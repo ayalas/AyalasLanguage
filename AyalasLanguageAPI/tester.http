@@ -1,0 +1,67 @@
+@hostname = localhost
+@port = 5097
+@host = http://{{hostname}}:{{port}}
+@contentType = application/json
+
+### Register a new user
+# @name registerUser
+POST {{host}}/api/users/register
+Content-Type: {{contentType}}
+
+{
+  "displayName": "John Doe",
+  "userName": "johndoe",
+  "password": "SecurePassword123"
+}
+
+### Link a language to the user (e.g., User 1, Language 4 - Spanish)
+POST {{host}}/api/users/1/languages
+Content-Type: {{contentType}}
+
+{
+  "languageId": 4,
+  "isLearning": true
+}
+
+
+### Create a Learning Path (Chapter 1)
+POST {{host}}/api/creator/learning-path
+Content-Type: {{contentType}}
+
+{
+  "languageId": 4,
+  "level": 1,
+  "chapter": 1,
+  "name": "Basics: Greetings",
+  "creatorUserId": 1
+}
+
+### Get the learning path for a specific language (e.g., Spanish - ID 4)
+GET {{host}}/api/learning/languages/4/path
+
+
+### Create an Exercise for the Path created above
+POST {{host}}/api/creator/exercise
+Content-Type: {{contentType}}
+
+{
+  "languageId": 4,
+  "learningPathId": 1,
+  "exerciseTypeId": 1,
+  "data": "{\"question\": \"How do you say Hello?\", \"answer\": \"Hola\"}",
+  "creatorUserId": 1
+}
+
+### Update user progress for a specific learning path item
+# Status 0 = Current, 1 = Done
+POST {{host}}/api/learning/progress?userId=1
+Content-Type: {{contentType}}
+
+{
+  "languageId": 4,
+  "learningPathId": 1,
+  "status": 1
+}
+
+### Get exercises for a specific learning path chapter
+GET {{host}}/api/learning/path/1/exercises

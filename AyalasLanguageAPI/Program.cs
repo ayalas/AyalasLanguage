@@ -1,6 +1,16 @@
+using AyalasLanguageAPI.Data;
+using AyalasLanguageAPI.Endpoints;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddAyalasLanguageDb();
+
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+app.MapLanguageEndpoints();
+app.MapContentCreatorEndpoints();
+
+app.MigrateDb();
 
 app.Run();

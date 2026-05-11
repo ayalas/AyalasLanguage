@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AyalasLanguageAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2025dc387bd89f42796e619aac8588c520e9161f")]
 [assembly: System.Reflection.AssemblyProductAttribute("AyalasLanguageAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AyalasLanguageAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
