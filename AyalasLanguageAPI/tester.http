@@ -5,7 +5,7 @@
 
 ### Register a new user
 # @name registerUser
-POST {{host}}/api/users/register
+POST {{host}}/api/auth/register
 Content-Type: {{contentType}}
 
 {
@@ -14,19 +14,75 @@ Content-Type: {{contentType}}
   "password": "SecurePassword123"
 }
 
-### Link a language to the user (e.g., User 1, Language 4 - Spanish)
-POST {{host}}/api/users/1/languages
+###
+
+# @name login
+POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "languageId": 4,
-  "isLearning": true
+  "userName": "johndoe",
+  "password": "SecurePassword123"
 }
 
+###
+
+@token = {{login.response.body.token}}
+
+### Link a language to the user (e.g., User 1, Language 4 - Spanish)
+POST {{host}}/api/profile
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "languages": [
+    {
+      "languageId": 4,
+      "isLearning": true
+    },
+    {
+      "languageId": 1,
+      "isLearning": false
+    }
+  ],
+  "exerciseTypes": [
+    {
+      "exerciseTypeId": 1
+    },
+    {
+      "exerciseTypeId": 2
+    },
+    {
+      "exerciseTypeId": 3
+    },
+    {
+      "exerciseTypeId": 4
+    }
+  ]
+}
+
+###
+GET {{host}}/api/static/languages
+Authorization: Bearer {{token}}
+
+###
+GET {{host}}/api/current
+Authorization: Bearer {{token}}
+
+###
+POST {{host}}/api/current
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "TargetLanguageId": 2,
+  "KnownLanguageId": 1
+}
 
 ### Create a Learning Path (Chapter 1)
 POST {{host}}/api/creator/learning-path
 Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
 
 {
   "languageId": 4,
@@ -36,13 +92,27 @@ Content-Type: {{contentType}}
   "creatorUserId": 1
 }
 
+### Update user progress for a specific learning path item
+# Status 0 = Current, 1 = Done
+POST {{host}}/api/learning/progress
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "languageId": 4,
+  "learningPathId": 1,
+  "status": 2
+}
+
 ### Get the learning path for a specific language (e.g., Spanish - ID 4)
 GET {{host}}/api/learning/languages/4/path
+Authorization: Bearer {{token}}
 
 
 ### Create an Exercise for the Path created above
 POST {{host}}/api/creator/exercise
 Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
 
 {
   "languageId": 4,
@@ -52,16 +122,8 @@ Content-Type: {{contentType}}
   "creatorUserId": 1
 }
 
-### Update user progress for a specific learning path item
-# Status 0 = Current, 1 = Done
-POST {{host}}/api/learning/progress?userId=1
-Content-Type: {{contentType}}
 
-{
-  "languageId": 4,
-  "learningPathId": 1,
-  "status": 1
-}
 
 ### Get exercises for a specific learning path chapter
 GET {{host}}/api/learning/path/1/exercises
+Authorization: Bearer {{token}}

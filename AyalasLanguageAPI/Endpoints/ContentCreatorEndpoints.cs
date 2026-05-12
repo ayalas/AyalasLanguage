@@ -2,9 +2,12 @@ using System;
 
 namespace AyalasLanguageAPI.Endpoints;
 
+using System.Security.Claims;
+using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.DTOs;
 using AyalasLanguageAPI.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 public static class ContentCreatorEndpoints
@@ -23,8 +26,10 @@ public static class ContentCreatorEndpoints
         creator.MapPatch("/learning-path/link", LinkPaths);
     }
 
-    private static async Task<IResult> CreateLearningPath(LearningPathCreateDto dto, AyalasLanguageDbContext db)
+    [Authorize(Roles = "Admin,ContentCreator")]
+    private static async Task<IResult> CreateLearningPath(ClaimsPrincipal claim, LearningPathCreateDto dto, AyalasLanguageDbContext db)
     {
+        var userId = claim.GetUserId();
         var path = new LearningPath
         {
             LanguageId = dto.LanguageId,
@@ -34,7 +39,7 @@ public static class ContentCreatorEndpoints
             PrevLearningPathId = dto.PrevLearningPathId,
             NextLearningPathId = dto.NextLearningPathId,
             Status = 1, // Default to active/published
-            UserId = dto.CreatorUserId
+            UserId = userId
         };
 
         db.LearningPaths.Add(path);
@@ -43,15 +48,17 @@ public static class ContentCreatorEndpoints
         return Results.Created($"/api/learning/path/{path.LearningPathId}", path);
     }
 
-    private static async Task<IResult> CreateExercise(ExerciseCreateDto dto, AyalasLanguageDbContext db)
+    [Authorize(Roles = "Admin,ContentCreator")]
+    private static async Task<IResult> CreateExercise(ClaimsPrincipal claim, ExerciseCreateDto dto, AyalasLanguageDbContext db)
     {
+        var userId = claim.GetUserId();
         var exercise = new Exercise
         {
             LanguageId = dto.LanguageId,
             LearningPathId = dto.LearningPathId,
             ExerciseTypeId = dto.ExerciseTypeId,
             Data = dto.Data,
-            UserId = dto.CreatorUserId
+            UserId = userId
         };
 
         db.Exercises.Add(exercise);
@@ -60,6 +67,7 @@ public static class ContentCreatorEndpoints
         return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", exercise);
     }
 
+    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> LinkPaths(int prevId, int nextId, AyalasLanguageDbContext db)
     {
         var prevPath = await db.LearningPaths.FindAsync(prevId);

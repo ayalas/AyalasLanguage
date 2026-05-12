@@ -10,17 +10,22 @@ public class AyalasLanguageDbContext : DbContext
 
     public DbSet<Language> Languages { get; set; }
     public DbSet<User> Users { get; set; }
+    public DbSet<Token> Tokens { get; set; }
     public DbSet<UserLanguage> UserLanguages { get; set; }
     public DbSet<ExerciseType> ExerciseTypes { get; set; }
     public DbSet<LearningPath> LearningPaths { get; set; }
     public DbSet<Exercise> Exercises { get; set; }
     public DbSet<UserProgress> UserProgresses { get; set; }
+    public DbSet<UserExerciseType> UserExerciseTypes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Composite Key for UserLanguage
         modelBuilder.Entity<UserLanguage>()
             .HasKey(ul => new { ul.UserId, ul.LanguageId });
+
+        modelBuilder.Entity<UserExerciseType>()
+            .HasKey(ul => new { ul.UserId, ul.ExerciseTypeId });
 
         // Composite Key for UserProgress
         modelBuilder.Entity<UserProgress>()
@@ -35,52 +40,52 @@ public class AyalasLanguageDbContext : DbContext
         .OnDelete(DeleteBehavior.SetNull);
 
         modelBuilder.Entity<ExerciseType>().HasData(
-            new ExerciseType { ExerciseTypeId = 1, Name = "from Known to target language" },
-            new ExerciseType { ExerciseTypeId = 2, Name = "from target to Known language" },
-            new ExerciseType { ExerciseTypeId = 3, Name = "Fill in the Blank" },
-            new ExerciseType { ExerciseTypeId = 4, Name = "Matching" },
-            new ExerciseType { ExerciseTypeId = 5, Name = "from Known to target language - bucket list" }
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "from Known to target language" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnown, Name = "from target to Known language" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FillInTheBlanks, Name = "Fill in the Blank" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.Matching, Name = "Matching" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTargetBucket, Name = "from Known to target language - bucket list" }
         );
 
         // Seed common languages
         modelBuilder.Entity<Language>().HasData(
-            new Language { LanguageId = 1, EnglishName = "English", NativeName = "English" },
-            new Language { LanguageId = 2, EnglishName = "Arabic", NativeName = "العربية" },
-            new Language { LanguageId = 3, EnglishName = "Danish", NativeName = "Dansk" },
-            new Language { LanguageId = 4, EnglishName = "Spanish", NativeName = "Español" },
-            new Language { LanguageId = 5, EnglishName = "French", NativeName = "Français" },
-            new Language { LanguageId = 6, EnglishName = "German", NativeName = "Deutsch" },
-            new Language { LanguageId = 7, EnglishName = "Japanese", NativeName = "日本語" },
-            new Language { LanguageId = 8, EnglishName = "Mandarin Chinese", NativeName = "普通话" },
-            new Language { LanguageId = 9, EnglishName = "Hindi", NativeName = "हिन्दी" },
-            new Language { LanguageId = 10, EnglishName = "Portuguese", NativeName = "Português" },
-            new Language { LanguageId = 11, EnglishName = "Russian", NativeName = "Русский" },
-            new Language { LanguageId = 12, EnglishName = "Bengali", NativeName = "বাংলা" },
-            new Language { LanguageId = 13, EnglishName = "Korean", NativeName = "한국어" },
-            new Language { LanguageId = 14, EnglishName = "Italian", NativeName = "Italiano" },
-            new Language { LanguageId = 15, EnglishName = "Turkish", NativeName = "Türkçe" },
-            new Language { LanguageId = 16, EnglishName = "Vietnamese", NativeName = "Tiếng Việt" },
-            new Language { LanguageId = 17, EnglishName = "Telugu", NativeName = "తెలుగు" },
-            new Language { LanguageId = 18, EnglishName = "Marathi", NativeName = "मराठी" },
-            new Language { LanguageId = 19, EnglishName = "Tamil", NativeName = "தமிழ்" },
-            new Language { LanguageId = 20, EnglishName = "Urdu", NativeName = "اردو" },
-            new Language { LanguageId = 21, EnglishName = "Greek", NativeName = "Ελληνικά" },
-            new Language { LanguageId = 22, EnglishName = "Dutch", NativeName = "Nederlands" },
-            new Language { LanguageId = 23, EnglishName = "Swedish", NativeName = "Svenska" },
-            new Language { LanguageId = 24, EnglishName = "Norwegian", NativeName = "Norsk" },
-            new Language { LanguageId = 25, EnglishName = "Polish", NativeName = "Polski" },
-            new Language { LanguageId = 26, EnglishName = "Finnish", NativeName = "Suomi" },
-            new Language { LanguageId = 27, EnglishName = "Czech", NativeName = "Čeština" },
-            new Language { LanguageId = 28, EnglishName = "Hungarian", NativeName = "Magyar" },
-            new Language { LanguageId = 29, EnglishName = "Thai", NativeName = "ไทย" },
-            new Language { LanguageId = 30, EnglishName = "Indonesian", NativeName = "Bahasa Indonesia" },
-            new Language { LanguageId = 31, EnglishName = "Romanian", NativeName = "Română" },
-            new Language { LanguageId = 32, EnglishName = "Ukrainian", NativeName = "Українська" },
-            new Language { LanguageId = 33, EnglishName = "Hebrew", NativeName = "עברית" },
-            new Language { LanguageId = 34, EnglishName = "Malay", NativeName = "Bahasa Melayu" },
-            new Language { LanguageId = 35, EnglishName = "Persian", NativeName = "فارسی" },
-            new Language { LanguageId = 36, EnglishName = "Slovak", NativeName = "Slovenčina" },
-            new Language { LanguageId = 37, EnglishName = "Catalan", NativeName = "Català" }
+            new Language { LanguageId = (int)LanguageEnum.English, Code = "en", EnglishName = "English", NativeName = "English" },
+            new Language { LanguageId = (int)LanguageEnum.Arabic, Code = "ar", EnglishName = "Arabic", NativeName = "العربية" },
+            new Language { LanguageId = (int)LanguageEnum.Danish, Code = "da", EnglishName = "Danish", NativeName = "Dansk" },
+            new Language { LanguageId = (int)LanguageEnum.Spanish, Code = "es", EnglishName = "Spanish", NativeName = "Español" },
+            new Language { LanguageId = (int)LanguageEnum.French, Code = "fr", EnglishName = "French", NativeName = "Français" },
+            new Language { LanguageId = (int)LanguageEnum.German, Code = "de", EnglishName = "German", NativeName = "Deutsch" },
+            new Language { LanguageId = (int)LanguageEnum.Japanese, Code = "ja", EnglishName = "Japanese", NativeName = "日本語" },
+            new Language { LanguageId = (int)LanguageEnum.MandarinChinese, Code = "zh", EnglishName = "Mandarin Chinese", NativeName = "普通话" },
+            new Language { LanguageId = (int)LanguageEnum.Hindi, Code = "hi", EnglishName = "Hindi", NativeName = "हिन्दी" },
+            new Language { LanguageId = (int)LanguageEnum.Portuguese, Code = "pt", EnglishName = "Portuguese", NativeName = "Português" },
+            new Language { LanguageId = (int)LanguageEnum.Russian, Code = "ru", EnglishName = "Russian", NativeName = "Русский" },
+            new Language { LanguageId = (int)LanguageEnum.Bengali, Code = "bn", EnglishName = "Bengali", NativeName = "বাংলা" },
+            new Language { LanguageId = (int)LanguageEnum.Korean, Code = "ko", EnglishName = "Korean", NativeName = "한국어" },
+            new Language { LanguageId = (int)LanguageEnum.Italian, Code = "it", EnglishName = "Italian", NativeName = "Italiano" },
+            new Language { LanguageId = (int)LanguageEnum.Turkish, Code = "tr", EnglishName = "Turkish", NativeName = "Türkçe" },
+            new Language { LanguageId = (int)LanguageEnum.Vietnamese, Code = "vi", EnglishName = "Vietnamese", NativeName = "Tiếng Việt" },
+            new Language { LanguageId = (int)LanguageEnum.Telugu, Code = "te", EnglishName = "Telugu", NativeName = "తెలుగు" },
+            new Language { LanguageId = (int)LanguageEnum.Marathi, Code = "mr", EnglishName = "Marathi", NativeName = "मराठी" },
+            new Language { LanguageId = (int)LanguageEnum.Tamil, Code = "ta", EnglishName = "Tamil", NativeName = "தமிழ்" },
+            new Language { LanguageId = (int)LanguageEnum.Urdu, Code = "ur", EnglishName = "Urdu", NativeName = "اردو" },
+            new Language { LanguageId = (int)LanguageEnum.Greek, Code = "el", EnglishName = "Greek", NativeName = "Ελληνικά" },
+            new Language { LanguageId = (int)LanguageEnum.Dutch, Code = "nl", EnglishName = "Dutch", NativeName = "Nederlands" },
+            new Language { LanguageId = (int)LanguageEnum.Swedish, Code = "sv", EnglishName = "Swedish", NativeName = "Svenska" },
+            new Language { LanguageId = (int)LanguageEnum.Norwegian, Code = "no", EnglishName = "Norwegian", NativeName = "Norsk" },
+            new Language { LanguageId = (int)LanguageEnum.Polish, Code = "pl", EnglishName = "Polish", NativeName = "Polski" },
+            new Language { LanguageId = (int)LanguageEnum.Finnish, Code = "fi", EnglishName = "Finnish", NativeName = "Suomi" },
+            new Language { LanguageId = (int)LanguageEnum.Czech, Code = "cs", EnglishName = "Czech", NativeName = "Čeština" },
+            new Language { LanguageId = (int)LanguageEnum.Hungarian, Code = "hu", EnglishName = "Hungarian", NativeName = "Magyar" },
+            new Language { LanguageId = (int)LanguageEnum.Thai, Code = "th", EnglishName = "Thai", NativeName = "ไทย" },
+            new Language { LanguageId = (int)LanguageEnum.Indonesian, Code = "id", EnglishName = "Indonesian", NativeName = "Bahasa Indonesia" },
+            new Language { LanguageId = (int)LanguageEnum.Romanian, Code = "ro", EnglishName = "Romanian", NativeName = "Română" },
+            new Language { LanguageId = (int)LanguageEnum.Ukrainian, Code = "uk", EnglishName = "Ukrainian", NativeName = "Українська" },
+            new Language { LanguageId = (int)LanguageEnum.Hebrew, Code = "he", EnglishName = "Hebrew", NativeName = "עברית" },
+            new Language { LanguageId = (int)LanguageEnum.Malay, Code = "ms", EnglishName = "Malay", NativeName = "Bahasa Melayu" },
+            new Language { LanguageId = (int)LanguageEnum.Persian, Code = "fa", EnglishName = "Persian", NativeName = "فارسی" },
+            new Language { LanguageId = (int)LanguageEnum.Slovak, Code = "sk", EnglishName = "Slovak", NativeName = "Slovenčina" },
+            new Language { LanguageId = (int)LanguageEnum.Catalan, Code = "ca", EnglishName = "Catalan", NativeName = "Català" }
         );
 
         base.OnModelCreating(modelBuilder);

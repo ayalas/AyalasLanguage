@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -32,7 +33,8 @@ namespace AyalasLanguageAPI.Data.Migrations
                     LanguageId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     EnglishName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    NativeName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true)
+                    NativeName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
+                    Code = table.Column<string>(type: "TEXT", maxLength: 5, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -48,11 +50,23 @@ namespace AyalasLanguageAPI.Data.Migrations
                     DisplayName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
                     PasswordHash = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false),
-                    Role = table.Column<byte>(type: "INTEGER", nullable: false)
+                    Role = table.Column<byte>(type: "INTEGER", nullable: false),
+                    TargetLanguageId = table.Column<int>(type: "INTEGER", nullable: true),
+                    KnownLanguageId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_Users_Languages_KnownLanguageId",
+                        column: x => x.KnownLanguageId,
+                        principalTable: "Languages",
+                        principalColumn: "LanguageId");
+                    table.ForeignKey(
+                        name: "FK_Users_Languages_TargetLanguageId",
+                        column: x => x.TargetLanguageId,
+                        principalTable: "Languages",
+                        principalColumn: "LanguageId");
                 });
 
             migrationBuilder.CreateTable(
@@ -87,6 +101,51 @@ namespace AyalasLanguageAPI.Data.Migrations
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_LearningPaths_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tokens",
+                columns: table => new
+                {
+                    TokenId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Content = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false),
+                    ExpiresOn = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tokens", x => x.TokenId);
+                    table.ForeignKey(
+                        name: "FK_Tokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserExerciseTypes",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ExerciseTypeId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserExerciseTypes", x => new { x.UserId, x.ExerciseTypeId });
+                    table.ForeignKey(
+                        name: "FK_UserExerciseTypes_ExerciseTypes_ExerciseTypeId",
+                        column: x => x.ExerciseTypeId,
+                        principalTable: "ExerciseTypes",
+                        principalColumn: "ExerciseTypeId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserExerciseTypes_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
@@ -204,46 +263,46 @@ namespace AyalasLanguageAPI.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "Languages",
-                columns: new[] { "LanguageId", "EnglishName", "NativeName" },
+                columns: new[] { "LanguageId", "Code", "EnglishName", "NativeName" },
                 values: new object[,]
                 {
-                    { 1, "English", "English" },
-                    { 2, "Arabic", "العربية" },
-                    { 3, "Danish", "Dansk" },
-                    { 4, "Spanish", "Español" },
-                    { 5, "French", "Français" },
-                    { 6, "German", "Deutsch" },
-                    { 7, "Japanese", "日本語" },
-                    { 8, "Mandarin Chinese", "普通话" },
-                    { 9, "Hindi", "हिन्दी" },
-                    { 10, "Portuguese", "Português" },
-                    { 11, "Russian", "Русский" },
-                    { 12, "Bengali", "বাংলা" },
-                    { 13, "Korean", "한국어" },
-                    { 14, "Italian", "Italiano" },
-                    { 15, "Turkish", "Türkçe" },
-                    { 16, "Vietnamese", "Tiếng Việt" },
-                    { 17, "Telugu", "తెలుగు" },
-                    { 18, "Marathi", "मराठी" },
-                    { 19, "Tamil", "தமிழ்" },
-                    { 20, "Urdu", "اردو" },
-                    { 21, "Greek", "Ελληνικά" },
-                    { 22, "Dutch", "Nederlands" },
-                    { 23, "Swedish", "Svenska" },
-                    { 24, "Norwegian", "Norsk" },
-                    { 25, "Polish", "Polski" },
-                    { 26, "Finnish", "Suomi" },
-                    { 27, "Czech", "Čeština" },
-                    { 28, "Hungarian", "Magyar" },
-                    { 29, "Thai", "ไทย" },
-                    { 30, "Indonesian", "Bahasa Indonesia" },
-                    { 31, "Romanian", "Română" },
-                    { 32, "Ukrainian", "Українська" },
-                    { 33, "Hebrew", "עברית" },
-                    { 34, "Malay", "Bahasa Melayu" },
-                    { 35, "Persian", "فارسی" },
-                    { 36, "Slovak", "Slovenčina" },
-                    { 37, "Catalan", "Català" }
+                    { 1, "en", "English", "English" },
+                    { 2, "ar", "Arabic", "العربية" },
+                    { 3, "da", "Danish", "Dansk" },
+                    { 4, "es", "Spanish", "Español" },
+                    { 5, "fr", "French", "Français" },
+                    { 6, "de", "German", "Deutsch" },
+                    { 7, "ja", "Japanese", "日本語" },
+                    { 8, "zh", "Mandarin Chinese", "普通话" },
+                    { 9, "hi", "Hindi", "हिन्दी" },
+                    { 10, "pt", "Portuguese", "Português" },
+                    { 11, "ru", "Russian", "Русский" },
+                    { 12, "bn", "Bengali", "বাংলা" },
+                    { 13, "ko", "Korean", "한국어" },
+                    { 14, "it", "Italian", "Italiano" },
+                    { 15, "tr", "Turkish", "Türkçe" },
+                    { 16, "vi", "Vietnamese", "Tiếng Việt" },
+                    { 17, "te", "Telugu", "తెలుగు" },
+                    { 18, "mr", "Marathi", "मराठी" },
+                    { 19, "ta", "Tamil", "தமிழ்" },
+                    { 20, "ur", "Urdu", "اردو" },
+                    { 21, "el", "Greek", "Ελληνικά" },
+                    { 22, "nl", "Dutch", "Nederlands" },
+                    { 23, "sv", "Swedish", "Svenska" },
+                    { 24, "no", "Norwegian", "Norsk" },
+                    { 25, "pl", "Polish", "Polski" },
+                    { 26, "fi", "Finnish", "Suomi" },
+                    { 27, "cs", "Czech", "Čeština" },
+                    { 28, "hu", "Hungarian", "Magyar" },
+                    { 29, "th", "Thai", "ไทย" },
+                    { 30, "id", "Indonesian", "Bahasa Indonesia" },
+                    { 31, "ro", "Romanian", "Română" },
+                    { 32, "uk", "Ukrainian", "Українська" },
+                    { 33, "he", "Hebrew", "עברית" },
+                    { 34, "ms", "Malay", "Bahasa Melayu" },
+                    { 35, "fa", "Persian", "فارسی" },
+                    { 36, "sk", "Slovak", "Slovenčina" },
+                    { 37, "ca", "Catalan", "Català" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -283,6 +342,16 @@ namespace AyalasLanguageAPI.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tokens_UserId",
+                table: "Tokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserExerciseTypes_ExerciseTypeId",
+                table: "UserExerciseTypes",
+                column: "ExerciseTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserLanguages_LanguageId",
                 table: "UserLanguages",
                 column: "LanguageId");
@@ -296,6 +365,16 @@ namespace AyalasLanguageAPI.Data.Migrations
                 name: "IX_UserProgresses_LearningPathId",
                 table: "UserProgresses",
                 column: "LearningPathId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_KnownLanguageId",
+                table: "Users",
+                column: "KnownLanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TargetLanguageId",
+                table: "Users",
+                column: "TargetLanguageId");
         }
 
         /// <inheritdoc />
@@ -303,6 +382,12 @@ namespace AyalasLanguageAPI.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Exercises");
+
+            migrationBuilder.DropTable(
+                name: "Tokens");
+
+            migrationBuilder.DropTable(
+                name: "UserExerciseTypes");
 
             migrationBuilder.DropTable(
                 name: "UserLanguages");
@@ -317,10 +402,10 @@ namespace AyalasLanguageAPI.Data.Migrations
                 name: "LearningPaths");
 
             migrationBuilder.DropTable(
-                name: "Languages");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Languages");
         }
     }
 }
