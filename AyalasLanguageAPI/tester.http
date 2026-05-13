@@ -2,6 +2,8 @@
 @port = 5097
 @host = http://{{hostname}}:{{port}}
 @contentType = application/json
+@userName = "johndoe"
+@password = "SecurePassword123"
 
 ### Register a new user
 # @name registerUser
@@ -10,8 +12,8 @@ Content-Type: {{contentType}}
 
 {
   "displayName": "John Doe",
-  "userName": "johndoe",
-  "password": "SecurePassword123"
+  "userName": {{userName}},
+  "password": {{password}}
 }
 
 ### login
@@ -21,8 +23,8 @@ POST {{host}}/api/auth/login
 Content-Type: {{contentType}}
 
 {
-  "userName": "johndoe",
-  "password": "SecurePassword123"
+  "userName": {{userName}},
+  "password": {{password}}
 }
 
 ###
@@ -102,21 +104,24 @@ Authorization: Bearer {{token}}
 DELETE {{host}}/api/learning/progress/9
 Authorization: Bearer {{token}}
 
-### Create a Learning Path (Chapter 1)
-# @name learningPath1
+### Create a Learning Path
+# @name createLearningPath1
 POST {{host}}/api/creator/learning-path
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
   "languageId": 4,
-  "level": 3,
-  "chapter": 3,
-  "name": "School",
-  "prevLearningPathId": 8
+  "level": 4,
+  "chapter": 4,
+  "name": "Nature",
+  "prevLearningPathId": 10,
+  "nextLearningPathId": 15
 }
+###
+@newLearningPathId = {{createLearningPath1.response.body.learningPathId}}
 
-### Create a Learning Path (Chapter 2, linked to Chapter 1)
+### Create a Learning Path
 POST {{host}}/api/creator/learning-path
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
@@ -126,23 +131,24 @@ Authorization: Bearer {{token}}
   "level": 1,
   "chapter": 2,
   "name": "Nature",
-  "prevLearningPathId": 1
+  "prevLearningPathId": {{newLearningPathId}},
+  "nextLearningPathId": 15
 }
 
 ### Edit learning path
-PUT {{host}}/api/creator/learning-path/8
+PUT {{host}}/api/creator/learning-path/10
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
   "level": 2,
-  "chapter": 2,
+  "chapter": 3,
   "name": "Outdoors"
 }
 
 
 ### delete learning paths
-DELETE {{host}}/api/creator/learning-path/8
+DELETE {{host}}/api/creator/learning-path/14
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
@@ -152,13 +158,13 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "learningPathId": 8,
-  "exerciseTypeId": 1,
+  "learningPathId": 10,
+  "exerciseTypeId": 2,
   "data": "{\"question\": \"How do you say Hello?\", \"answer\": \"Hola\"}"
 }
 
 ### Edit the Exercise created above
-PUT {{host}}/api/creator/exercise/1
+PUT {{host}}/api/creator/exercise/4
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 

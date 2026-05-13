@@ -28,16 +28,20 @@ public static class ContentCreatorEndpoints
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]
-    private static async Task<IResult> CreateLearningPath(ClaimsPrincipal claim, CreateLearningPathDto dto, AyalasLanguageDbContext db)
+    private static async Task<IResult> CreateLearningPath(CreateLearningPathDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
 
         LearningPath? prevPath = null;
         LearningPath? nextPath = null;
+        int prevPathId = 0;
+        int nextPathId = 0;
         if (dto.PrevLearningPathId != null)
         {
             prevPath = await db.LearningPaths.FindAsync(dto.PrevLearningPathId);
             if (prevPath == null) return Results.BadRequest("Previous learning path not found.");
+            prevPathId = prevPath.LearningPathId;
+            
 
             prevPath.NextLearningPathId = null; // Unlink from any existing next path
         }
@@ -55,8 +59,24 @@ public static class ContentCreatorEndpoints
         {
             nextPath = await db.LearningPaths.FindAsync(dto.NextLearningPathId);
             if (nextPath == null) return Results.BadRequest("Next learning path not found.");
+            nextPathId = nextPath.LearningPathId;
+            //do not allow having more than one next path
 
             nextPath.PrevLearningPathId = null; // Unlink from any existing previous path
+        }
+        
+        //is there another item linked to the same next or previous path?
+        //we can only allow this if our prev is linked to our next and vice verse - that we can fix
+        if (await db.LearningPaths.AnyAsync(lp => lp.NextLearningPathId == dto.NextLearningPathId 
+            && lp.LearningPathId != prevPathId))
+        {
+            return Results.BadRequest("Next learning path already has a previous path.");
+        }
+
+        if (await db.LearningPaths.AnyAsync(lp => lp.PrevLearningPathId == dto.PrevLearningPathId
+            && lp.LearningPathId != nextPathId))
+        {
+            return Results.BadRequest("Previous learning path already has a next path.");
         }
 
         var path = new LearningPath
@@ -77,9 +97,9 @@ public static class ContentCreatorEndpoints
         nextPath?.PrevLearningPathId = path.LearningPathId;
         await db.SaveChangesAsync();
 
-        return Results.Created($"/api/learning/path/{path.LearningPathId}", dto);
+        return Results.Created($"/api/learning/path/{path.LearningPathId}", new CreateLearningPathResponseDto(path.LearningPathId));
     }
-
+    
     [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> EditLearningPath(int id, EditLearningPathDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
@@ -94,7 +114,7 @@ public static class ContentCreatorEndpoints
         path.Name = dto.Name;
 
         await db.SaveChangesAsync();
-        return Results.Ok(dto);
+        return Results.Ok();
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]
@@ -148,7 +168,7 @@ public static class ContentCreatorEndpoints
         db.Exercises.Add(exercise);
         await db.SaveChangesAsync();
 
-        return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", dto);
+        return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", new CreateExerciseResponseDto(exercise.ExerciseId));
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]
@@ -163,7 +183,7 @@ public static class ContentCreatorEndpoints
         exercise.Data = dto.Data;
 
         await db.SaveChangesAsync();
-        return Results.Ok(dto);
+        return Results.Ok();
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]

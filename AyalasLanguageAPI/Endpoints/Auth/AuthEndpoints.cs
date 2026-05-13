@@ -23,7 +23,7 @@ public static class AuthEndpoints
         //not implementing email confirmation, forgot password, or other features for this demo - but they would go here
     }
     // --- Private Handler Implementations ---
-    private static async Task<IResult> LoginUser(LoginRequest login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache)
+    private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache)
     {
         // 1. Find user (In production, use a proper password hasher!)
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
@@ -49,8 +49,9 @@ public static class AuthEndpoints
         // We cache the User so we don't have to query the DB in the middleware
         cache.Set(tokenContent, user, expires);
 
-        return Results.Ok(new { token = tokenContent, expires });
+        return Results.Ok(new LoginResponseDto(tokenContent, expires));
     }
+    
     [Authorize]
     private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache)
     {
@@ -73,7 +74,7 @@ public static class AuthEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> RegisterUser(UserRegisterDto dto, AyalasLanguageDbContext db)
+    private static async Task<IResult> RegisterUser(RegisterDto dto, AyalasLanguageDbContext db)
     {
 
         if (await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName) != null)
@@ -93,7 +94,7 @@ public static class AuthEndpoints
         await db.SaveChangesAsync();
 
         return Results.Created($"/api/users/{user.UserId}",
-            new UserResponseDto(user.UserId, user.DisplayName, user.UserName, user.Role));
+            new RegisterResponseDto(user.UserId, user.DisplayName, user.UserName, user.Role));
     }
 
     [Authorize]

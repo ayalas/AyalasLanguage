@@ -3,9 +3,10 @@ using System;
 namespace AyalasLanguageAPI.DTOs
 {
     // Auth DTOs
-    public record LoginRequest(string UserName, string Password);
-    public record UserRegisterDto(string DisplayName, string UserName, string Password);
-    public record UserResponseDto(int UserId, string DisplayName, string UserName, byte Role);
+    public record LoginDto(string UserName, string Password);
+    public record LoginResponseDto(string Token, DateTime Expires);
+    public record RegisterDto(string DisplayName, string UserName, string Password);
+    public record RegisterResponseDto(int UserId, string DisplayName, string UserName, byte Role);
     public record ChangePasswordDto(string OldPassword, string NewPassword);
 
     //profile DTOs
@@ -40,13 +41,15 @@ namespace AyalasLanguageAPI.DTOs
         int? PrevLearningPathId = null,
         int? NextLearningPathId = null
     );
-    public record EditLearningPathDto(int LearningPathId, uint Level, byte Chapter, string? Name);
+    public record CreateLearningPathResponseDto(int LearningPathId);
+    public record EditLearningPathDto(uint Level, byte Chapter, string? Name);
     
     public record CreateExerciseDto(
         int? LearningPathId, 
         int ExerciseTypeId, 
         string Data
     );
+    public record CreateExerciseResponseDto(int ExerciseId);
 
     public record EditExerciseDto(
         string Data

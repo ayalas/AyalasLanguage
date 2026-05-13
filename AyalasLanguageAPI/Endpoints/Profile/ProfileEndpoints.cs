@@ -153,7 +153,7 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             user.KnownLanguageId = dto.KnownLanguageId;
 
             await db.SaveChangesAsync();
-            return Results.Ok(dto);
+            return Results.Ok();
         }
         
             #region Helper Functions

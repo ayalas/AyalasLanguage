@@ -44,8 +44,8 @@ public static class LearningEndpoints
             path.Chapter,
             path.Name,
             // Check if ANY progress exists for this user and path
-            db.UserProgresses.Any(up => up.UserId == userId && up.LearningPathId == path.LearningPathId) 
-                ? (byte)1 
+            db.UserProgresses.Any(up => up.UserId == userId && up.LearningPathId == path.LearningPathId)
+                ? (byte)1
                 : (byte)0,
             db.Exercises.Count(e => e.LearningPathId == path.LearningPathId),
             path.PrevLearningPathId,
@@ -54,23 +54,31 @@ public static class LearningEndpoints
         .ToListAsync();
 
         // 2. Reorder the list based on PrevLearningPathId
-        var sortedPaths = new List<LearningPathDto>();
-        Dictionary<long, LearningPathDto> pathMap = learningPathsWithStatus.ToDictionary(lp => lp.PrevLearningPathId ?? (long)0); // Key is the ID it follows
-
-        // Find the start (where PrevLearningPathId is null or 0)
-        long currentPrevId = 0; 
-
-        while (pathMap.TryGetValue(currentPrevId, out var nextPath))
+        try
         {
-            sortedPaths.Add(nextPath);
-            currentPrevId = nextPath.LearningPathId; // Move to the next link in the chain
-        }
+            var sortedPaths = new List<LearningPathDto>();
+            Dictionary<long, LearningPathDto> pathMap = learningPathsWithStatus.ToDictionary(lp => lp.PrevLearningPathId ?? (long)0); // Key is the ID it follows
 
-        return Results.Ok(sortedPaths);
+            // Find the start (where PrevLearningPathId is null or 0)
+            long currentPrevId = 0;
+
+            while (pathMap.TryGetValue(currentPrevId, out var nextPath))
+            {
+                sortedPaths.Add(nextPath);
+                currentPrevId = nextPath.LearningPathId; // Move to the next link in the chain
+            }
+
+            return Results.Ok(sortedPaths);
+        }
+        catch
+        {
+            // If there's a cycle or missing link, just return the unsorted list
+            return Results.Ok(learningPathsWithStatus);
+        }
     }
 
     [Authorize]
-    private static async Task<IResult> UpdateUserProgress(ClaimsPrincipal claim, UpdateProgressDto dto, AyalasLanguageDbContext db)
+    private static async Task<IResult> UpdateUserProgress(UpdateProgressDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
         var progress = await db.UserProgresses
