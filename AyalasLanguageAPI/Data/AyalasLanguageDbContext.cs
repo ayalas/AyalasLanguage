@@ -29,8 +29,7 @@ public class AyalasLanguageDbContext : DbContext
 
         // Composite Key for UserProgress
         modelBuilder.Entity<UserProgress>()
-            .HasKey(up => new { up.UserId, up.LanguageId, up.LearningPathId });
-
+            .HasKey(up => new { up.UserId, up.LearningPathId });
 
         modelBuilder.Entity<LearningPath>()
         .HasOne(lp => lp.NextLearningPath)

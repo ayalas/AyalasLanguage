@@ -32,5 +32,7 @@ namespace AyalasLanguageAPI.Model
         [Required]
         public int UserId { get; set; }
         public virtual User User { get; set; } = null!;
+
+        public virtual ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
     }
 }

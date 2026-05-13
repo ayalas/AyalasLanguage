@@ -30,6 +30,10 @@ public class CacheAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
             return AuthenticateResult.Fail("Missing Header");
 
         string authHeader = Request.Headers.Authorization;
+        if (string.IsNullOrEmpty(authHeader))
+            return AuthenticateResult.Fail("Empty Authorization Header");
+        if (!authHeader.StartsWith("Bearer "))
+            return AuthenticateResult.Fail("Invalid Authorization Header");
         var token = authHeader.Replace("Bearer ", "");
 
         User user = null;
@@ -42,7 +46,7 @@ public class CacheAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
 
             if (tokenRecord == null || tokenRecord.ExpiresOn < DateTime.UtcNow)
                 return AuthenticateResult.Fail("Invalid or Expired Token");
-            user = tokenRecord.User;
+            user = await db.Users.FindAsync(tokenRecord.UserId);
         }
 
         // 3. Create "Claims" (This represents the user in the context)

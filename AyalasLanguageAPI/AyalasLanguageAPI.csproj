@@ -15,7 +15,9 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Dtos\" />
-    <Folder Include="Endpoints\" />
+    <Folder Include="Endpoints\Learning\" />
+    <Folder Include="Endpoints\Profile\" />
+    <Folder Include="Endpoints\Static\" />
     <Folder Include="Model\" />
   </ItemGroup>
 

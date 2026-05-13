@@ -9,6 +9,7 @@ public enum UserRoleEnum
     Admin = 3
 }
 
+
 public enum ExerciseTypesEnum
 {
     FromKnownToTarget = 1,

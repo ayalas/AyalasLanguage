@@ -14,7 +14,7 @@ Content-Type: {{contentType}}
   "password": "SecurePassword123"
 }
 
-###
+### login
 
 # @name login
 POST {{host}}/api/auth/login
@@ -29,12 +29,13 @@ Content-Type: {{contentType}}
 
 @token = {{login.response.body.token}}
 
-### Link a language to the user (e.g., User 1, Language 4 - Spanish)
+### update profile - set display name, languages, and exercise types
 POST {{host}}/api/profile
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
+  "DisplayName": "John Doe 2",
   "languages": [
     {
       "languageId": 4,
@@ -61,25 +62,61 @@ Authorization: Bearer {{token}}
   ]
 }
 
-###
+### get user profile
+GET {{host}}/api/profile
+Authorization: Bearer {{token}}
+
+### get all available languages
 GET {{host}}/api/static/languages
 Authorization: Bearer {{token}}
 
-###
-GET {{host}}/api/current
+### get current language
+GET {{host}}/api/profile/current
 Authorization: Bearer {{token}}
 
-###
-POST {{host}}/api/current
+### switch current language
+POST {{host}}/api/profile/current
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "TargetLanguageId": 2,
+  "TargetLanguageId": 4,
   "KnownLanguageId": 1
 }
 
+### Get the learning path for current language
+### status 1 means it's done
+GET {{host}}/api/learning/path
+Authorization: Bearer {{token}}
+
+### Update user progress to done for a specific learning path item
+POST {{host}}/api/learning/progress
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "learningPathId": 9
+}
+
+### Delete user progress for a specific learning path item (mark as not done)
+DELETE {{host}}/api/learning/progress/9
+Authorization: Bearer {{token}}
+
 ### Create a Learning Path (Chapter 1)
+# @name learningPath1
+POST {{host}}/api/creator/learning-path
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "languageId": 4,
+  "level": 3,
+  "chapter": 3,
+  "name": "School",
+  "prevLearningPathId": 8
+}
+
+### Create a Learning Path (Chapter 2, linked to Chapter 1)
 POST {{host}}/api/creator/learning-path
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
@@ -87,27 +124,27 @@ Authorization: Bearer {{token}}
 {
   "languageId": 4,
   "level": 1,
-  "chapter": 1,
-  "name": "Basics: Greetings",
-  "creatorUserId": 1
+  "chapter": 2,
+  "name": "Nature",
+  "prevLearningPathId": 1
 }
 
-### Update user progress for a specific learning path item
-# Status 0 = Current, 1 = Done
-POST {{host}}/api/learning/progress
+### Edit learning path
+PUT {{host}}/api/creator/learning-path/8
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "languageId": 4,
-  "learningPathId": 1,
-  "status": 2
+  "level": 2,
+  "chapter": 2,
+  "name": "Outdoors"
 }
 
-### Get the learning path for a specific language (e.g., Spanish - ID 4)
-GET {{host}}/api/learning/languages/4/path
-Authorization: Bearer {{token}}
 
+### delete learning paths
+DELETE {{host}}/api/creator/learning-path/8
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
 
 ### Create an Exercise for the Path created above
 POST {{host}}/api/creator/exercise
@@ -115,15 +152,29 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "languageId": 4,
-  "learningPathId": 1,
+  "learningPathId": 8,
   "exerciseTypeId": 1,
-  "data": "{\"question\": \"How do you say Hello?\", \"answer\": \"Hola\"}",
-  "creatorUserId": 1
+  "data": "{\"question\": \"How do you say Hello?\", \"answer\": \"Hola\"}"
 }
 
+### Edit the Exercise created above
+PUT {{host}}/api/creator/exercise/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
 
+{
+  "data": "{\"question\": \"How do you say Goodbye?\", \"answer\": \"Adiós\"}"
+}
 
-### Get exercises for a specific learning path chapter
-GET {{host}}/api/learning/path/1/exercises
+### Delete the Exercise created above
+DELETE {{host}}/api/creator/exercise/2
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+### Get exercises for a learning path
+GET {{host}}/api/learning/path/8/exercises
+Authorization: Bearer {{token}}
+
+### Logout
+POST {{host}}/api/auth/logout
 Authorization: Bearer {{token}}

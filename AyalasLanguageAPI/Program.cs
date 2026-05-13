@@ -19,12 +19,11 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.MapLanguageEndpoints();
-app.MapContentCreatorEndpoints();
-
 app.MigrateDb();
 
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();
+
+app.MapAyalasLanguageEndpoints();
 
 app.Run();
