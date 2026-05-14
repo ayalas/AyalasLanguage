@@ -59,3 +59,12 @@ public enum LanguageEnum
     Slovak = 36,
     Catalan = 37
 }
+
+public static class Constants
+{
+    public const string BLANKS = "__";
+    public const int MATCH_MIN_COUNT = 5;
+    public const int MATCH_MAX_COUNT = 8;
+    public const int BUCKET_EXTRA_MIN_COUNT = 1;
+    public const int BUCKET_EXTRA_MAX_COUNT = 5;
+}

@@ -34,7 +34,6 @@ namespace AyalasLanguageAPI.DTOs
 
     // Content Creator DTOs
     public record CreateLearningPathDto(
-        int LanguageId,
         uint Level,
         byte Chapter,
         string? Name,

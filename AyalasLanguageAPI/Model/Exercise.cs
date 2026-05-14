@@ -8,8 +8,11 @@ namespace AyalasLanguageAPI.Model
         public int ExerciseId { get; set; }
 
         [Required]
-        public int LanguageId { get; set; }
-        public virtual Language Language { get; set; } = null!;
+        public int TargetLanguageId { get; set; }
+        public virtual Language TargetLanguage { get; set; } = null!;
+        [Required]
+        public int KnownLanguageId { get; set; }
+        public virtual Language KnownLanguage { get; set; } = null!;
 
         public int? LearningPathId { get; set; }
         public virtual LearningPath? LearningPath { get; set; }

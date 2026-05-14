@@ -36,7 +36,7 @@ public static class LearningEndpoints
         int languageId = user.TargetLanguageId.Value;
 
         var learningPathsWithStatus = await db.LearningPaths
-        .Where(lp => lp.LanguageId == languageId)
+        .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId)
         .Select(path => new LearningPathDto
         (
             path.LearningPathId,

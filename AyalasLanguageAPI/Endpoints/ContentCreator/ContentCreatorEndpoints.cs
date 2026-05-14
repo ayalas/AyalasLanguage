@@ -3,6 +3,7 @@ using System;
 namespace AyalasLanguageAPI.Endpoints;
 
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.DTOs;
@@ -32,6 +33,12 @@ public static class ContentCreatorEndpoints
     {
         var userId = claim.GetUserId();
 
+        var user = await db.Users.FindAsync(userId);
+        if (user == null) return Results.BadRequest("User not found.");
+
+        if (user.KnownLanguageId == null || user.TargetLanguageId == null)
+            return Results.BadRequest("User must have known and target languages set.");
+
         LearningPath? prevPath = null;
         LearningPath? nextPath = null;
         int prevPathId = 0;
@@ -47,9 +54,10 @@ public static class ContentCreatorEndpoints
         }
         else
         {
-            // If no previous path is specified, find the last path in the sequence for this language
+            // If no previous path is specified, find the last path in the sequence for this language learning
             prevPath = await db.LearningPaths
-                .Where(lp => lp.LanguageId == dto.LanguageId && lp.NextLearningPathId == null)
+                .Where(lp => lp.TargetLanguageId == user.TargetLanguageId 
+                    && lp.KnownLanguageId == user.KnownLanguageId && lp.NextLearningPathId == null)
                 .OrderByDescending(lp => lp.Level)
                 .ThenByDescending(lp => lp.Chapter)
                 .FirstOrDefaultAsync();
@@ -81,7 +89,8 @@ public static class ContentCreatorEndpoints
 
         var path = new LearningPath
         {
-            LanguageId = dto.LanguageId,
+            TargetLanguageId = user.TargetLanguageId.Value,
+            KnownLanguageId = user.KnownLanguageId.Value,
             Level = dto.Level,
             Chapter = dto.Chapter,
             Name = dto.Name,
@@ -156,9 +165,13 @@ public static class ContentCreatorEndpoints
         var learningPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.LearningPathId == dto.LearningPathId);
         if (learningPath == null) return Results.BadRequest("Learning path not found.");
 
+        if (!ValidateExerciseData(dto.ExerciseTypeId, dto.Data))
+            return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
+
         var exercise = new Exercise
         {
-            LanguageId = learningPath.LanguageId,
+            TargetLanguageId = learningPath.TargetLanguageId,
+            KnownLanguageId = learningPath.KnownLanguageId,
             LearningPathId = dto.LearningPathId,
             ExerciseTypeId = dto.ExerciseTypeId,
             Data = dto.Data,
@@ -180,6 +193,9 @@ public static class ContentCreatorEndpoints
         if (exercise.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
+        if (!ValidateExerciseData(id, dto.Data))
+            return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
+
         exercise.Data = dto.Data;
 
         await db.SaveChangesAsync();
@@ -198,5 +214,63 @@ public static class ContentCreatorEndpoints
         db.Exercises.Remove(exercise);
         await db.SaveChangesAsync();
         return Results.NoContent();
+    }
+
+    /// <summary>
+    /// Simple yes/no validation - the client should ensure the data is correct before sending,
+    /// but we want to have some basic validation on the server to prevent malformed data 
+    /// from being saved.
+    /// </summary>
+    /// <param name="exerciseTypeId"></param>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    private static bool ValidateExerciseData(int exerciseTypeId, string data)
+    {
+        if (string.IsNullOrEmpty(data))
+            return false;
+
+        try
+        {
+            switch (exerciseTypeId)
+            {
+                case (int)ExerciseTypesEnum.FromKnownToTarget:
+                case (int)ExerciseTypesEnum.FromTargetToKnown:
+                    // Validate that data is a JSON array of options
+                    var dtoSimple = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(data);
+                    return dtoSimple != null && !string.IsNullOrEmpty(dtoSimple.TargetText) && !string.IsNullOrEmpty(dtoSimple.KnownText);
+                case (int)ExerciseTypesEnum.FillInTheBlanks:
+                    var dtoFillInTheBlanks = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.FillInTheBlanksDto>(data);
+                    return dtoFillInTheBlanks != null
+                    && !string.IsNullOrEmpty(dtoFillInTheBlanks.TargetText)
+                    && dtoFillInTheBlanks.Replacements != null
+                    && dtoFillInTheBlanks.Replacements.Length > 0
+                    // Ensure number of blanks matches replacements
+                    && Regex.Matches(dtoFillInTheBlanks.TargetText, Constants.BLANKS, RegexOptions.IgnoreCase).Count
+                        == dtoFillInTheBlanks.Replacements.Length;
+                case (int)ExerciseTypesEnum.Matching:
+                    // Validate that data is a JSON array of pairs
+                    var dtoMatching = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.MatchDto>(data);
+                    return dtoMatching != null
+                           && dtoMatching.Items != null
+                           && dtoMatching.Items.Length >= Constants.MATCH_MIN_COUNT
+                           && dtoMatching.Items.Length <= Constants.MATCH_MAX_COUNT
+                           && dtoMatching.Items.All(item => !string.IsNullOrEmpty(item.KnownText) && !string.IsNullOrEmpty(item.TargetText));
+                case (int)ExerciseTypesEnum.FromKnownToTargetBucket:
+                    // Validate that data is a JSON object with question, options, and correct answer
+                    var dtoBucket = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.BucketTranslateDto>(data);
+                    return dtoBucket != null
+                           && !string.IsNullOrEmpty(dtoBucket.KnownText)
+                           && !string.IsNullOrEmpty(dtoBucket.TargetText)
+                           && dtoBucket.ExtraOptions.Length >= Constants.BUCKET_EXTRA_MIN_COUNT
+                           && dtoBucket.ExtraOptions.Length <= Constants.BUCKET_EXTRA_MAX_COUNT;
+                default:
+                    return false; // Assuming invalid for unknown types
+            }
+        }
+        catch
+        {
+            //todo: log exception
+            return false; // If any exception occurs during validation, consider it invalid
+        }
     }
 }

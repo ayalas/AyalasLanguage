@@ -18,6 +18,6 @@ namespace AyalasLanguageAPI.Model
 
         // Navigation properties
         public virtual ICollection<UserLanguage> UserLanguages { get; set; } = new List<UserLanguage>();
-        public virtual ICollection<LearningPath> LearningPaths { get; set; } = new List<LearningPath>();
+
     }
 }
