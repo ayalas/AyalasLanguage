@@ -4,5 +4,6 @@
 *.log
 *.bak
 *.tmp
-*.obj
+bin/
+obj/
 *.dll
