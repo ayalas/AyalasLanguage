@@ -91,18 +91,7 @@ Authorization: Bearer {{token}}
 GET {{host}}/api/learning/path
 Authorization: Bearer {{token}}
 
-### Update user progress to done for a specific learning path item
-POST {{host}}/api/learning/progress
-Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
 
-{
-  "learningPathId": 9
-}
-
-### Delete user progress for a specific learning path item (mark as not done)
-DELETE {{host}}/api/learning/progress/9
-Authorization: Bearer {{token}}
 
 ### Create a Learning Path
 # @name createLearningPath1
@@ -111,12 +100,9 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "languageId": 4,
-  "level": 4,
-  "chapter": 4,
-  "name": "Nature",
-  "prevLearningPathId": 10,
-  "nextLearningPathId": 15
+  "level": 1,
+  "chapter": 1,
+  "name": "Greetings"
 }
 ###
 @newLearningPathId = {{createLearningPath1.response.body.learningPathId}}
@@ -127,16 +113,27 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "languageId": 4,
   "level": 1,
   "chapter": 2,
   "name": "Nature",
-  "prevLearningPathId": {{newLearningPathId}},
-  "nextLearningPathId": 15
+  "prevLearningPathId": {{newLearningPathId}}
 }
 
+### Update user progress to done for a specific learning path item
+POST {{host}}/api/learning/progress
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "learningPathId": 1
+}
+
+### Delete user progress for a specific learning path item (mark as not done)
+DELETE {{host}}/api/learning/progress/1
+Authorization: Bearer {{token}}
+
 ### Edit learning path
-PUT {{host}}/api/creator/learning-path/10
+PUT {{host}}/api/creator/learning-path/2
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
@@ -148,37 +145,81 @@ Authorization: Bearer {{token}}
 
 
 ### delete learning paths
-DELETE {{host}}/api/creator/learning-path/14
+DELETE {{host}}/api/creator/learning-path/2
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
-### Create an Exercise for the Path created above
+### Create a simple Exercise for the Path created above
 POST {{host}}/api/creator/exercise
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "learningPathId": 10,
-  "exerciseTypeId": 2,
-  "data": "{\"question\": \"How do you say Hello?\", \"answer\": \"Hola\"}"
+  "learningPathId": 1,
+  "exerciseTypeId": 1,
+  "data": "{\"KnownText\": \"How do you say Hello?\", \"TargetText\": \"Hvordan siger du hej?\"}"
 }
 
-### Edit the Exercise created above
-PUT {{host}}/api/creator/exercise/4
+### Create a simple Exercise for the Path created above
+POST {{host}}/api/creator/exercise
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "data": "{\"question\": \"How do you say Goodbye?\", \"answer\": \"Adiós\"}"
+  "learningPathId": 1,
+  "exerciseTypeId": 2,
+  "data": "{\"KnownText\": \"How do you say Hello?\", \"TargetText\": \"Hvordan siger du hej?\"}"
+}
+
+### Edit the Exercise created above
+PUT {{host}}/api/creator/exercise/1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "data": "{\"KnownText\": \"How do you say Goodbye?\", \"TargetText\": \"Adiós\"}"
+}
+
+### Create a fillin the blanks exercise for the Path created above
+POST {{host}}/api/creator/exercise
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "learningPathId": 1,
+  "exerciseTypeId": 3,
+  "data": "{\"TargetText\": \"Jeg bor __ Danmark, men jeg kommer __ Tyskland\", \"Replacements\": [\"i\", \"fra\"]}"
+}
+
+### Create a Matching Exercise for the Path created above
+POST {{host}}/api/creator/exercise
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "learningPathId": 1,
+  "exerciseTypeId": 4,
+  "data": "{\"Items\":[{\"TargetText\": \"Hvordan\", \"KnownText\": \"How\"}, {\"TargetText\": \"sier\", \"KnownText\": \"do you say\"}, {\"TargetText\": \"Hei?\", \"KnownText\": \"Hello?\"}, {\"TargetText\": \"Hva\", \"KnownText\": \"What\"}, {\"TargetText\": \"heter\", \"KnownText\": \"is your name?\"}, {\"TargetText\": \"du?\", \"KnownText\": \"you?\"}]}"
+}
+
+### Create a bucket list exercise for the Path created above
+POST {{host}}/api/creator/exercise
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "learningPathId": 1,
+  "exerciseTypeId": 5,
+  "data": "{\"KnownText\": \"How do you say Hello?\", \"TargetText\": \"Hvordan siger du hej?\", \"ExtraOptions\": [\"ser\", \"farvel\", \"tak\"]}"
 }
 
 ### Delete the Exercise created above
-DELETE {{host}}/api/creator/exercise/2
+DELETE {{host}}/api/creator/exercise/1
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 ### Get exercises for a learning path
-GET {{host}}/api/learning/path/8/exercises
+GET {{host}}/api/learning/path/1/exercises
 Authorization: Bearer {{token}}
 
 ### Logout
