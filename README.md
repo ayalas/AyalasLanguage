@@ -1,4 +1,5 @@
 This project is designed to demonstrate both backend and frontend capabilies.
+
 AyalasLanguageAPI - Backend is implemented with ASP.Net Core Minimal APIs, Entity Framework and SQLite.
 
 AyalasLanguageUI/WEB/APP - Frontend will be implemented with React and React Native
