@@ -23,7 +23,7 @@ export const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        login(data); // Update global auth context state
+        login(data.user); // Update global auth context state
         navigate('/home'); // Redirect to secured home page
       } else {
         alert('Invalid credentials');

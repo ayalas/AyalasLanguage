@@ -56,6 +56,8 @@ public static class AuthEndpoints
             ExpiresOn = expires
         };
 
+        UserIdDto userIdDto = new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role);
+
         // 3. Save to DB (for persistence/audit)
         db.Tokens.Add(tokenEntry);
         await db.SaveChangesAsync();
@@ -65,7 +67,7 @@ public static class AuthEndpoints
         cache.Set(tokenContent, user, expires);
         context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent);
 
-        return Results.Ok(new LoginResponseDto(tokenContent, expires));
+        return Results.Ok(new LoginResponseDto(tokenContent, expires, userIdDto));
     }
     
     [Authorize]

@@ -11,6 +11,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
+        if (user) {
+          return;
+        }
         // Send a request to your backend that requires the cookie
         // Note: credentials: 'include' is crucial for cookie transmission
         const response = await fetch('/api/auth/me', { credentials: 'include' });
@@ -29,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuthStatus();
-  }, []);
+  }, [user]);
 
   const login = (userData) => setUser(userData);
   const logout = () => setUser(null);

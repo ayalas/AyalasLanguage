@@ -6,11 +6,13 @@ const ProtectedRoute = () => {
   const { user, loading, logout } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>; // Or a nice spinner component
+    return (
+      <div>loading ...</div>
+    );
   }
 
   // If there is no user, redirect to login page
-  return user ? <Outlet context={{user, logout}} /> : <Navigate to="/login" replace />;
+  return user ? <Outlet context={{ user, logout }} /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

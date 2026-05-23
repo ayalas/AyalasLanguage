@@ -3,13 +3,13 @@ using System;
 namespace AyalasLanguageAPI.DTOs
 {
     // Auth DTOs
-    public record LoginDto(string UserName, string Password);
-    public record LoginResponseDto(string Token, DateTime Expires);
+    public record LoginResponseDto(string Token, DateTime Expires, UserIdDto User);
     public record RegisterDto(string DisplayName, string UserName, string Password);
     public record RegisterResponseDto(int UserId, string DisplayName, string UserName, byte Role);
     public record ChangePasswordDto(string OldPassword, string NewPassword);
 
     public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role);
+    public record LoginDto(string UserName, string Password);
     //profile DTOs
     public record UserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes);
     public record EditUserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes);
