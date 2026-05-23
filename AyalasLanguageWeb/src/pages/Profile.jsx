@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthHeader } from '../components/AuthHeader';
 
 import axios from 'axios';
@@ -7,42 +8,76 @@ import axios from 'axios';
 
 export function Profile() {
     const [allLanguages, setAllLanguages] = useState([]);
-    const [targetLanguage, setTargetLanguage]= useState("");
-    const [knownLanguage, setKnownLanguage]= useState("");
+    const [targetLanguage, setTargetLanguage] = useState("");
+    const [knownLanguage, setKnownLanguage] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("/api/static/languages").then((response) => {
-            setAllLanguages(response.data);
-        });
+        async function loadData() {
+            let response = await axios.get("/api/static/languages");
+            const allLanguagesData = response.data;
+            setAllLanguages(allLanguagesData);
 
-        axios.get("/api/profile").then((response) => {
+            response = await axios.get("/api/profile/current");
+
             const profileData = response.data;
-            if (profileData && profileData.current) {
-                if (profileData.current.targetLanguageId > 0) {
-                    setTargetLanguage(profileData.current.targetLanguageId)
+            if (profileData) {
+                if (profileData.targetLanguageId > 0) {
+                    setTargetLanguage(profileData.targetLanguageId)
                 }
-                if (profileData.current.knownLanguageId > 0) {
-                    setKnownLanguage(profileData.current.knownLanguageId)
+                if (profileData.knownLanguageId > 0) {
+                    setKnownLanguage(profileData.knownLanguageId)
+                }
+                else {
+                    const english = allLanguagesData.find(lang => lang.code == 'en');
+                    setKnownLanguage(english.languageId);
                 }
             }
-        });
+        }
+        loadData();
     }, []); //run once
+
+    const validateForm = function (onlyClear) {
+        if (knownLanguage == "" || targetLanguage == "") {
+            if (!onlyClear) {
+                setError("Please select langauge to learn and language you know.")
+            }
+            return false;
+        }
+        else {
+            setError("");
+            return true;
+        }
+    }
+
+    const changeTargetLanguage = function (e) {
+        setTargetLanguage(e.target.value);
+        validateForm(true);
+    }
+    const changeKnownLanguage = function (e) {
+        setKnownLanguage(e.target.value);
+        validateForm(true);
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-            /*axios.post('/api/profile', {
-                displayName,
-                languages,
-                exerciseTypes
-            });*/
+            if (!validateForm(false)) {
+                return;
+            }
+            //todo: allow display name and exercise types update
+            await axios.post('/api/profile/current', {
+                TargetLanguageId: Number(targetLanguage),
+                KnownLanguageId: Number(knownLanguage)
+            });
+            navigate('/home');
         } catch (err) {
-            console.error('Login error:', err);
+            setError(err.message);
         }
     };
 
-    return (
+    return (allLanguages && allLanguages.length > 0 &&
         <>
             <AuthHeader />
             <div className="form-container">
@@ -50,18 +85,25 @@ export function Profile() {
                     <div className="form-header">
                         <h1>Profile</h1>
                     </div>
+                    {error != "" && (
+                        <div className="form-row">
+                            <label className="form-error">{error}</label>
+                        </div>
+                    )}
                     <div className="form-row">
                         <div className="form-label-cell">
                             <label className="form-label">Language to Learn</label>
                         </div>
                         <div className="form-input-cell">
-                            <select id="target-langauge" className="form-select" value={targetLanguage} onChange={e => setTargetLanguage(e.target.value)}>
+                            <select required="true" id="target-langauge" className="form-select" value={targetLanguage} onChange={changeTargetLanguage}>
                                 <option value="" disabled>-- Please choose an option --</option>
                                 {
                                     allLanguages.map((language) => {
-                                        <option key={language.languageId} value={language.languageId}>
-                                            {language.englishName} {language.nativeName}
-                                        </option>
+                                        return (
+                                            <option key={language.languageId} value={language.languageId}>
+                                                {language.englishName != language.nativeName ? `${language.englishName} ${language.nativeName}` : language.englishName}
+                                            </option>
+                                        );
                                     })
                                 }
                             </select>
@@ -72,13 +114,15 @@ export function Profile() {
                             <label className="form-label">Language I Know</label>
                         </div>
                         <div className="form-input-cell">
-                            <select id="known-langauge" className="form-select" value={knownLanguage} onChange={e => setKnownLanguage(e.target.value)}>
+                            <select required="true" id="known-langauge" className="form-select" value={knownLanguage} onChange={changeKnownLanguage}>
                                 <option value="" disabled>-- Please choose an option --</option>
                                 {
                                     allLanguages.map((language) => {
-                                        <option key={language.languageId} value={language.languageId}>
-                                            {language.englishName} {language.nativeName}
-                                        </option>
+                                        return (
+                                            <option key={language.languageId} value={language.languageId}>
+                                                {language.englishName != language.nativeName ? `${language.englishName} ${language.nativeName}` : language.englishName}
+                                            </option>
+                                        );
                                     })
                                 }
                             </select>

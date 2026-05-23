@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOutletContext, Link, useNavigate } from 'react-router-dom';
 import { SquareMenu } from 'lucide-react';
+import axios from 'axios';
 import {
     useFloating,
     offset,
@@ -14,8 +15,18 @@ import {
 
 export function AuthHeader() {
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedLanguage, setSelectedLanguage] = useState("");
     const { user, logout } = useOutletContext();
     const navigate = useNavigate();
+    useEffect(() => {
+        async function loadData() {
+            const response = await axios.get("/api/profile/current");
+            if (response.data != null) {
+                setSelectedLanguage(response.data.targetLanguage);
+            }
+        }
+        loadData();
+    }, []);
 
     // 1. Positioning Config
     const { refs: { setFloating, setReference }, floatingStyles, context } = useFloating({
@@ -40,49 +51,48 @@ export function AuthHeader() {
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
 
     const logoutAction = async function () {
-            const response = await fetch('/api/auth/logout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
+        const response = await fetch('/api/auth/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
 
-            if (response.ok) {
-                logout();
-                navigate(`/`); // Update global auth context state
-            } else {
-                alert(`${response.statusText} (${response.status})`);
-            }
+        if (response.ok) {
+            logout();
+            navigate(`/`); // Update global auth context state
+        } else {
+            alert(`${response.statusText} (${response.status})`);
+        }
     }
 
     return (
         <div className="header-row">
-            <div class="header-title">
-                <Link className="header-app-link" to="/home">Ayala's Language App</Link>
-            </div>
-            {/* Trigger Button */}
-            <div className="header-profile-name">{user.displayName}</div>
-            <Link ref={setReference}
-                {...getReferenceProps()}>
-                <SquareMenu />
-            </Link>
-            
-            {/* Absolutely Positioned Flyout Menu Panel */}
-            {isOpen && (
-                <div className="menu-container"
-                    ref={setFloating}
-                    style={{
-                        ...floatingStyles // Automatically applies dynamic top/left/transform styles
-                    }}
-                    {...getFloatingProps()}
-                >
-                    <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                        <li className="menu-line"><Link to='/profile' className="menu-item">Profile</Link></li>
-                        <li className="menu-line"><Link to='/change-password' className="menu-item">Change Password</Link></li>
-                        <hr className="menu-delimiter" />
-                        <li className="menu-line"><button onClick={logoutAction} className="menu-item">Logout</button></li>
-                    </ul>
+                <div className="header-title">
+                    <Link className="header-app-link" to="/home">Ayala's Language App</Link>
                 </div>
-            )}
-            
+                {/* Trigger Button */}
+                <div className="header-profile-name">{selectedLanguage}, {user.displayName}</div>
+                <Link ref={setReference}
+                    {...getReferenceProps()}>
+                    <SquareMenu />
+                </Link>
+
+                {/* Absolutely Positioned Flyout Menu Panel */}
+                {isOpen && (
+                    <div className="menu-container"
+                        ref={setFloating}
+                        style={{
+                            ...floatingStyles // Automatically applies dynamic top/left/transform styles
+                        }}
+                        {...getFloatingProps()}
+                    >
+                        <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                            <li className="menu-line"><Link to='/profile' className="menu-item">Profile</Link></li>
+                            <li className="menu-line"><Link to='/change-password' className="menu-item">Change Password</Link></li>
+                            <hr className="menu-delimiter" />
+                            <li className="menu-line"><button onClick={logoutAction} className="menu-item">Logout</button></li>
+                        </ul>
+                    </div>
+                )}
         </div>
     );
 }

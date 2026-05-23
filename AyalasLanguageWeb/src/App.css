@@ -14,7 +14,7 @@
 
 .form-label-cell {
   display: inline-flex;
-  width: 100px;
+  width: 150px;
   padding-left: 10px;
   padding-right: 10px;
 }
@@ -22,17 +22,22 @@
 label.form-label {
   width: 100%;
   text-align: right;
+  white-space: nowrap;
 }
 
 .form-input-cell {
   display: inline-flex;
-  width: 100px;
+  width: 150px;
   padding-left: 10px;
   padding-right: 10px;
 }
 
 .form-container {
   margin-top: 50px;
+}
+
+.form-error {
+  color: rgb(168, 44, 44);
 }
 
 .header-row {
@@ -45,6 +50,7 @@ label.form-label {
 
 .header-profile-name {
   display: inline-flex;
+  white-space: nowrap;
 }
 
 .header-title {

@@ -127,13 +127,16 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             return Results.Ok();
         }
         [Authorize]
-        private static async Task<SwitchLanguageDto> GetUserCurrentLearning(ClaimsPrincipal claim, AyalasLanguageDbContext db)
+        private static async Task<CurrentLanguageResponseDto> GetUserCurrentLearning(ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
-            var user = await db.Users.FindAsync(userId);
+            var user = await db.Users
+                .Include(u => u.KnownLanguage)
+                .Include(u => u.TargetLanguage)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null) return null!;
 
-            return new SwitchLanguageDto(user.TargetLanguageId, user.KnownLanguageId);
+            return new CurrentLanguageResponseDto(user.TargetLanguageId, user.TargetLanguage?.NativeName , user.KnownLanguageId, user.KnownLanguage?.NativeName);
         }
         [Authorize]
         private static async Task<IResult> SwitchUserLanguages(ClaimsPrincipal claim, SwitchLanguageDto dto, AyalasLanguageDbContext db)
