@@ -5,6 +5,7 @@ using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.DTOs;
 using AyalasLanguageAPI.Model;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -20,10 +21,24 @@ public static class AuthEndpoints
         auth.MapPost("/login", LoginUser);
         auth.MapPost("/logout", LogoutUser);
         auth.MapPost("/change-password", ChangeUserPassword);
+        auth.MapGet("/me", CheckAuthStatus);
         //not implementing email confirmation, forgot password, or other features for this demo - but they would go here
     }
+    [Authorize]
+    private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+
+        var user = await db.Users.FindAsync(userId);
+        if (user == null)
+        {
+            return Results.BadRequest("User not found");
+        }
+
+        return Results.Ok(new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role));
+    }
     // --- Private Handler Implementations ---
-    private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache)
+    private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
     {
         // 1. Find user (In production, use a proper password hasher!)
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
@@ -48,6 +63,7 @@ public static class AuthEndpoints
         // 4. Cache the User object keyed by the Token Content
         // We cache the User so we don't have to query the DB in the middleware
         cache.Set(tokenContent, user, expires);
+        context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent);
 
         return Results.Ok(new LoginResponseDto(tokenContent, expires));
     }

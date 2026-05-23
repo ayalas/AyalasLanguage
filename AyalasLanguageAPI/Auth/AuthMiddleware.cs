@@ -13,7 +13,7 @@ public static class AuthMiddleware
         app.Use(async (context, next) =>
         {
             string authHeader = context.Request.Headers.Authorization;
-    
+
             if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
             {
                 var token = authHeader.Substring(7);
@@ -30,7 +30,7 @@ public static class AuthMiddleware
                     // Optionally, you could also check the database for the token if it's not in cache
                     var db = context.RequestServices.GetRequiredService<AyalasLanguageDbContext>();
                     var tokenRecord = await db.Tokens.FirstOrDefaultAsync(t => t.Content == token);
-                    
+
                     if (tokenRecord != null && tokenRecord.ExpiresOn > DateTime.UtcNow)
                     {
                         // Cache the user for future requests
@@ -41,6 +41,23 @@ public static class AuthMiddleware
             }
 
             await next();
+        });
+    }
+
+    public static void FromCookieToAuthHeader(this WebApplication app)
+    {
+        // 1. Extract cookie and inject into Authorization header
+        app.Use(async (context, next) =>
+        {
+            // Check if the Authorization header is missing but the auth cookie exists
+            if (!context.Request.Headers.ContainsKey("Authorization") && 
+                context.Request.Cookies.TryGetValue(Constants.APP_COOKIE_NAME, out var token))
+            {
+                // Inject it into the header so your existing auth middleware reads it perfectly
+                context.Request.Headers.Authorization = $"Bearer {token}";
+            }
+
+            await next(context);
         });
     }
 }

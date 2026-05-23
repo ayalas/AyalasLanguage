@@ -9,6 +9,7 @@ namespace AyalasLanguageAPI.DTOs
     public record RegisterResponseDto(int UserId, string DisplayName, string UserName, byte Role);
     public record ChangePasswordDto(string OldPassword, string NewPassword);
 
+    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role);
     //profile DTOs
     public record UserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes);
     public record EditUserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes);

@@ -67,4 +67,6 @@ public static class Constants
     public const int MATCH_MAX_COUNT = 8;
     public const int BUCKET_EXTRA_MIN_COUNT = 1;
     public const int BUCKET_EXTRA_MAX_COUNT = 5;
+
+    public const string APP_COOKIE_NAME = "AyalasLanguageAppCookie";
 }

@@ -21,6 +21,7 @@ var app = builder.Build();
 
 app.MigrateDb();
 
+app.FromCookieToAuthHeader();
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();
 
