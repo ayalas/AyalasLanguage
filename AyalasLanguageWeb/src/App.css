@@ -36,8 +36,26 @@ label.form-label {
 }
 
 .header-row {
-  text-align: right;
   padding: 10px 20px;
+  align-items: center;
+  display: flex;
+  height: 10vh;
+  justify-content: flex-end;
+}
+
+.header-profile-name {
+  display: inline-flex;
+}
+
+.header-title {
+  text-align: center;
+  width: 100%;
+}
+
+.header-app-link {
+  text-decoration: none;
+  color: inherit;
+  font-size: 24px;
 }
 
 .menu-button {
@@ -53,6 +71,9 @@ label.form-label {
   background: none;
   border: none;
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  font-size: 14px;
 }
 
 .menu-container {
@@ -69,4 +90,9 @@ label.form-label {
   border: 0;
   border-top: 1px solid #eee;
   margin: 4px 0; 
+}
+
+.lucide-square-menu {
+  width: 36px;
+  height: 36px;
 }

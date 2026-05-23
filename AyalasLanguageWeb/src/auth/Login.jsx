@@ -1,7 +1,7 @@
 // Inside src/pages/Login.jsx
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { useAuth } from './AuthContext';
 
 export const Login = () => {
   const [ searchParams ] = useSearchParams();

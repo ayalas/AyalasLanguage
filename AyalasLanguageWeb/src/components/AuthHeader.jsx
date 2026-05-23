@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link, useNavigate } from 'react-router-dom';
+import { SquareMenu } from 'lucide-react';
 import {
     useFloating,
     offset,
@@ -13,7 +14,8 @@ import {
 
 export function AuthHeader() {
     const [isOpen, setIsOpen] = useState(false);
-    const { user } = useOutletContext();
+    const { user, logout } = useOutletContext();
+    const navigate = useNavigate();
 
     // 1. Positioning Config
     const { refs: { setFloating, setReference }, floatingStyles, context } = useFloating({
@@ -37,17 +39,32 @@ export function AuthHeader() {
     // 3. Merging interactions into simple prop getters
     const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
 
+    const logoutAction = async function () {
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                logout();
+                navigate(`/`); // Update global auth context state
+            } else {
+                alert(`${response.statusText} (${response.status})`);
+            }
+    }
+
     return (
         <div className="header-row">
+            <div class="header-title">
+                <Link className="header-app-link" to="/home">Ayala's Language App</Link>
+            </div>
             {/* Trigger Button */}
-            <button
-                ref={setReference}
-                {...getReferenceProps()}
-                className="menu-button"
-            >
-                {user.displayName}
-            </button>
-
+            <div className="header-profile-name">{user.displayName}</div>
+            <Link ref={setReference}
+                {...getReferenceProps()}>
+                <SquareMenu />
+            </Link>
+            
             {/* Absolutely Positioned Flyout Menu Panel */}
             {isOpen && (
                 <div className="menu-container"
@@ -59,12 +76,13 @@ export function AuthHeader() {
                 >
                     <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                         <li className="menu-line"><button onClick={() => alert('Profile')} className="menu-item">Profile</button></li>
-                        <li className="menu-line"><button onClick={() => alert('Change Password')} className="menu-item">Change Password</button></li>
+                        <li className="menu-line"><Link to='/change-password' className="menu-item">Change Password</Link></li>
                         <hr className="menu-delimiter" />
-                        <li className="menu-line"><button onClick={() => alert('Logout')} className="menu-item">Logout</button></li>
+                        <li className="menu-line"><button onClick={logoutAction} className="menu-item">Logout</button></li>
                     </ul>
                 </div>
             )}
+            
         </div>
     );
 }

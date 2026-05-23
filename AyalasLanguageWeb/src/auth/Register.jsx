@@ -8,25 +8,24 @@ export function Register() {
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayname: displayName, username: email, password }),
-        credentials: 'include', // Vital for getting cookies back from backend
-      });
+        e.preventDefault();
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ displayname: displayName, username: email, password })
+            });
 
-      if (response.ok) {
-        const data = await response.json();
-        navigate(`/login?user=${data.userName}`); // Update global auth context state
-      } else {
-        alert(`${response.statusText} (${response.status})`);
-      }
-    } catch (err) {
-      console.error('Login error:', err);
-    }
-  };
+            if (response.ok) {
+                const data = await response.json();
+                navigate(`/login?user=${data.userName}`); // Update global auth context state
+            } else {
+                alert(`${response.statusText} (${response.status})`);
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+        }
+    };
 
     return (
         <div className="form-container">

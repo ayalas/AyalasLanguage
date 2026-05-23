@@ -3,7 +3,7 @@
 @host = http://{{hostname}}:{{port}}
 @contentType = application/json
 @userName = "johndoe"
-@password = "SecurePassword123"
+@password = "SecurePassword124"
 
 ### Register a new user
 # @name registerUser
@@ -35,6 +35,16 @@ Content-Type: {{contentType}}
 GET {{host}}/api/auth/me
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
+
+### Change password
+POST {{host}}/api/auth/change-password
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "oldPassword": "SecurePassword123",
+  "newPassword": "SecurePassword124"
+}
 
 ### update profile - set display name, languages, and exercise types
 POST {{host}}/api/profile

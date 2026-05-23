@@ -69,7 +69,7 @@ public static class AuthEndpoints
     }
     
     [Authorize]
-    private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache)
+    private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
     {
         var userId = claim.GetUserId();
 
@@ -85,6 +85,7 @@ public static class AuthEndpoints
             }
             await db.SaveChangesAsync();
 
+            context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
         }
 
         return Results.NoContent();

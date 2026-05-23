@@ -1,16 +1,16 @@
 // src/components/ProtectedRoute.jsx
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from './AuthContext';
 
 const ProtectedRoute = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>; // Or a nice spinner component
   }
 
   // If there is no user, redirect to login page
-  return user ? <Outlet context={{user}} /> : <Navigate to="/login" replace />;
+  return user ? <Outlet context={{user, logout}} /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;
