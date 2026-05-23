@@ -34,7 +34,8 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             var profile = new UserProfileDto(
                 user.DisplayName,
                 user.UserLanguages.Select(ul => new UserLanguageDto(ul.LanguageId, ul.IsLearning)).ToList(),
-                user.UserExerciseTypes.Select(ue => new UserExerciseTypeDto(ue.ExerciseTypeId)).ToList()
+                user.UserExerciseTypes.Select(ue => new UserExerciseTypeDto(ue.ExerciseTypeId)).ToList(),
+                new SwitchLanguageDto(user.TargetLanguageId, user.KnownLanguageId)
             );
 
             return Results.Ok(profile);

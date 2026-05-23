@@ -4,10 +4,13 @@ import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './auth/ProtectedRoute';
 
 import { LandingPage } from './LandingPage';
-import { Homepage } from './pages/Homepage';
 import { Login } from './auth/Login';
 import { Register } from './auth/Register';
+
+//authenticated
 import { ChangePassword } from './auth/ChangePassword';
+import { Homepage } from './pages/Homepage';
+import { Profile } from './pages/Profile';
 
 import './App.css'
 
@@ -26,6 +29,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Homepage />} />
             <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
 
           {/* Fallback 404 Route */}

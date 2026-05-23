@@ -11,7 +11,7 @@ namespace AyalasLanguageAPI.DTOs
     public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role);
     public record LoginDto(string UserName, string Password);
     //profile DTOs
-    public record UserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes);
+    public record UserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes, SwitchLanguageDto Current);
     public record EditUserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes);
     public record SwitchLanguageDto(int? TargetLanguageId, int? KnownLanguageId);
 
