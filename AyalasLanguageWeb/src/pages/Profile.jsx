@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import { AuthHeader } from '../components/AuthHeader';
 
 import axios from 'axios';
@@ -12,6 +12,15 @@ export function Profile() {
     const [knownLanguage, setKnownLanguage] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { user, login } = useOutletContext();
+
+    const setNewLanguage = async function() {
+        const newUser = {...user};
+        const response = await axios.get('/api/profile/current');;
+        newUser.languageSettings = response.data;
+        console.log(login);
+        login(newUser);
+    }
 
     useEffect(() => {
         async function loadData() {
@@ -19,15 +28,12 @@ export function Profile() {
             const allLanguagesData = response.data;
             setAllLanguages(allLanguagesData);
 
-            response = await axios.get("/api/profile/current");
-
-            const profileData = response.data;
-            if (profileData) {
-                if (profileData.targetLanguageId > 0) {
-                    setTargetLanguage(profileData.targetLanguageId)
+            if (user.languageSettings) {
+                if (user.languageSettings.targetLanguageId > 0) {
+                    setTargetLanguage(user.languageSettings.targetLanguageId)
                 }
-                if (profileData.knownLanguageId > 0) {
-                    setKnownLanguage(profileData.knownLanguageId)
+                if (user.languageSettings.knownLanguageId > 0) {
+                    setKnownLanguage(user.languageSettings.knownLanguageId)
                 }
                 else {
                     const english = allLanguagesData.find(lang => lang.code == 'en');
@@ -36,7 +42,7 @@ export function Profile() {
             }
         }
         loadData();
-    }, []); //run once
+    }, [user.languageSettings]); //run once
 
     const validateForm = function (onlyClear) {
         if (knownLanguage == "" || targetLanguage == "") {
@@ -71,6 +77,8 @@ export function Profile() {
                 TargetLanguageId: Number(targetLanguage),
                 KnownLanguageId: Number(knownLanguage)
             });
+
+            await setNewLanguage();
             navigate('/home');
         } catch (err) {
             setError(err.message);
@@ -95,7 +103,7 @@ export function Profile() {
                             <label className="form-label">Language to Learn</label>
                         </div>
                         <div className="form-input-cell">
-                            <select required="true" id="target-langauge" className="form-select" value={targetLanguage} onChange={changeTargetLanguage}>
+                            <select required={true} id="target-langauge" className="form-select" value={targetLanguage} onChange={changeTargetLanguage}>
                                 <option value="" disabled>-- Please choose an option --</option>
                                 {
                                     allLanguages.map((language) => {
@@ -114,7 +122,7 @@ export function Profile() {
                             <label className="form-label">Language I Know</label>
                         </div>
                         <div className="form-input-cell">
-                            <select required="true" id="known-langauge" className="form-select" value={knownLanguage} onChange={changeKnownLanguage}>
+                            <select required={true} id="known-langauge" className="form-select" value={knownLanguage} onChange={changeKnownLanguage}>
                                 <option value="" disabled>-- Please choose an option --</option>
                                 {
                                     allLanguages.map((language) => {

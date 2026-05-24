@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 const ProtectedRoute = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, login } = useAuth();
 
   if (loading) {
     return (
@@ -12,7 +12,7 @@ const ProtectedRoute = () => {
   }
 
   // If there is no user, redirect to login page
-  return user ? <Outlet context={{ user, logout }} /> : <Navigate to="/login" replace />;
+  return user ? <Outlet context={{ user, logout, login }} /> : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

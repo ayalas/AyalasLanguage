@@ -29,13 +29,10 @@ public static class AuthEndpoints
     {
         var userId = claim.GetUserId();
 
-        var user = await db.Users.FindAsync(userId);
-        if (user == null)
-        {
-            return Results.BadRequest("User not found");
-        }
+         UserIdDto? userIdDto = await GetUserById(userId, db);
+        if (userIdDto == null) return Results.BadRequest("User not found");
 
-        return Results.Ok(new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role));
+        return Results.Ok(userIdDto);
     }
     // --- Private Handler Implementations ---
     private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
@@ -56,7 +53,8 @@ public static class AuthEndpoints
             ExpiresOn = expires
         };
 
-        UserIdDto userIdDto = new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role);
+        UserIdDto? userIdDto = await GetUserById(user.UserId, db);
+        if (userIdDto == null) return Results.InternalServerError("Could not retrieve user");
 
         // 3. Save to DB (for persistence/audit)
         db.Tokens.Add(tokenEntry);
@@ -69,7 +67,20 @@ public static class AuthEndpoints
 
         return Results.Ok(new LoginResponseDto(tokenContent, expires, userIdDto));
     }
-    
+
+    private static async Task<UserIdDto?> GetUserById(int userId, AyalasLanguageDbContext db)
+    {
+        var user = await db.Users
+            .Include(u => u.KnownLanguage)
+            .Include(u => u.TargetLanguage)
+            .FirstOrDefaultAsync(u => u.UserId == userId);
+        if (user == null) return null;
+
+        var languageSettings = new CurrentLanguageResponseDto(user.TargetLanguageId, user.TargetLanguage?.NativeName, user.KnownLanguageId, user.KnownLanguage?.NativeName);
+
+        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, languageSettings);
+    }
+
     [Authorize]
     private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
     {
