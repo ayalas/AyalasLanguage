@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 export function Register() {
     const [displayName, setDisplayName] = useState('');
@@ -62,6 +62,9 @@ export function Register() {
                     <div className="form-input-cell">
                         <button type="submit" className="form-button">Register</button>
                     </div>
+                </div>
+                <div className="form-row">
+                    <div className="login-register-line">Or <Link to="/login">Login</Link> with an existing account</div>
                 </div>
             </form>
         </div>

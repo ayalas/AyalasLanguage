@@ -1,6 +1,6 @@
 // Inside src/pages/Login.jsx
 import { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 
 export const Login = () => {
@@ -60,6 +60,9 @@ export const Login = () => {
           <div className="form-input-cell">
             <button type="submit" className="login-button">Log In</button>
           </div>
+        </div>
+        <div className="form-row">
+          <div className="login-register-line">Or <Link to="/register">Register</Link> a new account</div>
         </div>
       </form>
     </div>
