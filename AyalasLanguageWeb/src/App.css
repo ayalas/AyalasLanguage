@@ -49,6 +49,10 @@ label.form-label {
   text-align: start;
 }
 
+.input-text-placeholder {
+  font-size: 18px;
+}
+
 .text-area-wide {
   width: 100%;
   height: 200px;
