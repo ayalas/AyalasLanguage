@@ -11,6 +11,7 @@ import { Register } from './auth/Register';
 import { ChangePassword } from './auth/ChangePassword';
 import { Homepage } from './pages/Homepage';
 import { Profile } from './pages/Profile';
+import { LearningPathAuthoring } from './pages/content-creator/LearningPathAuthoring';
 
 import './App.css'
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="/home" element={<Homepage />} />
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/author/path" element={<LearningPathAuthoring />} />
           </Route>
 
           {/* Fallback 404 Route */}

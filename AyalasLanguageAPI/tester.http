@@ -2,8 +2,8 @@
 @port = 5097
 @host = http://{{hostname}}:{{port}}
 @contentType = application/json
-@userName = "johndoe"
-@password = "SecurePassword124"
+@userName = "ayala"
+@password = "123123"
 
 ### Register a new user
 # @name registerUser
@@ -160,7 +160,7 @@ Authorization: Bearer {{token}}
 
 
 ### delete learning paths
-DELETE {{host}}/api/creator/learning-path/2
+DELETE {{host}}/api/creator/learning-path/23
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
@@ -229,12 +229,12 @@ Authorization: Bearer {{token}}
 }
 
 ### Delete the Exercise created above
-DELETE {{host}}/api/creator/exercise/1
+DELETE {{host}}/api/creator/exercise/7
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 ### Get exercises for a learning path
-GET {{host}}/api/learning/path/1/exercises
+GET {{host}}/api/learning/path/24/exercises
 Authorization: Bearer {{token}}
 
 ### Logout

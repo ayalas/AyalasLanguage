@@ -71,17 +71,18 @@ public static class ContentCreatorEndpoints
             //do not allow having more than one next path
 
             nextPath.PrevLearningPathId = null; // Unlink from any existing previous path
-        }
-        
-        //is there another item linked to the same next or previous path?
-        //we can only allow this if our prev is linked to our next and vice verse - that we can fix
-        if (await db.LearningPaths.AnyAsync(lp => lp.NextLearningPathId == dto.NextLearningPathId 
-            && lp.LearningPathId != prevPathId))
-        {
-            return Results.BadRequest("Next learning path already has a previous path.");
+
+
+            //is there another item linked to the same next or previous path?
+            //we can only allow this if our prev is linked to our next and vice verse - that we can fix
+            if (await db.LearningPaths.AnyAsync(lp => lp.NextLearningPathId == dto.NextLearningPathId
+                && lp.LearningPathId != prevPathId))
+            {
+                return Results.BadRequest("Next learning path already has a previous path.");
+            }
         }
 
-        if (await db.LearningPaths.AnyAsync(lp => lp.PrevLearningPathId == dto.PrevLearningPathId
+        if (dto.PrevLearningPathId != null && await db.LearningPaths.AnyAsync(lp => lp.PrevLearningPathId == dto.PrevLearningPathId
             && lp.LearningPathId != nextPathId))
         {
             return Results.BadRequest("Previous learning path already has a next path.");
@@ -235,10 +236,11 @@ public static class ContentCreatorEndpoints
             {
                 case (int)ExerciseTypesEnum.FromKnownToTarget:
                 case (int)ExerciseTypesEnum.FromTargetToKnown:
+                case (int)ExerciseTypesEnum.FillInTheBlanks:
                     // Validate that data is a JSON array of options
                     var dtoSimple = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(data);
-                    return dtoSimple != null && !string.IsNullOrEmpty(dtoSimple.TargetText) && !string.IsNullOrEmpty(dtoSimple.KnownText);
-                case (int)ExerciseTypesEnum.FillInTheBlanks:
+                    return dtoSimple != null && !string.IsNullOrEmpty(dtoSimple.First) && !string.IsNullOrEmpty(dtoSimple.Second);
+                /*case (int)ExerciseTypesEnum.FillInTheBlanks:
                     var dtoFillInTheBlanks = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.FillInTheBlanksDto>(data);
                     return dtoFillInTheBlanks != null
                     && !string.IsNullOrEmpty(dtoFillInTheBlanks.TargetText)
@@ -246,7 +248,7 @@ public static class ContentCreatorEndpoints
                     && dtoFillInTheBlanks.Replacements.Length > 0
                     // Ensure number of blanks matches replacements
                     && Regex.Matches(dtoFillInTheBlanks.TargetText, Constants.BLANKS, RegexOptions.IgnoreCase).Count
-                        == dtoFillInTheBlanks.Replacements.Length;
+                        == dtoFillInTheBlanks.Replacements.Length;*/
                 case (int)ExerciseTypesEnum.Matching:
                     // Validate that data is a JSON array of pairs
                     var dtoMatching = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.MatchDto>(data);
@@ -259,8 +261,8 @@ public static class ContentCreatorEndpoints
                     // Validate that data is a JSON object with question, options, and correct answer
                     var dtoBucket = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.BucketTranslateDto>(data);
                     return dtoBucket != null
-                           && !string.IsNullOrEmpty(dtoBucket.KnownText)
-                           && !string.IsNullOrEmpty(dtoBucket.TargetText)
+                           && !string.IsNullOrEmpty(dtoBucket.First)
+                           && !string.IsNullOrEmpty(dtoBucket.Second)
                            && dtoBucket.ExtraOptions.Length >= Constants.BUCKET_EXTRA_MIN_COUNT
                            && dtoBucket.ExtraOptions.Length <= Constants.BUCKET_EXTRA_MAX_COUNT;
                 default:

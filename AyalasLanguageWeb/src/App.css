@@ -18,11 +18,23 @@
   padding-left: 10px;
   padding-right: 10px;
 }
+.form-label-row {
+  text-align: start;
+  color: black;
+}
+.form-content-row {
+  text-align: start;
+  
+}
 
 label.form-label {
   width: 100%;
-  text-align: right;
+  text-align: end;
   white-space: nowrap;
+}
+
+.form-row {
+  padding-bottom: 15px;
 }
 
 .form-input-cell {
@@ -32,8 +44,18 @@ label.form-label {
   padding-right: 10px;
 }
 
+.form-input-row {
+  width: 800px;
+  text-align: start;
+}
+
+.text-area-wide {
+  width: 100%;
+  height: 200px;
+}
+
 .form-container {
-  margin-top: 50px;
+  margin-top: 10px;
 }
 
 .form-error {
@@ -73,7 +95,7 @@ label.form-label {
   display: block;
   width: 100%;
   padding: 8px 16px;
-  text-align: left;
+  text-align: start;
   background: none;
   border: none;
   cursor: pointer;
