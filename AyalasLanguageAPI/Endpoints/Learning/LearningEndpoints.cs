@@ -15,9 +15,35 @@ public static class LearningEndpoints
     {
         var learning = app.MapGroup("/api/learning").WithTags("Learning");
         learning.MapGet("/path", GetLearningPath);
+        learning.MapGet("/path/{pathId:int}", GetSingleLearningPath);
         learning.MapGet("/path/{pathId:int}/exercises", GetExercises);
         learning.MapPost("/progress", UpdateUserProgress);
         learning.MapDelete("/progress/{pathId:int}", DeleteUserProgress);
+    }
+
+    [Authorize]
+    private static async Task<IResult> GetSingleLearningPath(int pathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+
+        return Results.Ok( await db.LearningPaths
+        .Where(lp => lp.LearningPathId == pathId)
+        .Select(path => new LearningPathDto
+        (
+            path.LearningPathId,
+            path.Level,
+            path.Chapter,
+            path.Name,
+            // Check if ANY progress exists for this user and path
+            db.UserProgresses.Any(up => up.UserId == userId && up.LearningPathId == path.LearningPathId)
+                ? (byte)1
+                : (byte)0,
+            db.Exercises.Count(e => e.LearningPathId == path.LearningPathId 
+            && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)),
+            path.PrevLearningPathId,
+            path.NextLearningPathId
+        ))
+        .FirstOrDefaultAsync());
     }
 
     [Authorize]
