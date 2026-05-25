@@ -1,5 +1,5 @@
 import { it, expect, describe } from 'vitest';
-import { removeLastCharIfMatch } from './utils';
+import { removeLastCharIfMatch, getMissingParts } from './utils';
 
 describe('removeLastCharIfMatch function', () => {
     it('removes last ;', () => {
@@ -17,4 +17,11 @@ describe('removeLastCharIfMatch function', () => {
     it('handles null', () => {
         expect(removeLastCharIfMatch(null, ';')).toBe(null);
     })
+})
+
+describe('getMissingParts function', () => {
+    it('returns the missing parts', () => {
+        expect(getMissingParts("you are special. very special. I want to acknowlede that to you", ["you are ", ". very ", ". I want ", " acknowlede that ", " you"]))
+        .toEqual(["special", "special", "to", "to"]);
+    });
 })

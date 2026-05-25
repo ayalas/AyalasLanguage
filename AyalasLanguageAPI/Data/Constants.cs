@@ -9,6 +9,12 @@ public enum UserRoleEnum
     Admin = 3
 }
 
+public enum ContentStatusEnum
+{
+    Draft = 0,
+    Approved = 1
+}
+
 
 public enum ExerciseTypesEnum
 {

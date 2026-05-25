@@ -38,6 +38,10 @@ public class AyalasLanguageDbContext : DbContext
         .IsRequired(false)
         .OnDelete(DeleteBehavior.SetNull);
 
+        modelBuilder.Entity<LearningPath>()
+            .HasIndex(p => new { p.TargetLanguageId, p.KnownLanguageId, p.Level, p.Chapter })
+            .IsUnique();
+
         modelBuilder.Entity<ExerciseType>().HasData(
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "from Known to target language" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnown, Name = "from target to Known language" },

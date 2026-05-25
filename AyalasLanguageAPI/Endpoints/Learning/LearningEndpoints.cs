@@ -47,7 +47,8 @@ public static class LearningEndpoints
             db.UserProgresses.Any(up => up.UserId == userId && up.LearningPathId == path.LearningPathId)
                 ? (byte)1
                 : (byte)0,
-            db.Exercises.Count(e => e.LearningPathId == path.LearningPathId),
+            db.Exercises.Count(e => e.LearningPathId == path.LearningPathId 
+            && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)),
             path.PrevLearningPathId,
             path.NextLearningPathId
         ))
@@ -127,7 +128,8 @@ public static class LearningEndpoints
 
         //Filter exercises by path and user exercise types
         var exercises = await db.Exercises
-            .Where(e => e.LearningPathId == pathId && userExerciseTypes.Contains(e.ExerciseTypeId))
+            .Where(e => e.LearningPathId == pathId && userExerciseTypes.Contains(e.ExerciseTypeId)
+            && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId))
             .OrderBy(e => e.ExerciseId) // Ensure consistent ordering
             .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data))
             .ToListAsync();

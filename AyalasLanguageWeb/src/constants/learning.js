@@ -9,7 +9,8 @@ export const EXERCISE_TYPES =
 
 export const PLACEHOLDERS = {
     KNOWN_LANGAUGE_PLACEHOLDER: "kkknownnn",
-    TARGET_LANGAUGE_PLACEHOLDER: "tttargettt"
+    TARGET_LANGAUGE_PLACEHOLDER: "tttargettt",
+    BLANKS: "___"
 }
 
 export const EXERCISE_GENERATIONS = 

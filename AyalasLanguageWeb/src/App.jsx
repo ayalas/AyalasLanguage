@@ -12,6 +12,7 @@ import { ChangePassword } from './auth/ChangePassword';
 import { Homepage } from './pages/Homepage';
 import { Profile } from './pages/Profile';
 import { LearningPathAuthoring } from './pages/content-creator/LearningPathAuthoring';
+import { LessonPage } from './pages/learning/LessonPage';
 
 import './App.css'
 
@@ -32,6 +33,7 @@ function App() {
             <Route path="/change-password" element={<ChangePassword />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/author/path" element={<LearningPathAuthoring />} />
+            <Route path="/path/:learningPathId" element={<LessonPage />} />
           </Route>
 
           {/* Fallback 404 Route */}

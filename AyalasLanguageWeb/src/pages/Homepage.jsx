@@ -1,5 +1,5 @@
 
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthHeader } from '../components/AuthHeader';
@@ -7,11 +7,37 @@ import { AuthHeader } from '../components/AuthHeader';
 
 export function Homepage() {
     const [learningPath, setLearningPath] = useState([]);
+    const [error, setError] = useState("");
     useEffect(() => {
         const loadData = async function () {
-            const response = await axios.get('/api/learning/path');
-            if (response.data != null) {
-                setLearningPath(response.data);
+            try {
+                const response = await axios.get('/api/learning/path');
+
+                if (response.data != null) {
+                    const learningPaths = response.data;
+
+                    //group by level
+                    const transformedArray = Object.values(
+                    learningPaths.reduce((acc, current) => {
+                        // If this level doesn't exist in our accumulator yet, create it
+                        if (!acc[current.level]) {
+                        acc[current.level] = {
+                            level: current.level,
+                            paths: []
+                        };
+                        }
+                        
+                        // Push the current object into the appropriate level's paths array
+                        acc[current.level].paths.push(current);
+                        
+                        return acc;
+                    }, {})
+                    );
+
+                    setLearningPath(transformedArray);
+                }
+            } catch (err) {
+                setError(err.message);
             }
         };
 
@@ -22,24 +48,38 @@ export function Homepage() {
             <AuthHeader />
             <div className="home-container">
                 <h1>Home</h1>
-                {(learningPath && learningPath.length > 0) && (
-                    <div className="learning-path-container">
-                    {
-                        learningPath.map((path) => {
-                            return (
-                                <div className="learning-lesson" key={path.learningPathId}>
-                                    {path.level}.{path.chapter} <Link to={`/author/path/${path.learningPathId}`}>{path.name}</Link>
-                                </div>
-                            );
-                        })
-                    }
-                </div>
-                ) || (
-                    <div className="learning-path-empty">
-                        It looks like there are not yet any lessons in this langauge.<br/>
-                        But you can <Link to="/author/path">add ones yourself!</Link>
+                {error != "" && (
+                    <div className="form-row">
+                        <label className="form-error">{error}</label>
                     </div>
                 )}
+                {(learningPath && learningPath.length > 0) && (
+                    <div className="learning-container">
+                        {
+                            learningPath.map((level) => {
+                                return (
+                                    <div className="learning-level-container" key={`level-${level.level}`}>
+                                        <h4>Level {level.level}</h4>
+                                        {
+                                            level.paths.map((path) => {
+                                                return (
+                                                    <div className="learning-lesson" key={path.learningPathId}>
+                                                        {path.chapter} <Link to={`/path/${path.learningPathId}`}>{path.name}</Link>
+                                                    </div>
+                                                );
+                                            })
+                                        }
+                                    </div>
+                                );
+                            })
+                        }
+                    </div>
+                ) || (
+                        <div className="learning-path-empty">
+                            It looks like there are not yet any lessons in this langauge.<br />
+                            But you can <Link to="/author/path">add ones yourself!</Link>
+                        </div>
+                    )}
             </div>
         </>
     );
