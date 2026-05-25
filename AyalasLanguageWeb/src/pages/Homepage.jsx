@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthHeader } from '../components/AuthHeader';
 import { LEANRING_STATUS } from '../constants/learning';
-import { LayersPlus } from 'lucide-react';
+import { LayersPlus, Check } from 'lucide-react';
 
 export function Homepage() {
     const [learningPath, setLearningPath] = useState([]);
@@ -63,9 +63,13 @@ export function Homepage() {
                                         <h4>Level {level.level}</h4>
                                         {
                                             level.paths.map((path) => {
+                                                const isDone = path.status == LEANRING_STATUS.DONE;
                                                 return (
                                                     <div className="learning-lesson" key={path.learningPathId}>
-                                                        {path.chapter} <Link className={`learning-lesson-link${path.status == LEANRING_STATUS.DONE? " lesson-done" : ""}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
+                                                        {path.chapter} <Link className={`learning-lesson-link${isDone? " lesson-done" : ""}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
+                                                        {isDone && (
+                                                            <Check className="learning-done-img" />
+                                                        )}
                                                     </div>
                                                 );
                                             })
