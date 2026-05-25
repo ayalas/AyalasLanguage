@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useOutletContext, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
 import { AuthHeader } from '../../components/AuthHeader';
@@ -21,6 +21,10 @@ export function LearningPathAuthoring() {
     const [aiInstructions, setAIInstructions] = useState("");
     const { user } = useOutletContext();
     const navigate = useNavigate();
+    const [ searchParams ] = useSearchParams();
+    const prevId = searchParams.get('prev');
+    const nextId = searchParams.get('next');
+
     const handleExerciseTypeLogic = function (exrTypeValue) {
         const exType = EXERCISE_GENERATIONS.find((ex) => ex.type == exrTypeValue);
         setExerciseTypeDesc(exType.description);
@@ -87,13 +91,19 @@ export function LearningPathAuthoring() {
                 return;
             }
             //first, create the learning path
-            const response = await axios.post('/api/creator/learning-path',
-                {
+            const req = {
                     level,
                     chapter,
-                    name: title
-                }
-            );
+                    name: title   
+                };
+            
+            if (prevId > 0) {
+                req.prevLearningPathId = prevId;
+            }
+            if (nextId > 0) {
+                req.nextLearningPathId = nextId;
+            }
+            const response = await axios.post('/api/creator/learning-path', req);
             learningPathId = response.data.learningPathId;
 
             //then, create the exercises within it

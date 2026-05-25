@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthHeader } from '../components/AuthHeader';
 import { LEANRING_STATUS } from '../constants/learning';
-
+import { LayersPlus } from 'lucide-react';
 
 export function Homepage() {
     const [learningPath, setLearningPath] = useState([]);
@@ -74,6 +74,9 @@ export function Homepage() {
                                 );
                             })
                         }
+                        <div className="learning-level-creator">
+                           <Link to={`/author/path?prev=${learningPath.slice(-1)[0].paths.slice(-1)[0].learningPathId}`} title="Generate more exercises here"><LayersPlus /></Link> 
+                        </div>
                     </div>
                 ) || (
                         <div className="learning-path-empty">

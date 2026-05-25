@@ -95,6 +95,10 @@ label.form-label {
   color: rgb(12, 66, 12);
 }
 
+.learning-level-creator {
+  padding-top: 10px;
+}
+
 .lesson-done {
   color: rgb(116, 117, 116);
 }
@@ -136,4 +140,8 @@ label.form-label {
 .lucide-square-menu {
   width: 36px;
   height: 36px;
+}
+
+.lucide-layers-plus {
+  color: rgb(12, 66, 12);
 }

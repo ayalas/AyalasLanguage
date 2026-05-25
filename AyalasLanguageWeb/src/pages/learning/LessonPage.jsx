@@ -5,16 +5,17 @@ import axios from 'axios';
 import { AuthHeader } from '../../components/AuthHeader';
 import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts } from '../../utils/utils';
-import { Exercise }  from '../../components/Exercise';
+import { Exercise } from '../../components/Exercise';
 
 export function LessonPage() {
     const { learningPathId } = useParams();
     const [exercises, setExercises] = useState([]);
+    const [learningPathData, setLearningPathData] = useState(null);
     const [currentExercise, setCurrentExercise] = useState(null);
     const [error, setError] = useState("");
     const exerciseRefs = useRef(new Map());
     const navigate = useNavigate();
-    
+
 
     const changeCurrentExercise = function (arrExercises, index) {
         const curItem = arrExercises[index];
@@ -39,24 +40,24 @@ export function LessonPage() {
     }
 
     const childLoaded = function (exerciseId) {
-         if (exerciseId == currentExercise.exerciseId) {
+        if (exerciseId == currentExercise.exerciseId) {
             const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
             if (refItem) {
                 exerciseRefs.current.get(currentExercise.exerciseId).setFocus();
             }
-         }
+        }
     }
 
     const setRef = (el) => {
         exerciseRefs.current.set(currentExercise.exerciseId, el);
     };
 
-    const moveNext = async function() {
-        if (currentExercise.index < exercises.length-1) {
+    const moveNext = async function () {
+        if (currentExercise.index < exercises.length - 1) {
             changeCurrentExercise(exercises, currentExercise.index + 1);
         }
         else {
-             try {
+            try {
                 await axios.post('/api/learning/progress',
                     {
                         learningPathId: learningPathId
@@ -73,7 +74,10 @@ export function LessonPage() {
     useEffect(() => {
         async function getData() {
             try {
-                const response = await axios.get('/api/learning/path/24/exercises');
+                let response = await axios.get(`/api/learning/path/${learningPathId}`);
+
+                setLearningPathData(response.data);
+                response = await axios.get(`/api/learning/path/${learningPathId}/exercises`);
 
                 if (response && response.data && response.data.length > 0) {
                     setExercises(response.data);
@@ -98,17 +102,23 @@ export function LessonPage() {
                     </div>
                 )}
                 <form>
-                    <div className="form-header">
-                        <h1>Exercise</h1>
-                    </div>
-                    
+                    {learningPathData && (
+                        <div className="form-header">
+                            <h1>{`Level ${learningPathData.level}, ${learningPathData.chapter} ${learningPathData.name}`}</h1>
+                        </div>
+                    )}
                     {currentExercise &&
                         (
-                            <Exercise key={currentExercise.exerciseId} 
-                                ref={setRef}
-                                exerciseInfo={currentExercise} 
-                                moveNext={moveNext}
-                                childLoaded={childLoaded} />
+                            <>
+                                <div className="form-row">
+                                    <label className="form-label-row">{`Exercise ${(currentExercise.index + 1)} of ${learningPathData.exerciseCount}`}</label>
+                                </div>
+                                <Exercise key={currentExercise.exerciseId}
+                                    ref={setRef}
+                                    exerciseInfo={currentExercise}
+                                    moveNext={moveNext}
+                                    childLoaded={childLoaded} />
+                            </>
                         )
                     }
                 </form>

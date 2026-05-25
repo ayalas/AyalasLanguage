@@ -4,6 +4,7 @@ import {ExerciseInput} from './ExerciseInput';
 export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref) => {
     const questionsRefMap = useRef(new Map());
     const [error, setError] = useState("");
+    const [displayAnswer, setDisplayAnswer] = useState(false);
 
     const checkAnswer = function() {
 
@@ -31,6 +32,10 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref
         else {
             setError('You have got some errors. Try again!');
         }
+    }
+
+    const showAnswer = function() {
+        setDisplayAnswer(true);
     }
 
     // This defines what the parent can access via the ref
@@ -83,9 +88,15 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref
                         );
                     })
                 }</div>
+            { displayAnswer && (
+                <div className="form-label-row">{exerciseInfo.data.Second}</div>
+            )}
             <div className="form-row">
                 <div className="form-input-row">
                     <button type="button" onClick={checkAnswer} className="leason-next">Check my answers</button>
+                </div>
+                <div className="form-input-row">
+                    <button type="button" onClick={showAnswer} className="leason-next">Reveal answer</button>
                 </div>
             </div>
         </Fragment>
