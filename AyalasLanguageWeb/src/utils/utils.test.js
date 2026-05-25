@@ -24,4 +24,9 @@ describe('getMissingParts function', () => {
         expect(getMissingParts("you are special. very special. I want to acknowlede that to you", ["you are ", ". very ", ". I want ", " acknowlede that ", " you"]))
         .toEqual(["special", "special", "to", "to"]);
     });
+
+    it('handles empty parts', () => {
+        expect(getMissingParts(" Vi mødes klokken fem", [" Vi mødes ", " klokken fem"]))
+        .toEqual([""]);
+    })
 })

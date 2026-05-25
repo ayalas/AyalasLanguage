@@ -1,15 +1,63 @@
 import { useParams } from 'react-router';
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 
 import { AuthHeader } from '../../components/AuthHeader';
 import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts } from '../../utils/utils';
+import { Exercise }  from '../../components/Exercise';
 
 export function LessonPage() {
     const { learningPathId } = useParams();
     const [exercises, setExercises] = useState([]);
+    const [currentExercise, setCurrentExercise] = useState(null);
     const [error, setError] = useState("");
+    const exerciseRefs = useRef(new Map());
+    
+
+    const changeCurrentExercise = function (arrExercises, index) {
+        const curItem = arrExercises[index];
+
+        let data = JSON.parse(curItem.data);
+        if (curItem.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS) {
+            let sentenceElements = data.First.split(PLACEHOLDERS.BLANKS);
+
+            let answers = getMissingParts(data.Second, sentenceElements);
+            setCurrentExercise({
+                ...curItem,
+                data,
+                sentenceElements,
+                answers,
+                index
+            });
+            const refItem = exerciseRefs.current.get(curItem.exerciseId);
+            if (refItem) {
+                exerciseRefs.current.get(curItem.exerciseId).setFocus();
+            }
+        }
+    }
+
+    const childLoaded = function (exerciseId) {
+         if (exerciseId == currentExercise.exerciseId) {
+            const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
+            if (refItem) {
+                exerciseRefs.current.get(currentExercise.exerciseId).setFocus();
+            }
+         }
+    }
+
+    const setRef = (el) => {
+        exerciseRefs.current.set(currentExercise.exerciseId, el);
+    };
+
+    const moveNext = function() {
+        if (currentExercise.index < exercises.length) {
+            changeCurrentExercise(exercises, currentExercise.index + 1);
+        }
+        else {
+            console.log('todo: finish up');
+        }
+    }
 
     useEffect(() => {
         async function getData() {
@@ -18,6 +66,7 @@ export function LessonPage() {
 
                 if (response && response.data && response.data.length > 0) {
                     setExercises(response.data);
+                    changeCurrentExercise(response.data, 0);
                 }
             } catch (err) {
                 setError(err.message);
@@ -27,71 +76,30 @@ export function LessonPage() {
 
     }, [learningPathId]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            console.log('todo handleSubmit');
-        } catch (err) {
-            setError(err.message);
-        }
-    };
 
     return (
         <>
             <AuthHeader />
             <div className="form-container">
-                <form onSubmit={handleSubmit}>
+                {error != "" && (
+                    <div className="form-row">
+                        <label className="form-error">{error}</label>
+                    </div>
+                )}
+                <form>
                     <div className="form-header">
                         <h1>Exercise</h1>
                     </div>
-                    {error != "" && (
-                        <div className="form-row">
-                            <label className="form-error">{error}</label>
-                        </div>
-                    )}
-                    {exercises &&
-                        exercises.map((exItem) => {
-                            let data = JSON.parse(exItem.data);
-                            if (exItem.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS) {
-                                let sentenceElements = data.First.split(PLACEHOLDERS.BLANKS);
-
-                                let answers = getMissingParts(data.Second, sentenceElements);
-
-                                let i = -1;
-                                return (
-                                    <Fragment key={`ex${exItem.exerciseId}row`}>
-                                        <div className="form-label-row">
-                                            {
-                                                sentenceElements.map((part) => {
-                                                    i++;
-                                                    return (
-                                                        <Fragment key={`ex${exItem.exerciseId}input${i}`}>
-                                                            {i == 0 && part == "" && (
-                                                                <input type="text" className="input-text-placeholder" style={{
-                                                                    width: `${(1 + answers[i].length)}ch`
-                                                                }}></input>
-                                                            )}
-                                                            {part}
-                                                            {(i > 0 || part != "") && (answers.length > i) && (
-                                                                <input type="text" className="input-text-placeholder" style={{
-                                                                    width: `${(1 + answers[i].length)}ch`
-                                                                }}></input>
-                                                            )}
-                                                        </Fragment>
-                                                    );
-                                                })
-                                            }</div>
-                                        <div className="form-label-row">{data.Second}</div>
-                                    </Fragment>
-                                );
-                            }
-                        })
+                    
+                    {currentExercise &&
+                        (
+                            <Exercise key={currentExercise.exerciseId} 
+                                ref={setRef}
+                                exerciseInfo={currentExercise} 
+                                moveNext={moveNext}
+                                childLoaded={childLoaded} />
+                        )
                     }
-                    <div className="form-row">
-                        <div className="form-input-row">
-                            <button type="submit" className="leason-next">Check my answers</button>
-                        </div>
-                    </div>
                 </form>
             </div>
         </>

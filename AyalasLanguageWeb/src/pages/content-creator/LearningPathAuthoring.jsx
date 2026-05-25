@@ -69,8 +69,8 @@ export function LearningPathAuthoring() {
         const arrObjects = [];
         for (let i = 0; i < arrFirstSet.length; i++) {
             arrObjects.push({
-                First: arrFirstSet[i],
-                Second: arrSecondSet[i]
+                First: arrFirstSet[i].trim(),
+                Second: arrSecondSet[i].trim()
             });
         }
 
