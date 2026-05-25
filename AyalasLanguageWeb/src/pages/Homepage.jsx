@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthHeader } from '../components/AuthHeader';
+import { LEANRING_STATUS } from '../constants/learning';
 
 
 export function Homepage() {
@@ -64,7 +65,7 @@ export function Homepage() {
                                             level.paths.map((path) => {
                                                 return (
                                                     <div className="learning-lesson" key={path.learningPathId}>
-                                                        {path.chapter} <Link to={`/path/${path.learningPathId}`}>{path.name}</Link>
+                                                        {path.chapter} <Link className={`learning-lesson-link${path.status == LEANRING_STATUS.DONE? " lesson-done" : ""}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
                                                     </div>
                                                 );
                                             })

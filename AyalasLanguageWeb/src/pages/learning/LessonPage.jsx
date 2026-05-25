@@ -1,4 +1,4 @@
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 
@@ -13,6 +13,7 @@ export function LessonPage() {
     const [currentExercise, setCurrentExercise] = useState(null);
     const [error, setError] = useState("");
     const exerciseRefs = useRef(new Map());
+    const navigate = useNavigate();
     
 
     const changeCurrentExercise = function (arrExercises, index) {
@@ -50,12 +51,22 @@ export function LessonPage() {
         exerciseRefs.current.set(currentExercise.exerciseId, el);
     };
 
-    const moveNext = function() {
-        if (currentExercise.index < exercises.length) {
+    const moveNext = async function() {
+        if (currentExercise.index < exercises.length-1) {
             changeCurrentExercise(exercises, currentExercise.index + 1);
         }
         else {
-            console.log('todo: finish up');
+             try {
+                await axios.post('/api/learning/progress',
+                    {
+                        learningPathId: learningPathId
+                    }
+                );
+
+                navigate('/home');
+            } catch (err) {
+                setError(err.message);
+            }
         }
     }
 

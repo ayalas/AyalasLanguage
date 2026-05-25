@@ -7,6 +7,12 @@ export const EXERCISE_TYPES =
     FROM_KNOWN_TO_TARGET_BUCKET: 5
 };
 
+export const LEANRING_STATUS = 
+{
+    NEW: 0,
+    DONE: 1
+}
+
 export const PLACEHOLDERS = {
     KNOWN_LANGAUGE_PLACEHOLDER: "kkknownnn",
     TARGET_LANGAUGE_PLACEHOLDER: "tttargettt",

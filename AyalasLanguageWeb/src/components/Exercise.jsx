@@ -6,6 +6,7 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref
     const [error, setError] = useState("");
 
     const checkAnswer = function() {
+
         const thisQuestionRefs = new Map(
             [...questionsRefMap.current.entries()].filter(([key, value]) => key.startsWith(`${exerciseInfo.exerciseId}-`))
         );
@@ -67,14 +68,16 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`} 
                                         ref={setRef} 
                                         charWidth={(1 + exerciseInfo.answers[i].length)} 
-                                        checkAnswer={checkAnswer} />
+                                        checkAnswer={checkAnswer}
+                                        />
                                 )}
                                 {part}
                                 {(i > 0 || part != "") && (exerciseInfo.answers.length > i) && (
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`} 
                                         ref={setRef} 
                                         charWidth={(1 + exerciseInfo.answers[i].length)} 
-                                        checkAnswer={checkAnswer} />
+                                        checkAnswer={checkAnswer}
+                                        />
                                 )}
                             </Fragment>
                         );

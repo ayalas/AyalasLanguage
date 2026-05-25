@@ -1,14 +1,19 @@
 import { useState, forwardRef, useImperativeHandle, useRef } from 'react';
 
+import { useOutletContext } from 'react-router-dom';
+
+import { replaceCharsForLanguage } from '../utils/languageUtils';
+
 export const ExerciseInput = forwardRef(({charWidth, checkAnswer}, ref) => {
   const [internalData, setInternalData] = useState("");
   const [errorState, setErrorState] = useState(false);
   const inputRef = useRef(null);
+  const { user } = useOutletContext();
 
   // This defines what the parent can access via the ref
   useImperativeHandle(ref, () => ({
     getUserAnswer() {
-        return internalData;
+        return replaceCharsForLanguage(user.languageSettings.targetLanguage, internalData);
     },
     setToError() {
         setErrorState(true);
@@ -25,6 +30,7 @@ export const ExerciseInput = forwardRef(({charWidth, checkAnswer}, ref) => {
 
   const handleKeyDown = function(e) {
     if (e.key === 'Enter' ) {
+      e.preventDefault();
       checkAnswer();
     }
   }
