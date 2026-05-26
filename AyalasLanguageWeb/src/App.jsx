@@ -10,7 +10,8 @@ import { RegisterPage } from './auth/RegisterPage';
 import { ChangePasswordPage } from './auth/ChangePasswordPage';
 import { Homepage } from './pages/Homepage';
 import { ProfilePage } from './pages/ProfilePage';
-import { LearningPathAuthoringPage } from './pages/content-creator/LearningPathAuthoringPage';
+import { LearningPathCreatePage } from './pages/content-creator/LearningPathCreatePage';
+import { LearningPathUpdatePage } from './pages/content-creator/LearningPathUpdatePage';
 import { LessonPage } from './pages/learning/LessonPage';
 
 import './App.css'
@@ -31,7 +32,8 @@ function App() {
             <Route path="/home" element={<Homepage />} />
             <Route path="/change-password" element={<ChangePasswordPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/author/path" element={<LearningPathAuthoringPage />} />
+            <Route path="/author/path/:learningPathId" element={<LearningPathUpdatePage />} />
+            <Route path="/author/path" element={<LearningPathCreatePage />} />
             <Route path="/path/:learningPathId" element={<LessonPage />} />
           </Route>
 

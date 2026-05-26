@@ -33,7 +33,7 @@
 }
 .form-content-row {
   text-align: start;
-  
+  display: inline-flex;
 }
 
 label.form-label {
@@ -164,4 +164,9 @@ label.form-label {
   width: 18px;
   height: 18px;
   margin-left: 5px;
+}
+
+.small-icon {
+  width: 18px;
+  height: 18px;
 }

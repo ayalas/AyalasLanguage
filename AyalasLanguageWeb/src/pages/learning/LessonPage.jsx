@@ -157,7 +157,8 @@ export function LessonPage() {
                                     moveNext={moveNext}
                                     childLoaded={childLoaded}
                                     saveProgress={saveProgress}
-                                    restartLesson={restartLesson} />
+                                    restartLesson={restartLesson}
+                                    learningPathId={learningPathId} />
                             </>
                         )
                     }

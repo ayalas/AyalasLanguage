@@ -14,6 +14,12 @@ export const LEANRING_STATUS =
     IN_PROGRESS: 2
 }
 
+export const AUTHOR_ACCESS = 
+{
+    LEARNER: 1,
+    CAN_EDIT: 2
+}
+
 export const PLACEHOLDERS = {
     KNOWN_LANGAUGE_PLACEHOLDER: "kkknownnn",
     TARGET_LANGAUGE_PLACEHOLDER: "tttargettt",

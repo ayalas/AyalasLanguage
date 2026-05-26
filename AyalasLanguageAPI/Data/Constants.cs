@@ -9,7 +9,7 @@ public enum UserRoleEnum
     Admin = 3
 }
 
-public enum UserAccess
+public enum UserAccessEnum
 {
     Learner = 1,
     CanEdit = 2

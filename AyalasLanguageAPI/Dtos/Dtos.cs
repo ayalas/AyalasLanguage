@@ -25,13 +25,13 @@ namespace AyalasLanguageAPI.DTOs
 
     // Learning Path & Progress
     public record LearningPathDto(int LearningPathId, uint Level, byte Chapter, string? Name,  int? Status = null,  int ExerciseCount = 0, int? PrevLearningPathId = null, int? NextLearningPathId = null);
-    public record LearningPathSingleDto(int LearningPathId, uint Level, byte Chapter, string? Name,  int? Status = null, int? ExerciseId = null,  int ExerciseCount = 0, int? PrevLearningPathId = null, int? NextLearningPathId = null);
+    public record LearningPathSingleDto(int LearningPathId, uint Level, byte Chapter, string? Name,  int? Status = null, int? ExerciseId = null,  int ExerciseCount = 0, int? PrevLearningPathId = null, int? NextLearningPathId = null, byte Access = 0);
 
     
     public record UpdateProgressDto(int LearningPathId, int? exerciseId);
 
     // Exercise DTOs
-    public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data);
+    public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access);
 
     // Content Creator DTOs
     public record CreateLearningPathDto(

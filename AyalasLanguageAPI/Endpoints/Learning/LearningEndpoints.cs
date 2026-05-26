@@ -29,7 +29,7 @@ public static class LearningEndpoints
 
         return Results.Ok( await db.LearningPaths
         .Where(lp => lp.LearningPathId == pathId)
-        .LeftJoin(db.UserProgresses,
+        .LeftJoin(db.UserProgresses.Where(up => up.UserId == userId),
             lp => lp.LearningPathId,
             up => up.LearningPathId,
             (lp, up) => new LearningPathSingleDto
@@ -41,9 +41,12 @@ public static class LearningEndpoints
                 up == null ? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
                 up == null ? null : up.ExerciseId,
                 db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId
-                && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)),
+                //add if we want to handle approved exercises
+                //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
+                ),
                 lp.PrevLearningPathId,
-                lp.NextLearningPathId
+                lp.NextLearningPathId,
+                lp.UserId == userId? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
             )
         )
         .FirstOrDefaultAsync());
@@ -66,7 +69,7 @@ public static class LearningEndpoints
 
         var learningPathsWithStatus = await db.LearningPaths
         .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId)
-        .LeftJoin(db.UserProgresses,
+        .LeftJoin(db.UserProgresses.Where(up => up.UserId == userId),
             lp => lp.LearningPathId,
             up => up.LearningPathId,
             (lp, up) => new LearningPathDto
@@ -77,7 +80,10 @@ public static class LearningEndpoints
                 lp.Name,
                 up == null? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
                 db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId
-                && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)),
+                //add if we want to handle approved exercises
+            //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
+                
+                ),
                 lp.PrevLearningPathId,
                 lp.NextLearningPathId
             )
@@ -180,9 +186,13 @@ public static class LearningEndpoints
         //Filter exercises by path and user exercise types
         var exercises = await db.Exercises
             .Where(e => e.LearningPathId == pathId && userExerciseTypes.Contains(e.ExerciseTypeId)
-            && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId))
+            //add if we want to handle approved exercises
+            //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
+            )
             .OrderBy(e => e.ExerciseId) // Ensure consistent ordering
-            .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data))
+            .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data,
+                e.UserId == userId? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
+            ))
             .ToListAsync();
 
         return Results.Ok(exercises);

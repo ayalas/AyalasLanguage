@@ -163,7 +163,7 @@ Authorization: Bearer {{token}}
 
 
 ### delete learning paths
-DELETE {{host}}/api/creator/learning-path/28
+DELETE {{host}}/api/creator/learning-path/29
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
@@ -232,12 +232,12 @@ Authorization: Bearer {{token}}
 }
 
 ### Delete the Exercise created above
-DELETE {{host}}/api/creator/exercise/320
+DELETE {{host}}/api/creator/exercise/321
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 ### Get exercises for a learning path
-GET {{host}}/api/learning/path/28/exercises
+GET {{host}}/api/learning/path/26/exercises
 Authorization: Bearer {{token}}
 
 ### Logout
