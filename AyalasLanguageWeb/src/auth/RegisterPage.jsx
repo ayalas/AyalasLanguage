@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { User } from 'lucide-react';
 
-export function Register() {
+export function RegisterPage() {
     const [displayName, setDisplayName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -34,6 +35,11 @@ export function Register() {
                     <h1>Register</h1>
                 </div>
                 <div className="form-row">
+                    <div className="form-input-row">
+                        <button type="submit" className="form-button" title="Register"><User /></button>
+                    </div>
+                </div>
+                <div className="form-row">
                     <div className="form-label-cell">
                         <label className="form-label">Display Name</label>
                     </div>
@@ -57,12 +63,7 @@ export function Register() {
                         <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
                     </div>
                 </div>
-                <div className="form-row">
-                    <div className="form-input-cell"></div>
-                    <div className="form-input-cell">
-                        <button type="submit" className="form-button">Register</button>
-                    </div>
-                </div>
+
                 <div className="form-row">
                     <div className="login-register-line">Or <Link to="/login">Login</Link> with an existing account</div>
                 </div>

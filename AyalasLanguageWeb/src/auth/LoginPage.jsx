@@ -1,10 +1,12 @@
 // Inside src/pages/Login.jsx
 import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { LogIn } from 'lucide-react';
+
 import { useAuth } from './AuthContext';
 
-export const Login = () => {
-  const [ searchParams ] = useSearchParams();
+export const LoginPage = () => {
+  const [searchParams] = useSearchParams();
   const searchUserName = searchParams.get('user');
   const [email, setEmail] = useState(searchUserName);
   const [password, setPassword] = useState('');
@@ -40,6 +42,11 @@ export const Login = () => {
           <h1>Login</h1>
         </div>
         <div className="form-row">
+          <div className="form-input-row">
+            <button type="submit" className="login-button" title="Log In"><LogIn /></button>
+          </div>
+        </div>
+        <div className="form-row">
           <div className="form-label-cell">
             <label className="form-label">Email</label>
           </div>
@@ -53,12 +60,6 @@ export const Login = () => {
           </div>
           <div className="form-input-cell">
             <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
-          </div>
-        </div>
-        <div className="form-row">
-          <div className="form-input-cell"></div>
-          <div className="form-input-cell">
-            <button type="submit" className="login-button">Log In</button>
           </div>
         </div>
         <div className="form-row">

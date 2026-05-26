@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { Save } from 'lucide-react';
 
 import { AuthHeader } from '../components/AuthHeader';
 
-export function ChangePassword() {
+export function ChangePasswordPage() {
 
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -40,6 +41,11 @@ export function ChangePassword() {
                             <div className="form-header">
                                 <h1>Change Password</h1>
                             </div>
+                             <div className="form-row">
+                                <div className="form-input-row">
+                                    <button type="submit" className="form-button" title="Change Password"><Save /></button>
+                                </div>
+                            </div>
                             <div className="form-row">
                                 <div className="form-label-cell">
                                     <label className="form-label">Old Password</label>
@@ -56,12 +62,7 @@ export function ChangePassword() {
                                     <input type="password" className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
                                 </div>
                             </div>
-                            <div className="form-row">
-                                <div className="form-input-cell"></div>
-                                <div className="form-input-cell">
-                                    <button type="submit" className="form-button">Change Password</button>
-                                </div>
-                            </div>
+                           
                         </form>
                     )
                 }

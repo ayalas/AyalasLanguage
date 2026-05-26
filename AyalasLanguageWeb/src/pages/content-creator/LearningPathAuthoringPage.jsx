@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { LayersPlus } from 'lucide-react';
 
 import { AuthHeader } from '../../components/AuthHeader';
 import { EXERCISE_GENERATIONS, PLACEHOLDERS } from '../../constants/learning';
 import { removeLastCharIfMatch } from '../../utils/utils';
 
 
-export function LearningPathAuthoring() {
+export function LearningPathAuthoringPage() {
     const [error, setError] = useState("");
     const [level, setLevel] = useState(1);
     const [chapter, setChapter] = useState(1);
@@ -163,6 +164,11 @@ export function LearningPathAuthoring() {
                     <div className="form-header">
                         <h1>Exercise Generator</h1>
                     </div>
+                    <div className="form-row">
+                        <div className="form-input-row">
+                            <button type="submit" className="form-button" title="Generate exercises"><LayersPlus /></button>
+                        </div>
+                    </div>
                     {error != "" && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>
@@ -222,11 +228,7 @@ export function LearningPathAuthoring() {
                         </div>
                         <div className="form-content-row">{secondSetDesc}</div>
                     </div>
-                    <div className="form-row">
-                        <div className="form-input-row">
-                            <button type="submit" className="form-button">Generate exercises</button>
-                        </div>
-                    </div>
+                    
                 </form>
             </div>
         </>

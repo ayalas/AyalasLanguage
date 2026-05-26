@@ -1,12 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Save } from 'lucide-react';
+
 import { AuthHeader } from '../components/AuthHeader';
 
-import axios from 'axios';
-
-
-export function Profile() {
+export function ProfilePage() {
     const [allLanguages, setAllLanguages] = useState([]);
     const [targetLanguage, setTargetLanguage] = useState("");
     const [knownLanguage, setKnownLanguage] = useState("");
@@ -14,8 +14,8 @@ export function Profile() {
     const navigate = useNavigate();
     const { user, login } = useOutletContext();
 
-    const setNewLanguage = async function() {
-        const newUser = {...user};
+    const setNewLanguage = async function () {
+        const newUser = { ...user };
         const response = await axios.get('/api/profile/current');;
         newUser.languageSettings = response.data;
         console.log(login);
@@ -93,6 +93,11 @@ export function Profile() {
                     <div className="form-header">
                         <h1>Profile</h1>
                     </div>
+                    <div className="form-row">
+                        <div className="form-input-row">
+                            <button type="submit" className="form-button" title="Save"><Save /></button>
+                        </div>
+                    </div>
                     {error != "" && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>
@@ -136,12 +141,7 @@ export function Profile() {
                             </select>
                         </div>
                     </div>
-                    <div className="form-row">
-                        <div className="form-input-cell"></div>
-                        <div className="form-input-cell">
-                            <button type="submit" className="form-button">Save</button>
-                        </div>
-                    </div>
+
                 </form>
             </div>
         </>

@@ -1,17 +1,16 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
 import { AuthProvider } from './auth/AuthContext';
 import ProtectedRoute from './auth/ProtectedRoute';
-
 import { LandingPage } from './LandingPage';
-import { Login } from './auth/Login';
-import { Register } from './auth/Register';
-
+import { LoginPage } from './auth/LoginPage';
+import { RegisterPage } from './auth/RegisterPage';
 //authenticated
-import { ChangePassword } from './auth/ChangePassword';
+import { ChangePasswordPage } from './auth/ChangePasswordPage';
 import { Homepage } from './pages/Homepage';
-import { Profile } from './pages/Profile';
-import { LearningPathAuthoring } from './pages/content-creator/LearningPathAuthoring';
+import { ProfilePage } from './pages/ProfilePage';
+import { LearningPathAuthoringPage } from './pages/content-creator/LearningPathAuthoringPage';
 import { LessonPage } from './pages/learning/LessonPage';
 
 import './App.css'
@@ -24,15 +23,15 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Homepage />} />
-            <Route path="/change-password" element={<ChangePassword />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/author/path" element={<LearningPathAuthoring />} />
+            <Route path="/change-password" element={<ChangePasswordPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/author/path" element={<LearningPathAuthoringPage />} />
             <Route path="/path/:learningPathId" element={<LessonPage />} />
           </Route>
 

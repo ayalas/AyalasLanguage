@@ -12,6 +12,14 @@
   }
 }
 
+.form-button {
+  background-color: inherit;
+}
+
+.form-button-wide {
+  width: 180px;
+}
+
 .form-label-cell {
   display: inline-flex;
   width: 150px;
