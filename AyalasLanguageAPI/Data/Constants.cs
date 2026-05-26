@@ -9,10 +9,23 @@ public enum UserRoleEnum
     Admin = 3
 }
 
+public enum UserAccess
+{
+    Learner = 1,
+    CanEdit = 2
+}
+
 public enum ContentStatusEnum
 {
     Draft = 0,
     Approved = 1
+}
+
+public enum UserProgressEnum
+{
+    NotStarted = 0,
+    Done = 1,
+    InProgress = 2
 }
 
 

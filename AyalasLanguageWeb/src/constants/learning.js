@@ -10,7 +10,8 @@ export const EXERCISE_TYPES =
 export const LEANRING_STATUS = 
 {
     NEW: 0,
-    DONE: 1
+    DONE: 1,
+    IN_PROGRESS: 2
 }
 
 export const PLACEHOLDERS = {

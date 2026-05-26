@@ -71,17 +71,55 @@ export function LessonPage() {
         }
     }
 
+    const saveProgress = async function() {
+        try {
+            let exCurInd = exercises.findIndex(e => e.exerciseId == currentExercise.exerciseId);
+            let exerId = null;
+            if (exCurInd > 0) {
+                exerId = currentExercise.exerciseId;
+            }
+
+            if (exerId == null) {
+                await axios.delete(`/api/learning/progress/${learningPathId}`);
+            }
+            else {
+                await axios.post('/api/learning/progress',
+                    {
+                        learningPathId: learningPathId,
+                        exerciseId: exerId
+                    }
+                );
+            }
+
+            navigate('/home');
+        } catch (err) {
+            setError(err.message);
+        }
+    }
+
+    const restartLesson = async function() {
+        changeCurrentExercise(exercises, 0);
+    }
+
     useEffect(() => {
         async function getData() {
             try {
                 let response = await axios.get(`/api/learning/path/${learningPathId}`);
-
-                setLearningPathData(response.data);
+                const learningPathTemp = response.data;
+                setLearningPathData(learningPathTemp);
                 response = await axios.get(`/api/learning/path/${learningPathId}/exercises`);
 
                 if (response && response.data && response.data.length > 0) {
-                    setExercises(response.data);
-                    changeCurrentExercise(response.data, 0);
+                    const exercisesTemp = response.data;
+                    setExercises(exercisesTemp);
+                    let exCurInd = 0;
+                    if (learningPathTemp.exerciseId != null) {
+                        exCurInd = exercisesTemp.findIndex(e => e.exerciseId == learningPathTemp.exerciseId);
+                        if (exCurInd < 0) {
+                            exCurInd = 0;
+                        }
+                    }
+                    changeCurrentExercise(exercisesTemp, exCurInd);
                 }
             } catch (err) {
                 setError(err.message);
@@ -117,7 +155,9 @@ export function LessonPage() {
                                     ref={setRef}
                                     exerciseInfo={currentExercise}
                                     moveNext={moveNext}
-                                    childLoaded={childLoaded} />
+                                    childLoaded={childLoaded}
+                                    saveProgress={saveProgress}
+                                    restartLesson={restartLesson} />
                             </>
                         )
                     }

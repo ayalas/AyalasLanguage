@@ -2,9 +2,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { LayersPlus, Check, CircleDotDashed } from 'lucide-react';
+
 import { AuthHeader } from '../components/AuthHeader';
 import { LEANRING_STATUS } from '../constants/learning';
-import { LayersPlus, Check } from 'lucide-react';
 
 export function Homepage() {
     const [learningPath, setLearningPath] = useState([]);
@@ -64,11 +65,15 @@ export function Homepage() {
                                         {
                                             level.paths.map((path) => {
                                                 const isDone = path.status == LEANRING_STATUS.DONE;
+                                                const isInProgress = path.status == LEANRING_STATUS.IN_PROGRESS;
                                                 return (
                                                     <div className="learning-lesson" key={path.learningPathId}>
                                                         {path.chapter} <Link className={`learning-lesson-link${isDone? " lesson-done" : ""}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
                                                         {isDone && (
-                                                            <Check className="learning-done-img" />
+                                                            <Check className="learning-progress-img" />
+                                                        )}
+                                                        {isInProgress && (
+                                                            <CircleDotDashed className="learning-progress-img" />
                                                         )}
                                                     </div>
                                                 );

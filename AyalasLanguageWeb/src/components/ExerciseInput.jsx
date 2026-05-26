@@ -35,10 +35,13 @@ export const ExerciseInput = forwardRef(({charWidth, checkAnswer}, ref) => {
     }
   }
 
+  const inputStyle = {
+      width: `${charWidth}ch`,
+      backgroundColor: errorState ? "rgb(228, 180, 180)" : "white" // No semicolons inside the strings!
+  };
+
   return <input ref={inputRef} type="text" value={internalData} 
             onChange={onInputChange}
             onKeyDown={handleKeyDown}
-            className="input-text-placeholder" style={{
-            width: `${charWidth}ch`, backgroundColor: errorState? "red": "white"
-        }}></input>;
+            className="input-text-placeholder" style={inputStyle}></input>;
 });

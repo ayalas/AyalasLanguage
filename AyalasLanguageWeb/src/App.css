@@ -14,6 +14,7 @@
 
 .form-button {
   background-color: inherit;
+  cursor: pointer;
 }
 
 .form-button-wide {
@@ -43,6 +44,11 @@ label.form-label {
 
 .form-row {
   padding-bottom: 15px;
+}
+
+.form-button-cell {
+ display: inline-flex; 
+ padding-right: 10px;
 }
 
 .form-input-cell {
@@ -154,7 +160,8 @@ label.form-label {
   color: rgb(12, 66, 12);
 }
 
-.learning-done-img {
+.learning-progress-img {
   width: 18px;
   height: 18px;
+  margin-left: 5px;
 }

@@ -1,7 +1,9 @@
 import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
+import { Eye, ListChecks, CircleDotDashed, RotateCcw } from 'lucide-react';
+
 import {ExerciseInput} from './ExerciseInput';
 
-export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref) => {
+export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson }, ref) => {
     const questionsRefMap = useRef(new Map());
     const [error, setError] = useState("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -34,8 +36,8 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref
         }
     }
 
-    const showAnswer = function() {
-        setDisplayAnswer(true);
+    const toggleAnswer = function() {
+        setDisplayAnswer(!displayAnswer);
     }
 
     // This defines what the parent can access via the ref
@@ -54,6 +56,23 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref
 
     return (
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
+            <div className="form-row">
+                <div className="form-input-row">
+                    <div className="form-button-cell">
+                        <button type="button" onClick={checkAnswer} className="form-button" title="Check my answers"><ListChecks /></button>
+                    </div>
+                    <div className="form-button-cell">
+                        <button type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>
+                    </div>
+                    <div className="form-button-cell">
+                        <button type="button" onClick={saveProgress} className="form-button" title="Save progress"><CircleDotDashed /></button>
+                    </div>
+                    <div className="form-button-cell">
+                        <button type="button" onClick={restartLesson} className="form-button" title="Restart lesson"><RotateCcw /></button>
+                    </div>
+                    
+                </div>
+            </div>
             {error != "" && (
                 <div className="form-row">
                     <label className="form-error">{error}</label>
@@ -91,14 +110,7 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded }, ref
             { displayAnswer && (
                 <div className="form-label-row">{exerciseInfo.data.Second}</div>
             )}
-            <div className="form-row">
-                <div className="form-input-row">
-                    <button type="button" onClick={checkAnswer} className="leason-next">Check my answers</button>
-                </div>
-                <div className="form-input-row">
-                    <button type="button" onClick={showAnswer} className="leason-next">Reveal answer</button>
-                </div>
-            </div>
+            
         </Fragment>
     );
 });

@@ -1,5 +1,6 @@
 using System;
 using System.Security.Claims;
+using System.Xml;
 using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.DTOs;
@@ -28,21 +29,23 @@ public static class LearningEndpoints
 
         return Results.Ok( await db.LearningPaths
         .Where(lp => lp.LearningPathId == pathId)
-        .Select(path => new LearningPathDto
-        (
-            path.LearningPathId,
-            path.Level,
-            path.Chapter,
-            path.Name,
-            // Check if ANY progress exists for this user and path
-            db.UserProgresses.Any(up => up.UserId == userId && up.LearningPathId == path.LearningPathId)
-                ? (byte)1
-                : (byte)0,
-            db.Exercises.Count(e => e.LearningPathId == path.LearningPathId 
-            && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)),
-            path.PrevLearningPathId,
-            path.NextLearningPathId
-        ))
+        .LeftJoin(db.UserProgresses,
+            lp => lp.LearningPathId,
+            up => up.LearningPathId,
+            (lp, up) => new LearningPathSingleDto
+            (
+                lp.LearningPathId,
+                lp.Level,
+                lp.Chapter,
+                lp.Name,
+                up == null ? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
+                up == null ? null : up.ExerciseId,
+                db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId
+                && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)),
+                lp.PrevLearningPathId,
+                lp.NextLearningPathId
+            )
+        )
         .FirstOrDefaultAsync());
     }
 
@@ -63,21 +66,22 @@ public static class LearningEndpoints
 
         var learningPathsWithStatus = await db.LearningPaths
         .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId)
-        .Select(path => new LearningPathDto
-        (
-            path.LearningPathId,
-            path.Level,
-            path.Chapter,
-            path.Name,
-            // Check if ANY progress exists for this user and path
-            db.UserProgresses.Any(up => up.UserId == userId && up.LearningPathId == path.LearningPathId)
-                ? (byte)1
-                : (byte)0,
-            db.Exercises.Count(e => e.LearningPathId == path.LearningPathId 
-            && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)),
-            path.PrevLearningPathId,
-            path.NextLearningPathId
-        ))
+        .LeftJoin(db.UserProgresses,
+            lp => lp.LearningPathId,
+            up => up.LearningPathId,
+            (lp, up) => new LearningPathDto
+            (
+                lp.LearningPathId,
+                lp.Level,
+                lp.Chapter,
+                lp.Name,
+                up == null? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
+                db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId
+                && (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)),
+                lp.PrevLearningPathId,
+                lp.NextLearningPathId
+            )
+        )
         .ToListAsync();
 
         // 2. Reorder the list based on PrevLearningPathId
@@ -111,18 +115,39 @@ public static class LearningEndpoints
         var progress = await db.UserProgresses
             .FirstOrDefaultAsync(p => p.UserId == userId && p.LearningPathId == dto.LearningPathId);
 
+        int? exerciseId = null;
+        if (dto.exerciseId != null && dto.exerciseId > 0)
+        {
+            var exercise = await db.Exercises
+                .FirstOrDefaultAsync(exr => exr.ExerciseId == dto.exerciseId && exr.LearningPathId == dto.LearningPathId);
+            if (exercise == null)
+            {
+                return Results.BadRequest("Exercise not found");
+            }
+            exerciseId = dto.exerciseId;
+        }
+
         if (progress == null)
         {
             db.UserProgresses.Add(new UserProgress
             {
                 UserId = userId,
-                LearningPathId = dto.LearningPathId
+                LearningPathId = dto.LearningPathId,
+                ExerciseId = exerciseId
             });
-
             await db.SaveChangesAsync();
+
+            return Results.Created($"/api/learning/progress/{dto.LearningPathId}", dto);
+        }
+        else if (progress.ExerciseId != exerciseId)
+        {
+            progress.ExerciseId = exerciseId;
+            await db.SaveChangesAsync();
+
+            return Results.Created($"/api/learning/progress/{dto.LearningPathId}", dto);
         }
 
-        return Results.Created($"/api/learning/progress/{dto.LearningPathId}", dto);
+        return Results.Ok();
     }
 
     [Authorize]
