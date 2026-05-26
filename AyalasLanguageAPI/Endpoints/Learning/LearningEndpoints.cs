@@ -60,7 +60,7 @@ public static class LearningEndpoints
         var user = await db.Users.FindAsync(userId); // Ensure user exists
         if (user == null) return Results.NotFound();
 
-        if (user.TargetLanguageId == null)
+        if (user.TargetLanguageId == null || user.KnownLanguageId == null)
         {
             return Results.BadRequest("User does not have a target language set.");
         }
@@ -68,7 +68,7 @@ public static class LearningEndpoints
         int languageId = user.TargetLanguageId.Value;
 
         var learningPathsWithStatus = await db.LearningPaths
-        .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId)
+        .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value)
         .LeftJoin(db.UserProgresses.Where(up => up.UserId == userId),
             lp => lp.LearningPathId,
             up => up.LearningPathId,
@@ -79,11 +79,9 @@ public static class LearningEndpoints
                 lp.Chapter,
                 lp.Name,
                 up == null? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
-                db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId
+                db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId),
                 //add if we want to handle approved exercises
-            //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
-                
-                ),
+                //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
                 lp.PrevLearningPathId,
                 lp.NextLearningPathId
             )

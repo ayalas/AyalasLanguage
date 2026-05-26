@@ -192,7 +192,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
                 <div className="form-row">
                     <div className="form-input-row">
                         <select required={true} id="exercise-type" className="form-select" value={exerciseType} onChange={onChangeExerciseType}>
-                            <option value="" disabled>-- Please choose an option --</option>
+                            <option value="0" disabled>-- Please choose an option --</option>
                             {
                                 EXERCISE_GENERATIONS.map((exType) => {
                                     return (

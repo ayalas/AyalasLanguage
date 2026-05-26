@@ -32,9 +32,16 @@ public class AyalasLanguageDbContext : DbContext
             .HasKey(up => new { up.UserId, up.LearningPathId });
 
         modelBuilder.Entity<LearningPath>()
+        .HasOne(lp => lp.PrevLearningPath)
+        .WithMany()
+        .HasForeignKey(lp => lp.PrevLearningPathId)
+        .IsRequired(false)
+        .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<LearningPath>()
         .HasOne(lp => lp.NextLearningPath)
-        .WithOne(lp => lp.PrevLearningPath)
-        .HasForeignKey<LearningPath>(lp => lp.NextLearningPathId)
+        .WithMany()
+        .HasForeignKey(lp => lp.NextLearningPathId) // Removed the generic type argument
         .IsRequired(false)
         .OnDelete(DeleteBehavior.SetNull);
 

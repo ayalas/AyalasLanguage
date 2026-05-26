@@ -54,15 +54,20 @@ public static class ContentCreatorEndpoints
             prevPathNextId = prevPath.NextLearningPathId; //save the id
             prevPath.NextLearningPathId = null; // Unlink from any existing next path
         }
-        else
+        else if (dto.NextLearningPathId == null)
         {
-            // If no previous path is specified, find the last path in the sequence for this language learning
+            // If no previous path and no next path is specified, find the last path in the sequence for this language learning
             prevPath = await db.LearningPaths
                 .Where(lp => lp.TargetLanguageId == user.TargetLanguageId
                     && lp.KnownLanguageId == user.KnownLanguageId && lp.NextLearningPathId == null)
                 .OrderByDescending(lp => lp.Level)
                 .ThenByDescending(lp => lp.Chapter)
                 .FirstOrDefaultAsync();
+            if (prevPath != null)
+            {
+                prevPathId = prevPath.LearningPathId;
+                prevPathNextId = prevPath.NextLearningPathId; //save the id
+            }
         }
 
         if (dto.NextLearningPathId != null)
@@ -77,10 +82,13 @@ public static class ContentCreatorEndpoints
 
             //is there another item linked to the same next or previous path?
             //we can only allow this if our prev is linked to our next and vice verse - that we can fix
-            if (await db.LearningPaths.AnyAsync(lp => lp.NextLearningPathId == dto.NextLearningPathId
-                && lp.LearningPathId != prevPathId))
+            if (prevPathId != 0)
             {
-                return Results.BadRequest("Next learning path already has a previous path.");
+                if (await db.LearningPaths.AnyAsync(lp => lp.NextLearningPathId == dto.NextLearningPathId
+                    && lp.LearningPathId != prevPathId))
+                {
+                    return Results.BadRequest("Next learning path already has a previous path.");
+                }
             }
         }
 

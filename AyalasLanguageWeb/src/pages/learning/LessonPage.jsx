@@ -33,10 +33,33 @@ export function LessonPage() {
                 answers,
                 index
             });
-            const refItem = exerciseRefs.current.get(curItem.exerciseId);
-            if (refItem) {
-                exerciseRefs.current.get(curItem.exerciseId).setFocus();
-            }
+            
+        }
+        else if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
+            setCurrentExercise({
+                ...curItem,
+                data,
+                sentenceElements: [data.First],
+                answers: [data.Second],
+                index
+            });
+        }
+        else {
+            let sentenceElements = data.First.split(',');
+
+            let answers = data.Second.split(',');
+
+            setCurrentExercise({
+                ...curItem,
+                data,
+                sentenceElements,
+                answers,
+                index
+            });
+        }
+        const refItem = exerciseRefs.current.get(curItem.exerciseId);
+        if (refItem) {
+            exerciseRefs.current.get(curItem.exerciseId).setFocus();
         }
     }
 
