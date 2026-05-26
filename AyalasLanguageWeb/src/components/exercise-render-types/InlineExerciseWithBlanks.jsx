@@ -3,7 +3,7 @@ import { Fragment, useRef, forwardRef, useImperativeHandle } from 'react';
 
 import { ExerciseInput } from '../ExerciseInput';
 
-export const FillInTheBlanksExercise = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer }, ref) => {
+export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer }, ref) => {
     const questionsRefMap = useRef(new Map());
 
 
@@ -20,7 +20,7 @@ export const FillInTheBlanksExercise = forwardRef(({ exerciseInfo, setError, mov
             for (let j = 0; j < exerciseInfo.answers.length; j++) {
                 const inputRef = thisQuestionRefs.get(`${exerciseInfo.exerciseId}-${j}`);
 
-                if (inputRef.getUserAnswer() != exerciseInfo.answers[j]) {
+                if (inputRef.getUserAnswer().trim().toLowerCase() != exerciseInfo.answers[j].trim().toLowerCase()) {
                     inputRef.setToError();
                     canMoveNext = false;
 
@@ -64,15 +64,15 @@ export const FillInTheBlanksExercise = forwardRef(({ exerciseInfo, setError, mov
                                 {i == 0 && part == "" && (
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                         ref={setRef}
-                                        charWidth={(1 + exerciseInfo.answers[i].length)}
+                                        charWidth={(2 + exerciseInfo.answers[i].length)}
                                         checkAnswer={internalCheckAnswer}
                                     />
                                 )}
-                                {part}
+                                <div className="content-line-part">{part}</div>
                                 {(i > 0 || part != "") && (exerciseInfo.answers.length > i) && (
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                         ref={setRef}
-                                        charWidth={(1 + exerciseInfo.answers[i].length)}
+                                        charWidth={(2 + exerciseInfo.answers[i].length)}
                                         checkAnswer={internalCheckAnswer}
                                     />
                                 )}

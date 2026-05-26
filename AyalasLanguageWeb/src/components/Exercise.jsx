@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine } from 'lucide-react';
 
 
-import { FillInTheBlanksExercise  } from './exercise-types/FillInTheBlanksExercise';
+import { InlineExerciseWithBlanks  } from './exercise-render-types/InlineExerciseWithBlanks';
 
 export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId }, ref) => {
     
@@ -55,7 +55,7 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
                     <label className="form-error">{error}</label>
                 </div>
             )}
-            <FillInTheBlanksExercise ref={refExercise} 
+            <InlineExerciseWithBlanks ref={refExercise} 
                 exerciseInfo={exerciseInfo} setError={setError} 
                 moveNext={moveNext} displayAnswer={displayAnswer} />
         </Fragment>
