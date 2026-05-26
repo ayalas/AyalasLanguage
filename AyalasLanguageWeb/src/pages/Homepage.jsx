@@ -87,7 +87,7 @@ export function Homepage() {
                                                         </div>
                                                         <div className="learning-level-creator">
                                                             <Link 
-                                                                to={`/author/path?prev=${path.learningPathId}${
+                                                                to={`/author/path?level=${path.level}&chapter=${path.chapter+1}&prev=${path.learningPathId}${
                                                                     level.paths.length -1 == index? "": `&next=${level.paths[index+1].learningPathId}`
                                                                 }`} 
                                                                 title="Generate more exercises here"><LayersPlus /></Link>

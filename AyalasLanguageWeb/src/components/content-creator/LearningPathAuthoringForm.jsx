@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext,useNavigate } from 'react-router-dom';
+import { useOutletContext,useNavigate, useSearchParams } from 'react-router-dom';
 import { LayersPlus, Trash } from 'lucide-react';
 import axios from 'axios';
 
@@ -19,6 +19,9 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
     const [firstSetDesc, setFirstSetDesc] = useState("");
     const [secondSetDesc, setSecondSetDesc] = useState("");
     const [aiInstructions, setAIInstructions] = useState("");
+    const [ searchParams ] = useSearchParams();
+    const initLevel = searchParams.get('level');
+    const initChapter = searchParams.get('chapter');
     const navigate = useNavigate();
 
     const { user } = useOutletContext();
@@ -126,6 +129,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
                 setChapter(initialRecord.chapter);
                 setTitle(initialRecord.name);
                 setAccess(initialRecord.access);
+            }
+            else {
+                if (initLevel != "" && Number(initLevel) > 0) {
+                    setLevel(initLevel);
+                }
+                if (initChapter != "" && Number(initChapter) > 0) {
+                    setChapter(initChapter);
+                }
             }
         };
 
