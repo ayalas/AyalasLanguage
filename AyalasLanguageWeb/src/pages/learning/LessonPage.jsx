@@ -1,6 +1,7 @@
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate, Link } from 'react-router';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
+import { FilePenLine } from 'lucide-react';
 
 import { AuthHeader } from '../../components/AuthHeader';
 import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
@@ -71,7 +72,7 @@ export function LessonPage() {
         }
     }
 
-    const saveProgress = async function() {
+    const saveProgress = async function () {
         try {
             let exCurInd = exercises.findIndex(e => e.exerciseId == currentExercise.exerciseId);
             let exerId = null;
@@ -97,7 +98,7 @@ export function LessonPage() {
         }
     }
 
-    const restartLesson = async function() {
+    const restartLesson = async function () {
         changeCurrentExercise(exercises, 0);
     }
 
@@ -141,9 +142,18 @@ export function LessonPage() {
                 )}
                 <form>
                     {learningPathData && (
-                        <div className="form-header">
-                            <h1>{`Level ${learningPathData.level}, ${learningPathData.chapter} ${learningPathData.name}`}</h1>
-                        </div>
+                        <>
+                            <div className="form-header">
+                                <h1>{`Level ${learningPathData.level}, ${learningPathData.chapter} ${learningPathData.name}`}</h1>
+                            </div>
+                            {!currentExercise && (
+                                <div className="form-row">
+                                    <div className="form-button-cell">
+                                        <Link to={`/author/path/${learningPathId}`} className="link-button" title="Edit lesson"><FilePenLine /></Link>
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     )}
                     {currentExercise &&
                         (

@@ -27,6 +27,7 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
             if (inputRef.getUserAnswer() != exerciseInfo.answers[j]) {
                 inputRef.setToError();
                 canMoveNext = false;
+
             }
         }
         if (canMoveNext) {

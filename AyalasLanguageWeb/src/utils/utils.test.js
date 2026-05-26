@@ -29,4 +29,9 @@ describe('getMissingParts function', () => {
         expect(getMissingParts(" Vi mødes klokken fem", [" Vi mødes ", " klokken fem"]))
         .toEqual([""]);
     })
+
+    it('handles Studenten læser på universitetet', () => {
+        expect(getMissingParts("Studenten læser på universitetet", ['Studenten læser ', ' universitetet']))
+        .toEqual(["på"]);
+    });
 })

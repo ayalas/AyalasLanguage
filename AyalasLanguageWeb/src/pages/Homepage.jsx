@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { LayersPlus, Check, CircleDotDashed } from 'lucide-react';
@@ -20,20 +20,20 @@ export function Homepage() {
 
                     //group by level
                     const transformedArray = Object.values(
-                    learningPaths.reduce((acc, current) => {
-                        // If this level doesn't exist in our accumulator yet, create it
-                        if (!acc[current.level]) {
-                        acc[current.level] = {
-                            level: current.level,
-                            paths: []
-                        };
-                        }
-                        
-                        // Push the current object into the appropriate level's paths array
-                        acc[current.level].paths.push(current);
-                        
-                        return acc;
-                    }, {})
+                        learningPaths.reduce((acc, current) => {
+                            // If this level doesn't exist in our accumulator yet, create it
+                            if (!acc[current.level]) {
+                                acc[current.level] = {
+                                    level: current.level,
+                                    paths: []
+                                };
+                            }
+
+                            // Push the current object into the appropriate level's paths array
+                            acc[current.level].paths.push(current);
+
+                            return acc;
+                        }, {})
                     );
 
                     setLearningPath(transformedArray);
@@ -58,34 +58,51 @@ export function Homepage() {
                 {(learningPath && learningPath.length > 0) && (
                     <div className="learning-container">
                         {
-                            learningPath.map((level) => {
+                            learningPath.map((level, levelIndex) => {
                                 return (
+
                                     <div className="learning-level-container" key={`level-${level.level}`}>
                                         <h4>Level {level.level}</h4>
                                         {
-                                            level.paths.map((path) => {
+                                            level.paths.map((path, index) => {
                                                 const isDone = path.status == LEANRING_STATUS.DONE;
                                                 const isInProgress = path.status == LEANRING_STATUS.IN_PROGRESS;
                                                 return (
-                                                    <div className="learning-lesson" key={path.learningPathId}>
-                                                        {path.chapter} <Link className={`learning-lesson-link${isDone? " lesson-done" : ""}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
-                                                        {isDone && (
-                                                            <Check className="learning-progress-img" />
+                                                    <Fragment key={path.learningPathId}>
+                                                        { index == 0 && levelIndex == 0 && (
+                                                            <div className="learning-level-creator">
+                                                                <Link 
+                                                                    to={`/author/path?&next=${level.paths[0].learningPathId}`} 
+                                                                    title="Generate more exercises here"><LayersPlus /></Link>
+                                                            </div>
                                                         )}
-                                                        {isInProgress && (
-                                                            <CircleDotDashed className="learning-progress-img" />
-                                                        )}
-                                                    </div>
+                                                        <div className="learning-lesson" >
+                                                            {path.chapter} <Link className={`learning-lesson-link${isDone ? " lesson-done" : ""}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
+                                                            {isDone && (
+                                                                <Check className="learning-progress-img" />
+                                                            )}
+                                                            {isInProgress && (
+                                                                <CircleDotDashed className="learning-progress-img" />
+                                                            )}
+                                                        </div>
+                                                        <div className="learning-level-creator">
+                                                            <Link 
+                                                                to={`/author/path?prev=${path.learningPathId}${
+                                                                    level.paths.length -1 == index? "": `&next=${level.paths[index+1].learningPathId}`
+                                                                }`} 
+                                                                title="Generate more exercises here"><LayersPlus /></Link>
+                                                        </div>
+                                                    </Fragment>
                                                 );
                                             })
                                         }
                                     </div>
+
+
                                 );
                             })
                         }
-                        <div className="learning-level-creator">
-                           <Link to={`/author/path?prev=${learningPath.slice(-1)[0].paths.slice(-1)[0].learningPathId}`} title="Generate more exercises here"><LayersPlus /></Link> 
-                        </div>
+
                     </div>
                 ) || (
                         <div className="learning-path-empty">

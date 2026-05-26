@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { LayersPlus } from 'lucide-react';
+import { useOutletContext,useNavigate } from 'react-router-dom';
+import { LayersPlus, Trash } from 'lucide-react';
 import axios from 'axios';
 
 import { removeLastCharIfMatch } from '../../utils/utils';
@@ -19,6 +19,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
     const [firstSetDesc, setFirstSetDesc] = useState("");
     const [secondSetDesc, setSecondSetDesc] = useState("");
     const [aiInstructions, setAIInstructions] = useState("");
+    const navigate = useNavigate();
 
     const { user } = useOutletContext();
 
@@ -89,6 +90,17 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
         }
     }
 
+    const deleteLesson = async function() {
+        try {
+                await axios.delete(`/api/creator/learning-path/${initialRecord.learningPathId}`);
+
+                navigate('/home');
+            }
+            catch (ex) {
+                setError(ex.message);
+            }
+    };
+
     const handleExerciseTypeLogic = function (exrTypeValue) {
         const exType = EXERCISE_GENERATIONS.find((ex) => ex.type == exrTypeValue);
         setExerciseTypeDesc(exType.description);
@@ -112,7 +124,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
             if (initialRecord != null) {
                 setLevel(initialRecord.level);
                 setChapter(initialRecord.chapter);
-                setTitle(initialRecord.title);
+                setTitle(initialRecord.name);
                 setAccess(initialRecord.access);
             }
         };
@@ -138,9 +150,17 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
                     <h1>Lesson editor</h1>
                 </div>
                 <div className="form-row">
-                    <div className="form-input-row">
+                    <div className="form-button-cell">
                         <button type="submit" className="form-button" title="Save"><LayersPlus /></button>
                     </div>
+                    {
+                        initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT &&
+                        initialRecord.exerciseCount == 0 && (
+                            <div className="form-button-cell">
+                                <button type="button" onClick={deleteLesson} className="form-button" title="Delete lesson"><Trash /></button>
+                            </div>
+                        )
+                    }
                 </div>
                 {error != "" && (
                     <div className="form-row">

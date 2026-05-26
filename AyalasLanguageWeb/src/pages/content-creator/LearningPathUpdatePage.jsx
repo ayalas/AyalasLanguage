@@ -47,14 +47,7 @@ export function LearningPathUpdatePage() {
             try {
                 if (learningPathId > 0) {
                     let res = await axios.get(`/api/learning/path/${learningPathId}`);
-                    setInitialRecord(
-                        {
-                            level: res.data.level,
-                            chapter: res.data.chapter,
-                            title: res.data.name,
-                            access: res.data.access
-                        }
-                    );
+                    setInitialRecord(res.data);
 
                     //get exercises
                     res = await axios.get(`/api/learning/path/${learningPathId}/exercises`);

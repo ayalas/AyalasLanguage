@@ -17,7 +17,6 @@ export function ExerciseLineForDelete({ exerciseInfo }) {
             setError(err.message);
         }
     }
-    console.log(exerciseInfo);
     return (
         <>
             {exists && (
