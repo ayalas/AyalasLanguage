@@ -84,7 +84,7 @@ export function Homepage() {
                                                             {isInProgress && (
                                                                 <CircleDotDashed className="learning-progress-img" />
                                                             )}
-                                                            <div className="content-line-part">[{path.exerciseCount} exercises]</div>
+                                                            <div className="content-line-part">[{path.exerciseCount}]</div>
                                                         </div>
                                                         <div className="learning-level-creator">
                                                             <Link 
