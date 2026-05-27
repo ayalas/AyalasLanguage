@@ -257,34 +257,18 @@ public static class ContentCreatorEndpoints
                 case (int)ExerciseTypesEnum.FromKnownToTarget:
                 case (int)ExerciseTypesEnum.FromTargetToKnown:
                 case (int)ExerciseTypesEnum.FillInTheBlanks:
+                case (int)ExerciseTypesEnum.Matching:
                     // Validate that data is a JSON array of options
                     var dtoSimple = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(data);
                     return dtoSimple != null && !string.IsNullOrEmpty(dtoSimple.First) && !string.IsNullOrEmpty(dtoSimple.Second);
-                /*case (int)ExerciseTypesEnum.FillInTheBlanks:
-                    var dtoFillInTheBlanks = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.FillInTheBlanksDto>(data);
-                    return dtoFillInTheBlanks != null
-                    && !string.IsNullOrEmpty(dtoFillInTheBlanks.TargetText)
-                    && dtoFillInTheBlanks.Replacements != null
-                    && dtoFillInTheBlanks.Replacements.Length > 0
-                    // Ensure number of blanks matches replacements
-                    && Regex.Matches(dtoFillInTheBlanks.TargetText, Constants.BLANKS, RegexOptions.IgnoreCase).Count
-                        == dtoFillInTheBlanks.Replacements.Length;*/
-                case (int)ExerciseTypesEnum.Matching:
-                    // Validate that data is a JSON array of pairs
-                    var dtoMatching = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.MatchDto>(data);
-                    return dtoMatching != null
-                           && dtoMatching.Items != null
-                           && dtoMatching.Items.Length >= Constants.MATCH_MIN_COUNT
-                           && dtoMatching.Items.Length <= Constants.MATCH_MAX_COUNT
-                           && dtoMatching.Items.All(item => !string.IsNullOrEmpty(item.KnownText) && !string.IsNullOrEmpty(item.TargetText));
                 case (int)ExerciseTypesEnum.FromKnownToTargetBucket:
                     // Validate that data is a JSON object with question, options, and correct answer
                     var dtoBucket = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.BucketTranslateDto>(data);
                     return dtoBucket != null
                            && !string.IsNullOrEmpty(dtoBucket.First)
                            && !string.IsNullOrEmpty(dtoBucket.Second)
-                           && dtoBucket.ExtraOptions.Length >= Constants.BUCKET_EXTRA_MIN_COUNT
-                           && dtoBucket.ExtraOptions.Length <= Constants.BUCKET_EXTRA_MAX_COUNT;
+                           && dtoBucket.ExtraOptions.Split(" ").Length >= Constants.BUCKET_EXTRA_MIN_COUNT
+                           && dtoBucket.ExtraOptions.Split(" ").Length <= Constants.BUCKET_EXTRA_MAX_COUNT;
                 default:
                     return false; // Assuming invalid for unknown types
             }

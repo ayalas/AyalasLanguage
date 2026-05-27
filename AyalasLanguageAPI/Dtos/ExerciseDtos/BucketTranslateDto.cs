@@ -4,5 +4,5 @@ namespace AyalasLanguageAPI.Dtos.ExerciseDtos;
 
 public class BucketTranslateDto : SimpleTranslateDto
 {
-        public string[] ExtraOptions { get; set; } = null!;
+        public string ExtraOptions { get; set; } = null!;
 }

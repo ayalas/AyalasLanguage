@@ -4,7 +4,7 @@ import { LayersPlus, Trash } from 'lucide-react';
 import axios from 'axios';
 
 import { removeLastCharIfMatch } from '../../utils/utils';
-import { EXERCISE_GENERATIONS, PLACEHOLDERS, AUTHOR_ACCESS } from '../../constants/learning';
+import { EXERCISE_GENERATIONS, PLACEHOLDERS, AUTHOR_ACCESS, EXERCISE_TYPES } from '../../constants/learning';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
     const [error, setError] = useState("");
@@ -16,6 +16,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
     const [exerciseTypeDesc, setExerciseTypeDesc] = useState("");
     const [firstSet, setFirstSet] = useState("");
     const [secondSet, setSecondSet] = useState("");
+    const [wrongExtraOptions, setWrongExtraOptions] = useState("");
     const [firstSetDesc, setFirstSetDesc] = useState("");
     const [secondSetDesc, setSecondSetDesc] = useState("");
     const [aiInstructions, setAIInstructions] = useState("");
@@ -45,12 +46,27 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
             return null;
         }
 
+        let arrExtraOptions = [];
+        if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET)
+        {
+            arrExtraOptions = removeLastCharIfMatch(wrongExtraOptions.trim(), ';').split(';');
+            if (arrFirstSet.length != arrExtraOptions.length) {
+                setError(`Must have a match between the number of words/sentences and sets of extra options. Found ${arrFirstSet.length} on the first set, and ${arrExtraOptions.length} on the wrong extra options.`)
+                return null;
+            }
+        }
+
         const arrObjects = [];
         for (let i = 0; i < arrFirstSet.length; i++) {
-            arrObjects.push({
+            const objExerciseData = {
                 First: arrFirstSet[i].trim(),
                 Second: arrSecondSet[i].trim()
-            });
+            };
+            if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET)
+            {
+                objExerciseData.ExtraOptions = arrExtraOptions[i].trim();
+            }
+            arrObjects.push(objExerciseData);
         }
 
         setError("");
@@ -241,7 +257,16 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
                     </div>
                     <div className="form-content-row">{secondSetDesc}</div>
                 </div>
-
+                { exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
+                    <>
+                        <div className="form-label-row">Wrong Extra Options</div>
+                        <div className="form-row">
+                            <div className="form-input-row">
+                                <textarea className="text-area-wide" value={wrongExtraOptions} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
+                            </div>
+                        </div>
+                    </>
+                )}
             </form>
         </div>
     );
