@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Xml;
 using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
+using AyalasLanguageAPI.Data.Migrations;
 using AyalasLanguageAPI.DTOs;
 using AyalasLanguageAPI.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -121,7 +122,7 @@ public static class LearningEndpoints
         var userId = claim.GetUserId();
         var progress = await db.UserProgresses
             .FirstOrDefaultAsync(p => p.UserId == userId && p.LearningPathId == dto.LearningPathId);
-
+        
         int? exerciseId = null;
         bool practiseMistakesInThisPath = false;
 
@@ -144,6 +145,7 @@ public static class LearningEndpoints
             exerciseId = dto.exerciseId;
         }
 
+        bool modified = false;
         if (progress == null)
         {
             db.UserProgresses.Add(new UserProgress
@@ -155,7 +157,7 @@ public static class LearningEndpoints
             });
             await db.SaveChangesAsync();
 
-            return Results.Created($"/api/learning/progress/{dto.LearningPathId}", dto);
+            modified = true;
         }
         else if (progress.ExerciseId != exerciseId ||
                     progress.practiseMistakesInThisPath != practiseMistakesInThisPath)
@@ -164,9 +166,43 @@ public static class LearningEndpoints
             progress.practiseMistakesInThisPath = practiseMistakesInThisPath;
             await db.SaveChangesAsync();
 
-            return Results.Created($"/api/learning/progress/{dto.LearningPathId}", dto);
+            modified = true;
         }
 
+        if (practiseMistakesInThisPath)
+        {
+            //get the languages for this learning path 
+            var learningPath = await db.LearningPaths
+                .FirstOrDefaultAsync(lp => lp.LearningPathId == dto.LearningPathId);
+
+            if (learningPath != null)
+            {
+                //remove this flag from other lessons for the user
+                var otherMarkedProgresses = await db.UserProgresses
+                    .Where(up => up.UserId == userId && up.practiseMistakesInThisPath == true
+                    && up.LearningPathId != dto.LearningPathId)
+                .Join(db.LearningPaths.Where(lp => lp.TargetLanguageId == learningPath.TargetLanguageId
+                                                && lp.KnownLanguageId == learningPath.KnownLanguageId),
+                    up => up.LearningPathId,
+                    lp => lp.LearningPathId,
+                    (up, lp) => up).ToListAsync();
+
+                if (otherMarkedProgresses != null && otherMarkedProgresses.Count > 0)
+                {
+                    foreach (var pr in otherMarkedProgresses)
+                    {
+                        pr.practiseMistakesInThisPath = false;
+                    }
+                    await db.SaveChangesAsync();
+                }
+            }
+        }
+
+
+        if (modified)
+        {
+            return Results.Created($"/api/learning/progress/{dto.LearningPathId}", dto);
+        }
         return Results.Ok();
     }
 
