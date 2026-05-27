@@ -93,7 +93,7 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
             ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.MATCHING && (
                 <MatchWordsExercise 
                     exerciseInfo={exerciseInfo} setError={setError}
-                    moveNext={moveNext} />
+                    moveNext={moveNext} addMistake={addMistake} />
             )) || (
                     <TwoLinesTranslationExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}

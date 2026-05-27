@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { MatchWordItem } from './MatchWordItem';
 import { getRandomizedSequence } from '../../utils/utils';
 
-export function MatchWordsExercise({ exerciseInfo, setError, moveNext }) {
+export function MatchWordsExercise({ exerciseInfo, setError, moveNext, addMistake }) {
     const [matches, setMatchs] = useState([]);
     const [countDone, setCountDone] = useState(0);
     const [column1Selected, setColumn1Selected] = useState(null);
@@ -14,6 +14,7 @@ export function MatchWordsExercise({ exerciseInfo, setError, moveNext }) {
             return true;
         }
         else {
+            addMistake(exerciseInfo.exerciseId);
             setError('You have got an error. Try again!');
             return false;
         }
