@@ -8,6 +8,24 @@ export function removeLastCharIfMatch(str, charToRemove) {
   return str;
 }
 
+export function getRandomizedSequence(n) {
+  if (typeof n !== 'number' || n <= 0 || !Number.isInteger(n)) {
+    throw new Error("Input must be a positive integer greater than zero.");
+  }
+
+  // 1. Create an array from 0 to n-1
+  const arr = Array.from({ length: n }, (_, index) => index);
+
+  // 2. Shuffle the array using the Fisher-Yates algorithm
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    // Swap elements arr[i] and arr[j]
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+
+  return arr;
+}
+
 export function getMissingParts(fullString, segments) {
     const missingParts = [];
     let currentIndex = 0;

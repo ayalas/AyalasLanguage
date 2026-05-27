@@ -5,6 +5,7 @@ import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History 
 import { EXERCISE_TYPES } from '../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
+import { MatchWordsExercise } from './exercise-render-types/MatchWordsExercise';
 
 export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake }, ref) => {
 
@@ -46,12 +47,19 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
     return (
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
             <div className="form-row">
-                <div className="form-button-cell">
-                    <button type="button" onClick={checkAnswer} className="form-button" title="Check my answers"><ListChecks /></button>
-                </div>
-                <div className="form-button-cell">
-                    <button type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>
-                </div>
+                {
+                    exerciseInfo.exerciseTypeId != EXERCISE_TYPES.MATCHING && (
+                        <>
+                            <div className="form-button-cell">
+                                <button type="button" onClick={checkAnswer} className="form-button" title="Check my answers"><ListChecks /></button>
+                            </div>
+                            <div className="form-button-cell">
+                                <button type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>
+                            </div>
+                        </>
+                    )
+                }
+
                 <div className="form-button-cell">
                     <button type="button" onClick={saveProgress} className="form-button" title="Save progress"><CircleDotDashed /></button>
                 </div>
@@ -82,7 +90,11 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
                     exerciseInfo={exerciseInfo} setError={setError}
                     moveNext={moveNext} displayAnswer={displayAnswer}
                     parentCheckAnswer={checkAnswer} />
-            ) || (
+            ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.MATCHING && (
+                <MatchWordsExercise 
+                    exerciseInfo={exerciseInfo} setError={setError}
+                    moveNext={moveNext} />
+            )) || (
                     <TwoLinesTranslationExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer}

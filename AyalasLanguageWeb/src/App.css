@@ -177,3 +177,42 @@ label.form-label {
   width: 18px;
   height: 18px;
 }
+
+.match-words-container {
+  padding-left: 20px;
+}
+.match-words-row{
+  text-align: start;
+  display: flex;
+}
+.match-word-item-cell{
+  text-align: center;
+  display: inline-flex;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  min-width: 200px;
+}
+.match-word-item-button{
+  font-size: 20px;
+  background-color: inherit;
+  cursor: pointer;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  min-width: 150px;
+}
+.match-words-item-done{
+  color: rgb(69, 69, 69);
+  background-color: rgb(203, 203, 203);
+}
+.match-words-item-error{
+  color: white;
+  background-color: rgb(201, 157, 157);
+}
+.match-words-item-selected{
+  color: white;
+  background-color: rgb(127, 222, 127);
+}

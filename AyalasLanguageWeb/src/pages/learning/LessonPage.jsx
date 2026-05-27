@@ -34,7 +34,7 @@ export function LessonPage() {
                 answers,
                 index
             });
-            
+
         }
         else if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
             setCurrentExercise({
@@ -58,23 +58,27 @@ export function LessonPage() {
                 index
             });
         }
-        const refItem = exerciseRefs.current.get(curItem.exerciseId);
-        if (refItem) {
-            exerciseRefs.current.get(curItem.exerciseId).setFocus();
+        if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
+            const refItem = exerciseRefs.current.get(curItem.exerciseId);
+            if (refItem) {
+                exerciseRefs.current.get(curItem.exerciseId).setFocus();
+            }
         }
     }
 
     const childLoaded = function (exerciseId) {
         if (exerciseId == currentExercise.exerciseId) {
-            const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
-            if (refItem) {
-                exerciseRefs.current.get(currentExercise.exerciseId).setFocus();
+            if (currentExercise.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
+                const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
+                if (refItem) {
+                    exerciseRefs.current.get(currentExercise.exerciseId).setFocus();
+                }
             }
         }
     }
-    const changeMistakesSetting = async function(readd) {
+    const changeMistakesSetting = async function (readd) {
         try {
-            
+
             //save the exercise to preserve the record even if it's the first one
             await axios.post('/api/learning/progress',
                 {
@@ -90,9 +94,9 @@ export function LessonPage() {
         }
     }
 
-    const addMistake = async function(exerciseId) {
+    const addMistake = async function (exerciseId) {
         try {
-            
+
             //save the exercise to preserve the record even if it's the first one
             await axios.post('/api/learning/mistake',
                 {

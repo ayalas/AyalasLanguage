@@ -1,6 +1,6 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react';
 
-import { ExerciseInput } from '../ExerciseInput';
+import { ExerciseInput } from './ExerciseInput';
 
 export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer }, ref) => {
     const inputRef = useRef(null);
@@ -34,10 +34,10 @@ export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError,
 
     return (
         <>
-            <div className="form-label-row">
+            <div className="form-row">
                 <div className="form-label-row">{exerciseInfo.data.First}</div>
             </div>
-            <div className="form-label-row">
+            <div className="form-row">
                 <ExerciseInput
                     ref={inputRef}
                     charWidth={(2 + exerciseInfo.data.Second.length)}

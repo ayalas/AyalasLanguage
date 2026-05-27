@@ -1,7 +1,7 @@
 import { Fragment, useRef, forwardRef, useImperativeHandle } from 'react';
 
 
-import { ExerciseInput } from '../ExerciseInput';
+import { ExerciseInput } from './ExerciseInput';
 
 export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer }, ref) => {
     const questionsRefMap = useRef(new Map());
