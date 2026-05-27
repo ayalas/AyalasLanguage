@@ -14,4 +14,6 @@ public class UserProgress
 
     public int? ExerciseId { get; set; }= null!;
     public virtual Exercise Exercise { get; set; } = null!;
+
+    public bool practiseMistakesInThisPath { get; set; } = false;
 }

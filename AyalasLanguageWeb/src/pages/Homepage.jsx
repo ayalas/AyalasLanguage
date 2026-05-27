@@ -2,7 +2,7 @@
 import { useEffect, useState, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { LayersPlus, Check, CircleDotDashed } from 'lucide-react';
+import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
 
 import { AuthHeader } from '../components/AuthHeader';
 import { LEANRING_STATUS } from '../constants/learning';
@@ -79,11 +79,16 @@ export function Homepage() {
                                                         <div className="learning-lesson" >
                                                             {path.chapter} <Link className={`learning-lesson-link${isDone ? " lesson-done" : ""}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
                                                             {isDone && (
-                                                                <Check className="learning-progress-img" />
+                                                                <Check className="learning-progress-img" title="done" />
                                                             )}
                                                             {isInProgress && (
-                                                                <CircleDotDashed className="learning-progress-img" />
+                                                                <CircleDotDashed className="learning-progress-img" title="in progress" />
                                                             )}
+                                                            {
+                                                                path.practiseMistakesInThisPath && (
+                                                                    <History className="learning-progress-img" title="mistakes will be readded to this lesson" />
+                                                                )
+                                                            }
                                                             <div className="content-line-part">[{path.exerciseCount}]</div>
                                                         </div>
                                                         <div className="learning-level-creator">

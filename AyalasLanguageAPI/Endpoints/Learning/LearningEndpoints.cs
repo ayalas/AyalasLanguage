@@ -19,6 +19,7 @@ public static class LearningEndpoints
         learning.MapGet("/path/{pathId:int}", GetSingleLearningPath);
         learning.MapGet("/path/{pathId:int}/exercises", GetExercises);
         learning.MapPost("/progress", UpdateUserProgress);
+        learning.MapPost("/mistake", AddMistake);
         learning.MapDelete("/progress/{pathId:int}", DeleteUserProgress);
     }
 
@@ -27,7 +28,7 @@ public static class LearningEndpoints
     {
         var userId = claim.GetUserId();
 
-        return Results.Ok( await db.LearningPaths
+        return Results.Ok(await db.LearningPaths
         .Where(lp => lp.LearningPathId == pathId)
         .LeftJoin(db.UserProgresses.Where(up => up.UserId == userId),
             lp => lp.LearningPathId,
@@ -46,7 +47,8 @@ public static class LearningEndpoints
                 ),
                 lp.PrevLearningPathId,
                 lp.NextLearningPathId,
-                lp.UserId == userId? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
+                lp.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner,
+                up != null && up.practiseMistakesInThisPath
             )
         )
         .FirstOrDefaultAsync());
@@ -78,12 +80,13 @@ public static class LearningEndpoints
                 lp.Level,
                 lp.Chapter,
                 lp.Name,
-                up == null? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
+                up == null ? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
                 db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId),
                 //add if we want to handle approved exercises
                 //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
                 lp.PrevLearningPathId,
-                lp.NextLearningPathId
+                lp.NextLearningPathId,
+                up != null && up.practiseMistakesInThisPath
             )
         )
         .ToListAsync();
@@ -120,6 +123,16 @@ public static class LearningEndpoints
             .FirstOrDefaultAsync(p => p.UserId == userId && p.LearningPathId == dto.LearningPathId);
 
         int? exerciseId = null;
+        bool practiseMistakesInThisPath = false;
+
+        if (dto.practiseMistakesInThisPath != null)
+        {
+            practiseMistakesInThisPath = dto.practiseMistakesInThisPath.Value;
+        }
+        else if (progress != null)
+        {
+            practiseMistakesInThisPath = progress.practiseMistakesInThisPath;
+        }
         if (dto.exerciseId != null && dto.exerciseId > 0)
         {
             var exercise = await db.Exercises
@@ -137,15 +150,18 @@ public static class LearningEndpoints
             {
                 UserId = userId,
                 LearningPathId = dto.LearningPathId,
-                ExerciseId = exerciseId
+                ExerciseId = exerciseId,
+                practiseMistakesInThisPath = practiseMistakesInThisPath
             });
             await db.SaveChangesAsync();
 
             return Results.Created($"/api/learning/progress/{dto.LearningPathId}", dto);
         }
-        else if (progress.ExerciseId != exerciseId)
+        else if (progress.ExerciseId != exerciseId ||
+                    progress.practiseMistakesInThisPath != practiseMistakesInThisPath)
         {
             progress.ExerciseId = exerciseId;
+            progress.practiseMistakesInThisPath = practiseMistakesInThisPath;
             await db.SaveChangesAsync();
 
             return Results.Created($"/api/learning/progress/{dto.LearningPathId}", dto);
@@ -189,11 +205,77 @@ public static class LearningEndpoints
             )
             .OrderBy(e => e.ExerciseId) // Ensure consistent ordering
             .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data,
-                e.UserId == userId? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
+                e.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
             ))
             .ToListAsync();
 
         return Results.Ok(exercises);
     }
 
+    [Authorize]
+    private static async Task<IResult> AddMistake(AddMistakeDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+
+        //get the exercise learnging path
+        var exercise = await db.Exercises
+            .Include(e => e.LearningPath)
+            .FirstOrDefaultAsync(e => e.ExerciseId == dto.ExerciseId);
+
+        if (exercise == null)
+        {
+            return Results.NotFound();
+        }
+
+        if (exercise.LearningPath == null)
+        {
+            return Results.InternalServerError("Exercise has no learning path");
+        }
+
+        //check if we have a user progress record, with mistakeAdd flag on, 
+        // for these langauges and user
+        var learningPathForMistakes = await db.UserProgresses.Where(p => p.UserId == userId && p.practiseMistakesInThisPath == true)
+            .Join(db.LearningPaths.Where((lp) => lp.TargetLanguageId == exercise.LearningPath.TargetLanguageId && lp.KnownLanguageId == exercise.LearningPath.KnownLanguageId),
+            (up) => up.LearningPathId,
+            (lp) => lp.LearningPathId,
+            (up, lp) => lp)
+            .FirstOrDefaultAsync();
+
+        //no learning path for mistakes found
+        if (learningPathForMistakes == null)
+        { 
+            return Results.NoContent();
+        }
+
+        //get last added exercise data
+        var lastExercise = await db.Exercises
+            .Where(e => e.LearningPathId == learningPathForMistakes.LearningPathId)
+            .OrderByDescending(e => e.ExerciseId)
+            .FirstOrDefaultAsync();
+
+        //only add mistake if not added already lastly
+        if (lastExercise == null || ( lastExercise.ExerciseId != dto.ExerciseId
+        && (lastExercise.ExerciseTypeId != exercise.ExerciseTypeId
+            || lastExercise.Data != exercise.Data
+            ) ))
+        {
+
+            var exerciseToAdd = new Exercise
+            {
+                TargetLanguageId = exercise.TargetLanguageId,
+                KnownLanguageId = exercise.KnownLanguageId,
+                LearningPathId = learningPathForMistakes.LearningPathId,
+                ExerciseTypeId = exercise.ExerciseTypeId,
+                Data = exercise.Data,
+                UserId = userId
+            };
+
+            db.Exercises.Add(exerciseToAdd);
+            await db.SaveChangesAsync();
+
+            return Results.Created($"/api/learning/exercise/{exerciseToAdd.ExerciseId}", new CreateExerciseResponseDto(exerciseToAdd.ExerciseId));
+        }
+
+        return Results.NoContent();
+    }
 }

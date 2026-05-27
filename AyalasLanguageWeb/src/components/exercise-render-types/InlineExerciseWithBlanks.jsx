@@ -3,12 +3,19 @@ import { Fragment, useRef, forwardRef, useImperativeHandle } from 'react';
 
 import { ExerciseInput } from '../ExerciseInput';
 
-export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer }, ref) => {
+export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer }, ref) => {
     const questionsRefMap = useRef(new Map());
 
-
-    function internalCheckAnswer() {
-        const thisQuestionRefs = new Map(
+    // This defines what the parent can access via the ref
+    useImperativeHandle(ref, () => ({
+        setFocus() {
+            const firstInput = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-0`);
+            if (firstInput) {
+                firstInput.setFocus();
+            }
+        },
+        checkAnswer() {
+            const thisQuestionRefs = new Map(
                 [...questionsRefMap.current.entries()].filter(([key, value]) => key.startsWith(`${exerciseInfo.exerciseId}-`))
             );
 
@@ -23,7 +30,6 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
                 if (inputRef.getUserAnswer().trim().toLowerCase() != exerciseInfo.answers[j].trim().toLowerCase()) {
                     inputRef.setToError();
                     canMoveNext = false;
-
                 }
             }
             if (canMoveNext) {
@@ -32,18 +38,8 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
             else {
                 setError('You have got some errors. Try again!');
             }
-    }
 
-    // This defines what the parent can access via the ref
-    useImperativeHandle(ref, () => ({
-        setFocus() {
-            const firstInput = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-0`);
-            if (firstInput) {
-                firstInput.setFocus();
-            }
-        },
-        checkAnswer() {
-            internalCheckAnswer();
+            return canMoveNext;
         }
     }));
 
@@ -65,7 +61,7 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                         ref={setRef}
                                         charWidth={(2 + exerciseInfo.answers[i].length)}
-                                        checkAnswer={internalCheckAnswer}
+                                        checkAnswer={parentCheckAnswer}
                                     />
                                 )}
                                 <div className="content-line-part">{part}</div>
@@ -73,7 +69,7 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                         ref={setRef}
                                         charWidth={(2 + exerciseInfo.answers[i].length)}
-                                        checkAnswer={internalCheckAnswer}
+                                        checkAnswer={parentCheckAnswer}
                                     />
                                 )}
                             </Fragment>

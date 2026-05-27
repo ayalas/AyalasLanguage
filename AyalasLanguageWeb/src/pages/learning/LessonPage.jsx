@@ -13,6 +13,7 @@ export function LessonPage() {
     const [exercises, setExercises] = useState([]);
     const [learningPathData, setLearningPathData] = useState(null);
     const [currentExercise, setCurrentExercise] = useState(null);
+    const [practiseMistakesInThisPath, setPractiseMistakesInThisPath] = useState(false);
     const [error, setError] = useState("");
     const exerciseRefs = useRef(new Map());
     const navigate = useNavigate();
@@ -69,6 +70,37 @@ export function LessonPage() {
             if (refItem) {
                 exerciseRefs.current.get(currentExercise.exerciseId).setFocus();
             }
+        }
+    }
+    const changeMistakesSetting = async function(readd) {
+        try {
+            
+            //save the exercise to preserve the record even if it's the first one
+            await axios.post('/api/learning/progress',
+                {
+                    learningPathId: learningPathId,
+                    exerciseId: currentExercise.exerciseId,
+                    practiseMistakesInThisPath: readd
+                }
+            );
+
+            setPractiseMistakesInThisPath(readd);
+        } catch (err) {
+            setError(err.message);
+        }
+    }
+
+    const addMistake = async function(exerciseId) {
+        try {
+            
+            //save the exercise to preserve the record even if it's the first one
+            await axios.post('/api/learning/mistake',
+                {
+                    exerciseId: exerciseId
+                }
+            );
+        } catch (err) {
+            setError(err.message);
         }
     }
 
@@ -131,6 +163,7 @@ export function LessonPage() {
                 let response = await axios.get(`/api/learning/path/${learningPathId}`);
                 const learningPathTemp = response.data;
                 setLearningPathData(learningPathTemp);
+                setPractiseMistakesInThisPath(learningPathTemp.practiseMistakesInThisPath);
                 response = await axios.get(`/api/learning/path/${learningPathId}/exercises`);
 
                 if (response && response.data && response.data.length > 0) {
@@ -191,7 +224,10 @@ export function LessonPage() {
                                     childLoaded={childLoaded}
                                     saveProgress={saveProgress}
                                     restartLesson={restartLesson}
-                                    learningPathId={learningPathId} />
+                                    learningPathId={learningPathId}
+                                    changeMistakesSetting={changeMistakesSetting}
+                                    practiseMistakesInThisPath={practiseMistakesInThisPath}
+                                    addMistake={addMistake} />
                             </>
                         )
                     }
