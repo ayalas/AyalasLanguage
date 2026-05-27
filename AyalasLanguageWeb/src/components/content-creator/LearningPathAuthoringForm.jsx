@@ -112,6 +112,12 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
         aiDesc = aiDesc.replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user.languageSettings.knownLanguage);
         aiDesc = aiDesc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user.languageSettings.targetLanguage);
 
+        let subject = title.trim();
+        if (subject == "") {
+            subject = "any language exchange";
+        }
+        aiDesc = aiDesc.replaceAll(PLACEHOLDERS.SUBJECT_PLACEHOLDER, subject);
+
         setAIInstructions(aiDesc);
         setFirstSetDesc(exType.first_data_instructions);
         setSecondSetDesc(exType.second_data_instructions);
