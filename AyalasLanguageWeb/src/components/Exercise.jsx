@@ -6,6 +6,7 @@ import { EXERCISE_TYPES } from '../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import { MatchWordsExercise } from './exercise-render-types/MatchWordsExercise';
+import { BucketListExercise } from './exercise-render-types/BucketListExercise';
 
 export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake }, ref) => {
 
@@ -94,12 +95,16 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
                 <MatchWordsExercise 
                     exerciseInfo={exerciseInfo} setError={setError}
                     moveNext={moveNext} addMistake={addMistake} />
+            ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
+                <BucketListExercise ref={refExercise}
+                    exerciseInfo={exerciseInfo} setError={setError}
+                    moveNext={moveNext} displayAnswer={displayAnswer} />
             )) || (
-                    <TwoLinesTranslationExercise ref={refExercise}
-                        exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer}
-                        parentCheckAnswer={checkAnswer} />
-                )}
+                <TwoLinesTranslationExercise ref={refExercise}
+                    exerciseInfo={exerciseInfo} setError={setError}
+                    moveNext={moveNext} displayAnswer={displayAnswer}
+                    parentCheckAnswer={checkAnswer} />
+            ))}
         </Fragment>
     );
 });

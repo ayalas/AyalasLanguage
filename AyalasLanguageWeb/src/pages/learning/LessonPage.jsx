@@ -36,6 +36,16 @@ export function LessonPage() {
             });
 
         }
+        else if (curItem.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
+            setCurrentExercise({
+                ...curItem,
+                data,
+                sentenceElements: [data.First],
+                answers: data.Second.trim().split(' '),
+                extraItems: data.ExtraOptions.trim().split(' '),
+                index
+            });
+        }
         else if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
             setCurrentExercise({
                 ...curItem,
@@ -58,7 +68,9 @@ export function LessonPage() {
                 index
             });
         }
-        if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
+        if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING
+            && curItem.exerciseTypeId != EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET
+        ) {
             const refItem = exerciseRefs.current.get(curItem.exerciseId);
             if (refItem) {
                 exerciseRefs.current.get(curItem.exerciseId).setFocus();
@@ -68,7 +80,9 @@ export function LessonPage() {
 
     const childLoaded = function (exerciseId) {
         if (exerciseId == currentExercise.exerciseId) {
-            if (currentExercise.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
+            if (currentExercise.exerciseTypeId != EXERCISE_TYPES.MATCHING &&
+                currentExercise.exerciseTypeId != EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET
+            ) {
                 const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
                 if (refItem) {
                     exerciseRefs.current.get(currentExercise.exerciseId).setFocus();
