@@ -2,8 +2,9 @@ import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect 
 import { Link } from 'react-router';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History } from 'lucide-react';
 
-
+import { EXERCISE_TYPES } from '../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
+import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 
 export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake }, ref) => {
 
@@ -62,10 +63,10 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
                         <button type="button" onClick={cancelMistakesAdd} className="form-button" title="Cancel readding my mistakes here"><Ban /></button>
                     </div>
                 ) || (
-                    <div className="form-button-cell">
-                        <button type="button" onClick={readdMistakes} className="form-button" title="Readd my mistakes here"><History /></button>
-                    </div>
-                )}
+                        <div className="form-button-cell">
+                            <button type="button" onClick={readdMistakes} className="form-button" title="Readd my mistakes here"><History /></button>
+                        </div>
+                    )}
                 <div className="form-button-cell">
                     <Link to={`/author/path/${learningPathId}`} className="link-button" title="Edit lesson"><FilePenLine /></Link>
                 </div>
@@ -75,10 +76,18 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
                     <label className="form-error">{error}</label>
                 </div>
             )}
-            <InlineExerciseWithBlanks ref={refExercise}
-                exerciseInfo={exerciseInfo} setError={setError}
-                moveNext={moveNext} displayAnswer={displayAnswer}
-                parentCheckAnswer={checkAnswer} />
+
+            {exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS && (
+                <InlineExerciseWithBlanks ref={refExercise}
+                    exerciseInfo={exerciseInfo} setError={setError}
+                    moveNext={moveNext} displayAnswer={displayAnswer}
+                    parentCheckAnswer={checkAnswer} />
+            ) || (
+                    <TwoLinesTranslationExercise ref={refExercise}
+                        exerciseInfo={exerciseInfo} setError={setError}
+                        moveNext={moveNext} displayAnswer={displayAnswer}
+                        parentCheckAnswer={checkAnswer} />
+                )}
         </Fragment>
     );
 });
