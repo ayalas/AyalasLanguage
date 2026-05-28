@@ -17,7 +17,15 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             profileGroup.MapGet("/", GetUserProfile);
             profileGroup.MapPost("/", EditUserProfile);
             profileGroup.MapPost("/current", SwitchUserLanguages);
-            profileGroup.MapGet("/current", GetUserCurrentLearning);
+            profileGroup.MapGet("/current", GetCurrentLanguage);
+        }
+
+        [Authorize]
+        private static async Task<CurrentLanguageResponseDto?> GetCurrentLanguage(ClaimsPrincipal claim, AyalasLanguageDbContext db)
+        {
+            var userId = claim.GetUserId();
+            var userDto = await AuthEndpoints.GetUserById(userId, db);
+            return userDto!= null ? userDto.languageSettings : null;
         }
     
         [Authorize]
@@ -126,18 +134,7 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             await db.SaveChangesAsync();
             return Results.Ok();
         }
-        [Authorize]
-        private static async Task<CurrentLanguageResponseDto> GetUserCurrentLearning(ClaimsPrincipal claim, AyalasLanguageDbContext db)
-        {
-            var userId = claim.GetUserId();
-            var user = await db.Users
-                .Include(u => u.KnownLanguage)
-                .Include(u => u.TargetLanguage)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
-            if (user == null) return null!;
 
-            return new CurrentLanguageResponseDto(user.TargetLanguageId, user.TargetLanguage?.NativeName , user.KnownLanguageId, user.KnownLanguage?.NativeName);
-        }
         [Authorize]
         private static async Task<IResult> SwitchUserLanguages(ClaimsPrincipal claim, SwitchLanguageDto dto, AyalasLanguageDbContext db)
         {

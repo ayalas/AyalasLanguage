@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, Link, useNavigate } from 'react-router-dom';
 import { SquareMenu } from 'lucide-react';
+import axios from 'axios';
+import { switchLanguage } from '../../utils/languageUtils';
 import {
     useFloating,
     offset,
@@ -14,13 +16,15 @@ import {
 
 export function AuthHeader({ hideAppTitle }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedLanguageId, setSelectedLanguageId] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("");
-    const { user, logout } = useOutletContext();
+    const { user, logout, login } = useOutletContext();
     const navigate = useNavigate();
 
     useEffect(() => {
         const loadLanguage = async function () {
             if (user.languageSettings.targetLanguageId != null) {
+                setSelectedLanguageId(user.languageSettings.targetLanguageId);
                 setSelectedLanguage(user.languageSettings.targetLanguage);
             }
         };
@@ -63,17 +67,43 @@ export function AuthHeader({ hideAppTitle }) {
         }
     }
 
+    async function onChangeLanguage(e) {
+        e.preventDefault();
+        try {
+            setSelectedLanguageId(e.target.value);
+            const newUser = await switchLanguage(axios, user, login, Number(e.target.value), user.languageSettings.knownLanguageId );
+            setSelectedLanguage(newUser.languageSettings.targetLanguage);
+        } catch (err) {
+            console.error('Language switch error:', err);
+        }
+    }
+
     return (
         <div className="header-row">
 
             <div className="header-title">
                 {!hideAppTitle && (
                     <Link className="header-app-link" to="/home">Ayala's Language App</Link>
-                )}
+                ) || ( user.languageSettings.knownLanguageId > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
+                        <div className="form-input-cell">
+                            <select id="language-picker" className="form-select" value={selectedLanguageId} onChange={onChangeLanguage} >
+                                <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguage}</option>
+                                {
+                                    user.languageSettings.otherUserLanguages.map((lang) => {
+                                        return (
+                                            <option key={lang.languageId} value={lang.languageId}>
+                                                {lang.nativeName}
+                                            </option>
+                                        );
+                                    })
+                                }
+                            </select>
+                        </div>
+                    ))}
             </div>
 
             {/* Trigger Button */}
-            <div className="header-profile-name">{selectedLanguage}, {user.displayName}</div>
+            <div className="header-profile-name">{hideAppTitle? "" : `${selectedLanguage}, `}{user.displayName}</div>
             <Link ref={setReference}
                 {...getReferenceProps()}>
                 <SquareMenu />

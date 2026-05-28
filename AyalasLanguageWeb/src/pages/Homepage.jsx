@@ -1,6 +1,6 @@
 
 import { useEffect, useState, Fragment } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
 
@@ -10,6 +10,7 @@ import { LEANRING_STATUS } from '../constants/learning';
 export function Homepage() {
     const [learningPath, setLearningPath] = useState([]);
     const [error, setError] = useState("");
+    const { user } = useOutletContext();
     useEffect(() => {
         const loadData = async function () {
             try {
@@ -44,7 +45,7 @@ export function Homepage() {
         };
 
         loadData();
-    }, []);
+    }, [user]);
     return (
         <>
             <AuthHeader hideAppTitle={true} />

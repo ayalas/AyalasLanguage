@@ -1,5 +1,6 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext(null);
 
@@ -16,13 +17,10 @@ export const AuthProvider = ({ children }) => {
         }
         // Send a request to your backend that requires the cookie
         // Note: credentials: 'include' is crucial for cookie transmission
-        const response = await fetch('/api/auth/me', { credentials: 'include' });
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data); // e.g., { id: 1, email: 'user@example.com' }
-        } else {
-          setUser(null);
-        }
+        const response = await axios.get('/api/auth/me');
+        const data = await response.data;
+        setUser(data); // e.g., { id: 1, email: 'user@example.com' }
+
       } catch (error) {
         console.error("Auth check failed", error);
         setUser(null);

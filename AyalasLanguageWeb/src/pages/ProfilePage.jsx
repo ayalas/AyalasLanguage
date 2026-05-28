@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Save } from 'lucide-react';
 
 import { AuthHeader } from '../components/auth/AuthHeader';
+import { switchLanguage } from '../utils/languageUtils';
 
 export function ProfilePage() {
     const [allLanguages, setAllLanguages] = useState([]);
@@ -13,14 +14,6 @@ export function ProfilePage() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
     const { user, login } = useOutletContext();
-
-    const setNewLanguage = async function () {
-        const newUser = { ...user };
-        const response = await axios.get('/api/profile/current');;
-        newUser.languageSettings = response.data;
-        console.log(login);
-        login(newUser);
-    }
 
     useEffect(() => {
         async function loadData() {
@@ -73,12 +66,8 @@ export function ProfilePage() {
                 return;
             }
             //todo: allow display name and exercise types update
-            await axios.post('/api/profile/current', {
-                TargetLanguageId: Number(targetLanguage),
-                KnownLanguageId: Number(knownLanguage)
-            });
+            await switchLanguage(axios, user, login, Number(targetLanguage), Number(knownLanguage));
 
-            await setNewLanguage();
             navigate('/home');
         } catch (err) {
             setError(err.message);

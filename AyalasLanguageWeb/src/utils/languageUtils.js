@@ -1,7 +1,7 @@
 export function replaceCharsForLanguage(language, str) {
     if (!str) return str;
 
-    switch(language.toLowerCase()) {
+    switch (language.toLowerCase()) {
         case 'dansk': // Danish
         case 'norsk': // Norwegian (uses the same characters)
             return str
@@ -33,5 +33,20 @@ export function replaceCharsForLanguage(language, str) {
         default:
             return str;
     }
+}
+
+export async function switchLanguage(axios, user, login, targetLanguageId, knownLangaugeId) {
+
+    await axios.post('/api/profile/current', {
+        TargetLanguageId: targetLanguageId,
+        KnownLanguageId: knownLangaugeId
+    });
+
+    const newUser = { ...user };
+    const response = await axios.get('/api/profile/current');
+    newUser.languageSettings = response.data;
+    console.log(newUser);
+    login(newUser);
+    return newUser;
 }
 

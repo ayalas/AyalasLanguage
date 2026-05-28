@@ -68,7 +68,7 @@ public static class AuthEndpoints
         return Results.Ok(new LoginResponseDto(tokenContent, expires, userIdDto));
     }
 
-    private static async Task<UserIdDto?> GetUserById(int userId, AyalasLanguageDbContext db)
+    public static async Task<UserIdDto?> GetUserById(int userId, AyalasLanguageDbContext db)
     {
         var user = await db.Users
             .Include(u => u.KnownLanguage)
@@ -76,7 +76,17 @@ public static class AuthEndpoints
             .FirstOrDefaultAsync(u => u.UserId == userId);
         if (user == null) return null;
 
-        var languageSettings = new CurrentLanguageResponseDto(user.TargetLanguageId, user.TargetLanguage?.NativeName, user.KnownLanguageId, user.KnownLanguage?.NativeName);
+        var otherLanguages = await db.UserLanguages
+            .Include(ul => ul.Language)
+            .Where((ul) => ul.UserId == userId
+            && ul.LanguageId != user.TargetLanguageId
+            && ul.IsLearning)
+            .Select((ul) => new LanguageDto(
+                ul.LanguageId, ul.Language.Code, ul.Language.EnglishName, ul.Language.NativeName
+            ))
+        .ToArrayAsync();
+        
+        var languageSettings = new CurrentLanguageResponseDto(user.TargetLanguageId, user.TargetLanguage?.NativeName, user.KnownLanguageId, user.KnownLanguage?.NativeName, otherLanguages);
 
         return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, languageSettings);
     }
