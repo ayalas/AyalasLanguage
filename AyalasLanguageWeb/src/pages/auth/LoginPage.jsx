@@ -26,6 +26,11 @@ export const LoginPage = () => {
       if (response.ok) {
         const data = await response.json();
         login(data.user); // Update global auth context state
+        //if no langauge settings, switch to profile
+        if (data.user.languageSettings.knownLanguageId == null || data.user.languageSettings.targetLanguageId == null) {
+          navigate('/profile'); 
+          return;
+        }
         navigate('/home'); // Redirect to secured home page
       } else {
         alert('Invalid credentials');

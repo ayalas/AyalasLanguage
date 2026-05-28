@@ -10,10 +10,19 @@ import { LEANRING_STATUS } from '../constants/learning';
 export function Homepage() {
     const [learningPath, setLearningPath] = useState([]);
     const [error, setError] = useState("");
+    const [hasLangauge, setHasLangauge] = useState(false);
     const { user } = useOutletContext();
     useEffect(() => {
         const loadData = async function () {
             try {
+                if (user.languageSettings.targetLanguageId != null &&
+                    user.languageSettings.knownLanguageId != null 
+                ) {
+                    setHasLangauge(true);
+                }
+                else {
+                    return;
+                }
                 const response = await axios.get('/api/learning/path');
 
                 if (response.data != null) {
@@ -111,13 +120,18 @@ export function Homepage() {
                         }
 
                     </div>
-                ) || (
+                ) || (hasLangauge && (
                         <div className="learning-path-empty">
                             It looks like there are not yet any lessons in this langauge.<br />
                             But you can <Link to="/author/path">add ones yourself!</Link>
                         </div>
-                    )}
-            </div>
+               )) || (
+                        <div className="learning-path-empty">
+                            You have not selected which langauge to learn.<br />
+                            Go to <Link to="/profile">the profile page</Link> to choose one!
+                        </div>
+               )
+                }</div>
         </>
     );
 }

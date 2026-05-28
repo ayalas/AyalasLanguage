@@ -18,6 +18,7 @@ export function AuthHeader({ hideAppTitle }) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedLanguageId, setSelectedLanguageId] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("");
+    const [showLanguageNextToProfile, setShowLanguageNextToProfile] = useState(!hideAppTitle);
     const { user, logout, login } = useOutletContext();
     const navigate = useNavigate();
 
@@ -26,6 +27,14 @@ export function AuthHeader({ hideAppTitle }) {
             if (user.languageSettings.targetLanguageId != null) {
                 setSelectedLanguageId(user.languageSettings.targetLanguageId);
                 setSelectedLanguage(user.languageSettings.targetLanguage);
+
+                if (!showLanguageNextToProfile && (!user.languageSettings.otherUserLanguages 
+                    || user.languageSettings.otherUserLanguages.length == 0)) {
+                       setShowLanguageNextToProfile(true); 
+                }
+            }
+            else {
+                setShowLanguageNextToProfile(false);
             }
         };
         loadLanguage();
@@ -103,7 +112,7 @@ export function AuthHeader({ hideAppTitle }) {
             </div>
 
             {/* Trigger Button */}
-            <div className="header-profile-name">{hideAppTitle? "" : `${selectedLanguage}, `}{user.displayName}</div>
+            <div className="header-profile-name">{showLanguageNextToProfile? `${selectedLanguage}, ` : ""}{user.displayName}</div>
             <Link ref={setReference}
                 {...getReferenceProps()}>
                 <SquareMenu />
