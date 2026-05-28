@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 
-import { AuthHeader } from '../../components/AuthHeader';
+import { AuthHeader } from '../../components/auth/AuthHeader';
 
 import { LearningPathAuthoringForm } from '../../components/content-creator/LearningPathAuthoringForm';
 

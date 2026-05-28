@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Save } from 'lucide-react';
 
-import { AuthHeader } from '../components/AuthHeader';
+import { AuthHeader } from '../../components/auth/AuthHeader';
 
 export function ChangePasswordPage() {
 

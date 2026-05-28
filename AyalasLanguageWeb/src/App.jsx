@@ -1,13 +1,13 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-import { AuthProvider } from './auth/AuthContext';
-import ProtectedRoute from './auth/ProtectedRoute';
+import { AuthProvider } from './components/auth/AuthContext';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import { LandingPage } from './LandingPage';
-import { LoginPage } from './auth/LoginPage';
-import { RegisterPage } from './auth/RegisterPage';
+import { LoginPage } from './pages/auth/LoginPage';
+import { RegisterPage } from './pages/auth/RegisterPage';
 //authenticated
-import { ChangePasswordPage } from './auth/ChangePasswordPage';
+import { ChangePasswordPage } from './pages/auth/ChangePasswordPage';
 import { Homepage } from './pages/Homepage';
 import { ProfilePage } from './pages/ProfilePage';
 import { LearningPathCreatePage } from './pages/content-creator/LearningPathCreatePage';

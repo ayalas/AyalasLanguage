@@ -12,14 +12,14 @@ import {
     useInteractions
 } from '@floating-ui/react';
 
-export function AuthHeader() {
+export function AuthHeader({ hideAppTitle }) {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState("");
     const { user, logout } = useOutletContext();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const loadLanguage = async function() {
+        const loadLanguage = async function () {
             if (user.languageSettings.targetLanguageId != null) {
                 setSelectedLanguage(user.languageSettings.targetLanguage);
             }
@@ -65,9 +65,13 @@ export function AuthHeader() {
 
     return (
         <div className="header-row">
+
             <div className="header-title">
-                <Link className="header-app-link" to="/home">Ayala's Language App</Link>
+                {!hideAppTitle && (
+                    <Link className="header-app-link" to="/home">Ayala's Language App</Link>
+                )}
             </div>
+
             {/* Trigger Button */}
             <div className="header-profile-name">{selectedLanguage}, {user.displayName}</div>
             <Link ref={setReference}

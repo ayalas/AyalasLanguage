@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { MatchWordItem } from './MatchWordItem';
-import { getRandomizedSequence } from '../../utils/utils';
+import { getRandomizedSequence } from '../../../utils/utils';
 
 export function MatchWordsExercise({ exerciseInfo, setError, moveNext, addMistake }) {
     const [matches, setMatchs] = useState([]);

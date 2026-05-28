@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
 
-import { AuthHeader } from '../components/AuthHeader';
+import { AuthHeader } from '../components/auth/AuthHeader';
 import { LEANRING_STATUS } from '../constants/learning';
 
 export function Homepage() {
@@ -47,9 +47,9 @@ export function Homepage() {
     }, []);
     return (
         <>
-            <AuthHeader />
+            <AuthHeader hideAppTitle={true} />
             <div className="home-container">
-                <h1>Home</h1>
+                <h1>Ayala's Language App</h1>
                 {error != "" && (
                     <div className="form-row">
                         <label className="form-error">{error}</label>

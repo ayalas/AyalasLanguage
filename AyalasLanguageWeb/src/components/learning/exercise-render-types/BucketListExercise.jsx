@@ -1,7 +1,7 @@
 import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 
 import { BucketListItem } from './BucketListItem';
-import { getRandomizedSequence } from '../../utils/utils';
+import { getRandomizedSequence } from '../../../utils/utils';
 
 
 export const BucketListExercise = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer }, ref) => {

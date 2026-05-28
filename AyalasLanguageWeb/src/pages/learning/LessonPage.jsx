@@ -3,10 +3,10 @@ import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { FilePenLine } from 'lucide-react';
 
-import { AuthHeader } from '../../components/AuthHeader';
+import { AuthHeader } from '../../components/auth/AuthHeader';
 import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts } from '../../utils/utils';
-import { Exercise } from '../../components/Exercise';
+import { Exercise } from '../../components/learning/Exercise';
 
 export function LessonPage() {
     const { learningPathId } = useParams();
@@ -17,7 +17,6 @@ export function LessonPage() {
     const [error, setError] = useState("");
     const exerciseRefs = useRef(new Map());
     const navigate = useNavigate();
-
 
     const changeCurrentExercise = function (arrExercises, index) {
         const curItem = arrExercises[index];
@@ -90,6 +89,9 @@ export function LessonPage() {
             }
         }
     }
+
+    
+
     const changeMistakesSetting = async function (readd) {
         try {
 
@@ -235,6 +237,7 @@ export function LessonPage() {
                                 <div className="form-row">
                                     <label className="form-label-row">{`Exercise ${(currentExercise.index + 1)} of ${learningPathData.exerciseCount}`}</label>
                                 </div>
+                                
                                 <Exercise key={currentExercise.exerciseId}
                                     ref={setRef}
                                     exerciseInfo={currentExercise}

@@ -21,13 +21,13 @@ export function ExerciseLineForDelete({ exerciseInfo }) {
         <>
             {exists && (
                 <div className="form-row">
-                    {   exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT &&
+                   
+                    <div className="content-line-part">
+                         {   exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT &&
                         (
-                    <div className="form-button-cell">
-                        <button type="button" className="form-button" onClick={onButtonClick} ><Trash className="small-icon" /></button>
-                    </div>
+
+                        <button type="button" className="form-button button-delete-exercise" onClick={onButtonClick} ><Trash className="small-icon" /></button>
                     )}
-                    <div className="form-content-row">
                         {exerciseInfo.exerciseObject.First}
                     </div>
                 </div>

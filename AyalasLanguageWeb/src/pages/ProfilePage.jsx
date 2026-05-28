@@ -4,7 +4,7 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Save } from 'lucide-react';
 
-import { AuthHeader } from '../components/AuthHeader';
+import { AuthHeader } from '../components/auth/AuthHeader';
 
 export function ProfilePage() {
     const [allLanguages, setAllLanguages] = useState([]);
@@ -103,7 +103,7 @@ export function ProfilePage() {
                             <label className="form-error">{error}</label>
                         </div>
                     )}
-                    <div className="form-row">
+                    <div className="form-input-row">
                         <div className="form-label-cell">
                             <label className="form-label">Language to Learn</label>
                         </div>
@@ -122,7 +122,7 @@ export function ProfilePage() {
                             </select>
                         </div>
                     </div>
-                    <div className="form-row">
+                    <div className="form-input-row">
                         <div className="form-label-cell">
                             <label className="form-label">Language I Know</label>
                         </div>

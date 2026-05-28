@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
-import { useAuth } from './AuthContext';
+import { useAuth } from '../../components/auth/AuthContext';
 
 export const LoginPage = () => {
   const [searchParams] = useSearchParams();
   const searchUserName = searchParams.get('user');
-  const [email, setEmail] = useState(searchUserName);
+  const [email, setEmail] = useState(searchUserName || '');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -42,11 +42,11 @@ export const LoginPage = () => {
           <h1>Login</h1>
         </div>
         <div className="form-row">
-          <div className="form-input-row">
+          <div className="form-button-cell">
             <button type="submit" className="login-button" title="Log In"><LogIn /></button>
           </div>
         </div>
-        <div className="form-row">
+        <div className="form-input-row">
           <div className="form-label-cell">
             <label className="form-label">Email</label>
           </div>
@@ -54,7 +54,7 @@ export const LoginPage = () => {
             <input type="text" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
           </div>
         </div>
-        <div className="form-row">
+        <div className="form-input-row">
           <div className="form-label-cell">
             <label className="form-label">Password</label>
           </div>

@@ -1,8 +1,8 @@
 import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router';
+import { Link, useOutletContext } from 'react-router';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History } from 'lucide-react';
 
-import { EXERCISE_TYPES } from '../constants/learning';
+import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import { MatchWordsExercise } from './exercise-render-types/MatchWordsExercise';
@@ -13,6 +13,7 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
     const [error, setError] = useState("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
     const refExercise = useRef(null);
+    const { user } = useOutletContext();
 
 
     const toggleAnswer = function () {
@@ -32,6 +33,15 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
 
     const cancelMistakesAdd = function () {
         changeMistakesSetting(false);
+    }
+
+    function ExerciseTypeInstruction() {
+        if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
+            let desc = EXERCISE_TYPE_INSTRUCTIONS[exerciseInfo.exerciseTypeId];
+            return desc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user.languageSettings.knownLanguage)
+                .replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user.languageSettings.targetLanguage)
+        }
+        return "";
     }
 
     // This defines what the parent can access via the ref
@@ -80,31 +90,36 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
                     <Link to={`/author/path/${learningPathId}`} className="link-button" title="Edit lesson"><FilePenLine /></Link>
                 </div>
             </div>
-            {error != "" && (
+            <div className="exercise-body-container">
                 <div className="form-row">
-                    <label className="form-error">{error}</label>
+                    <label className="form-label-row">{ExerciseTypeInstruction()}</label>
                 </div>
-            )}
+                {error != "" && (
+                    <div className="form-row">
+                        <label className="form-error">{error}</label>
+                    </div>
+                )}
 
-            {exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS && (
-                <InlineExerciseWithBlanks ref={refExercise}
-                    exerciseInfo={exerciseInfo} setError={setError}
-                    moveNext={moveNext} displayAnswer={displayAnswer}
-                    parentCheckAnswer={checkAnswer} />
-            ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.MATCHING && (
-                <MatchWordsExercise 
-                    exerciseInfo={exerciseInfo} setError={setError}
-                    moveNext={moveNext} addMistake={addMistake} />
-            ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
-                <BucketListExercise ref={refExercise}
-                    exerciseInfo={exerciseInfo} setError={setError}
-                    moveNext={moveNext} displayAnswer={displayAnswer} />
-            )) || (
-                <TwoLinesTranslationExercise ref={refExercise}
-                    exerciseInfo={exerciseInfo} setError={setError}
-                    moveNext={moveNext} displayAnswer={displayAnswer}
-                    parentCheckAnswer={checkAnswer} />
-            ))}
+                {exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS && (
+                    <InlineExerciseWithBlanks ref={refExercise}
+                        exerciseInfo={exerciseInfo} setError={setError}
+                        moveNext={moveNext} displayAnswer={displayAnswer}
+                        parentCheckAnswer={checkAnswer} />
+                ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.MATCHING && (
+                    <MatchWordsExercise
+                        exerciseInfo={exerciseInfo} setError={setError}
+                        moveNext={moveNext} addMistake={addMistake} />
+                ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
+                    <BucketListExercise ref={refExercise}
+                        exerciseInfo={exerciseInfo} setError={setError}
+                        moveNext={moveNext} displayAnswer={displayAnswer} />
+                )) || (
+                        <TwoLinesTranslationExercise ref={refExercise}
+                            exerciseInfo={exerciseInfo} setError={setError}
+                            moveNext={moveNext} displayAnswer={displayAnswer}
+                            parentCheckAnswer={checkAnswer} />
+                    ))}
+            </div>
         </Fragment>
     );
 });

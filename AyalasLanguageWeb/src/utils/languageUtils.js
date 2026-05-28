@@ -34,3 +34,4 @@ export function replaceCharsForLanguage(language, str) {
             return str;
     }
 }
+
