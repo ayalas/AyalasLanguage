@@ -5,6 +5,7 @@ import { LogIn } from 'lucide-react';
 
 import { useAuth } from '../../components/auth/AuthContext';
 
+
 export const LoginPage = () => {
   const [searchParams] = useSearchParams();
   const searchUserName = searchParams.get('user');

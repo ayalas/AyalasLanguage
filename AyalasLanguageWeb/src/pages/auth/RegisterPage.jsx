@@ -2,15 +2,30 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User } from 'lucide-react';
 
+import { checkPasswordStrength, generatePasswordFeedback, isValidEmail } from '../../utils/utils';
+
 export function RegisterPage() {
     const [displayName, setDisplayName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            if (!isValidEmail(email)) {
+                setError("Please enter a valid email address");
+                return;
+            }
+            //validate password strength
+            const resCheck = checkPasswordStrength(password);
+            if (!resCheck.isValid) {
+                const feedback = generatePasswordFeedback(resCheck.checks);
+                setError(feedback.message);
+                return;
+            }
+
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -21,10 +36,14 @@ export function RegisterPage() {
                 const data = await response.json();
                 navigate(`/login?user=${data.userName}`); // Update global auth context state
             } else {
-                alert(`${response.statusText} (${response.status})`);
+                if (response.status == "409") {
+                    setError("User already exists");
+                }
+                else
+                    setError(`${response.statusText} (${response.status})`);
             }
         } catch (err) {
-            console.error('Login error:', err);
+            setError(err.messgae);
         }
     };
 
@@ -39,6 +58,11 @@ export function RegisterPage() {
                         <button type="submit" className="form-button" title="Register"><User /></button>
                     </div>
                 </div>
+                {error != "" && (
+                    <div className="form-row">
+                        <label className="form-error">{error}</label>
+                    </div>
+                )}
                 <div className="form-row">
                     <div className="form-label-cell">
                         <label className="form-label">Display Name</label>
