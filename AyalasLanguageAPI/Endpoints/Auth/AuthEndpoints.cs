@@ -29,7 +29,7 @@ public static class AuthEndpoints
     {
         var userId = claim.GetUserId();
 
-         UserIdDto? userIdDto = await GetUserById(userId, db);
+        UserIdDto? userIdDto = await GetUserById(userId, db);
         if (userIdDto == null) return Results.BadRequest("User not found");
 
         return Results.Ok(userIdDto);
@@ -63,7 +63,10 @@ public static class AuthEndpoints
         // 4. Cache the User object keyed by the Token Content
         // We cache the User so we don't have to query the DB in the middleware
         cache.Set(tokenContent, user, expires);
-        context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent);
+        if (config["ASPNETCORE_ENVIRONMENT"] == "Development")
+        {
+            context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent);
+        }
 
         return Results.Ok(new LoginResponseDto(tokenContent, expires, userIdDto));
     }
@@ -85,14 +88,14 @@ public static class AuthEndpoints
                 ul.LanguageId, ul.Language.Code, ul.Language.EnglishName, ul.Language.NativeName
             ))
         .ToArrayAsync();
-        
+
         var languageSettings = new CurrentLanguageResponseDto(user.TargetLanguageId, user.TargetLanguage?.NativeName, user.KnownLanguageId, user.KnownLanguage?.NativeName, otherLanguages);
 
         return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, languageSettings);
     }
 
     [Authorize]
-    private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, IConfiguration config)
     {
         var userId = claim.GetUserId();
 
@@ -108,11 +111,14 @@ public static class AuthEndpoints
             }
             await db.SaveChangesAsync();
 
-            context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
+            if (config["ASPNETCORE_ENVIRONMENT"] == "Development")
+            {
+                context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
+            }
         }
 
-        return Results.NoContent();
-    }
+            return Results.NoContent();
+        }
 
     private static async Task<IResult> RegisterUser(RegisterDto dto, AyalasLanguageDbContext db)
     {

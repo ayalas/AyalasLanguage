@@ -24,13 +24,16 @@ export function AuthHeader({ hideAppTitle }) {
 
     useEffect(() => {
         const loadLanguage = async function () {
+            if (!user || !user.languageSettings) {
+                return;
+            }
             if (user.languageSettings.targetLanguageId != null) {
                 setSelectedLanguageId(user.languageSettings.targetLanguageId);
                 setSelectedLanguage(user.languageSettings.targetLanguage);
 
-                if (!showLanguageNextToProfile && (!user.languageSettings.otherUserLanguages 
+                if (!showLanguageNextToProfile && (!user.languageSettings.otherUserLanguages
                     || user.languageSettings.otherUserLanguages.length == 0)) {
-                       setShowLanguageNextToProfile(true); 
+                    setShowLanguageNextToProfile(true);
                 }
             }
             else {
@@ -80,7 +83,7 @@ export function AuthHeader({ hideAppTitle }) {
         e.preventDefault();
         try {
             setSelectedLanguageId(e.target.value);
-            const newUser = await switchLanguage(axios, user, login, Number(e.target.value), user.languageSettings.knownLanguageId );
+            const newUser = await switchLanguage(axios, user, login, Number(e.target.value), user.languageSettings.knownLanguageId);
             setSelectedLanguage(newUser.languageSettings.targetLanguage);
         } catch (err) {
             console.error('Language switch error:', err);
@@ -93,26 +96,26 @@ export function AuthHeader({ hideAppTitle }) {
             <div className="header-title">
                 {!hideAppTitle && (
                     <Link className="header-app-link" to="/home">Ayala's Language App</Link>
-                ) || ( user.languageSettings.knownLanguageId > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
-                        <div className="header-input-cell">
-                            <select id="language-picker" className="header-select" value={selectedLanguageId} onChange={onChangeLanguage} >
-                                <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguage}</option>
-                                {
-                                    user.languageSettings.otherUserLanguages.map((lang) => {
-                                        return (
-                                            <option key={lang.languageId} value={lang.languageId}>
-                                                {lang.nativeName}
-                                            </option>
-                                        );
-                                    })
-                                }
-                            </select>
-                        </div>
-                    ))}
+                ) || (user && user.languageSettings && user.languageSettings.knownLanguageId > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
+                    <div className="header-input-cell">
+                        <select id="language-picker" className="header-select" value={selectedLanguageId} onChange={onChangeLanguage} >
+                            <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguage}</option>
+                            {
+                                user.languageSettings.otherUserLanguages.map((lang) => {
+                                    return (
+                                        <option key={lang.languageId} value={lang.languageId}>
+                                            {lang.nativeName}
+                                        </option>
+                                    );
+                                })
+                            }
+                        </select>
+                    </div>
+                ))}
             </div>
 
             {/* Trigger Button */}
-            <div className="header-profile-name">{showLanguageNextToProfile? `${selectedLanguage}, ` : ""}{user.displayName}</div>
+            <div className="header-profile-name">{showLanguageNextToProfile ? `${selectedLanguage}, ` : ""}{user.displayName}</div>
             <Link ref={setReference}
                 {...getReferenceProps()}>
                 <SquareMenu />

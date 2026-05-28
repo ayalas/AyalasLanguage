@@ -44,20 +44,23 @@ public static class AuthMiddleware
         });
     }
 
-    public static void FromCookieToAuthHeader(this WebApplication app)
+    public static void FromCookieToAuthHeader(this WebApplication app, IConfiguration config)
     {
-        // 1. Extract cookie and inject into Authorization header
-        app.Use(async (context, next) =>
+        if (config["ASPNETCORE_ENVIRONMENT"] == "Development")
         {
-            // Check if the Authorization header is missing but the auth cookie exists
-            if (!context.Request.Headers.ContainsKey("Authorization") && 
-                context.Request.Cookies.TryGetValue(Constants.APP_COOKIE_NAME, out var token))
+            // 1. Extract cookie and inject into Authorization header
+            app.Use(async (context, next) =>
             {
-                // Inject it into the header so your existing auth middleware reads it perfectly
-                context.Request.Headers.Authorization = $"Bearer {token}";
-            }
+                // Check if the Authorization header is missing but the auth cookie exists
+                if (!context.Request.Headers.ContainsKey("Authorization") &&
+                    context.Request.Cookies.TryGetValue(Constants.APP_COOKIE_NAME, out var token))
+                {
+                    // Inject it into the header so your existing auth middleware reads it perfectly
+                    context.Request.Headers.Authorization = $"Bearer {token}";
+                }
 
-            await next(context);
-        });
+                await next(context);
+            });
+        }
     }
 }

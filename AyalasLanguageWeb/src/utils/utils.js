@@ -112,20 +112,6 @@ export function generatePasswordFeedback(checks) {
   };
 }
 
-// --- Example Usage for UI ---
-const result = checkPasswordStrength("Secret1");
-console.log(result.isValid); // false
-console.log(result.checks);  
-/* Output:
-{ 
-  hasMinLength: false, 
-  hasUppercase: true, 
-  hasLowercase: true, 
-  hasNumber: true, 
-  hasSpecialChar: false 
-}
-*/
-
 // emailValidator.js
 
 /**

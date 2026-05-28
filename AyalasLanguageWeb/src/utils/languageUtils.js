@@ -40,7 +40,6 @@ export async function reloadLanguageSettings(axios, user, login) {
     const newUser = { ...user };
     const response = await axios.get('/api/profile/current');
     newUser.languageSettings = response.data;
-    console.log(newUser);
     login(newUser);
     return newUser;
 }
@@ -52,7 +51,7 @@ export async function switchLanguage(axios, user, login, targetLanguageId, known
         KnownLanguageId: knownLangaugeId
     });
 
-    reloadLanguageSettings(axios, user, login);
+    return reloadLanguageSettings(axios, user, login);
 }
 
 
