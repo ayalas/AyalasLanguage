@@ -5,8 +5,8 @@ import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History 
 import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
-import { MatchWordsExercise } from './exercise-render-types/MatchWordsExercise';
-import { BucketListExercise } from './exercise-render-types/BucketListExercise';
+import { MatchWordsExercise } from './exercise-render-types/match-words/MatchWordsExercise';
+import { BucketListExercise } from './exercise-render-types/bucket-list/BucketListExercise';
 
 export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake }, ref) => {
 

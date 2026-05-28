@@ -1,6 +1,6 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react';
 
-import { ExerciseInput } from './ExerciseInput';
+import { ExerciseInput } from '../../../../components/content-creator/ExerciseInput';
 
 export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer }, ref) => {
     const inputRef = useRef(null);

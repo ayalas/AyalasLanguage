@@ -2,7 +2,7 @@ import { useState, forwardRef, useImperativeHandle, useRef } from 'react';
 
 import { useOutletContext } from 'react-router-dom';
 
-import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
+import { replaceCharsForLanguage } from '../../utils/languageUtils';
 
 export const ExerciseInput = forwardRef(({charWidth, checkAnswer}, ref) => {
   const [internalData, setInternalData] = useState("");
