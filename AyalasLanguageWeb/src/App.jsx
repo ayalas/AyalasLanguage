@@ -9,9 +9,9 @@ import { RegisterPage } from './pages/auth/RegisterPage';
 //authenticated
 import { ChangePasswordPage } from './pages/auth/ChangePasswordPage';
 import { Homepage } from './pages/Homepage';
-import { ProfilePage } from './pages/ProfilePage';
+import { ProfilePage } from './pages/profile/ProfilePage';
 import { LearningPathCreatePage } from './pages/content-creator/LearningPathCreatePage';
-import { LearningPathUpdatePage } from './pages/content-creator/LearningPathUpdatePage';
+import { LearningPathUpdatePage } from './pages/content-creator/learning-path-update/LearningPathUpdatePage';
 import { LessonPage } from './pages/learning/LessonPage';
 
 import './App.css'

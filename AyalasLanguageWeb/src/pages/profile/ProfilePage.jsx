@@ -4,8 +4,8 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Save } from 'lucide-react';
 
-import { AuthHeader } from '../components/auth/AuthHeader';
-import { switchLanguage } from '../utils/languageUtils';
+import { AuthHeader } from '../../components/auth/AuthHeader';
+import { switchLanguage } from '../../utils/languageUtils';
 
 export function ProfilePage() {
     const [allLanguages, setAllLanguages] = useState([]);

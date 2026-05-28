@@ -122,12 +122,12 @@ export function Homepage() {
                     </div>
                 ) || (hasLangauge && (
                         <div className="learning-path-empty">
-                            It looks like there are not yet any lessons in this langauge.<br />
+                            It looks like there are not yet any lessons in this language.<br />
                             But you can <Link to="/author/path">add ones yourself!</Link>
                         </div>
                )) || (
                         <div className="learning-path-empty">
-                            You have not selected which langauge to learn.<br />
+                            You have not selected which language to learn.<br />
                             Go to <Link to="/profile">the profile page</Link> to choose one!
                         </div>
                )

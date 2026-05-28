@@ -6,7 +6,7 @@ import { FilePenLine } from 'lucide-react';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts } from '../../utils/utils';
-import { Exercise } from '../../components/learning/Exercise';
+import { Exercise } from './exercise/Exercise';
 
 export function LessonPage() {
     const { learningPathId } = useParams();

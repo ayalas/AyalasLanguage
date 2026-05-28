@@ -2,7 +2,7 @@ import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect 
 import { Link, useOutletContext } from 'react-router';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History } from 'lucide-react';
 
-import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../constants/learning';
+import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import { MatchWordsExercise } from './exercise-render-types/MatchWordsExercise';

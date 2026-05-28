@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-import { AuthHeader } from '../../components/auth/AuthHeader';
+import { AuthHeader } from '../../../components/auth/AuthHeader';
 
-import { LearningPathAuthoringForm } from '../../components/content-creator/LearningPathAuthoringForm';
-import { ExerciseLineForDelete } from '../../components/content-creator/ExerciseLineForDelete';
-import { AUTHOR_ACCESS } from '../../constants/learning';
+import { LearningPathAuthoringForm } from '../../../components/content-creator/LearningPathAuthoringForm';
+import { ExerciseLineForDelete } from './ExerciseLineForDelete';
+import { AUTHOR_ACCESS } from '../../../constants/learning';
 
 export function LearningPathUpdatePage() {
     const [initialRecord, setInitialRecord] = useState(null);

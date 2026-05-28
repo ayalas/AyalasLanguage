@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Trash } from 'lucide-react';
-import { AUTHOR_ACCESS } from '../../constants/learning';
+import { Trash2 } from 'lucide-react';
+import { AUTHOR_ACCESS } from '../../../constants/learning';
 
 export function ExerciseLineForDelete({ exerciseInfo }) {
     const [error, setError] = useState("");
@@ -26,7 +26,7 @@ export function ExerciseLineForDelete({ exerciseInfo }) {
                          {   exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT &&
                         (
 
-                        <button type="button" className="form-button button-delete-exercise" onClick={onButtonClick} ><Trash className="small-icon" /></button>
+                        <button type="button" className="form-button button-delete-exercise" onClick={onButtonClick} ><Trash2 className="small-icon" /></button>
                     )}
                         {exerciseInfo.exerciseObject.First}
                     </div>
