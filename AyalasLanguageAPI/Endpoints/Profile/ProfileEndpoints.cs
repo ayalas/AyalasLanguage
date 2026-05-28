@@ -18,6 +18,7 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             profileGroup.MapPost("/", EditUserProfile);
             profileGroup.MapPost("/current", SwitchUserLanguages);
             profileGroup.MapGet("/current", GetCurrentLanguage);
+            profileGroup.MapDelete("/{languageId:int}", DeleteOtherLanguage);
         }
 
         [Authorize]
@@ -25,9 +26,9 @@ namespace AyalasLanguageAPI.Endpoints.Profile
         {
             var userId = claim.GetUserId();
             var userDto = await AuthEndpoints.GetUserById(userId, db);
-            return userDto!= null ? userDto.languageSettings : null;
+            return userDto != null ? userDto.languageSettings : null;
         }
-    
+
         [Authorize]
         private static async Task<IResult> GetUserProfile(ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
@@ -77,7 +78,7 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             {
                 user.DisplayName = dto.DisplayName;
             }
-            
+
 
             var existingLangs = user.UserLanguages.ToList();
             var existingExerciseTypes = user.UserExerciseTypes.ToList();
@@ -156,8 +157,38 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             await db.SaveChangesAsync();
             return Results.Ok();
         }
-        
-            #region Helper Functions
+
+        [Authorize]
+        private static async Task<IResult> DeleteOtherLanguage(int languageId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+        {
+            if (languageId <= 0)
+            {
+                return Results.BadRequest("invalid langauge id.");
+            }
+            var userId = claim.GetUserId();
+            var user = await db.Users.FindAsync(userId);
+            if (user == null) return Results.NotFound("user not found");
+
+            if (user.TargetLanguageId == languageId)
+            {
+                return Results.Conflict("Must not delete current langauge for user.");
+            }
+
+            var userLanguage = await db.UserLanguages.FirstOrDefaultAsync(ul => ul.LanguageId == languageId &&
+                ul.UserId == userId && ul.IsLearning == true);
+
+            if (userLanguage == null)
+            {
+                return Results.BadRequest($"Langauge {languageId} is not an other langauge for user {userId}.");
+            }
+
+            db.UserLanguages.Remove(userLanguage);
+            await db.SaveChangesAsync();
+
+            return Results.Ok();
+        }
+
+        #region Helper Functions
         //helper function to add or update a user's language preference
         private static async Task AddLanguageToUser(int userId, int languageId, bool isLearning, AyalasLanguageDbContext db)
         {
@@ -181,4 +212,5 @@ namespace AyalasLanguageAPI.Endpoints.Profile
         #endregion
 
     }
+    
 }

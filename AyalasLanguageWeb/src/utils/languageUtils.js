@@ -35,12 +35,7 @@ export function replaceCharsForLanguage(language, str) {
     }
 }
 
-export async function switchLanguage(axios, user, login, targetLanguageId, knownLangaugeId) {
-
-    await axios.post('/api/profile/current', {
-        TargetLanguageId: targetLanguageId,
-        KnownLanguageId: knownLangaugeId
-    });
+export async function reloadLanguageSettings(axios, user, login) {
 
     const newUser = { ...user };
     const response = await axios.get('/api/profile/current');
@@ -49,4 +44,15 @@ export async function switchLanguage(axios, user, login, targetLanguageId, known
     login(newUser);
     return newUser;
 }
+
+export async function switchLanguage(axios, user, login, targetLanguageId, knownLangaugeId) {
+
+    await axios.post('/api/profile/current', {
+        TargetLanguageId: targetLanguageId,
+        KnownLanguageId: knownLangaugeId
+    });
+
+    reloadLanguageSettings(axios, user, login);
+}
+
 

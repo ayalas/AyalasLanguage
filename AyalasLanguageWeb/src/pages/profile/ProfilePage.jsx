@@ -5,7 +5,8 @@ import axios from 'axios';
 import { Save } from 'lucide-react';
 
 import { AuthHeader } from '../../components/auth/AuthHeader';
-import { switchLanguage } from '../../utils/languageUtils';
+import { switchLanguage, reloadLanguageSettings } from '../../utils/languageUtils';
+import { LanguageLineForDelete } from './LanguageLineForDelete';
 
 export function ProfilePage() {
     const [allLanguages, setAllLanguages] = useState([]);
@@ -132,6 +133,22 @@ export function ProfilePage() {
                     </div>
 
                 </form>
+
+                {
+                user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
+                    <div className="form-row">
+                        <div className="form-content-row">
+                            <h3>Other languages</h3>
+                        </div>
+                        {
+                            user.languageSettings.otherUserLanguages.map((lang) => {
+                                return (
+                                    <LanguageLineForDelete key={lang.languageId} languageInfo={lang} user={user} login={login} reloadLanguageSettings={reloadLanguageSettings} />
+                                );
+                            })
+                        }
+                    </div>)
+            }
             </div>
         </>
     );
