@@ -94,8 +94,8 @@ export function AuthHeader({ hideAppTitle }) {
                 {!hideAppTitle && (
                     <Link className="header-app-link" to="/home">Ayala's Language App</Link>
                 ) || ( user.languageSettings.knownLanguageId > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
-                        <div className="form-input-cell">
-                            <select id="language-picker" className="form-select" value={selectedLanguageId} onChange={onChangeLanguage} >
+                        <div className="header-input-cell">
+                            <select id="language-picker" className="header-select" value={selectedLanguageId} onChange={onChangeLanguage} >
                                 <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguage}</option>
                                 {
                                     user.languageSettings.otherUserLanguages.map((lang) => {
