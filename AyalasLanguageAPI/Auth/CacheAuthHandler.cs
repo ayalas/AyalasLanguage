@@ -25,17 +25,11 @@ public class CacheAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        // 1. Check for Authorization header
-        if (!Request.Headers.ContainsKey("Authorization"))
-            return AuthenticateResult.Fail("Missing Header");
+        var token = Request.Cookies[Constants.APP_COOKIE_NAME];
 
-        string authHeader = Request.Headers.Authorization;
-        if (string.IsNullOrEmpty(authHeader))
-            return AuthenticateResult.Fail("Empty Authorization Header");
-        if (!authHeader.StartsWith("Bearer "))
-            return AuthenticateResult.Fail("Invalid Authorization Header");
-        var token = authHeader.Replace("Bearer ", "");
-
+        if (string.IsNullOrEmpty(token))
+            return AuthenticateResult.Fail("Empty token");
+        
         User user = null;
         // 2. Look up user in cache
         if (!_cache.TryGetValue(token, out user))

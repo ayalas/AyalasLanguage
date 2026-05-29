@@ -63,12 +63,15 @@ public static class AuthEndpoints
         // 4. Cache the User object keyed by the Token Content
         // We cache the User so we don't have to query the DB in the middleware
         cache.Set(tokenContent, user, expires);
-        if (config["ASPNETCORE_ENVIRONMENT"] == "Development")
-        {
-            context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent);
-        }
 
-        return Results.Ok(new LoginResponseDto(tokenContent, expires, userIdDto));
+        context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent, new CookieOptions
+        {
+            HttpOnly = true,   // ◄ CRITICAL: Darkens the cookie to JavaScript/React
+            Secure = true,     // ◄ Forces HTTPS in production
+            SameSite = SameSiteMode.Strict // ◄ Protects against CSRF attacks
+        });
+
+        return Results.Ok(new LoginResponseDto(expires, userIdDto));
     }
 
     public static async Task<UserIdDto?> GetUserById(int userId, AyalasLanguageDbContext db)
@@ -111,14 +114,12 @@ public static class AuthEndpoints
             }
             await db.SaveChangesAsync();
 
-            if (config["ASPNETCORE_ENVIRONMENT"] == "Development")
-            {
-                context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
-            }
+
+            context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
         }
 
-            return Results.NoContent();
-        }
+        return Results.NoContent();
+    }
 
     private static async Task<IResult> RegisterUser(RegisterDto dto, AyalasLanguageDbContext db)
     {
