@@ -28,13 +28,28 @@ app.UseAuthorization();
 
 app.MapAyalasLanguageEndpoints();
 
-if (builder.Configuration["ASPNETCORE_ENVIRONMENT"]  != "Development")
+
+if (!app.Environment.IsDevelopment())
 {
+    var contentRoot = builder.Environment.ContentRootPath;
+    var distPath = Path.Combine(contentRoot, "dist");
+
+    // Fallback check if running inside a containerized production environment
+    if (!Directory.Exists(distPath))
+    {
+        distPath = Path.Combine(AppContext.BaseDirectory, "dist");
+    }
+
+    app.UseDefaultFiles(new DefaultFilesOptions
+    {
+        FileProvider = new PhysicalFileProvider(distPath),
+        RequestPath = ""
+    });
+
     app.UseStaticFiles(new StaticFileOptions
     {
-        FileProvider = new PhysicalFileProvider(
-            Path.Combine(builder.Environment.ContentRootPath, "dist")),
-        RequestPath = "" // serve the static files in the root. APIS are served in /api
+        FileProvider = new PhysicalFileProvider(distPath),
+        RequestPath = ""
     });
 }
 
