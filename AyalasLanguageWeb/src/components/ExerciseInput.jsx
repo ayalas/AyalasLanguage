@@ -4,7 +4,7 @@ import { useOutletContext } from 'react-router-dom';
 
 import { replaceCharsForLanguage } from '../utils/languageUtils';
 
-export const ExerciseInput = forwardRef(({charWidth, checkAnswer, value, onChange}, ref) => {
+export const ExerciseInput = forwardRef(({charWidth, checkAnswer, value, onChange, customKey}, ref) => {
   const [internalData, setInternalData] = useState("");
   const [errorState, setErrorState] = useState(false);
   const inputRef = useRef(null);
@@ -20,17 +20,23 @@ export const ExerciseInput = forwardRef(({charWidth, checkAnswer, value, onChang
     },
     setFocus() {
       inputRef.current.focus();
+    },
+    setValue(val) {
+      setInternalData(val);
+      setErrorState(false);
     }
   }));
 
   useEffect(() => {
-    setInternalData(value);
-    setErrorState(false);
+    if (value != null) {
+      setInternalData(value);
+      setErrorState(false);
+    }
   }, [value]);
 
   const onInputChange = function(e) {
     setInternalData(e.target.value);
-    onChange(e.target.value);
+    onChange(e.target.value, customKey);
     setErrorState(false);
   }
 
@@ -41,6 +47,10 @@ export const ExerciseInput = forwardRef(({charWidth, checkAnswer, value, onChang
     }
   }
 
+  const handleFocus = function(e) {
+    onChange(e.target.value, customKey);
+  }
+
   const inputStyle = {
       width: `${charWidth}ch`,
       backgroundColor: errorState ? "rgb(228, 180, 180)" : "white" // No semicolons inside the strings!
@@ -49,5 +59,6 @@ export const ExerciseInput = forwardRef(({charWidth, checkAnswer, value, onChang
   return <input ref={inputRef} type="text" value={internalData} 
             onChange={onInputChange}
             onKeyDown={handleKeyDown}
+            onFocus={handleFocus} 
             className="input-text-placeholder" style={inputStyle}></input>;
 });

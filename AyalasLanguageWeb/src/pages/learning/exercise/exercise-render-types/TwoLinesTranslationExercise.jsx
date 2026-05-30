@@ -5,6 +5,7 @@ import { ExerciseInput } from '../../../../components/ExerciseInput';
 import { EXERCISE_TYPES } from '../../../../constants/learning';
 
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
+import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 
 export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user }, ref) => {
     const inputRef = useRef(null);
@@ -25,9 +26,8 @@ export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError,
             const thisQuestionRef = inputRef.current;
 
             let canMoveNext = true;
-            console.log(`user answer:#${thisQuestionRef.getUserAnswer().trim().toLowerCase()}#`);
-            console.log(`real answer:#${exerciseInfo.data.Second.trim().toLowerCase()}#`);
-            if (thisQuestionRef.getUserAnswer().trim().toLowerCase() != exerciseInfo.data.Second.trim().toLowerCase()) {
+
+            if (thisQuestionRef.getUserAnswer().trim().toLowerCase() != replaceCharsForLanguage(exerciseInfo.data.Second.trim().toLowerCase())) {
                 thisQuestionRef.setToError();
                 canMoveNext = false;
             }

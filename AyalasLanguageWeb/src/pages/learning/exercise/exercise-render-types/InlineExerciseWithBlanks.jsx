@@ -1,15 +1,25 @@
-import { Fragment, useRef,useState, forwardRef, useImperativeHandle } from 'react';
+import { Fragment, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
 
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
+import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 
 export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user }, ref) => {
     const questionsRefMap = useRef(new Map());
     const [valueFromKeyboard, setValueFromKeyboard] = useState("");
+    const currentInputKey = useRef("");
 
     function onChangeFromKeyboard (input) {
-        console.log(input);
+        if (currentInputKey.current != "") {
+            setValueFromKeyboard(input);
+            questionsRefMap.current.get(currentInputKey.current).setValue(input);
+        }
+    }
+
+    function onChangeFromInput(value, key) {
+        setValueFromKeyboard(value);
+        currentInputKey.current = key;
     }
 
     // This defines what the parent can access via the ref
@@ -29,11 +39,10 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
                 setError('please fill in all the input elements');
             }
             let canMoveNext = true;
-
             for (let j = 0; j < exerciseInfo.answers.length; j++) {
                 const inputRef = thisQuestionRefs.get(`${exerciseInfo.exerciseId}-${j}`);
-
-                if (inputRef.getUserAnswer().trim().toLowerCase() != exerciseInfo.answers[j].trim().toLowerCase()) {
+                if (inputRef.getUserAnswer().trim().toLowerCase() 
+                        != replaceCharsForLanguage(user.languageSettings.targetLanguage, exerciseInfo.answers[j].trim().toLowerCase())) {
                     inputRef.setToError();
                     canMoveNext = false;
                 }
@@ -68,6 +77,8 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
                                         ref={setRef}
                                         charWidth={(2 + exerciseInfo.answers[i].length)}
                                         checkAnswer={parentCheckAnswer}
+                                        customKey={`${exerciseInfo.exerciseId}-${i}`}
+                                        onChange={onChangeFromInput}
                                     />
                                 )}
                                 <div className="content-line-part">{part}</div>
@@ -76,6 +87,8 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
                                         ref={setRef}
                                         charWidth={(2 + exerciseInfo.answers[i].length)}
                                         checkAnswer={parentCheckAnswer}
+                                        customKey={`${exerciseInfo.exerciseId}-${i}`}
+                                        onChange={onChangeFromInput}
                                     />
                                 )}
                             </Fragment>

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { replaceCharsForLanguage } from './languageUtils'; // Adjust this path to your actual file
+import { replaceCharsForLanguage, getMissingParts } from './languageUtils'; // Adjust this path to your actual file
 
 describe('replaceCharsForLanguage', () => {
     
@@ -42,6 +42,13 @@ describe('replaceCharsForLanguage', () => {
         });
     });
 
+    describe('Arabic', () => {
+        it('should remove vowel indications', () => {
+            expect(replaceCharsForLanguage('arabic', 'فِي')).toBe('في');
+            expect(replaceCharsForLanguage('arabic', 'عَلَى')).toBe('على');
+        })
+    });
+
     describe('Edge Cases & Fallbacks', () => {
         it('should be case-insensitive regarding the language name argument', () => {
             expect(replaceCharsForLanguage('dAnSk', 'aa')).toBe('å');
@@ -62,3 +69,30 @@ describe('replaceCharsForLanguage', () => {
         });
     });
 });
+
+describe('getMissingParts function', () => {
+    it('returns the missing parts', () => {
+        expect(getMissingParts("you are special. very special. I want to acknowlede that to you", ["you are ", ". very ", ". I want ", " acknowlede that ", " you"]))
+        .toEqual(["special", "special", "to", "to"]);
+    });
+
+    it('handles empty parts', () => {
+        expect(getMissingParts(" Vi mødes klokken fem", [" Vi mødes ", " klokken fem"]))
+        .toEqual([""]);
+    });
+
+    it('handles arabic', () => {
+        expect(
+            getMissingParts(
+                "الطَّبِيبُ يَكْتُبُ الوَصْفَةَ بِالقَلَمِ لِلْمَرِيضِ",
+                // Cleaned up the letters to match the fullString exactly
+                ['الطَّبِيبُ يَكْتُبُ الوَصْفَةَ', 'القَلَمِ', 'لْمَرِيضِ'] 
+            )
+        ).toEqual(['بِ', 'لِ']);
+    });
+
+    it('handles Studenten læser på universitetet', () => {
+        expect(getMissingParts("Studenten læser på universitetet", ['Studenten læser ', ' universitetet']))
+        .toEqual(["på"]);
+    });
+})

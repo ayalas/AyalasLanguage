@@ -1,5 +1,5 @@
 import { it, expect, describe } from 'vitest';
-import { isValidEmail, removeLastCharIfMatch, getMissingParts, getRandomizedSequence, checkPasswordStrength } from './utils';
+import { isValidEmail, removeLastCharIfMatch, getRandomizedSequence, checkPasswordStrength } from './utils';
 
 describe('removeLastCharIfMatch function', () => {
     it('removes last ;', () => {
@@ -19,22 +19,7 @@ describe('removeLastCharIfMatch function', () => {
     })
 })
 
-describe('getMissingParts function', () => {
-    it('returns the missing parts', () => {
-        expect(getMissingParts("you are special. very special. I want to acknowlede that to you", ["you are ", ". very ", ". I want ", " acknowlede that ", " you"]))
-        .toEqual(["special", "special", "to", "to"]);
-    });
 
-    it('handles empty parts', () => {
-        expect(getMissingParts(" Vi mødes klokken fem", [" Vi mødes ", " klokken fem"]))
-        .toEqual([""]);
-    })
-
-    it('handles Studenten læser på universitetet', () => {
-        expect(getMissingParts("Studenten læser på universitetet", ['Studenten læser ', ' universitetet']))
-        .toEqual(["på"]);
-    });
-})
 
 describe('getRandomizedSequence', () => {
   // --- Happy Path Tests ---

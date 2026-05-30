@@ -1,11 +1,11 @@
-import { useParams, useNavigate, Link } from 'react-router';
+import { useParams, useNavigate, Link, useOutletContext } from 'react-router';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { FilePenLine } from 'lucide-react';
 
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
-import { getMissingParts } from '../../utils/utils';
+import { getMissingParts, replaceCharsForLanguage } from '../../utils/languageUtils';
 import { Exercise } from './exercise/Exercise';
 
 export function LessonPage() {
@@ -17,15 +17,27 @@ export function LessonPage() {
     const [error, setError] = useState("");
     const exerciseRefs = useRef(new Map());
     const navigate = useNavigate();
+    const { user } = useOutletContext();
 
     const changeCurrentExercise = function (arrExercises, index) {
         const curItem = arrExercises[index];
 
-        let data = JSON.parse(curItem.data);
-        if (curItem.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS) {
-            let sentenceElements = data.First.split(PLACEHOLDERS.BLANKS);
+        const data = JSON.parse(curItem.data);
 
-            let answers = getMissingParts(data.Second, sentenceElements);
+        const firstData = replaceCharsForLanguage(
+            user.languageSettings.targetLanguage, data.First
+        );
+        const secondData = replaceCharsForLanguage(
+            user.languageSettings.targetLanguage, data.Second
+        );
+
+        if (curItem.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS) {
+            let sentenceElements = firstData.split(PLACEHOLDERS.BLANKS);
+            for (let i=0;i<sentenceElements.length;i++) {
+                sentenceElements[i] = sentenceElements[i].trim();
+            }
+
+            let answers = getMissingParts(secondData, sentenceElements);
             setCurrentExercise({
                 ...curItem,
                 data,
@@ -33,15 +45,15 @@ export function LessonPage() {
                 answers,
                 index
             });
-
         }
         else if (curItem.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
             setCurrentExercise({
                 ...curItem,
                 data,
-                sentenceElements: [data.First],
-                answers: data.Second.trim().split(' '),
-                extraItems: data.ExtraOptions.trim().split(' '),
+                sentenceElements: [firstData],
+                answers: secondData.trim().split(' '),
+                extraItems: replaceCharsForLanguage(
+                        user.languageSettings.targetLanguage,data.ExtraOptions).trim().split(' '),
                 index
             });
         }
@@ -49,15 +61,15 @@ export function LessonPage() {
             setCurrentExercise({
                 ...curItem,
                 data,
-                sentenceElements: [data.First],
-                answers: [data.Second],
+                sentenceElements: [firstData],
+                answers: [secondData],
                 index
             });
         }
         else {
-            let sentenceElements = data.First.split(',');
+            let sentenceElements = firstData.split(',');
 
-            let answers = data.Second.split(',');
+            let answers = secondData.split(',');
 
             setCurrentExercise({
                 ...curItem,

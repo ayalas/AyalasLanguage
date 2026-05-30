@@ -31,7 +31,8 @@ export function replaceCharsForLanguage(language, str) {
                 .replaceAll('oe', 'ó').replaceAll('Oe', 'Ó').replaceAll('OE', 'Ó') // <-- Changed to ó/Ó
                 .replaceAll('th', 'þ').replaceAll('Th', 'Þ').replaceAll('TH', 'Þ')
                 .replaceAll('dh', 'ð').replaceAll('Dh', 'Ð').replaceAll('DH', 'Ð');
-
+        case 'arabic':
+            return str.replace(/[\u064B-\u0652\u0640]/g, '');
         default:
             return str;
     }
@@ -56,4 +57,37 @@ export async function switchLanguage(axios, user, login, targetLanguageId, known
     return reloadLanguageSettings(axios, user, login);
 }
 
+export function getMissingParts(fullString, segments) {
+    const missingParts = [];
+    let currentIndex = 0;
 
+    for (let i = 0; i < segments.length - 1; i++) {
+        // Trim the segments to remove accidental outer spaces
+        const currentSegment = segments[i].trim();
+        const nextSegment = segments[i + 1].trim();
+
+        // 1. Find where the current segment starts
+        const segmentStart = fullString.indexOf(currentSegment, currentIndex);
+        if (segmentStart === -1) continue; 
+        
+        // 2. Move to the end of the current segment
+        const missingStart = segmentStart + currentSegment.length;
+
+        // 3. Find where the next segment begins
+        const missingEnd = fullString.indexOf(nextSegment, missingStart);
+        
+        if (missingEnd === -1) {
+            missingParts.push(""); 
+            continue;
+        }
+
+        // 4. Extract the piece in between and trim it to remove extra spaces
+        const missingWord = fullString.substring(missingStart, missingEnd).trim();
+        missingParts.push(missingWord);
+
+        // 5. Update pointer
+        currentIndex = missingEnd;
+    }
+
+    return missingParts;
+}
