@@ -42,15 +42,12 @@ export function LearningPathUpdatePage() {
         }
     };
 
-    useEffect(() => {
-        async function loadAsync() {
-            try {
+    async function loadExercises()
+    {
+        try {
                 if (learningPathId > 0) {
-                    let res = await axios.get(`/api/learning/path/${learningPathId}`);
-                    setInitialRecord(res.data);
-
                     //get exercises
-                    res = await axios.get(`/api/learning/path/${learningPathId}/exercises`);
+                    const res = await axios.get(`/api/learning/path/${learningPathId}/exercises`);
                     const exercisesTemp = [
                     ]
                     for (const ex of res.data)
@@ -74,6 +71,22 @@ export function LearningPathUpdatePage() {
             catch (err) {
                 setUpdateFormError(err.message);
             }
+    }
+
+    useEffect(() => {
+        async function loadAsync() {
+            try {
+                if (learningPathId > 0) {
+                    let res = await axios.get(`/api/learning/path/${learningPathId}`);
+                    setInitialRecord(res.data);
+
+                    //get exercises
+                    await loadExercises();
+                }
+            }
+            catch (err) {
+                setUpdateFormError(err.message);
+            }
         }
 
         loadAsync();
@@ -87,7 +100,7 @@ export function LearningPathUpdatePage() {
                     <label className="form-error">{updateFormError}</label>
                 </div>
             )}
-            <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} />
+            <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
             {
                 existingExercises && existingExercises.length > 0 && (
                     <div className="form-row">

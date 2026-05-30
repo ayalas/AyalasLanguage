@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext,useNavigate, useSearchParams } from 'react-router-dom';
-import { LayersPlus, Trash } from 'lucide-react';
+import { useOutletContext, useNavigate, useSearchParams } from 'react-router-dom';
+import { LayersPlus, Trash, FileUp, FileDown, Ban } from 'lucide-react';
 import axios from 'axios';
 
-import { removeLastCharIfMatch } from '../../utils/utils';
+import { removeLastCharIfMatch, downloadFile } from '../../utils/utils';
 import { EXERCISE_GENERATIONS, PLACEHOLDERS, AUTHOR_ACCESS, EXERCISE_TYPES } from '../../constants/learning';
 
-export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
+export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }) {
     const [error, setError] = useState("");
     const [level, setLevel] = useState(1);
+    const [fileForImport, setFileForImport] = useState(null);
+    const [importStart, setImportStart] = useState(false);
     const [chapter, setChapter] = useState(1);
     const [title, setTitle] = useState("");
     const [access, setAccess] = useState(AUTHOR_ACCESS.CAN_EDIT);
@@ -20,7 +22,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
     const [firstSetDesc, setFirstSetDesc] = useState("");
     const [secondSetDesc, setSecondSetDesc] = useState("");
     const [aiInstructions, setAIInstructions] = useState("");
-    const [ searchParams ] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const initLevel = searchParams.get('level');
     const initChapter = searchParams.get('chapter');
     const navigate = useNavigate();
@@ -47,8 +49,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
         }
 
         let arrExtraOptions = [];
-        if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET)
-        {
+        if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
             arrExtraOptions = removeLastCharIfMatch(wrongExtraOptions.trim(), ';').split(';');
             if (arrFirstSet.length != arrExtraOptions.length) {
                 setError(`Must have a match between the number of words/sentences and sets of extra options. Found ${arrFirstSet.length} on the first set, and ${arrExtraOptions.length} on the wrong extra options.`)
@@ -62,8 +63,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
                 First: arrFirstSet[i].trim(),
                 Second: arrSecondSet[i].trim()
             };
-            if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET)
-            {
+            if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
                 objExerciseData.ExtraOptions = arrExtraOptions[i].trim();
             }
             arrObjects.push(objExerciseData);
@@ -76,7 +76,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
     const onFormSubmit = function (e) {
         e.preventDefault();
         let arrData = parseForm();
-        
+
         handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
     }
 
@@ -109,15 +109,15 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
         }
     }
 
-    const deleteLesson = async function() {
+    const deleteLesson = async function () {
         try {
-                await axios.delete(`/api/creator/learning-path/${initialRecord.learningPathId}`);
+            await axios.delete(`/api/creator/learning-path/${initialRecord.learningPathId}`);
 
-                navigate('/home');
-            }
-            catch (ex) {
-                setError(ex.message);
-            }
+            navigate('/home');
+        }
+        catch (ex) {
+            setError(ex.message);
+        }
     };
 
     const handleExerciseTypeLogic = function (exrTypeValue) {
@@ -145,26 +145,79 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
         handleExerciseTypeLogic(e.target.value);
     };
 
+    async function onImportExercises(e) {
+        e.preventDefault();
+        try {
+            if (!importStart) {
+                setImportStart(true);
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileForImport); // 'file' matches the backend field name
+
+            await axios.post(`/api/creator/learning-path/${initialRecord.learningPathId}/import`, formData);
+            setImportStart(false);
+            reloadExercise();
+
+        }
+        catch (ex) {
+            setError(ex.response?.data || ex.message);
+        }
+    }
+
+    function handleFileChange(e) {
+        if (e.target.files && e.target.files[0]) {
+            setFileForImport(e.target.files[0]);
+        }
+    }
+
+    function cancelImport(e) {
+        e.preventDefault();
+        setImportStart(false);
+    }
+
+    async function onExportExercises(e) {
+        try {
+            e.preventDefault();
+
+            const response = await fetch(`/api/learning/path/${initialRecord.learningPathId}/exercises`);
+
+            if (response && response.ok) {
+                downloadFile(await response.blob(), `exercises-${initialRecord.learningPathId}.json`);
+            }
+        }
+        catch (ex) {
+            setError(ex.message);
+        }
+
+    }
+
     useEffect(() => {
         async function execAsync() {
-            if (initialRecord != null) {
-                setLevel(initialRecord.level);
-                setChapter(initialRecord.chapter);
-                setTitle(initialRecord.name);
-                setAccess(initialRecord.access);
+            try {
+                if (initialRecord != null) {
+                    setLevel(initialRecord.level);
+                    setChapter(initialRecord.chapter);
+                    setTitle(initialRecord.name);
+                    setAccess(initialRecord.access);
+                }
+                else {
+                    if (initLevel != "" && Number(initLevel) > 0) {
+                        setLevel(initLevel);
+                    }
+                    if (initChapter != "" && Number(initChapter) > 0) {
+                        setChapter(initChapter);
+                    }
+                }
             }
-            else {
-                if (initLevel != "" && Number(initLevel) > 0) {
-                    setLevel(initLevel);
-                }
-                if (initChapter != "" && Number(initChapter) > 0) {
-                    setChapter(initChapter);
-                }
+            catch (ex) {
+                setError(ex.message);
             }
         };
 
         execAsync()
-    }, [initialRecord])
+    }, [initialRecord]);
 
     useEffect(() => {
         async function execAsync() {
@@ -187,6 +240,16 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
                     <div className="form-button-cell">
                         <button type="submit" className="form-button" title="Save"><LayersPlus /></button>
                     </div>
+                    {initialRecord && (
+                        <>
+                            <div className="form-button-cell">
+                                <button type="button" onClick={onImportExercises} className="form-button" title="Import Exercises"><FileDown /></button>
+                            </div>
+                            <div className="form-button-cell">
+                                <button type="button" onClick={onExportExercises} className="form-button" title="Export Exercises"><FileUp /></button>
+                            </div>
+                        </>
+                    )}
                     {
                         initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT &&
                         initialRecord.exerciseCount == 0 && (
@@ -200,6 +263,19 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
                     <div className="form-row">
                         <label className="form-error">{error}</label>
                     </div>
+                )}
+                {importStart && (
+                    <>
+                        <div className="form-label-row">Please select an exercises json file for import and click Import Exercises again</div>
+                        <div className="form-row">
+                            <div className="form-input-row">
+                                <input type="file" onChange={handleFileChange} accept=".json" />
+                            </div>
+                            <div className="form-input-row">
+                                <button type="button" onClick={cancelImport} className="form-button" title="Cancel"><Ban /> Cancel</button>
+                            </div>
+                        </div>
+                    </>
                 )}
                 <div className="form-label-row">Level</div>
                 <div className="form-row">
@@ -258,7 +334,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
                     </div>
                     <div className="form-content-row">{secondSetDesc}</div>
                 </div>
-                { exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
+                {exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
                     <>
                         <div className="form-label-row">Wrong Extra Options</div>
                         <div className="form-row">

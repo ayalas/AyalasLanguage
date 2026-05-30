@@ -20,6 +20,7 @@ public static class ContentCreatorEndpoints
         // Learning Path Creation
         creator.MapPost("/learning-path", CreateLearningPath);
         creator.MapPut("/learning-path/{id}", EditLearningPath); // Allow PUT for idempotent updates
+        creator.MapPost("/learning-path/{id}/import", ImportExercises).DisableAntiforgery();
         creator.MapDelete("/learning-path/{id}", DeleteLearningPath);
         // Exercise Creation
         creator.MapPost("/exercise", CreateExercise);
@@ -128,6 +129,51 @@ public static class ContentCreatorEndpoints
         await db.SaveChangesAsync();
 
         return Results.Created($"/api/learning/path/{path.LearningPathId}", new CreateLearningPathResponseDto(path.LearningPathId));
+    }
+    [Authorize(Roles = "Admin,ContentCreator")]
+    private static async Task<IResult> ImportExercises(int id, IFormFile file, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+
+        var learningPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.LearningPathId == id);
+        if (learningPath == null) return Results.BadRequest("Learning path not found.");
+
+        string? fileContent = null;
+        using (var stream = file.OpenReadStream())
+        using (var reader = new StreamReader(stream))
+        {
+            // 2. Read the entire content into a string variable
+            fileContent = await reader.ReadToEndAsync();
+        }
+
+        List<ExerciseDto>? dtoList = System.Text.Json.JsonSerializer.Deserialize<List<ExerciseDto>>(fileContent, new System.Text.Json.JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+        if (dtoList == null)
+        {
+            return Results.BadRequest("Could not parse exercises.");
+        }
+        foreach (ExerciseDto dto in dtoList)
+        {
+            if (!ValidateExerciseData(dto.ExerciseTypeId, dto.Data))
+                return Results.BadRequest($"Invalid exercise data format for the specified exercise type. Type:{((ExerciseTypesEnum)dto.ExerciseTypeId).ToString()}. Data: {dto.Data}");
+
+            var exercise = new Exercise
+            {
+                TargetLanguageId = learningPath.TargetLanguageId,
+                KnownLanguageId = learningPath.KnownLanguageId,
+                LearningPathId = id,
+                ExerciseTypeId = dto.ExerciseTypeId,
+                Data = dto.Data,
+                UserId = userId
+            };
+
+            db.Exercises.Add(exercise);
+        }
+
+        await db.SaveChangesAsync();
+        return Results.Ok();
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]

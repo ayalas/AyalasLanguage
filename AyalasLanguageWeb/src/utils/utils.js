@@ -99,3 +99,24 @@ export function isValidEmail(email) {
 
   return emailRegex.test(trimmedEmail);
 }
+
+//use const blob = await response.blob(); to create a blob
+export function downloadFile(blob, name) {
+      // 3. Create a local URL pointing to that Blob object
+      const localUrl = window.URL.createObjectURL(blob);
+
+      // 4. Create a hidden anchor element programmatically
+      const link = document.createElement('a');
+      link.href = localUrl;
+      
+      // Define the target filename
+      link.setAttribute('download', name); 
+
+      // 5. Append to DOM, click it to trigger download, then remove it
+      document.body.appendChild(link);
+      link.click();
+      
+      // 6. Clean up the DOM and release the object URL
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(localUrl);
+}

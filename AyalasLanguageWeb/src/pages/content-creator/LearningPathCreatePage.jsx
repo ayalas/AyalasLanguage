@@ -15,10 +15,7 @@ export function LearningPathCreatePage() {
     const handleSubmit = async (setError, createExercises, level, chapter, title, exerciseType, arrData) => {
         let learningPathId = 0;
         try {
-            if (arrData == null || arrData.length == 0) {
-                setError("Please fill in initial exercises data.");
-                return;
-            }
+
             //first, create the learning path
             const req = {
                     level,
@@ -36,11 +33,15 @@ export function LearningPathCreatePage() {
             learningPathId = response.data.learningPathId;
 
             //then, create the exercises within it
-            await createExercises(learningPathId, exerciseType, arrData);
+            if (arrData != null && arrData.length > 0) {
+                await createExercises(learningPathId, exerciseType, arrData);
 
-            //navigate to home
-            navigate('/home');
-
+                 //navigate to home
+                navigate('/home');
+            }
+            else {
+                navigate(`/author/path/${learningPathId}`);
+            }
         } catch (err) {
             if (learningPathId > 0) {
                 await axios.delete(`/api/creator/learning-path/${learningPathId}`);
