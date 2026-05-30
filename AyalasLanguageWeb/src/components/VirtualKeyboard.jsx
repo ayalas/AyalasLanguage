@@ -18,11 +18,26 @@ const layoutCodeOverrides = {
   ur: "urdu",
   fa: "farsi",
   he: "hebrew",
+  ar: "arabic",
+};
+
+// Helper function to check if the language layout actually exists
+const isLanguageSupported = (langCode) => {
+  if (langCode === "en") return true;
+  
+  const layouts = new KeyboardLayouts();
+  const targetLayoutCode = layoutCodeOverrides[langCode] || langCode;
+  const layoutData = layouts.get(targetLayoutCode);
+  
+  return !!(layoutData && layoutData.layout);
 };
 
 const VirtualKeyboard = ({ languageCode, isRightToLeft, onChange, value }) => {
   const keyboardRef = useRef(null);
   const [layoutName, setLayoutName] = useState("default");
+
+  // Determine support status immediately during rendering
+  const isSupported = isLanguageSupported(languageCode);
 
   const handleKeyPress = (button) => {
     if (button === "{shift}" || button === "{lock}") {
@@ -30,8 +45,10 @@ const VirtualKeyboard = ({ languageCode, isRightToLeft, onChange, value }) => {
     }
   };
 
-  // 1. Initialize the keyboard instance ONLY ONCE on mount
+  // 1. Initialize the keyboard instance ONLY if supported and ONCE on mount
   useEffect(() => {
+    if (!isSupported) return;
+
     keyboardRef.current = new Keyboard(".simple-keyboard", {
       onChange: (input) => onChange(input),
       onKeyPress: (button) => handleKeyPress(button),
@@ -41,13 +58,14 @@ const VirtualKeyboard = ({ languageCode, isRightToLeft, onChange, value }) => {
     return () => {
       if (keyboardRef.current) {
         keyboardRef.current.destroy();
+        keyboardRef.current = null;
       }
     };
-  }, []); // Empty dependency array prevents instance recreation
+  }, [isSupported]); // Re-run initialization if support status changes
 
-  // 2. Dynamically update keyboard configurations without destroying the instance
+  // 2. Dynamically update keyboard configurations
   useEffect(() => {
-    if (!keyboardRef.current) return;
+    if (!keyboardRef.current || !isSupported) return;
 
     let keyboardOptions = {
       layoutName: layoutName,
@@ -63,20 +81,23 @@ const VirtualKeyboard = ({ languageCode, isRightToLeft, onChange, value }) => {
         keyboardOptions.layout = layoutData.layout;
       }
     } else {
-      // Reset back to default English layout if languageCode is 'en'
       keyboardOptions.layout = undefined; 
     }
 
-    // Use setOptions to smoothly apply layout updates and preserve input history
     keyboardRef.current.setOptions(keyboardOptions);
-  }, [languageCode, layoutName, isRightToLeft]);
+  }, [languageCode, layoutName, isRightToLeft, isSupported]);
 
   // 3. Keep controlled component state perfectly synced
   useEffect(() => {
-    if (keyboardRef.current && value !== keyboardRef.current.getInput()) {
+    if (keyboardRef.current && isSupported && value !== keyboardRef.current.getInput()) {
       keyboardRef.current.setInput(value);
     }
-  }, [value]);
+  }, [value, isSupported]);
+
+  // Early return: If the language is not supported, hide the entire keyboard element
+  if (!isSupported) {
+    return null;
+  }
 
   return (
     <div 
