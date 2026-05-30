@@ -27,7 +27,8 @@ export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError,
 
             let canMoveNext = true;
 
-            if (thisQuestionRef.getUserAnswer().trim().toLowerCase() != replaceCharsForLanguage(exerciseInfo.data.Second.trim().toLowerCase())) {
+            if (thisQuestionRef.getUserAnswer().trim().toLowerCase() 
+                != replaceCharsForLanguage(user.languageSettings.targetLanguage,exerciseInfo.data.Second.trim().toLowerCase())) {
                 thisQuestionRef.setToError();
                 canMoveNext = false;
             }

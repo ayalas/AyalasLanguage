@@ -69,6 +69,7 @@ public static class AuthEndpoints
             HttpOnly = true,   // ◄ CRITICAL: Darkens the cookie to JavaScript/React
             Secure = true,     // ◄ Forces HTTPS in production
             SameSite = SameSiteMode.Strict // ◄ Protects against CSRF attacks
+            ,Expires = new DateTimeOffset(expires)
         });
 
         return Results.Ok(new LoginResponseDto(expires, userIdDto));
