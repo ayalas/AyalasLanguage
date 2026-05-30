@@ -1,10 +1,16 @@
-import { Fragment, useRef, forwardRef, useImperativeHandle } from 'react';
+import { Fragment, useRef,useState, forwardRef, useImperativeHandle } from 'react';
 
 
-import { ExerciseInput } from '../../../../components/content-creator/ExerciseInput';
+import { ExerciseInput } from '../../../../components/ExerciseInput';
+import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 
-export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer }, ref) => {
+export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user }, ref) => {
     const questionsRefMap = useRef(new Map());
+    const [valueFromKeyboard, setValueFromKeyboard] = useState("");
+
+    function onChangeFromKeyboard (input) {
+        console.log(input);
+    }
 
     // This defines what the parent can access via the ref
     useImperativeHandle(ref, () => ({
@@ -79,6 +85,12 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
             {displayAnswer && (
                 <div className="form-label-row">{exerciseInfo.data.Second}</div>
             )}
+            <div className="form-row">
+                <VirtualKeyboard languageCode={user.languageSettings.targetLanguageEnglishName.toLowerCase()} isRightToLeft={true}
+                    onChange={onChangeFromKeyboard} 
+                    value={valueFromKeyboard}
+                />
+            </div>
         </>
     );
 });

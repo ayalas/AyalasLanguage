@@ -1,10 +1,10 @@
-import { useState, forwardRef, useImperativeHandle, useRef } from 'react';
+import { useState,useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
 
 import { useOutletContext } from 'react-router-dom';
 
-import { replaceCharsForLanguage } from '../../utils/languageUtils';
+import { replaceCharsForLanguage } from '../utils/languageUtils';
 
-export const ExerciseInput = forwardRef(({charWidth, checkAnswer}, ref) => {
+export const ExerciseInput = forwardRef(({charWidth, checkAnswer, value, onChange}, ref) => {
   const [internalData, setInternalData] = useState("");
   const [errorState, setErrorState] = useState(false);
   const inputRef = useRef(null);
@@ -23,8 +23,14 @@ export const ExerciseInput = forwardRef(({charWidth, checkAnswer}, ref) => {
     }
   }));
 
+  useEffect(() => {
+    setInternalData(value);
+    setErrorState(false);
+  }, [value]);
+
   const onInputChange = function(e) {
     setInternalData(e.target.value);
+    onChange(e.target.value);
     setErrorState(false);
   }
 

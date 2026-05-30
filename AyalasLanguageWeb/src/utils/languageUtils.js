@@ -1,6 +1,8 @@
 export function replaceCharsForLanguage(language, str) {
     if (!str) return str;
 
+    str = str.replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, '');
+
     switch (language.toLowerCase()) {
         case 'dansk': // Danish
         case 'norsk': // Norwegian (uses the same characters)

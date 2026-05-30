@@ -104,7 +104,7 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
                     <InlineExerciseWithBlanks ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer}
-                        parentCheckAnswer={checkAnswer} />
+                        parentCheckAnswer={checkAnswer} user={user} />
                 ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.MATCHING && (
                     <MatchWordsExercise
                         exerciseInfo={exerciseInfo} setError={setError}
@@ -117,7 +117,7 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
                         <TwoLinesTranslationExercise ref={refExercise}
                             exerciseInfo={exerciseInfo} setError={setError}
                             moveNext={moveNext} displayAnswer={displayAnswer}
-                            parentCheckAnswer={checkAnswer} />
+                            parentCheckAnswer={checkAnswer} user={user} />
                     ))}
             </div>
         </Fragment>
