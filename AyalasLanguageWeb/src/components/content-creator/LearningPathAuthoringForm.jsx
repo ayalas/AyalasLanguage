@@ -127,6 +127,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord }) {
         let aiDesc = exType.ai_instruction;
         aiDesc = aiDesc.replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user.languageSettings.knownLanguage);
         aiDesc = aiDesc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user.languageSettings.targetLanguage);
+        aiDesc = aiDesc.replaceAll(PLACEHOLDERS.LEVEL_PLACEHOLDER, level);
 
         let subject = title.trim();
         if (subject == "") {

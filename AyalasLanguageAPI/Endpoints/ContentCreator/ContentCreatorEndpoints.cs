@@ -94,11 +94,11 @@ public static class ContentCreatorEndpoints
 
         int? nextToUpdate = dto.NextLearningPathId;
 
-        if (nextPathId == 0 && prevPathNextId != null)
+        if (nextPathId == 0 && prevPathNextId != null && prevPathNextId > 0)
         {
             nextToUpdate = prevPathNextId;
             nextPath = await db.LearningPaths.FindAsync(nextToUpdate);
-            if (nextPath == null) return Results.BadRequest("Next learning path not found [2].");
+            if (nextPath == null) return Results.BadRequest($"Next learning path not found [prev path next path: {prevPathNextId}].");
             nextPath.PrevLearningPathId = null; // Unlink from any existing previous path
         }
 
