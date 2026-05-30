@@ -44,8 +44,9 @@ describe('replaceCharsForLanguage', () => {
 
     describe('Arabic', () => {
         it('should remove vowel indications', () => {
-            expect(replaceCharsForLanguage('arabic', 'فِي')).toBe('في');
-            expect(replaceCharsForLanguage('arabic', 'عَلَى')).toBe('على');
+            expect(replaceCharsForLanguage('العربية', 'فِي')).toBe('في');
+            expect(replaceCharsForLanguage('العربية', 'عَلَى')).toBe('على');
+            expect(replaceCharsForLanguage('العربية', 'المَرِيضُ جَالِسٌ عَلَى السَّرِيرِ فِي الغُرْفَةِ')).toBe('المريض جالس على السرير في الغرفة');
         })
     });
 

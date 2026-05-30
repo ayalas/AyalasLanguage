@@ -31,7 +31,7 @@ export function replaceCharsForLanguage(language, str) {
                 .replaceAll('oe', 'ó').replaceAll('Oe', 'Ó').replaceAll('OE', 'Ó') // <-- Changed to ó/Ó
                 .replaceAll('th', 'þ').replaceAll('Th', 'Þ').replaceAll('TH', 'Þ')
                 .replaceAll('dh', 'ð').replaceAll('Dh', 'Ð').replaceAll('DH', 'Ð');
-        case 'arabic':
+        case 'العربية':
             return str.replace(/[\u064B-\u0652\u0640]/g, '');
         default:
             return str;

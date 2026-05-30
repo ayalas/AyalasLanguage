@@ -67,7 +67,7 @@ export const EXERCISE_GENERATIONS =
         description:"Generate sentences to fill in words in, such as the right prepositions. Use ____ for blanks.",
         first_data_instructions: "Sentences in the langauge you are learning, separated by semi-colon(;), with blanks for words to fill",
         second_data_instructions: "The same sentences with the blanks filled, separated by semi-colon(;)",
-        ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 exercises, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, where I have to fill in the right preposition - use ___ for blanks. Then preapre me a separate list with the full correct answers. In each list, separate each sentence with semi-colon. Do not include punctuations to fill, just the prepositions.`
+        ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 exercises, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, where I have to fill in the right preposition - use ___ for blanks. Then preapre me a separate list with the full correct sentences. Do not include optional vowel indications, if relevant to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. In each list, separate each sentence with semi-colon. Do not include punctuations to fill, just the prepositions.`
     },
     {
         type: EXERCISE_TYPES.MATCHING, 

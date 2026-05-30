@@ -41,6 +41,7 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
             let canMoveNext = true;
             for (let j = 0; j < exerciseInfo.answers.length; j++) {
                 const inputRef = thisQuestionRefs.get(`${exerciseInfo.exerciseId}-${j}`);
+
                 if (inputRef.getUserAnswer().trim().toLowerCase() 
                         != replaceCharsForLanguage(user.languageSettings.targetLanguage, exerciseInfo.answers[j].trim().toLowerCase())) {
                     inputRef.setToError();

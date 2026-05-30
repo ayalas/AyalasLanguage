@@ -1,7 +1,4 @@
 .answer {
     direction: rtl;
-
-    @media (min-width: 1025px) {
-        margin-right: 40%;
-    }
+    text-align: left;
 }
