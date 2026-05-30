@@ -92,7 +92,7 @@ public static class AuthEndpoints
             ))
         .ToArrayAsync();
 
-        var languageSettings = new CurrentLanguageResponseDto(user.TargetLanguageId, user.TargetLanguage?.NativeName, user.KnownLanguageId, user.KnownLanguage?.NativeName, otherLanguages);
+        var languageSettings = new CurrentLanguageResponseDto(user.TargetLanguageId, user.TargetLanguage?.NativeName, user.KnownLanguageId, user.KnownLanguage?.NativeName, otherLanguages, user.TargetLanguage != null && user.TargetLanguage.IsRightToLeft);
 
         return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, languageSettings);
     }

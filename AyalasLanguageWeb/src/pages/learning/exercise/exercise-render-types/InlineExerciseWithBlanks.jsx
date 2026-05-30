@@ -47,7 +47,7 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
 
     return (
         <>
-            <div className="form-label-row">
+            <div className="form-label-row answer">
                 {
                     exerciseInfo.sentenceElements.map((part, i) => {
                         // Function to safely set/delete items in the Map

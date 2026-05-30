@@ -60,7 +60,7 @@ public class AyalasLanguageDbContext : DbContext
         // Seed common languages
         modelBuilder.Entity<Language>().HasData(
             new Language { LanguageId = (int)LanguageEnum.English, Code = "en", EnglishName = "English", NativeName = "English" },
-            new Language { LanguageId = (int)LanguageEnum.Arabic, Code = "ar", EnglishName = "Arabic", NativeName = "العربية" },
+            new Language { LanguageId = (int)LanguageEnum.Arabic, Code = "ar", EnglishName = "Arabic", NativeName = "العربية" , IsRightToLeft = true},
             new Language { LanguageId = (int)LanguageEnum.Danish, Code = "da", EnglishName = "Danish", NativeName = "Dansk" },
             new Language { LanguageId = (int)LanguageEnum.Spanish, Code = "es", EnglishName = "Spanish", NativeName = "Español" },
             new Language { LanguageId = (int)LanguageEnum.French, Code = "fr", EnglishName = "French", NativeName = "Français" },
@@ -78,7 +78,7 @@ public class AyalasLanguageDbContext : DbContext
             new Language { LanguageId = (int)LanguageEnum.Telugu, Code = "te", EnglishName = "Telugu", NativeName = "తెలుగు" },
             new Language { LanguageId = (int)LanguageEnum.Marathi, Code = "mr", EnglishName = "Marathi", NativeName = "मराठी" },
             new Language { LanguageId = (int)LanguageEnum.Tamil, Code = "ta", EnglishName = "Tamil", NativeName = "தமிழ்" },
-            new Language { LanguageId = (int)LanguageEnum.Urdu, Code = "ur", EnglishName = "Urdu", NativeName = "اردو" },
+            new Language { LanguageId = (int)LanguageEnum.Urdu, Code = "ur", EnglishName = "Urdu", NativeName = "اردو", IsRightToLeft = true },
             new Language { LanguageId = (int)LanguageEnum.Greek, Code = "el", EnglishName = "Greek", NativeName = "Ελληνικά" },
             new Language { LanguageId = (int)LanguageEnum.Dutch, Code = "nl", EnglishName = "Dutch", NativeName = "Nederlands" },
             new Language { LanguageId = (int)LanguageEnum.Swedish, Code = "sv", EnglishName = "Swedish", NativeName = "Svenska" },
@@ -91,9 +91,9 @@ public class AyalasLanguageDbContext : DbContext
             new Language { LanguageId = (int)LanguageEnum.Indonesian, Code = "id", EnglishName = "Indonesian", NativeName = "Bahasa Indonesia" },
             new Language { LanguageId = (int)LanguageEnum.Romanian, Code = "ro", EnglishName = "Romanian", NativeName = "Română" },
             new Language { LanguageId = (int)LanguageEnum.Ukrainian, Code = "uk", EnglishName = "Ukrainian", NativeName = "Українська" },
-            new Language { LanguageId = (int)LanguageEnum.Hebrew, Code = "he", EnglishName = "Hebrew", NativeName = "עברית" },
+            new Language { LanguageId = (int)LanguageEnum.Hebrew, Code = "he", EnglishName = "Hebrew", NativeName = "עברית" , IsRightToLeft = true},
             new Language { LanguageId = (int)LanguageEnum.Malay, Code = "ms", EnglishName = "Malay", NativeName = "Bahasa Melayu" },
-            new Language { LanguageId = (int)LanguageEnum.Persian, Code = "fa", EnglishName = "Persian", NativeName = "فارسی" },
+            new Language { LanguageId = (int)LanguageEnum.Persian, Code = "fa", EnglishName = "Persian", NativeName = "فارسی" , IsRightToLeft = true},
             new Language { LanguageId = (int)LanguageEnum.Slovak, Code = "sk", EnglishName = "Slovak", NativeName = "Slovenčina" },
             new Language { LanguageId = (int)LanguageEnum.Catalan, Code = "ca", EnglishName = "Catalan", NativeName = "Català" }
         );

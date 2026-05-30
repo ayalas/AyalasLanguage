@@ -16,6 +16,8 @@ namespace AyalasLanguageAPI.Model
         [StringLength(5)]
         public string? Code { get; set; }
 
+        public bool IsRightToLeft { get; set; } = false;
+
         // Navigation properties
         public virtual ICollection<UserLanguage> UserLanguages { get; set; } = new List<UserLanguage>();
 

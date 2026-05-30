@@ -2,6 +2,8 @@ import { useRef, forwardRef, useImperativeHandle } from 'react';
 
 import { ExerciseInput } from '../../../../components/content-creator/ExerciseInput';
 
+import { EXERCISE_TYPES } from '../../../../constants/learning';
+
 export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer }, ref) => {
     const inputRef = useRef(null);
 
@@ -37,7 +39,7 @@ export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError,
             <div className="form-row">
                 <div className="form-label-row">{exerciseInfo.data.First}</div>
             </div>
-            <div className="form-row">
+            <div className={`${exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET ? "form-row answer" : "form-row"  }`}>
                 <ExerciseInput
                     ref={inputRef}
                     charWidth={(2 + exerciseInfo.data.Second.length)}

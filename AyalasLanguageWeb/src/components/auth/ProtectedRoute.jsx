@@ -12,7 +12,21 @@ const ProtectedRoute = () => {
   }
 
   // If there is no user, redirect to login page
-  return user ? <Outlet context={{ user, logout, login }} /> : <Navigate to="/login" replace />;
+  if (user) {
+    //import right to left css conditionally
+    if (user.languageSettings && user.languageSettings.targetLanguageIsRightToLeft) {
+      import('../../assets/RightToLeft.css');
+    }
+
+    return (
+      <Outlet context={{ user, logout, login }} />
+    );
+  }
+  else {
+    return (
+      <Navigate to="/login" replace />
+    );
+  }
 };
 
 export default ProtectedRoute;
