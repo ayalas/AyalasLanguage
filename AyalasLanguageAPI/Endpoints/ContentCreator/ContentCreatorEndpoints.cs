@@ -124,8 +124,14 @@ public static class ContentCreatorEndpoints
 
         db.LearningPaths.Add(path);
         await db.SaveChangesAsync();
-        prevPath?.NextLearningPathId = path.LearningPathId;
-        nextPath?.PrevLearningPathId = path.LearningPathId;
+        if (prevPath != null)
+        {
+            prevPath.NextLearningPathId = path.LearningPathId;
+        }
+        if (nextPath != null)
+        {
+            nextPath.PrevLearningPathId = path.LearningPathId;
+        }
         await db.SaveChangesAsync();
 
         return Results.Created($"/api/learning/path/{path.LearningPathId}", new CreateLearningPathResponseDto(path.LearningPathId));
@@ -212,14 +218,18 @@ public static class ContentCreatorEndpoints
         var prevPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.NextLearningPathId == id);
         var nextPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.PrevLearningPathId == id);
 
-        //no need to unlink first, we can just update the links after deletion
-        //prevPath?.NextLearningPathId = null;
-        //nextPath?.PrevLearningPathId = null;
 
         db.LearningPaths.Remove(path);
         await db.SaveChangesAsync();
-        prevPath?.NextLearningPathId = path.NextLearningPathId;
-        nextPath?.PrevLearningPathId = path.PrevLearningPathId;
+        if (prevPath != null)
+        {
+            prevPath.NextLearningPathId = path.NextLearningPathId;
+        }
+        if (nextPath != null)
+        {
+            nextPath.PrevLearningPathId = path.PrevLearningPathId;
+        }
+        
         await db.SaveChangesAsync();
         return Results.NoContent();
     }

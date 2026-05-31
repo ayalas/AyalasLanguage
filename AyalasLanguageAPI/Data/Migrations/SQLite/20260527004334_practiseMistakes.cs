@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     /// <inheritdoc />
     public partial class practiseMistakes : Migration

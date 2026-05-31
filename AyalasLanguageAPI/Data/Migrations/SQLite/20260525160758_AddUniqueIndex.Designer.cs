@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    [Migration("20260526044827_UserProgressExercise")]
-    partial class UserProgressExercise
+    [Migration("20260525160758_AddUniqueIndex")]
+    partial class AddUniqueIndex
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -545,12 +545,7 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Property<int>("LearningPathId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ExerciseId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("UserId", "LearningPathId");
-
-                    b.HasIndex("ExerciseId");
 
                     b.HasIndex("LearningPathId");
 
@@ -698,10 +693,6 @@ namespace AyalasLanguageAPI.Data.Migrations
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.UserProgress", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Exercise", "Exercise")
-                        .WithMany()
-                        .HasForeignKey("ExerciseId");
-
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
                         .WithMany()
                         .HasForeignKey("LearningPathId")
@@ -713,8 +704,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Exercise");
 
                     b.Navigation("LearningPath");
 

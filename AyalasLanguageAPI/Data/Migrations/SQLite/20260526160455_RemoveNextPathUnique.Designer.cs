@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    [Migration("20260527004334_practiseMistakes")]
-    partial class practiseMistakes
+    [Migration("20260526160455_RemoveNextPathUnique")]
+    partial class RemoveNextPathUnique
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -16,7 +16,7 @@ RUN npm run build
 # ==========================================
 # STAGE 2: Build and Publish the .NET Backend
 # ==========================================
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS publish
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS publish
 WORKDIR /src
 
 # Copy and restore .NET dependencies
@@ -32,7 +32,7 @@ RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 # ==========================================
 # STAGE 3: Final Combined Runtime Image
 # ==========================================
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 WORKDIR /app
 
 ARG BUILD_ENV

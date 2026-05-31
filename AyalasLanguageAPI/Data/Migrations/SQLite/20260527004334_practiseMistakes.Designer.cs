@@ -3,16 +3,19 @@ using System;
 using AyalasLanguageAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    partial class AyalasLanguageDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260527004334_practiseMistakes")]
+    partial class practiseMistakes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
@@ -119,9 +122,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsRightToLeft")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("NativeName")
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
@@ -136,7 +136,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 1,
                             Code = "en",
                             EnglishName = "English",
-                            IsRightToLeft = false,
                             NativeName = "English"
                         },
                         new
@@ -144,7 +143,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 2,
                             Code = "ar",
                             EnglishName = "Arabic",
-                            IsRightToLeft = true,
                             NativeName = "العربية"
                         },
                         new
@@ -152,7 +150,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 3,
                             Code = "da",
                             EnglishName = "Danish",
-                            IsRightToLeft = false,
                             NativeName = "Dansk"
                         },
                         new
@@ -160,7 +157,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 4,
                             Code = "es",
                             EnglishName = "Spanish",
-                            IsRightToLeft = false,
                             NativeName = "Español"
                         },
                         new
@@ -168,7 +164,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 5,
                             Code = "fr",
                             EnglishName = "French",
-                            IsRightToLeft = false,
                             NativeName = "Français"
                         },
                         new
@@ -176,7 +171,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 6,
                             Code = "de",
                             EnglishName = "German",
-                            IsRightToLeft = false,
                             NativeName = "Deutsch"
                         },
                         new
@@ -184,7 +178,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 7,
                             Code = "ja",
                             EnglishName = "Japanese",
-                            IsRightToLeft = false,
                             NativeName = "日本語"
                         },
                         new
@@ -192,7 +185,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 8,
                             Code = "zh",
                             EnglishName = "Mandarin Chinese",
-                            IsRightToLeft = false,
                             NativeName = "普通话"
                         },
                         new
@@ -200,7 +192,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 9,
                             Code = "hi",
                             EnglishName = "Hindi",
-                            IsRightToLeft = false,
                             NativeName = "हिन्दी"
                         },
                         new
@@ -208,7 +199,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 10,
                             Code = "pt",
                             EnglishName = "Portuguese",
-                            IsRightToLeft = false,
                             NativeName = "Português"
                         },
                         new
@@ -216,7 +206,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 11,
                             Code = "ru",
                             EnglishName = "Russian",
-                            IsRightToLeft = false,
                             NativeName = "Русский"
                         },
                         new
@@ -224,7 +213,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 12,
                             Code = "bn",
                             EnglishName = "Bengali",
-                            IsRightToLeft = false,
                             NativeName = "বাংলা"
                         },
                         new
@@ -232,7 +220,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 13,
                             Code = "ko",
                             EnglishName = "Korean",
-                            IsRightToLeft = false,
                             NativeName = "한국어"
                         },
                         new
@@ -240,7 +227,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 14,
                             Code = "it",
                             EnglishName = "Italian",
-                            IsRightToLeft = false,
                             NativeName = "Italiano"
                         },
                         new
@@ -248,7 +234,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 15,
                             Code = "tr",
                             EnglishName = "Turkish",
-                            IsRightToLeft = false,
                             NativeName = "Türkçe"
                         },
                         new
@@ -256,7 +241,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 16,
                             Code = "vi",
                             EnglishName = "Vietnamese",
-                            IsRightToLeft = false,
                             NativeName = "Tiếng Việt"
                         },
                         new
@@ -264,7 +248,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 17,
                             Code = "te",
                             EnglishName = "Telugu",
-                            IsRightToLeft = false,
                             NativeName = "తెలుగు"
                         },
                         new
@@ -272,7 +255,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 18,
                             Code = "mr",
                             EnglishName = "Marathi",
-                            IsRightToLeft = false,
                             NativeName = "मराठी"
                         },
                         new
@@ -280,7 +262,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 19,
                             Code = "ta",
                             EnglishName = "Tamil",
-                            IsRightToLeft = false,
                             NativeName = "தமிழ்"
                         },
                         new
@@ -288,7 +269,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 20,
                             Code = "ur",
                             EnglishName = "Urdu",
-                            IsRightToLeft = true,
                             NativeName = "اردو"
                         },
                         new
@@ -296,7 +276,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 21,
                             Code = "el",
                             EnglishName = "Greek",
-                            IsRightToLeft = false,
                             NativeName = "Ελληνικά"
                         },
                         new
@@ -304,7 +283,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 22,
                             Code = "nl",
                             EnglishName = "Dutch",
-                            IsRightToLeft = false,
                             NativeName = "Nederlands"
                         },
                         new
@@ -312,7 +290,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 23,
                             Code = "sv",
                             EnglishName = "Swedish",
-                            IsRightToLeft = false,
                             NativeName = "Svenska"
                         },
                         new
@@ -320,7 +297,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 24,
                             Code = "no",
                             EnglishName = "Norwegian",
-                            IsRightToLeft = false,
                             NativeName = "Norsk"
                         },
                         new
@@ -328,7 +304,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 25,
                             Code = "pl",
                             EnglishName = "Polish",
-                            IsRightToLeft = false,
                             NativeName = "Polski"
                         },
                         new
@@ -336,7 +311,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 26,
                             Code = "fi",
                             EnglishName = "Finnish",
-                            IsRightToLeft = false,
                             NativeName = "Suomi"
                         },
                         new
@@ -344,7 +318,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 27,
                             Code = "cs",
                             EnglishName = "Czech",
-                            IsRightToLeft = false,
                             NativeName = "Čeština"
                         },
                         new
@@ -352,7 +325,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 28,
                             Code = "hu",
                             EnglishName = "Hungarian",
-                            IsRightToLeft = false,
                             NativeName = "Magyar"
                         },
                         new
@@ -360,7 +332,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 29,
                             Code = "th",
                             EnglishName = "Thai",
-                            IsRightToLeft = false,
                             NativeName = "ไทย"
                         },
                         new
@@ -368,7 +339,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 30,
                             Code = "id",
                             EnglishName = "Indonesian",
-                            IsRightToLeft = false,
                             NativeName = "Bahasa Indonesia"
                         },
                         new
@@ -376,7 +346,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 31,
                             Code = "ro",
                             EnglishName = "Romanian",
-                            IsRightToLeft = false,
                             NativeName = "Română"
                         },
                         new
@@ -384,7 +353,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 32,
                             Code = "uk",
                             EnglishName = "Ukrainian",
-                            IsRightToLeft = false,
                             NativeName = "Українська"
                         },
                         new
@@ -392,7 +360,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 33,
                             Code = "he",
                             EnglishName = "Hebrew",
-                            IsRightToLeft = true,
                             NativeName = "עברית"
                         },
                         new
@@ -400,7 +367,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 34,
                             Code = "ms",
                             EnglishName = "Malay",
-                            IsRightToLeft = false,
                             NativeName = "Bahasa Melayu"
                         },
                         new
@@ -408,7 +374,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 35,
                             Code = "fa",
                             EnglishName = "Persian",
-                            IsRightToLeft = true,
                             NativeName = "فارسی"
                         },
                         new
@@ -416,7 +381,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 36,
                             Code = "sk",
                             EnglishName = "Slovak",
-                            IsRightToLeft = false,
                             NativeName = "Slovenčina"
                         },
                         new
@@ -424,7 +388,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                             LanguageId = 37,
                             Code = "ca",
                             EnglishName = "Catalan",
-                            IsRightToLeft = false,
                             NativeName = "Català"
                         });
                 });
@@ -584,9 +547,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("ExerciseId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("practiseMistakesInThisPath")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("UserId", "LearningPathId");

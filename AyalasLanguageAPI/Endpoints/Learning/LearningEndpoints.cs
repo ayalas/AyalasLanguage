@@ -30,29 +30,39 @@ public static class LearningEndpoints
         var userId = claim.GetUserId();
 
         return Results.Ok(await db.LearningPaths
-        .Where(lp => lp.LearningPathId == pathId)
-        .LeftJoin(db.UserProgresses.Where(up => up.UserId == userId),
-            lp => lp.LearningPathId,
-            up => up.LearningPathId,
-            (lp, up) => new LearningPathSingleDto
-            (
-                lp.LearningPathId,
-                lp.Level,
-                lp.Chapter,
-                lp.Name,
-                up == null ? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
-                up == null ? null : up.ExerciseId,
-                db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId
-                //add if we want to handle approved exercises
-                //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
-                ),
-                lp.PrevLearningPathId,
-                lp.NextLearningPathId,
-                lp.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner,
-                up != null && up.practiseMistakesInThisPath
+            .Where(lp => lp.LearningPathId == pathId)
+            // 1. GroupJoin correlates the LearningPath with the filtered UserProgress
+            .GroupJoin(
+                db.UserProgresses.Where(up => up.UserId == userId),
+                lp => lp.LearningPathId,
+                up => up.LearningPathId,
+                (lp, userProgressGroup) => new { lp, userProgressGroup }
             )
-        )
-        .FirstOrDefaultAsync());
+            // 2. SelectMany with DefaultIfEmpty flattens the group into a true SQL LEFT JOIN
+            .SelectMany(
+                x => x.userProgressGroup.DefaultIfEmpty(),
+                (x, up) => new LearningPathSingleDto
+                (
+                    x.lp.LearningPathId,
+                    x.lp.Level,
+                    x.lp.Chapter,
+                    x.lp.Name,
+                    // EF9 cleanly translates null-coalescing and conditionals here into SQL CASE WHEN
+                    up == null
+                        ? (byte)UserProgressEnum.NotStarted
+                        : up.ExerciseId == null
+                            ? (byte)UserProgressEnum.Done
+                            : (byte)UserProgressEnum.InProgress,
+                    up == null ? null : up.ExerciseId,
+                    // EF9 optimizes correlated subquery counts beautifully
+                    db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId),
+                    x.lp.PrevLearningPathId,
+                    x.lp.NextLearningPathId,
+                    x.lp.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner,
+                    up != null && up.practiseMistakesInThisPath
+                )
+            )
+            .FirstOrDefaultAsync());
     }
 
     [Authorize]
@@ -70,23 +80,34 @@ public static class LearningEndpoints
 
         int languageId = user.TargetLanguageId.Value;
 
-        var learningPathsWithStatus = await db.LearningPaths
+            var learningPathsWithStatus = await db.LearningPaths
         .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value)
-        .LeftJoin(db.UserProgresses.Where(up => up.UserId == userId),
+        // 1. Correlate LearningPaths with the user's specific progress records
+        .GroupJoin(
+            db.UserProgresses.Where(up => up.UserId == userId),
             lp => lp.LearningPathId,
             up => up.LearningPathId,
-            (lp, up) => new LearningPathDto
+            (lp, userProgressGroup) => new { lp, userProgressGroup }
+        )
+        // 2. Flatten the group into a true left outer join
+        .SelectMany(
+            x => x.userProgressGroup.DefaultIfEmpty(),
+            (x, up) => new LearningPathDto
             (
-                lp.LearningPathId,
-                lp.Level,
-                lp.Chapter,
-                lp.Name,
-                up == null ? (byte)UserProgressEnum.NotStarted : up.ExerciseId == null ? (byte)UserProgressEnum.Done : (byte)UserProgressEnum.InProgress,
-                db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId),
-                //add if we want to handle approved exercises
-                //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
-                lp.PrevLearningPathId,
-                lp.NextLearningPathId,
+                x.lp.LearningPathId,
+                x.lp.Level,
+                x.lp.Chapter,
+                x.lp.Name,
+                // EF9 translates this conditional tree perfectly into a SQL CASE WHEN statement
+                up == null 
+                    ? (byte)UserProgressEnum.NotStarted 
+                    : up.ExerciseId == null 
+                        ? (byte)UserProgressEnum.Done 
+                        : (byte)UserProgressEnum.InProgress,
+                // EF9 optimizes this into a sub-select COUNT query
+                db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId),
+                x.lp.PrevLearningPathId,
+                x.lp.NextLearningPathId,
                 up != null && up.practiseMistakesInThisPath
             )
         )
@@ -122,7 +143,7 @@ public static class LearningEndpoints
         var userId = claim.GetUserId();
         var progress = await db.UserProgresses
             .FirstOrDefaultAsync(p => p.UserId == userId && p.LearningPathId == dto.LearningPathId);
-        
+
         int? exerciseId = null;
         bool practiseMistakesInThisPath = false;
 
@@ -279,7 +300,7 @@ public static class LearningEndpoints
 
         //no learning path for mistakes found
         if (learningPathForMistakes == null)
-        { 
+        {
             return Results.NoContent();
         }
 
@@ -290,10 +311,10 @@ public static class LearningEndpoints
             .FirstOrDefaultAsync();
 
         //only add mistake if not added already lastly
-        if (lastExercise == null || ( lastExercise.ExerciseId != dto.ExerciseId
+        if (lastExercise == null || (lastExercise.ExerciseId != dto.ExerciseId
         && (lastExercise.ExerciseTypeId != exercise.ExerciseTypeId
             || lastExercise.Data != exercise.Data
-            ) ))
+            )))
         {
 
             var exerciseToAdd = new Exercise

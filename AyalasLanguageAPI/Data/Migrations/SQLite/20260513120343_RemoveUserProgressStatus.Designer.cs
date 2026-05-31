@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    [Migration("20260527011835_practiseMistakes2")]
-    partial class practiseMistakes2
+    [Migration("20260513120343_RemoveUserProgressStatus")]
+    partial class RemoveUserProgressStatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,16 +34,10 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Property<int>("ExerciseTypeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("KnownLanguageId")
+                    b.Property<int>("LanguageId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("LearningPathId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<byte>("Status")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TargetLanguageId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("UserId")
@@ -53,11 +47,9 @@ namespace AyalasLanguageAPI.Data.Migrations
 
                     b.HasIndex("ExerciseTypeId");
 
-                    b.HasIndex("KnownLanguageId");
+                    b.HasIndex("LanguageId");
 
                     b.HasIndex("LearningPathId");
-
-                    b.HasIndex("TargetLanguageId");
 
                     b.HasIndex("UserId");
 
@@ -401,7 +393,7 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Property<byte>("Chapter")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("KnownLanguageId")
+                    b.Property<int>("LanguageId")
                         .HasColumnType("INTEGER");
 
                     b.Property<uint>("Level")
@@ -420,24 +412,17 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Property<byte>("Status")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("TargetLanguageId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("LearningPathId");
 
-                    b.HasIndex("KnownLanguageId");
+                    b.HasIndex("LanguageId");
 
-                    b.HasIndex("NextLearningPathId");
-
-                    b.HasIndex("PrevLearningPathId");
+                    b.HasIndex("NextLearningPathId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
-
-                    b.HasIndex("TargetLanguageId", "KnownLanguageId", "Level", "Chapter")
-                        .IsUnique();
 
                     b.ToTable("LearningPaths");
                 });
@@ -546,15 +531,7 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Property<int>("LearningPathId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ExerciseId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("practiseMistakesInThisPath")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("UserId", "LearningPathId");
-
-                    b.HasIndex("ExerciseId");
 
                     b.HasIndex("LearningPathId");
 
@@ -569,21 +546,15 @@ namespace AyalasLanguageAPI.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
+                    b.HasOne("AyalasLanguageAPI.Model.Language", "Language")
                         .WithMany()
-                        .HasForeignKey("KnownLanguageId")
+                        .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
                         .WithMany("Exercises")
                         .HasForeignKey("LearningPathId");
-
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
-                        .WithMany()
-                        .HasForeignKey("TargetLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.User", "User")
                         .WithMany()
@@ -593,38 +564,25 @@ namespace AyalasLanguageAPI.Data.Migrations
 
                     b.Navigation("ExerciseType");
 
-                    b.Navigation("KnownLanguage");
+                    b.Navigation("Language");
 
                     b.Navigation("LearningPath");
-
-                    b.Navigation("TargetLanguage");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
-                        .WithMany()
-                        .HasForeignKey("KnownLanguageId")
+                    b.HasOne("AyalasLanguageAPI.Model.Language", "Language")
+                        .WithMany("LearningPaths")
+                        .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "NextLearningPath")
-                        .WithMany()
-                        .HasForeignKey("NextLearningPathId")
+                        .WithOne("PrevLearningPath")
+                        .HasForeignKey("AyalasLanguageAPI.Model.LearningPath", "NextLearningPathId")
                         .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "PrevLearningPath")
-                        .WithMany()
-                        .HasForeignKey("PrevLearningPathId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
-                        .WithMany()
-                        .HasForeignKey("TargetLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.User", "User")
                         .WithMany("LearningPaths")
@@ -632,13 +590,9 @@ namespace AyalasLanguageAPI.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("KnownLanguage");
+                    b.Navigation("Language");
 
                     b.Navigation("NextLearningPath");
-
-                    b.Navigation("PrevLearningPath");
-
-                    b.Navigation("TargetLanguage");
 
                     b.Navigation("User");
                 });
@@ -709,10 +663,6 @@ namespace AyalasLanguageAPI.Data.Migrations
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.UserProgress", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Exercise", "Exercise")
-                        .WithMany()
-                        .HasForeignKey("ExerciseId");
-
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
                         .WithMany()
                         .HasForeignKey("LearningPathId")
@@ -725,8 +675,6 @@ namespace AyalasLanguageAPI.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Exercise");
-
                     b.Navigation("LearningPath");
 
                     b.Navigation("User");
@@ -734,12 +682,16 @@ namespace AyalasLanguageAPI.Data.Migrations
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.Language", b =>
                 {
+                    b.Navigation("LearningPaths");
+
                     b.Navigation("UserLanguages");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
                 {
                     b.Navigation("Exercises");
+
+                    b.Navigation("PrevLearningPath");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.User", b =>

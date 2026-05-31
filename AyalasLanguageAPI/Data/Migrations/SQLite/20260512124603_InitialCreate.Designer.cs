@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    [Migration("20260513074514_ImproveAPIFlow")]
-    partial class ImproveAPIFlow
+    [Migration("20260512124603_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -528,13 +528,18 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("LearningPathId")
                         .HasColumnType("INTEGER");
 
                     b.Property<byte>("Status")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("UserId", "LearningPathId");
+                    b.HasKey("UserId", "LanguageId", "LearningPathId");
+
+                    b.HasIndex("LanguageId");
 
                     b.HasIndex("LearningPathId");
 
@@ -666,6 +671,12 @@ namespace AyalasLanguageAPI.Data.Migrations
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.UserProgress", b =>
                 {
+                    b.HasOne("AyalasLanguageAPI.Model.Language", "Language")
+                        .WithMany()
+                        .HasForeignKey("LanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
                         .WithMany()
                         .HasForeignKey("LearningPathId")
@@ -677,6 +688,8 @@ namespace AyalasLanguageAPI.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Language");
 
                     b.Navigation("LearningPath");
 

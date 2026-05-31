@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    [Migration("20260513120343_RemoveUserProgressStatus")]
-    partial class RemoveUserProgressStatus
+    [Migration("20260513074514_ImproveAPIFlow")]
+    partial class ImproveAPIFlow
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -531,6 +531,9 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Property<int>("LearningPathId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<byte>("Status")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("UserId", "LearningPathId");
 
                     b.HasIndex("LearningPathId");
@@ -553,7 +556,7 @@ namespace AyalasLanguageAPI.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
-                        .WithMany("Exercises")
+                        .WithMany()
                         .HasForeignKey("LearningPathId");
 
                     b.HasOne("AyalasLanguageAPI.Model.User", "User")
@@ -689,8 +692,6 @@ namespace AyalasLanguageAPI.Data.Migrations
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
                 {
-                    b.Navigation("Exercises");
-
                     b.Navigation("PrevLearningPath");
                 });
 

@@ -8,6 +8,12 @@ AyalasLanguageAPI - Backend is implemented with ASP.Net Core Minimal APIs, Entit
 
 AyalasLanguageWEB - Frontend implemented with React and JavaScript
 
+## AWS Demo Site (Production)
+Served by AWS Beanstalk with an external MySQL instance in this address:
+https://AyalasLanguageApp.eu-north-1.elasticbeanstalk.com
+
+In the profile page after registering and logging in choose to learn Danish or Arabic.
+
 ## Dev environment
 To stage this app in the development environment:
 For the backend, inside AyalasLanguageAPI, run:
@@ -25,7 +31,7 @@ npm run dev
 Browse to the url provided by vite http://localhost:5097
 
 ## Docker commands (Staging)
-To build and stage this app using Docker, from the root folder of the solution, run the docker file to build the image (note: Production requires a mysql instance, so we choose Staging here):
+To build and stage this app using Docker, from the root folder of the solution, run the docker file to build the image (note about env: a non-Development environment means the static files are served from the backend. Also, the path to sqlite changes and maps to the volume setup here):
 
 docker build --build-arg BUILD_ENV=Staging -t ayalas-language-app -f AyalasLanguageAPI/Dockerfile .
 
@@ -35,11 +41,7 @@ docker run -d -p [::1]:8080:8080 -e ASPNETCORE_HTTP_PORTS=8080 --name ayalas-lan
 
 Then, browse to http://localhost:8080
 
-## AWS Demo Site (Production)
-Served by AWS Beanstalk with an external MySQL instance in this address:
-
-## Publish to an AWS Beanstalk environment with powershell:
-prepare the files with poweshell script:
+## Publish to an AWS Beanstalk environment, MySQL database enabled, with a powershell script
 
 run build.bat from windows explorer, or run the following powershell script in the terminal, from the solution root:
 powershell -NoProfile -ExecutionPolicy Bypass -File ".\build.ps1"

@@ -2,28 +2,28 @@
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     /// <inheritdoc />
-    public partial class practiseMistakes2 : Migration
+    public partial class AddStatusToExercise : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "practiseMistakesInThisPath",
-                table: "UserProgresses",
+            migrationBuilder.AddColumn<byte>(
+                name: "Status",
+                table: "Exercises",
                 type: "INTEGER",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: (byte)0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "practiseMistakesInThisPath",
-                table: "UserProgresses");
+                name: "Status",
+                table: "Exercises");
         }
     }
 }
