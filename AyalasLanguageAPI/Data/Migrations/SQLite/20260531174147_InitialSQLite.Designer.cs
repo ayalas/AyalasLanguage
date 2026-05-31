@@ -8,17 +8,17 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations.SQLite
+namespace Data.Migrations.SQLite
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    [Migration("20260512124603_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260531174147_InitialSQLite")]
+    partial class InitialSQLite
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.7");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.16");
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.Exercise", b =>
                 {
@@ -34,10 +34,16 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Property<int>("ExerciseTypeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("LanguageId")
+                    b.Property<int>("KnownLanguageId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("LearningPathId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TargetLanguageId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("UserId")
@@ -47,9 +53,11 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("ExerciseTypeId");
 
-                    b.HasIndex("LanguageId");
+                    b.HasIndex("KnownLanguageId");
 
                     b.HasIndex("LearningPathId");
+
+                    b.HasIndex("TargetLanguageId");
 
                     b.HasIndex("UserId");
 
@@ -114,6 +122,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsRightToLeft")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("NativeName")
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
@@ -128,6 +139,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 1,
                             Code = "en",
                             EnglishName = "English",
+                            IsRightToLeft = false,
                             NativeName = "English"
                         },
                         new
@@ -135,6 +147,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 2,
                             Code = "ar",
                             EnglishName = "Arabic",
+                            IsRightToLeft = true,
                             NativeName = "العربية"
                         },
                         new
@@ -142,6 +155,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 3,
                             Code = "da",
                             EnglishName = "Danish",
+                            IsRightToLeft = false,
                             NativeName = "Dansk"
                         },
                         new
@@ -149,6 +163,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 4,
                             Code = "es",
                             EnglishName = "Spanish",
+                            IsRightToLeft = false,
                             NativeName = "Español"
                         },
                         new
@@ -156,6 +171,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 5,
                             Code = "fr",
                             EnglishName = "French",
+                            IsRightToLeft = false,
                             NativeName = "Français"
                         },
                         new
@@ -163,6 +179,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 6,
                             Code = "de",
                             EnglishName = "German",
+                            IsRightToLeft = false,
                             NativeName = "Deutsch"
                         },
                         new
@@ -170,6 +187,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 7,
                             Code = "ja",
                             EnglishName = "Japanese",
+                            IsRightToLeft = false,
                             NativeName = "日本語"
                         },
                         new
@@ -177,6 +195,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 8,
                             Code = "zh",
                             EnglishName = "Mandarin Chinese",
+                            IsRightToLeft = false,
                             NativeName = "普通话"
                         },
                         new
@@ -184,6 +203,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 9,
                             Code = "hi",
                             EnglishName = "Hindi",
+                            IsRightToLeft = false,
                             NativeName = "हिन्दी"
                         },
                         new
@@ -191,6 +211,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 10,
                             Code = "pt",
                             EnglishName = "Portuguese",
+                            IsRightToLeft = false,
                             NativeName = "Português"
                         },
                         new
@@ -198,6 +219,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 11,
                             Code = "ru",
                             EnglishName = "Russian",
+                            IsRightToLeft = false,
                             NativeName = "Русский"
                         },
                         new
@@ -205,6 +227,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 12,
                             Code = "bn",
                             EnglishName = "Bengali",
+                            IsRightToLeft = false,
                             NativeName = "বাংলা"
                         },
                         new
@@ -212,6 +235,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 13,
                             Code = "ko",
                             EnglishName = "Korean",
+                            IsRightToLeft = false,
                             NativeName = "한국어"
                         },
                         new
@@ -219,6 +243,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 14,
                             Code = "it",
                             EnglishName = "Italian",
+                            IsRightToLeft = false,
                             NativeName = "Italiano"
                         },
                         new
@@ -226,6 +251,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 15,
                             Code = "tr",
                             EnglishName = "Turkish",
+                            IsRightToLeft = false,
                             NativeName = "Türkçe"
                         },
                         new
@@ -233,6 +259,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 16,
                             Code = "vi",
                             EnglishName = "Vietnamese",
+                            IsRightToLeft = false,
                             NativeName = "Tiếng Việt"
                         },
                         new
@@ -240,6 +267,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 17,
                             Code = "te",
                             EnglishName = "Telugu",
+                            IsRightToLeft = false,
                             NativeName = "తెలుగు"
                         },
                         new
@@ -247,6 +275,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 18,
                             Code = "mr",
                             EnglishName = "Marathi",
+                            IsRightToLeft = false,
                             NativeName = "मराठी"
                         },
                         new
@@ -254,6 +283,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 19,
                             Code = "ta",
                             EnglishName = "Tamil",
+                            IsRightToLeft = false,
                             NativeName = "தமிழ்"
                         },
                         new
@@ -261,6 +291,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 20,
                             Code = "ur",
                             EnglishName = "Urdu",
+                            IsRightToLeft = true,
                             NativeName = "اردو"
                         },
                         new
@@ -268,6 +299,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 21,
                             Code = "el",
                             EnglishName = "Greek",
+                            IsRightToLeft = false,
                             NativeName = "Ελληνικά"
                         },
                         new
@@ -275,6 +307,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 22,
                             Code = "nl",
                             EnglishName = "Dutch",
+                            IsRightToLeft = false,
                             NativeName = "Nederlands"
                         },
                         new
@@ -282,6 +315,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 23,
                             Code = "sv",
                             EnglishName = "Swedish",
+                            IsRightToLeft = false,
                             NativeName = "Svenska"
                         },
                         new
@@ -289,6 +323,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 24,
                             Code = "no",
                             EnglishName = "Norwegian",
+                            IsRightToLeft = false,
                             NativeName = "Norsk"
                         },
                         new
@@ -296,6 +331,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 25,
                             Code = "pl",
                             EnglishName = "Polish",
+                            IsRightToLeft = false,
                             NativeName = "Polski"
                         },
                         new
@@ -303,6 +339,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 26,
                             Code = "fi",
                             EnglishName = "Finnish",
+                            IsRightToLeft = false,
                             NativeName = "Suomi"
                         },
                         new
@@ -310,6 +347,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 27,
                             Code = "cs",
                             EnglishName = "Czech",
+                            IsRightToLeft = false,
                             NativeName = "Čeština"
                         },
                         new
@@ -317,6 +355,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 28,
                             Code = "hu",
                             EnglishName = "Hungarian",
+                            IsRightToLeft = false,
                             NativeName = "Magyar"
                         },
                         new
@@ -324,6 +363,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 29,
                             Code = "th",
                             EnglishName = "Thai",
+                            IsRightToLeft = false,
                             NativeName = "ไทย"
                         },
                         new
@@ -331,6 +371,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 30,
                             Code = "id",
                             EnglishName = "Indonesian",
+                            IsRightToLeft = false,
                             NativeName = "Bahasa Indonesia"
                         },
                         new
@@ -338,6 +379,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 31,
                             Code = "ro",
                             EnglishName = "Romanian",
+                            IsRightToLeft = false,
                             NativeName = "Română"
                         },
                         new
@@ -345,6 +387,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 32,
                             Code = "uk",
                             EnglishName = "Ukrainian",
+                            IsRightToLeft = false,
                             NativeName = "Українська"
                         },
                         new
@@ -352,6 +395,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 33,
                             Code = "he",
                             EnglishName = "Hebrew",
+                            IsRightToLeft = true,
                             NativeName = "עברית"
                         },
                         new
@@ -359,6 +403,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 34,
                             Code = "ms",
                             EnglishName = "Malay",
+                            IsRightToLeft = false,
                             NativeName = "Bahasa Melayu"
                         },
                         new
@@ -366,6 +411,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 35,
                             Code = "fa",
                             EnglishName = "Persian",
+                            IsRightToLeft = true,
                             NativeName = "فارسی"
                         },
                         new
@@ -373,6 +419,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 36,
                             Code = "sk",
                             EnglishName = "Slovak",
+                            IsRightToLeft = false,
                             NativeName = "Slovenčina"
                         },
                         new
@@ -380,6 +427,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             LanguageId = 37,
                             Code = "ca",
                             EnglishName = "Catalan",
+                            IsRightToLeft = false,
                             NativeName = "Català"
                         });
                 });
@@ -393,7 +441,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Property<byte>("Chapter")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("LanguageId")
+                    b.Property<int>("KnownLanguageId")
                         .HasColumnType("INTEGER");
 
                     b.Property<uint>("Level")
@@ -412,17 +460,24 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Property<byte>("Status")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("TargetLanguageId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("LearningPathId");
 
-                    b.HasIndex("LanguageId");
+                    b.HasIndex("KnownLanguageId");
 
-                    b.HasIndex("NextLearningPathId")
-                        .IsUnique();
+                    b.HasIndex("NextLearningPathId");
+
+                    b.HasIndex("PrevLearningPathId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("TargetLanguageId", "KnownLanguageId", "Level", "Chapter")
+                        .IsUnique();
 
                     b.ToTable("LearningPaths");
                 });
@@ -528,18 +583,18 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("LanguageId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("LearningPathId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<byte>("Status")
+                    b.Property<int?>("ExerciseId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("UserId", "LanguageId", "LearningPathId");
+                    b.Property<bool>("practiseMistakesInThisPath")
+                        .HasColumnType("INTEGER");
 
-                    b.HasIndex("LanguageId");
+                    b.HasKey("UserId", "LearningPathId");
+
+                    b.HasIndex("ExerciseId");
 
                     b.HasIndex("LearningPathId");
 
@@ -554,15 +609,21 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "Language")
+                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
                         .WithMany()
-                        .HasForeignKey("LanguageId")
+                        .HasForeignKey("KnownLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
-                        .WithMany()
+                        .WithMany("Exercises")
                         .HasForeignKey("LearningPathId");
+
+                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
+                        .WithMany()
+                        .HasForeignKey("TargetLanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.User", "User")
                         .WithMany()
@@ -572,25 +633,38 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.Navigation("ExerciseType");
 
-                    b.Navigation("Language");
+                    b.Navigation("KnownLanguage");
 
                     b.Navigation("LearningPath");
+
+                    b.Navigation("TargetLanguage");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "Language")
-                        .WithMany("LearningPaths")
-                        .HasForeignKey("LanguageId")
+                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
+                        .WithMany()
+                        .HasForeignKey("KnownLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "NextLearningPath")
-                        .WithOne("PrevLearningPath")
-                        .HasForeignKey("AyalasLanguageAPI.Model.LearningPath", "NextLearningPathId")
+                        .WithMany()
+                        .HasForeignKey("NextLearningPathId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "PrevLearningPath")
+                        .WithMany()
+                        .HasForeignKey("PrevLearningPathId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
+                        .WithMany()
+                        .HasForeignKey("TargetLanguageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AyalasLanguageAPI.Model.User", "User")
                         .WithMany("LearningPaths")
@@ -598,9 +672,13 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Language");
+                    b.Navigation("KnownLanguage");
 
                     b.Navigation("NextLearningPath");
+
+                    b.Navigation("PrevLearningPath");
+
+                    b.Navigation("TargetLanguage");
 
                     b.Navigation("User");
                 });
@@ -671,11 +749,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.UserProgress", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "Language")
+                    b.HasOne("AyalasLanguageAPI.Model.Exercise", "Exercise")
                         .WithMany()
-                        .HasForeignKey("LanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ExerciseId");
 
                     b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
                         .WithMany()
@@ -689,7 +765,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Language");
+                    b.Navigation("Exercise");
 
                     b.Navigation("LearningPath");
 
@@ -698,14 +774,12 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.Language", b =>
                 {
-                    b.Navigation("LearningPaths");
-
                     b.Navigation("UserLanguages");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
                 {
-                    b.Navigation("PrevLearningPath");
+                    b.Navigation("Exercises");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Model.User", b =>

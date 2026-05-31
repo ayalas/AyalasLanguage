@@ -27,28 +27,36 @@ public static class DataExtensions
             var rdsDb = Environment.GetEnvironmentVariable("RDS_DB_NAME");
 
             connectionString = $"Server={rdsHost};Port={rdsPort};Database={rdsDb};Uid={rdsUser};Pwd={rdsPass};";
-
-            // ServerVersion.AutoDetect automatically figures out the MySQL/MariaDB version from RDS
-            builder.Services.AddDbContext<AyalasLanguageDbContext>(options =>
-                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
         }
         else
         {
             connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
                     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-                    
-            if (connectionString.Contains("Server="))
+        }
+
+        if (connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase))
+        {
+            ServerVersion serverVersion;
+            if (builder.Environment.IsDevelopment())
             {
-                //use predefined my sql connection
-                builder.Services.AddDbContext<AyalasLanguageDbContext>(options =>
-                    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+                // Hardcode your production target version for ef migrations
+                serverVersion = new MySqlServerVersion(new Version(8, 4, 8));
             }
             else
             {
-                // We are running locally! Fallback to appsettings.json
-                builder.Services.AddSqlite<AyalasLanguageDbContext>(connectionString);
+                // On production / AWS, use AutoDetect safely
+                serverVersion = ServerVersion.AutoDetect(connectionString);
             }
-        }
 
+            //use predefined my sql connection
+            builder.Services.AddDbContext<AyalasLanguageDbContext>(options =>
+                options.UseMySql(connectionString, serverVersion,
+                b => b.MigrationsHistoryTable("__EFMigrationsHistory")));
+        }
+        else
+        {
+            // We are running locally! Fallback to appsettings.json
+            builder.Services.AddSqlite<AyalasLanguageDbContext>(connectionString);
+        }
     }
 }

@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Xml;
 using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
-using AyalasLanguageAPI.Data.Migrations;
 using AyalasLanguageAPI.DTOs;
 using AyalasLanguageAPI.Model;
 using Microsoft.AspNetCore.Authorization;

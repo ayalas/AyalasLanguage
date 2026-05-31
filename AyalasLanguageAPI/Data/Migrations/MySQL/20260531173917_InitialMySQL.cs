@@ -1,11 +1,12 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace AyalasLanguageAPI.Data.Migrations.MySQL
+namespace Data.Migrations.MySQL
 {
     /// <inheritdoc />
     public partial class InitialMySQL : Migration
@@ -13,47 +14,59 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateTable(
                 name: "ExerciseTypes",
                 columns: table => new
                 {
-                    ExerciseTypeId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false)
+                    ExerciseTypeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ExerciseTypes", x => x.ExerciseTypeId);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Languages",
                 columns: table => new
                 {
-                    LanguageId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    EnglishName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    NativeName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
-                    Code = table.Column<string>(type: "TEXT", maxLength: 5, nullable: true),
-                    IsRightToLeft = table.Column<bool>(type: "INTEGER", nullable: false)
+                    LanguageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    EnglishName = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NativeName = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Code = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsRightToLeft = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Languages", x => x.LanguageId);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    DisplayName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    UserName = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
-                    PasswordHash = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false),
-                    Role = table.Column<byte>(type: "INTEGER", nullable: false),
-                    TargetLanguageId = table.Column<int>(type: "INTEGER", nullable: true),
-                    KnownLanguageId = table.Column<int>(type: "INTEGER", nullable: true)
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    DisplayName = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserName = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PasswordHash = table.Column<string>(type: "varchar(1024)", maxLength: 1024, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Role = table.Column<byte>(type: "tinyint unsigned", nullable: false),
+                    TargetLanguageId = table.Column<int>(type: "int", nullable: true),
+                    KnownLanguageId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -68,23 +81,25 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         column: x => x.TargetLanguageId,
                         principalTable: "Languages",
                         principalColumn: "LanguageId");
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "LearningPaths",
                 columns: table => new
                 {
-                    LearningPathId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    Level = table.Column<uint>(type: "INTEGER", nullable: false),
-                    Chapter = table.Column<byte>(type: "INTEGER", nullable: false),
-                    Name = table.Column<string>(type: "TEXT", maxLength: 128, nullable: true),
-                    PrevLearningPathId = table.Column<int>(type: "INTEGER", nullable: true),
-                    NextLearningPathId = table.Column<int>(type: "INTEGER", nullable: true),
-                    TargetLanguageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    KnownLanguageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Status = table.Column<byte>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
+                    LearningPathId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Level = table.Column<uint>(type: "int unsigned", nullable: false),
+                    Chapter = table.Column<byte>(type: "tinyint unsigned", nullable: false),
+                    Name = table.Column<string>(type: "varchar(128)", maxLength: 128, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PrevLearningPathId = table.Column<int>(type: "int", nullable: true),
+                    NextLearningPathId = table.Column<int>(type: "int", nullable: true),
+                    TargetLanguageId = table.Column<int>(type: "int", nullable: false),
+                    KnownLanguageId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<byte>(type: "tinyint unsigned", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -119,17 +134,19 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Tokens",
                 columns: table => new
                 {
-                    TokenId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Content = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: false),
-                    ExpiresOn = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    TokenId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "varchar(1024)", maxLength: 1024, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExpiresOn = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -140,14 +157,15 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "UserExerciseTypes",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ExerciseTypeId = table.Column<int>(type: "INTEGER", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ExerciseTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -164,15 +182,16 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "UserLanguages",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    LanguageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    IsLearning = table.Column<bool>(type: "INTEGER", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    LanguageId = table.Column<int>(type: "int", nullable: false),
+                    IsLearning = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,21 +208,23 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "Exercises",
                 columns: table => new
                 {
-                    ExerciseId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    TargetLanguageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    KnownLanguageId = table.Column<int>(type: "INTEGER", nullable: false),
-                    LearningPathId = table.Column<int>(type: "INTEGER", nullable: true),
-                    ExerciseTypeId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Data = table.Column<string>(type: "TEXT", maxLength: 8192, nullable: false),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Status = table.Column<byte>(type: "INTEGER", nullable: false)
+                    ExerciseId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    TargetLanguageId = table.Column<int>(type: "int", nullable: false),
+                    KnownLanguageId = table.Column<int>(type: "int", nullable: false),
+                    LearningPathId = table.Column<int>(type: "int", nullable: true),
+                    ExerciseTypeId = table.Column<int>(type: "int", nullable: false),
+                    Data = table.Column<string>(type: "varchar(8192)", maxLength: 8192, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<byte>(type: "tinyint unsigned", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -237,16 +258,17 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
                 name: "UserProgresses",
                 columns: table => new
                 {
-                    LearningPathId = table.Column<int>(type: "INTEGER", nullable: false),
-                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ExerciseId = table.Column<int>(type: "INTEGER", nullable: true),
-                    practiseMistakesInThisPath = table.Column<bool>(type: "INTEGER", nullable: false)
+                    LearningPathId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ExerciseId = table.Column<int>(type: "int", nullable: true),
+                    practiseMistakesInThisPath = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -268,7 +290,8 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
-                });
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.InsertData(
                 table: "ExerciseTypes",
