@@ -27,17 +27,18 @@ Browse to the url provided by vite http://localhost:5097
 ## Docker commands (Staging)
 To build and stage this app using Docker, from the root folder of the solution, run the docker file to build the image (note: Production requires a mysql instance, so we choose Staging here):
 
-docker build --build-arg BUILD_ENV=Staging-t ayalas-language-app -f AyalasLanguageAPI/Dockerfile .
+docker build --build-arg BUILD_ENV=Staging -t ayalas-language-app -f AyalasLanguageAPI/Dockerfile .
 
 then, to start the container with an external volume for the db, run:
 
 docker run -d -p [::1]:8080:8080 -e ASPNETCORE_HTTP_PORTS=8080 --name ayalas-language-app -v ayalas-language-db:/app/data ayalas-language-app:latest
 
+Then, browse to http://localhost:8080
 
 ## AWS Demo Site (Production)
 Served by AWS Beanstalk with an external MySQL instance in this address:
 
-## Publish to an AWS Instance with powershell:
+## Publish to an AWS Beanstalk environment with powershell:
 prepare the files with poweshell script:
 
 run build.bat from windows explorer, or run the following powershell script in the terminal, from the solution root:

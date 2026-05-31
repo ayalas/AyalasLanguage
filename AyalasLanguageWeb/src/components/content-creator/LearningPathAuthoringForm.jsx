@@ -184,7 +184,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             const response = await fetch(`/api/learning/path/${initialRecord.learningPathId}/exercises`);
 
             if (response && response.ok) {
-                downloadFile(await response.blob(), `exercises-${initialRecord.learningPathId}.json`);
+                downloadFile(await response.blob(), `${title}-exercises-${initialRecord.learningPathId}.json`);
             }
         }
         catch (ex) {
