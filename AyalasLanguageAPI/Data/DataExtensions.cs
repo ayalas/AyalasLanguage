@@ -15,6 +15,16 @@ public static class DataExtensions
     public static void AddAyalasLanguageDb(this WebApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-        builder.Services.AddSqlite<AyalasLanguageDbContext>(connectionString);
+        if (builder.Environment.IsProduction())
+        {
+            // ServerVersion.AutoDetect automatically figures out the MySQL/MariaDB version from RDS
+            builder.Services.AddDbContext<AyalasLanguageDbContext>(options =>
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+        }
+        else
+        {
+            builder.Services.AddSqlite<AyalasLanguageDbContext>(connectionString);
+        }
+
     }
 }

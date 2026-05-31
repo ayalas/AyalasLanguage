@@ -35,6 +35,10 @@ RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS final
 WORKDIR /app
 
+ARG BUILD_ENV
+
+ENV ASPNETCORE_ENVIRONMENT=$BUILD_ENV
+
 # Setup data directory with correct permissions
 USER root
 RUN mkdir -p /app/data && chown -R $APP_UID:$APP_UID /app/data
