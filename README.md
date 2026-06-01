@@ -10,7 +10,7 @@ AyalasLanguageWEB - Frontend implemented with React and JavaScript
 
 ## AWS Demo Site (Production)
 Served by AWS Beanstalk with an external MySQL instance in this address:
-https://ayalalangdemo.duckdns.org
+http://ayalaslanguagedemo.eu-north-1.elasticbeanstalk.com/
 
 In the profile page after registering and logging in choose to learn Danish or Arabic.
 
