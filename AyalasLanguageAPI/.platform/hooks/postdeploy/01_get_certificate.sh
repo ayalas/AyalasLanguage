@@ -1,17 +1,25 @@
 #!/bin/bash
-# 1. Install Certbot globally via python pip if missing
-pip3 install certbot certbot-nginx --quiet
+DOMAIN="ayalalangdemo.duckdns.org"
+EMAIL="ayalaswisa@proton.me"
 
-# 2. Obtain the SSL certificate using standard webroot authentication validation
-if [ ! -d "/etc/letsencrypt/live/ayalasapp.duckdns.org" ]; then
-    echo "Requesting fresh Let's Encrypt SSL configuration..."
+# 1. Request the real certificate using webroot mode if we haven't already
+if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+    echo "Requesting production Let's Encrypt SSL certificate..."
+    
     certbot certonly --webroot \
       -w /var/app/current/public \
       --non-interactive \
       --agree-tos \
-      --email ayalaswisa@proton.me \
-      -d ayalalangdemo.duckdns.org
-      
-    # 3. Force Nginx to safely reload and pick up the new ssl.conf configuration fragment
-    systemctl reload nginx
+      --email "$EMAIL" \
+      -d "$DOMAIN"
+
+    # 2. If successful, point our active Nginx paths to the real keys
+    if [ -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+        echo "Linking production certificates..."
+        ln -sf /etc/letsencrypt/live/$DOMAIN/fullchain.pem /etc/pki/tls/certs/server.crt
+        ln -sf /etc/letsencrypt/live/$DOMAIN/privkey.pem /etc/pki/tls/private/server.key
+        
+        # 3. Reload Nginx to securely apply the trusted cert
+        systemctl reload nginx
+    fi
 fi
