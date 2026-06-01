@@ -48,6 +48,21 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ".\build.ps1"
 
 a zip file ready for deployment will be created on the same folder
 
+## Multi DB provider EF migrations setup - MySQL and SQLite
+After a db schema change-
+
+1. change connection strings to the one for MYSQL db provider in appsettings.Development.json (see Dummy Connection String for MySQL below)
+2. Setup and run the MySQL dotnet ef migrations add command from the solution root
+dotnet ef migrations add ***Yout change***MySQL --context AyalasLanguageDbContext --project AyalasLanguageAPI.Data.Migrations.MySQL --startup-project AyalasLanguageAPI --namespace AyalasLanguageAPI.Data.Migrations.MySQL
+3. change back the connection strings in appsettings.Development.json
+4. Setup and run the SQLite dotnet ef migrations add command from the solution root
+dotnet ef migrations add ***Yout change***SQLite --context AyalasLanguageDbContext --namespace AyalasLanguageAPI.Data.Migrations.SQLite --project AyalasLanguageAPI.Data.Migrations.SQLite --startup-project AyalasLanguageAPI
+
+Dummy Connection String for MySQL
+"ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;port=3306;database=my_dummy_db;user=root;password=my_secret_password;"
+}
+
 ## License
 Licensed under GNU v3 license. See LICENSE file for details.
 

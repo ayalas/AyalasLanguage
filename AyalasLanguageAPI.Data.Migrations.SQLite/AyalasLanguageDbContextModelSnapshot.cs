@@ -3,7 +3,6 @@ using System;
 using AyalasLanguageAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,16 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    [Migration("20260531174147_InitialSQLite")]
-    partial class InitialSQLite
+    partial class AyalasLanguageDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.16");
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Exercise", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Exercise", b =>
                 {
                     b.Property<int>("ExerciseId")
                         .ValueGeneratedOnAdd()
@@ -64,7 +61,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.ToTable("Exercises");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.ExerciseType", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.ExerciseType", b =>
                 {
                     b.Property<int>("ExerciseTypeId")
                         .ValueGeneratedOnAdd()
@@ -107,7 +104,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         });
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Language", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Language", b =>
                 {
                     b.Property<int>("LanguageId")
                         .ValueGeneratedOnAdd()
@@ -432,7 +429,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         });
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.LearningPath", b =>
                 {
                     b.Property<int>("LearningPathId")
                         .ValueGeneratedOnAdd()
@@ -482,7 +479,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.ToTable("LearningPaths");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Token", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Token", b =>
                 {
                     b.Property<int>("TokenId")
                         .ValueGeneratedOnAdd()
@@ -506,7 +503,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.ToTable("Tokens");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.User", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -545,7 +542,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserExerciseType", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserExerciseType", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
@@ -560,7 +557,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.ToTable("UserExerciseTypes");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserLanguage", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserLanguage", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
@@ -578,7 +575,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.ToTable("UserLanguages");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserProgress", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserProgress", b =>
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
@@ -601,31 +598,31 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.ToTable("UserProgresses");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Exercise", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Exercise", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.ExerciseType", "ExerciseType")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.ExerciseType", "ExerciseType")
                         .WithMany()
                         .HasForeignKey("ExerciseTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "KnownLanguage")
                         .WithMany()
                         .HasForeignKey("KnownLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "LearningPath")
                         .WithMany("Exercises")
                         .HasForeignKey("LearningPathId");
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
                         .HasForeignKey("TargetLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -642,31 +639,31 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.LearningPath", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "KnownLanguage")
                         .WithMany()
                         .HasForeignKey("KnownLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "NextLearningPath")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "NextLearningPath")
                         .WithMany()
                         .HasForeignKey("NextLearningPathId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "PrevLearningPath")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "PrevLearningPath")
                         .WithMany()
                         .HasForeignKey("PrevLearningPathId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
                         .HasForeignKey("TargetLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany("LearningPaths")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -683,9 +680,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Token", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Token", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -694,13 +691,13 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.User", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.User", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "KnownLanguage")
                         .WithMany()
                         .HasForeignKey("KnownLanguageId");
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
                         .HasForeignKey("TargetLanguageId");
 
@@ -709,15 +706,15 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("TargetLanguage");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserExerciseType", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserExerciseType", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.ExerciseType", "ExerciseType")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.ExerciseType", "ExerciseType")
                         .WithMany()
                         .HasForeignKey("ExerciseTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany("UserExerciseTypes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -728,15 +725,15 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserLanguage", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserLanguage", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "Language")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "Language")
                         .WithMany("UserLanguages")
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany("UserLanguages")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -747,19 +744,19 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserProgress", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserProgress", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Exercise", "Exercise")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Exercise", "Exercise")
                         .WithMany()
                         .HasForeignKey("ExerciseId");
 
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "LearningPath")
                         .WithMany()
                         .HasForeignKey("LearningPathId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -772,17 +769,17 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Language", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Language", b =>
                 {
                     b.Navigation("UserLanguages");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.LearningPath", b =>
                 {
                     b.Navigation("Exercises");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.User", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.User", b =>
                 {
                     b.Navigation("LearningPaths");
 

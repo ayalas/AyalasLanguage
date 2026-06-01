@@ -1,5 +1,5 @@
 using System;
-using AyalasLanguageAPI.Model;
+using AyalasLanguageAPI.Data.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageAPI.Data;
@@ -32,7 +32,7 @@ public class AyalasLanguageDbContext : DbContext
             .HasKey(up => new { up.UserId, up.LearningPathId });
 
         //create indexes before foreign keys - important for mysql
-        modelBuilder.Entity<LearningPath>()
+       /* modelBuilder.Entity<LearningPath>()
         .HasIndex(p => p.PrevLearningPath)
         .HasDatabaseName("IX_LearningPaths_PrevLearningPath");
 
@@ -46,17 +46,11 @@ public class AyalasLanguageDbContext : DbContext
 
         modelBuilder.Entity<LearningPath>()
         .HasIndex(p => p.KnownLanguageId)
-        .HasDatabaseName("IX_LearningPaths_KnownLanguageId");
+        .HasDatabaseName("IX_LearningPaths_KnownLanguageId");*/
 
         modelBuilder.Entity<LearningPath>()
             .HasIndex(p => new { p.TargetLanguageId, p.KnownLanguageId, p.Level, p.Chapter })
             .IsUnique();
-
-        modelBuilder.Entity<Exercise>()
-        .HasOne<User>() // Leave this empty if Exercise doesn't have a navigation property, or pass the type if it's a shadow property
-        .WithMany()     // Leave this completely empty since User doesn't have an Exercises collection
-        .HasForeignKey(e => e.UserId)
-        .IsRequired();
 
         modelBuilder.Entity<LearningPath>()
         .HasOne(lp => lp.PrevLearningPath)

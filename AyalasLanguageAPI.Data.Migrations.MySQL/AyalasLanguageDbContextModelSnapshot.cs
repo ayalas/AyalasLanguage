@@ -3,11 +3,12 @@ using System;
 using AyalasLanguageAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace AyalasLanguageAPI.Data.Migrations
+namespace AyalasLanguageAPI.Data.Migrations.MySQL
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
     partial class AyalasLanguageDbContextModelSnapshot : ModelSnapshot
@@ -15,36 +16,42 @@ namespace AyalasLanguageAPI.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.16");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "9.0.16")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Exercise", b =>
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Exercise", b =>
                 {
                     b.Property<int>("ExerciseId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ExerciseId"));
 
                     b.Property<string>("Data")
                         .IsRequired()
                         .HasMaxLength(8192)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(8192)");
 
                     b.Property<int>("ExerciseTypeId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("KnownLanguageId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int?>("LearningPathId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<byte>("Status")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("tinyint unsigned");
 
                     b.Property<int>("TargetLanguageId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("ExerciseId");
 
@@ -61,16 +68,18 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.ToTable("Exercises");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.ExerciseType", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.ExerciseType", b =>
                 {
                     b.Property<int>("ExerciseTypeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ExerciseTypeId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("ExerciseTypeId");
 
@@ -104,27 +113,29 @@ namespace AyalasLanguageAPI.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Language", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Language", b =>
                 {
                     b.Property<int>("LanguageId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("LanguageId"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(5)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(5)");
 
                     b.Property<string>("EnglishName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<bool>("IsRightToLeft")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("NativeName")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("LanguageId");
 
@@ -429,39 +440,41 @@ namespace AyalasLanguageAPI.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.LearningPath", b =>
                 {
                     b.Property<int>("LearningPathId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("LearningPathId"));
 
                     b.Property<byte>("Chapter")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("tinyint unsigned");
 
                     b.Property<int>("KnownLanguageId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<uint>("Level")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int unsigned");
 
                     b.Property<string>("Name")
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<int?>("NextLearningPathId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int?>("PrevLearningPathId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<byte>("Status")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("tinyint unsigned");
 
                     b.Property<int>("TargetLanguageId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("LearningPathId");
 
@@ -479,22 +492,24 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.ToTable("LearningPaths");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Token", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Token", b =>
                 {
                     b.Property<int>("TokenId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("TokenId"));
 
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(1024)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(1024)");
 
                     b.Property<DateTime>("ExpiresOn")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("TokenId");
 
@@ -503,35 +518,37 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.ToTable("Tokens");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.User", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(128)");
 
                     b.Property<int?>("KnownLanguageId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(1024)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(1024)");
 
                     b.Property<byte>("Role")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("tinyint unsigned");
 
                     b.Property<int?>("TargetLanguageId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(128)");
 
                     b.HasKey("UserId");
 
@@ -542,13 +559,13 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserExerciseType", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserExerciseType", b =>
                 {
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("ExerciseTypeId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.HasKey("UserId", "ExerciseTypeId");
 
@@ -557,16 +574,16 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.ToTable("UserExerciseTypes");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserLanguage", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserLanguage", b =>
                 {
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("LanguageId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsLearning")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("UserId", "LanguageId");
 
@@ -575,19 +592,19 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.ToTable("UserLanguages");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserProgress", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserProgress", b =>
                 {
                     b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("LearningPathId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int?>("ExerciseId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<bool>("practiseMistakesInThisPath")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("UserId", "LearningPathId");
 
@@ -598,31 +615,31 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.ToTable("UserProgresses");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Exercise", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Exercise", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.ExerciseType", "ExerciseType")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.ExerciseType", "ExerciseType")
                         .WithMany()
                         .HasForeignKey("ExerciseTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "KnownLanguage")
                         .WithMany()
                         .HasForeignKey("KnownLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "LearningPath")
                         .WithMany("Exercises")
                         .HasForeignKey("LearningPathId");
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
                         .HasForeignKey("TargetLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -639,31 +656,31 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.LearningPath", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "KnownLanguage")
                         .WithMany()
                         .HasForeignKey("KnownLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "NextLearningPath")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "NextLearningPath")
                         .WithMany()
                         .HasForeignKey("NextLearningPathId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "PrevLearningPath")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "PrevLearningPath")
                         .WithMany()
                         .HasForeignKey("PrevLearningPathId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
                         .HasForeignKey("TargetLanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany("LearningPaths")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -680,9 +697,9 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Token", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Token", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -691,13 +708,13 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.User", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.User", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "KnownLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "KnownLanguage")
                         .WithMany()
                         .HasForeignKey("KnownLanguageId");
 
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "TargetLanguage")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
                         .HasForeignKey("TargetLanguageId");
 
@@ -706,15 +723,15 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Navigation("TargetLanguage");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserExerciseType", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserExerciseType", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.ExerciseType", "ExerciseType")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.ExerciseType", "ExerciseType")
                         .WithMany()
                         .HasForeignKey("ExerciseTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany("UserExerciseTypes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -725,15 +742,15 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserLanguage", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserLanguage", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Language", "Language")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Language", "Language")
                         .WithMany("UserLanguages")
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany("UserLanguages")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -744,19 +761,19 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.UserProgress", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserProgress", b =>
                 {
-                    b.HasOne("AyalasLanguageAPI.Model.Exercise", "Exercise")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Exercise", "Exercise")
                         .WithMany()
                         .HasForeignKey("ExerciseId");
 
-                    b.HasOne("AyalasLanguageAPI.Model.LearningPath", "LearningPath")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "LearningPath")
                         .WithMany()
                         .HasForeignKey("LearningPathId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AyalasLanguageAPI.Model.User", "User")
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -769,17 +786,17 @@ namespace AyalasLanguageAPI.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.Language", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Language", b =>
                 {
                     b.Navigation("UserLanguages");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.LearningPath", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.LearningPath", b =>
                 {
                     b.Navigation("Exercises");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Model.User", b =>
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.User", b =>
                 {
                     b.Navigation("LearningPaths");
 

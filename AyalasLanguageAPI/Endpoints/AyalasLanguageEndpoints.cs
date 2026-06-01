@@ -9,7 +9,7 @@ namespace AyalasLanguageAPI.Endpoints
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Routing;
     using AyalasLanguageAPI.Data;
-    using AyalasLanguageAPI.Model;
+    using AyalasLanguageAPI.Data.Model;
     using Microsoft.Extensions.Caching.Memory;
     using System.Security.Claims;
     using AyalasLanguageAPI.Auth;

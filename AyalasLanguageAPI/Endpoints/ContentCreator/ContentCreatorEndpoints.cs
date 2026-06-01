@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.DTOs;
-using AyalasLanguageAPI.Model;
+using AyalasLanguageAPI.Data.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 

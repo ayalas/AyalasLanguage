@@ -1,6 +1,6 @@
 using System;
 using AyalasLanguageAPI.Data;
-using AyalasLanguageAPI.Model;
+using AyalasLanguageAPI.Data.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 

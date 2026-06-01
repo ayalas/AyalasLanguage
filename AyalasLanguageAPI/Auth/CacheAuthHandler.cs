@@ -5,7 +5,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using AyalasLanguageAPI.Data;
 using System.Text.Encodings.Web;
-using AyalasLanguageAPI.Model;
+using AyalasLanguageAPI.Data.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageAPI.Auth;

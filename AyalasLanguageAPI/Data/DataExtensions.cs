@@ -79,12 +79,13 @@ public static class DataExtensions
             //use predefined my sql connection
             builder.Services.AddDbContext<AyalasLanguageDbContext>(options =>
                 options.UseMySql(connectionString, serverVersion,
-                b => b.MigrationsHistoryTable("__EFMigrationsHistory")));
+                b => b.MigrationsHistoryTable("__EFMigrationsHistory")
+                .MigrationsAssembly("AyalasLanguageAPI.Data.Migrations.MySQL")));
         }
         else
         {
-            // We are running locally! Fallback to appsettings.json
-            builder.Services.AddSqlite<AyalasLanguageDbContext>(connectionString);
+            builder.Services.AddSqlite<AyalasLanguageDbContext>(connectionString,
+            options => options.MigrationsAssembly("AyalasLanguageAPI.Data.Migrations.SQLite"));
         }
     }
 }

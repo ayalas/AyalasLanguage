@@ -23,4 +23,10 @@
     <Folder Include="Model\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AyalasLanguageAPI.Data.Migrations.MySQL\AyalasLanguageAPI.Data.Migrations.MySQL.csproj" />
+    <ProjectReference Include="..\AyalasLanguageAPI.Data.Migrations.SQLite\AyalasLanguageAPI.Data.Migrations.SQLite.csproj" />
+    <ProjectReference Include="..\AyalasLanguageAPI.Data\AyalasLanguageAPI.Data.csproj" />
+  </ItemGroup>
+
 </Project>

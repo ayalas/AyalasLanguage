@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace AyalasLanguageAPI.Model;
+namespace AyalasLanguageAPI.Data.Model;
 
 public class Token
 {

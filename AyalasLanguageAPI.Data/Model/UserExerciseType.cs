@@ -1,6 +1,6 @@
 using System;
 
-namespace AyalasLanguageAPI.Model;
+namespace AyalasLanguageAPI.Data.Model;
 
 public class UserExerciseType
 {

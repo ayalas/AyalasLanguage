@@ -2,7 +2,7 @@ using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.Endpoints;
 using AyalasLanguageAPI.Endpoints.Static;
-using AyalasLanguageAPI.Model;
+using AyalasLanguageAPI.Data.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
