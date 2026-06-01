@@ -12,11 +12,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
+        axios.defaults.withCredentials = true; //set once for all requests
+
         if (user) {
           return;
         }
         // Send a request to your backend that requires the cookie
         // Note: credentials: 'include' is crucial for cookie transmission
+
         const response = await axios.get('/api/auth/me');
         const data = await response.data;
         setUser(data); // e.g., { id: 1, email: 'user@example.com' }
