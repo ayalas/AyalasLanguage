@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Data.Migrations.MySQL
+namespace AyalasLanguageAPI.Data.Migrations.MySQL
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
     [Migration("20260531173917_InitialMySQL")]

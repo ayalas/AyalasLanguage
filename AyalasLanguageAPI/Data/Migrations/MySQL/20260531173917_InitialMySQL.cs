@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Data.Migrations.MySQL
+namespace AyalasLanguageAPI.Data.Migrations.MySQL
 {
     /// <inheritdoc />
     public partial class InitialMySQL : Migration

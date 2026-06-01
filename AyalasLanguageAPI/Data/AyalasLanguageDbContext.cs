@@ -31,6 +31,33 @@ public class AyalasLanguageDbContext : DbContext
         modelBuilder.Entity<UserProgress>()
             .HasKey(up => new { up.UserId, up.LearningPathId });
 
+        //create indexes before foreign keys - important for mysql
+        modelBuilder.Entity<LearningPath>()
+        .HasIndex(p => p.PrevLearningPath)
+        .HasDatabaseName("IX_LearningPaths_PrevLearningPath");
+
+        modelBuilder.Entity<LearningPath>()
+        .HasIndex(p => p.NextLearningPathId)
+        .HasDatabaseName("IX_LearningPaths_NextLearningPathId");
+
+        modelBuilder.Entity<LearningPath>()
+        .HasIndex(p => p.TargetLanguageId)
+        .HasDatabaseName("IX_LearningPaths_TargetLanguageId");
+
+        modelBuilder.Entity<LearningPath>()
+        .HasIndex(p => p.KnownLanguageId)
+        .HasDatabaseName("IX_LearningPaths_KnownLanguageId");
+
+        modelBuilder.Entity<LearningPath>()
+            .HasIndex(p => new { p.TargetLanguageId, p.KnownLanguageId, p.Level, p.Chapter })
+            .IsUnique();
+
+        modelBuilder.Entity<Exercise>()
+        .HasOne<User>() // Leave this empty if Exercise doesn't have a navigation property, or pass the type if it's a shadow property
+        .WithMany()     // Leave this completely empty since User doesn't have an Exercises collection
+        .HasForeignKey(e => e.UserId)
+        .IsRequired();
+
         modelBuilder.Entity<LearningPath>()
         .HasOne(lp => lp.PrevLearningPath)
         .WithMany()
@@ -44,10 +71,6 @@ public class AyalasLanguageDbContext : DbContext
         .HasForeignKey(lp => lp.NextLearningPathId) // Removed the generic type argument
         .IsRequired(false)
         .OnDelete(DeleteBehavior.SetNull);
-
-        modelBuilder.Entity<LearningPath>()
-            .HasIndex(p => new { p.TargetLanguageId, p.KnownLanguageId, p.Level, p.Chapter })
-            .IsUnique();
 
         modelBuilder.Entity<ExerciseType>().HasData(
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "from Known to target language" },

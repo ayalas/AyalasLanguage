@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Data.Migrations.SQLite
+namespace AyalasLanguageAPI.Data.Migrations
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
     partial class AyalasLanguageDbContextModelSnapshot : ModelSnapshot

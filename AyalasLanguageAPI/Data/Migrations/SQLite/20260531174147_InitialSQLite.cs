@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Data.Migrations.SQLite
+namespace AyalasLanguageAPI.Data.Migrations.SQLite
 {
     /// <inheritdoc />
     public partial class InitialSQLite : Migration

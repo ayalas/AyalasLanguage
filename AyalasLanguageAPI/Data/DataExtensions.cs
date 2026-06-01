@@ -7,25 +7,45 @@ public static class DataExtensions
 {
     public static void MigrateDb(this WebApplication app)
     {
-        using var scope = app.Services.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<AyalasLanguageDbContext>();
+        using (var scope = app.Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<AyalasLanguageDbContext>();
 
-        // 1. Tell MySQL to stop validating FK execution order temporarily
-        context.Database.ExecuteSqlRaw("SET FOREIGN_KEY_CHECKS = 0;");
+            // Get the name of the current provider (e.g., "Microsoft.EntityFrameworkCore.Sqlite" or "Pomelo.EntityFrameworkCore.MySql")
+            var providerName = context.Database.ProviderName;
+            if (providerName == null)
+                throw new Exception("context.Database.ProviderName is empty");
 
-        // 2. Run the migration cleanly
-        context.Database.Migrate();
+            // Retrieve all pending migrations
+            var pendingMigrations = context.Database.GetPendingMigrations();
 
-        // 3. Re-enable them for normal application operations
-        context.Database.ExecuteSqlRaw("SET FOREIGN_KEY_CHECKS = 1;");
+            foreach (var migration in pendingMigrations)
+            {
+                // Safety Check: Ensure the migration matches your intended provider
+                if (providerName.Contains("MySql", StringComparison.OrdinalIgnoreCase) && !migration.Contains("MySQL", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Skip SQLite migrations when running on MySQL
+                    continue;
+                }
+                if (providerName.Contains("Sqlite", StringComparison.OrdinalIgnoreCase) && migration.Contains("MySQL", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Skip MySQL migrations when running on local SQLite
+                    continue;
+                }
+
+                // Apply only the correct, isolated migration
+                context.Database.Migrate();
+            }
+        }
+
     }
-    
+
     public static void AddAyalasLanguageDb(this WebApplicationBuilder builder)
     {
         // 1. Attempt to read AWS RDS environment variables
         var rdsHost = Environment.GetEnvironmentVariable("RDS_HOSTNAME");
         string? connectionString = null;
-
+        bool isRDS = false;
         if (!string.IsNullOrEmpty(rdsHost))
         {
             // We are running in AWS Beanstalk! Build the MySQL connection string dynamically.
@@ -33,7 +53,7 @@ public static class DataExtensions
             var rdsUser = Environment.GetEnvironmentVariable("RDS_USERNAME");
             var rdsPass = Environment.GetEnvironmentVariable("RDS_PASSWORD");
             var rdsDb = Environment.GetEnvironmentVariable("RDS_DB_NAME");
-
+            isRDS = true;
             connectionString = $"Server={rdsHost};Port={rdsPort};Database={rdsDb};Uid={rdsUser};Pwd={rdsPass};";
         }
         else
@@ -42,7 +62,7 @@ public static class DataExtensions
                     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         }
 
-        if (connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase))
+        if (isRDS || connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase))
         {
             ServerVersion serverVersion;
             if (builder.Environment.IsDevelopment())
