@@ -480,9 +480,11 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
 
                     b.HasIndex("KnownLanguageId");
 
-                    b.HasIndex("NextLearningPathId");
+                    b.HasIndex("NextLearningPathId")
+                        .HasDatabaseName("IX_LearningPaths_NextLearningPathId");
 
-                    b.HasIndex("PrevLearningPathId");
+                    b.HasIndex("PrevLearningPathId")
+                        .HasDatabaseName("IX_LearningPaths_PrevLearningPathId");
 
                     b.HasIndex("UserId");
 
