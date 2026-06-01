@@ -88,4 +88,5 @@ public static class Constants
     public const int BUCKET_EXTRA_MAX_COUNT = 5;
 
     public const string APP_COOKIE_NAME = "AyalasLanguageAppCookie";
+    public const string CONFIG_BYPASS_SECURE_COOKIES_KEY = "BypassSecureCookies";
 }

@@ -64,10 +64,12 @@ public static class AuthEndpoints
         // We cache the User so we don't have to query the DB in the middleware
         cache.Set(tokenContent, user, expires);
 
+        bool BypassSecureCookies = config.GetValue<bool>(Constants.CONFIG_BYPASS_SECURE_COOKIES_KEY, false);
+
         context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent, new CookieOptions
         {
             HttpOnly = true,   // ◄ CRITICAL: Darkens the cookie to JavaScript/React
-            Secure = true,     // ◄ Forces HTTPS in production
+            Secure = !BypassSecureCookies,     // ◄ Forces HTTPS in production
             SameSite = SameSiteMode.Strict // ◄ Protects against CSRF attacks
             ,Expires = new DateTimeOffset(expires)
         });
