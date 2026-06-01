@@ -9,9 +9,17 @@ public static class DataExtensions
     {
         using var scope = app.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AyalasLanguageDbContext>();
-        context.Database.Migrate();
-    }
 
+        // 1. Tell MySQL to stop validating FK execution order temporarily
+        context.Database.ExecuteSqlRaw("SET FOREIGN_KEY_CHECKS = 0;");
+
+        // 2. Run the migration cleanly
+        context.Database.Migrate();
+
+        // 3. Re-enable them for normal application operations
+        context.Database.ExecuteSqlRaw("SET FOREIGN_KEY_CHECKS = 1;");
+    }
+    
     public static void AddAyalasLanguageDb(this WebApplicationBuilder builder)
     {
         // 1. Attempt to read AWS RDS environment variables
