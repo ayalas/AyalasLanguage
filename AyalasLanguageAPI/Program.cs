@@ -22,6 +22,13 @@ var app = builder.Build();
 
 app.MigrateDb();
 
+//support forward headers for reverse proxy scenarios (e.g., when deployed behind Nginx or Apache)
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | 
+                       Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+});
+
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();
 

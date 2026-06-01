@@ -21,6 +21,8 @@
     <Folder Include="Endpoints\Profile\" />
     <Folder Include="Endpoints\Static\" />
     <Folder Include="Model\" />
+    <Content Include=".ebextensions\**\*" CopyToPublishDirectory="Always" />
+    <Content Include=".platform\**\*" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
