@@ -52,31 +52,6 @@ public class AyalasLanguageDbContext : DbContext
             .HasIndex(p => new { p.TargetLanguageId, p.KnownLanguageId, p.Level, p.Chapter })
             .IsUnique();
 
-        modelBuilder.Entity<LearningPath>(entity =>
-        {
-            // Explicitly target the foreign key first to break the convention loop
-            entity.HasIndex(lp => lp.PrevLearningPathId)
-            .HasDatabaseName("IX_LearningPaths_PrevLearningPathId");
-
-            entity.HasOne(lp => lp.PrevLearningPath)
-                .WithMany()
-                .HasForeignKey(lp => lp.PrevLearningPathId)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.SetNull);
-        });
-
-        modelBuilder.Entity<LearningPath>(entity =>
-        {
-            // Explicitly target the foreign key first to break the convention loop
-            entity.HasIndex(lp => lp.NextLearningPathId)
-            .HasDatabaseName("IX_LearningPaths_NextLearningPathId");
-
-            entity.HasOne(lp => lp.NextLearningPath)
-            .WithMany()
-            .HasForeignKey(lp => lp.NextLearningPathId) // Removed the generic type argument
-            .IsRequired(false)
-            .OnDelete(DeleteBehavior.SetNull);
-        });
 
         modelBuilder.Entity<ExerciseType>().HasData(
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "from Known to target language" },

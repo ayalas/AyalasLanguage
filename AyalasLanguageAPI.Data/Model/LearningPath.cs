@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AyalasLanguageAPI.Data.Model
 {
@@ -17,9 +18,11 @@ namespace AyalasLanguageAPI.Data.Model
         public string? Name { get; set; }
 
         public int? PrevLearningPathId { get; set; }
+        [ForeignKey(nameof(PrevLearningPathId))]
         public virtual LearningPath? PrevLearningPath { get; set; }
 
         public int? NextLearningPathId { get; set; }
+        [ForeignKey(nameof(NextLearningPathId))]
         public virtual LearningPath? NextLearningPath { get; set; }
 
         [Required]

@@ -467,11 +467,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("KnownLanguageId");
 
-                    b.HasIndex("NextLearningPathId")
-                        .HasDatabaseName("IX_LearningPaths_NextLearningPathId");
+                    b.HasIndex("NextLearningPathId");
 
-                    b.HasIndex("PrevLearningPathId")
-                        .HasDatabaseName("IX_LearningPaths_PrevLearningPathId");
+                    b.HasIndex("PrevLearningPathId");
 
                     b.HasIndex("UserId");
 
@@ -651,13 +649,11 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "NextLearningPath")
                         .WithMany()
-                        .HasForeignKey("NextLearningPathId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("NextLearningPathId");
 
                     b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "PrevLearningPath")
                         .WithMany()
-                        .HasForeignKey("PrevLearningPathId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("PrevLearningPathId");
 
                     b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
