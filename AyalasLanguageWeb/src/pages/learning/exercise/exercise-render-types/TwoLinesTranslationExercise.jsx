@@ -62,12 +62,10 @@ export const TwoLinesTranslationExercise = forwardRef(({ exerciseInfo, setError,
                 <div className="form-label-row">{exerciseInfo.data.Second}</div>
             )}
             {exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET && (
-                <div className="form-row">
                     <VirtualKeyboard languageCode={user.languageSettings.targetLanguageEnglishName.toLowerCase()} isRightToLeft={true}
                         onChange={OnChange}
                         value={inputValue}
                     />
-                </div>
             )}
         </>
     );

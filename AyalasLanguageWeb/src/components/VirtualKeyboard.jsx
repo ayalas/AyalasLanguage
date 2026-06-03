@@ -111,9 +111,11 @@ const VirtualKeyboard = ({ languageCode, isRightToLeft, onChange, value }) => {
       className="keyboard-container" 
       style={{ 
         direction: isRightToLeft ? "rtl" : "ltr", 
-        width: "100%", 
+        width: "85%", 
         maxWidth: "850px",
-        margin: "0 auto",
+        margin: "0",
+        justifyContent: "flex-start",
+        textAlign: "start",
         display: showKeyboard ? "block" : "none"
       }}
     >

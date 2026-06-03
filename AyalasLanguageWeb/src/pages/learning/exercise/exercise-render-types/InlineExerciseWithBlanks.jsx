@@ -99,12 +99,10 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
             {displayAnswer && (
                 <div className="form-label-row">{exerciseInfo.data.Second}</div>
             )}
-            <div className="form-row">
-                <VirtualKeyboard languageCode={user.languageSettings.targetLanguageEnglishName.toLowerCase()} isRightToLeft={true}
-                    onChange={onChangeFromKeyboard} 
-                    value={valueFromKeyboard}
-                />
-            </div>
+            <VirtualKeyboard languageCode={user.languageSettings.targetLanguageEnglishName.toLowerCase()} isRightToLeft={true}
+                onChange={onChangeFromKeyboard} 
+                value={valueFromKeyboard}
+            />
         </>
     );
 });
