@@ -75,7 +75,7 @@ export const EXERCISE_GENERATIONS =
         description:"Match words between two buckets lists: one bucket list will includes words in the langauge you know and the other bucket list will include words in the langauge you are learning.",
         first_data_instructions: "Words in the langauge you know, separated by semi-colon(;)",
         second_data_instructions: "Words in the langauge you are learning, separated by semi-colon(;)",
-        ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 sets of six words\\expressions in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, each word\\expression separated by comma. Then, prepare matching sets of the translations in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. In each list, separate each set with semi-colon. Do not include punctuations.`
+        ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 sets of three to five words\\expressions in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, each word\\expression separated by comma. Then, prepare matching sets of the translations in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. In each list, separate each set with semi-colon. Do not include punctuations.`
     },
     {
         type: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET, 
