@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from 'react-router';
 import KeyboardModule from "simple-keyboard";
 import KeyboardLayoutsModule from "simple-keyboard-layouts";
 import "simple-keyboard/build/css/index.css";
@@ -34,6 +35,7 @@ const isLanguageSupported = (langCode) => {
 
 const VirtualKeyboard = ({ languageCode, isRightToLeft, onChange, value }) => {
   const keyboardRef = useRef(null);
+  const [showKeyboard, setShowKeyboard] = useState(true);
   const [layoutName, setLayoutName] = useState("default");
 
   // Determine support status immediately during rendering
@@ -44,6 +46,10 @@ const VirtualKeyboard = ({ languageCode, isRightToLeft, onChange, value }) => {
       setLayoutName((prev) => (prev === "default" ? "shift" : "default"));
     }
   };
+
+  const toggleKeyboard = () => {
+    setShowKeyboard(!showKeyboard);
+  }
 
   // 1. Initialize the keyboard instance ONLY if supported and ONCE on mount
   useEffect(() => {
@@ -100,17 +106,23 @@ const VirtualKeyboard = ({ languageCode, isRightToLeft, onChange, value }) => {
   }
 
   return (
+    <>
     <div 
       className="keyboard-container" 
       style={{ 
         direction: isRightToLeft ? "rtl" : "ltr", 
         width: "100%", 
         maxWidth: "850px",
-        margin: "0 auto" 
+        margin: "0 auto",
+        display: showKeyboard ? "block" : "none"
       }}
     >
       <div className="simple-keyboard" />
     </div>
+    <div className="form-label-center-row">
+      <Link className="form-link" onClick={toggleKeyboard}>{showKeyboard ? "Hide" : "Show"} Keyboard</Link>
+    </div>
+    </>
   );
 };
 

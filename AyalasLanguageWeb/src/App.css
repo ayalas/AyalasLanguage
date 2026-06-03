@@ -39,6 +39,13 @@ body {
   text-align: start;
   color: black;
 }
+.form-label-center-row {
+  text-align: center;
+}
+.form-link {
+  text-decoration: none;
+  color: inherit;
+}
 .form-content-row {
   text-align: start;
   display: inline-flex;
