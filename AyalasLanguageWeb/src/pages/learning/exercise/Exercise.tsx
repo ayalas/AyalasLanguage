@@ -81,7 +81,7 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
                     exerciseInfo.exerciseTypeId != EXERCISE_TYPES.MATCHING && (
                         <>
                             <div className="form-button-cell">
-                                <button type="button" onClick={checkAnswer} className="form-button" title="Check my answers"><ListChecks /></button>
+                                <button type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks /></button>
                             </div>
                             <div className="form-button-cell">
                                 <button type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>

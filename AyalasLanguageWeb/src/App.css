@@ -13,6 +13,7 @@
 }
 body {
   font-size: 18px;
+  color: #2D3748;
 }
 
 .form-button {
@@ -22,11 +23,13 @@ body {
   align-items: center;      /* Centers items vertically */
   justify-content: center;  /* Centers items horizontally */
   gap: 8px;
+  border-radius: 4px;
 }
 
 .button-delete-item {
   height: 36px;
   margin-right: 10px;
+  border-radius: 4px;
 }
 
 .form-label-cell {
@@ -37,7 +40,7 @@ body {
 }
 .form-label-row {
   text-align: start;
-  color: black;
+  color: #2D3748;
 }
 .form-label-center-row {
   text-align: center;
@@ -180,6 +183,13 @@ label.form-label {
   color: rgb(116, 117, 116);
 }
 
+.link-button {
+  background-color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
 .menu-button {
   padding: 10px 20px;
   cursor: pointer;
@@ -223,6 +233,11 @@ label.form-label {
   color: rgb(12, 66, 12);
 }
 
+.check-answer-button {
+  background-color: rgb(55, 194, 20);
+  color: white;
+}
+
 .learning-progress-img {
   width: 18px;
   height: 18px;
@@ -260,6 +275,7 @@ label.form-label {
   padding-bottom: 5px;
   min-width: 10%;
   overflow-wrap: break-word;
+  border-radius: 8px;
 }
 .match-words-item-done{
   color: rgb(69, 69, 69);
@@ -286,6 +302,7 @@ label.form-label {
   padding-right: 5px;
   padding-top: 2px;
   padding-bottom: 2px;
+  border-radius: 8px;
 }
 
 .keyboard-container {
