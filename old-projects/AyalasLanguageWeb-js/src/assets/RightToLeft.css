@@ -1,0 +1,6 @@
+body[data-rtl="true"] {
+    .answer {
+        direction: rtl;
+        text-align: left;
+    }
+}
