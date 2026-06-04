@@ -1,28 +1,39 @@
 import { Fragment, useRef, useState, forwardRef, useImperativeHandle } from 'react';
-
-
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
+import type { ExerciseInfo } from '../../../../types/exercise/Exercise';
+import type { User } from '../../../../types/shared/User';
+import type { ExerciseInputHandle, ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 
-export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user }, ref) => {
-    const questionsRefMap = useRef(new Map());
+interface Props {
+    exerciseInfo: ExerciseInfo;
+    setError: (s: string) => void;
+    moveNext: () => void;
+    displayAnswer?: boolean;
+    parentCheckAnswer?: () => void;
+    user?: User;
+}
+
+export const InlineExerciseWithBlanks = forwardRef<ExerciseHandle, Props>((props: Props, ref) => {
+    const { exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user } = props;
+    const questionsRefMap = useRef<Map<string, ExerciseInputHandle | undefined>>(new Map());
     const [valueFromKeyboard, setValueFromKeyboard] = useState("");
     const currentInputKey = useRef("");
 
-    function onChangeFromKeyboard (input) {
-        if (currentInputKey.current != "") {
+    function onChangeFromKeyboard (input: string) {
+        if (currentInputKey.current !== "") {
             setValueFromKeyboard(input);
-            questionsRefMap.current.get(currentInputKey.current).setValue(input);
+            const entry = questionsRefMap.current.get(currentInputKey.current);
+            entry?.setValue(input);
         }
     }
 
-    function onChangeFromInput(value, key) {
+    function onChangeFromInput(value: string, key?: string) {
         setValueFromKeyboard(value);
-        currentInputKey.current = key;
+        if (key) currentInputKey.current = key;
     }
 
-    // This defines what the parent can access via the ref
     useImperativeHandle(ref, () => ({
         setFocus() {
             const firstInput = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-0`);
@@ -32,18 +43,22 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
         },
         checkAnswer() {
             const thisQuestionRefs = new Map(
-                [...questionsRefMap.current.entries()].filter(([key, value]) => key.startsWith(`${exerciseInfo.exerciseId}-`))
+                [...questionsRefMap.current.entries()].filter(([key]) => key.startsWith(`${exerciseInfo.exerciseId}-`))
             );
 
-            if (thisQuestionRefs.length < exerciseInfo.answers.length) {
+            if (thisQuestionRefs.size < (exerciseInfo.answers?.length || 0)) {
                 setError('please fill in all the input elements');
             }
             let canMoveNext = true;
-            for (let j = 0; j < exerciseInfo.answers.length; j++) {
+            for (let j = 0; j < (exerciseInfo.answers?.length || 0); j++) {
                 const inputRef = thisQuestionRefs.get(`${exerciseInfo.exerciseId}-${j}`);
-
+                const userTarget = user?.languageSettings?.targetLanguage;
+                if (!inputRef) {
+                    canMoveNext = false;
+                    continue;
+                }
                 if (inputRef.getUserAnswer().trim().toLowerCase() 
-                        != replaceCharsForLanguage(user.languageSettings.targetLanguage, exerciseInfo.answers[j].trim().toLowerCase())) {
+                        !== (replaceCharsForLanguage(userTarget, exerciseInfo.answers?.[j]?.trim().toLowerCase() || '') || '')) {
                     inputRef.setToError();
                     canMoveNext = false;
                 }
@@ -59,34 +74,36 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
         }
     }));
 
-
-
     return (
         <>
             <div className="form-label-row answer">
                 {
-                    exerciseInfo.sentenceElements.map((part, i) => {
-                        // Function to safely set/delete items in the Map
-                        const setRef = (el) => {
-                            questionsRefMap.current.set(`${exerciseInfo.exerciseId}-${i}`, el);
+                    exerciseInfo.sentenceElements?.map((part, i) => {
+                        const setRef = (el: ExerciseInputHandle | null) => {
+                            if (el) {
+                                questionsRefMap.current.set(`${exerciseInfo.exerciseId}-${i}`, el);
+                            }
+                            else {
+                                questionsRefMap.current.delete(`${exerciseInfo.exerciseId}-${i}`);
+                            }
                         };
 
                         return (
                             <Fragment key={`ex${exerciseInfo.exerciseId}input-container${i}`}>
-                                {i == 0 && part == "" && (
+                                {i === 0 && part === "" && (
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                         ref={setRef}
-                                        charWidth={(2 + exerciseInfo.answers[i].length)}
+                                        charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
                                         checkAnswer={parentCheckAnswer}
                                         customKey={`${exerciseInfo.exerciseId}-${i}`}
                                         onChange={onChangeFromInput}
                                     />
                                 )}
                                 <div className="content-line-part">{part}</div>
-                                {(i > 0 || part != "") && (exerciseInfo.answers.length > i) && (
+                                {(i > 0 || part !== "") && (exerciseInfo.answers && exerciseInfo.answers.length > i) && (
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                         ref={setRef}
-                                        charWidth={(2 + exerciseInfo.answers[i].length)}
+                                        charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
                                         checkAnswer={parentCheckAnswer}
                                         customKey={`${exerciseInfo.exerciseId}-${i}`}
                                         onChange={onChangeFromInput}
@@ -97,12 +114,14 @@ export const InlineExerciseWithBlanks = forwardRef(({ exerciseInfo, setError, mo
                     })
                 }</div>
             {displayAnswer && (
-                <div className="form-label-row">{exerciseInfo.data.Second}</div>
+                <div className="form-label-row">{(typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).Second; } catch { return ''; } })() : exerciseInfo.data.Second) || ''}</div>
             )}
-            <VirtualKeyboard languageCode={user.languageSettings.targetLanguageEnglishName.toLowerCase()} isRightToLeft={true}
+            <VirtualKeyboard languageCode={user?.languageSettings?.targetLanguageEnglishName?.toLowerCase() || ''} isRightToLeft={true}
                 onChange={onChangeFromKeyboard} 
                 value={valueFromKeyboard}
             />
         </>
     );
 });
+
+export default InlineExerciseWithBlanks;

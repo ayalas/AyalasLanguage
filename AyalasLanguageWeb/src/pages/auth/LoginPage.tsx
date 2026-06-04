@@ -1,38 +1,36 @@
-// Inside src/pages/Login.jsx
-import { useState } from 'react';
+import React, { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
-import { useAuth } from '../../components/auth/AuthContext';
+import { useAuth } from '../../components/auth/useAuth';
 
-
-export const LoginPage = () => {
+export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
-  const searchUserName = searchParams.get('user');
-  const [email, setEmail] = useState(searchUserName || '');
-  const [password, setPassword] = useState('');
+  const searchUserName = searchParams.get('user') ?? '';
+  const [email, setEmail] = useState<string>(searchUserName);
+  const [password, setPassword] = useState<string>('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: email, password }),
-        credentials: 'include', // Vital for getting cookies back from backend
+        credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
-        login(data.user); // Update global auth context state
-        //if no langauge settings, switch to profile
-        if (data.user.languageSettings.knownLanguageId == null || data.user.languageSettings.targetLanguageId == null) {
-          navigate('/profile'); 
+        login(data.user);
+        if (data.user.languageSettings?.knownLanguageId == null || data.user.languageSettings?.targetLanguageId == null) {
+          navigate('/profile');
           return;
         }
-        navigate('/home'); // Redirect to secured home page
+        navigate('/home');
       } else {
         alert('Invalid credentials');
       }
@@ -74,4 +72,4 @@ export const LoginPage = () => {
       </form>
     </div>
   );
-};
+}

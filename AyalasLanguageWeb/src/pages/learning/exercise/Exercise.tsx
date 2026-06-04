@@ -1,30 +1,46 @@
 import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { Link, useOutletContext } from 'react-router';
+import { Link, useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History } from 'lucide-react';
 
 import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
-import { MatchWordsExercise } from './exercise-render-types/match-words/MatchWordsExercise';
-import { BucketListExercise } from './exercise-render-types/bucket-list/BucketListExercise';
+import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
+import BucketListExercise from './exercise-render-types/bucket-list/BucketListExercise';
+import type { User } from '../../../types/shared/User';
+import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 
-export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake }, ref) => {
+type Props = {
+  exerciseInfo: any;
+  moveNext: () => void;
+  childLoaded: (id: number) => void;
+  saveProgress: () => void;
+  restartLesson: () => void;
+  learningPathId?: number;
+  changeMistakesSetting: (val: boolean) => void;
+  practiseMistakesInThisPath?: boolean;
+  addMistake: (id: number) => Promise<void>;
+};
 
-    const [error, setError] = useState("");
+export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake }, ref) => {
+
+    const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
-    const refExercise = useRef(null);
-    const { user } = useOutletContext();
+    const refExercise = useRef<ExerciseHandle | null>(null);
+    const { user } = useOutletContext() as { user?: User };
 
 
     const toggleAnswer = function () {
         setDisplayAnswer(!displayAnswer);
     }
 
-    const checkAnswer = async function () {
-        const success = refExercise.current.checkAnswer();
+    const checkAnswer = function () {
+        const success = refExercise.current?.checkAnswer?.() || false;
         if (!success) {
-            await addMistake(exerciseInfo.exerciseId);
+            // fire-and-forget addMistake; caller expects boolean return
+            void addMistake(exerciseInfo.exerciseId);
         }
+        return success;
     }
 
     const readdMistakes = function () {
@@ -38,16 +54,18 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
     function ExerciseTypeInstruction() {
         if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
             let desc = EXERCISE_TYPE_INSTRUCTIONS[exerciseInfo.exerciseTypeId];
-            return desc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user.languageSettings.knownLanguage)
-                .replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user.languageSettings.targetLanguage)
+            return desc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
+                .replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguage || '')
         }
         return "";
     }
 
-    // This defines what the parent can access via the ref
     useImperativeHandle(ref, () => ({
         setFocus() {
-            refExercise.current.setFocus();
+            refExercise.current?.setFocus?.();
+        },
+        checkAnswer() {
+            return refExercise.current?.checkAnswer?.() || false;
         }
     }));
 
@@ -123,3 +141,5 @@ export const Exercise = forwardRef(({ exerciseInfo, moveNext, childLoaded, saveP
         </Fragment>
     );
 });
+
+export default Exercise;

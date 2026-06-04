@@ -4,7 +4,7 @@ export const PLACEHOLDERS = {
     BLANKS: "___",
     SUBJECT_PLACEHOLDER: "sssubjectsss",
     LEVEL_PLACEHOLDER: 'llllevelllll'
-}
+} as const;
 
 export const EXERCISE_TYPES = 
 {
@@ -13,9 +13,9 @@ export const EXERCISE_TYPES =
     FILL_IN_THE_BLANKS: 3,
     MATCHING: 4,
     FROM_KNOWN_TO_TARGET_BUCKET: 5
-};
+} as const;
 
-export const EXERCISE_TYPE_INSTRUCTIONS = [];
+export const EXERCISE_TYPE_INSTRUCTIONS: string[] = [];
 EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET] = `Translate to ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}`;
 EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN] = `Translate to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}`;
 EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FILL_IN_THE_BLANKS] = "Fill in the blanks";
@@ -26,22 +26,20 @@ export const BUCKET_LIST_EXTRA_OPTIONS =
 {
     MIN_WORDS: 1,
     MAX_WORDS: 5
-}
+} as const;
 
 export const LEANRING_STATUS = 
 {
     NEW: 0,
     DONE: 1,
     IN_PROGRESS: 2
-}
+} as const;
 
 export const AUTHOR_ACCESS = 
 {
     LEARNER: 1,
     CAN_EDIT: 2
-}
-
-
+} as const;
 
 export const EXERCISE_GENERATIONS = 
 [

@@ -3,12 +3,12 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { AuthProvider } from './components/auth/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import { LandingPage } from './LandingPage';
-import { LoginPage } from './pages/auth/LoginPage';
+import LandingPage from './LandingPage';
+import LoginPage from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 //authenticated
 import { ChangePasswordPage } from './pages/auth/ChangePasswordPage';
-import { Homepage } from './pages/Homepage';
+import Homepage from './pages/Homepage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { LearningPathCreatePage } from './pages/content-creator/LearningPathCreatePage';
 import { LearningPathUpdatePage } from './pages/content-creator/learning-path-update/LearningPathUpdatePage';
