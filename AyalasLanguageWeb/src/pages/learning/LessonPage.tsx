@@ -11,7 +11,7 @@ import type { User } from '../../types/shared/User';
 import type { ExerciseInfo } from '../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../types/ui/ComponentHandles';
 
-type LocalExercise = ExerciseInfo & { data: string | ParsedExercise; exerciseObject?: ParsedExercise | any; index?: number };
+type LocalExercise = ExerciseInfo & { data: string | ParsedExercise; exerciseObject?: ParsedExercise; index?: number };
 type ParsedExercise = { First?: string; Second?: string; ExtraOptions?: string };
 
 function extractErrorMessage(err: unknown) {
@@ -38,7 +38,7 @@ export function LessonPage() {
     // Defensive: ensure curItem and curItem.data are present
     const raw = curItem?.data;
     const rawString = typeof raw === 'string' ? raw : JSON.stringify(raw || {});
-    let dataObj: ParsedExercise = {};
+    let dataObj: ParsedExercise;
     try {
       dataObj = JSON.parse(rawString) as ParsedExercise;
     } catch {
