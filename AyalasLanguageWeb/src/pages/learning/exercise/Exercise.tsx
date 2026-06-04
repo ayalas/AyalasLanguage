@@ -9,9 +9,10 @@ import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsEx
 import BucketListExercise from './exercise-render-types/bucket-list/BucketListExercise';
 import type { User } from '../../../types/shared/User';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
+import type { ExerciseInfo } from '../../../types/exercise/Exercise';
 
 type Props = {
-  exerciseInfo: any;
+  exerciseInfo: ExerciseInfo;
   moveNext: () => void;
   childLoaded: (id: number) => void;
   saveProgress: () => void;
@@ -53,7 +54,7 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
 
     function ExerciseTypeInstruction() {
         if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
-            let desc = EXERCISE_TYPE_INSTRUCTIONS[exerciseInfo.exerciseTypeId];
+            const desc = EXERCISE_TYPE_INSTRUCTIONS[exerciseInfo.exerciseTypeId];
             return desc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
                 .replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguage || '')
         }

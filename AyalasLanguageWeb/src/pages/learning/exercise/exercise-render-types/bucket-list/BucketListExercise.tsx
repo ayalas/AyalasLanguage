@@ -11,7 +11,7 @@ type Props = {
   displayAnswer?: boolean;
 };
 
-export const BucketListExercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, setError, moveNext, displayAnswer }, ref) => {
+const BucketListExercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, setError, moveNext, displayAnswer }, ref) => {
   const [bucketList, setBucketList] = useState<string[]>([]);
   const [answerList, setAnswerList] = useState<string[]>([]);
 
