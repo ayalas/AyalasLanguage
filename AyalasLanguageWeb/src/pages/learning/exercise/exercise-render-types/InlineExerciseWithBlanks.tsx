@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { Fragment, useRef, useState, forwardRef, useImperativeHandle, type RefObject, useCallback } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
@@ -21,18 +21,18 @@ export const InlineExerciseWithBlanks = forwardRef<ExerciseHandle, Props>((props
     const [valueFromKeyboard, setValueFromKeyboard] = useState("");
     const currentInputKey = useRef("");
 
-    function onChangeFromKeyboard (input: string) {
+    const onChangeFromKeyboard = useCallback((input: string) => {
         if (currentInputKey.current !== "") {
             setValueFromKeyboard(input);
             const entry = questionsRefMap.current.get(currentInputKey.current);
             entry?.setValue(input);
         }
-    }
+    }, []);
 
-    function onChangeFromInput(value: string, key?: string) {
+    const onChangeFromInput = useCallback((value: string, key?: string) => {
         setValueFromKeyboard(value);
         if (key) currentInputKey.current = key;
-    }
+    }, []);
 
     useImperativeHandle(ref, () => ({
         setFocus() {
@@ -57,8 +57,8 @@ export const InlineExerciseWithBlanks = forwardRef<ExerciseHandle, Props>((props
                     canMoveNext = false;
                     continue;
                 }
-                if (inputRef.getUserAnswer().trim().toLowerCase() 
-                        !== (replaceCharsForLanguage(userTarget, exerciseInfo.answers?.[j]?.trim().toLowerCase() || '') || '')) {
+                if (inputRef.getUserAnswer().trim().toLowerCase()
+                    !== (replaceCharsForLanguage(userTarget, exerciseInfo.answers?.[j]?.trim().toLowerCase() || '') || '')) {
                     inputRef.setToError();
                     canMoveNext = false;
                 }
@@ -117,7 +117,7 @@ export const InlineExerciseWithBlanks = forwardRef<ExerciseHandle, Props>((props
                 <div className="form-label-row">{(typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).Second; } catch { return ''; } })() : exerciseInfo.data.Second) || ''}</div>
             )}
             <VirtualKeyboard languageCode={user?.languageSettings?.targetLanguageEnglishName?.toLowerCase() || ''} isRightToLeft={true}
-                onChange={onChangeFromKeyboard} 
+                onChange={onChangeFromKeyboard}
                 value={valueFromKeyboard}
             />
         </>
