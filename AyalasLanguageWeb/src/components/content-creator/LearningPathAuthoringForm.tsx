@@ -33,14 +33,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
   const parseForm = function () {
     if (firstSet == '' || secondSet == '') {
-      return null;
+      return [];
     }
 
   const arrFirstSet = (removeLastCharIfMatch(firstSet.trim(), ';') ?? '').split(';');
   const arrSecondSet = (removeLastCharIfMatch(secondSet.trim(), ';') ?? '').split(';');
 
     if (!arrFirstSet || arrFirstSet.length === 0 || !arrSecondSet || arrSecondSet.length === 0) {
-      return null;
+      return [];
     }
 
     if (arrFirstSet.length != arrSecondSet.length) {
@@ -73,18 +73,18 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     return arrObjects;
   };
 
-  const onFormSubmit = function (e: React.FormEvent) {
+  const onFormSubmit = function (e: React.SubmitEvent) {
     e.preventDefault();
-    let arrData = parseForm();
+    const arrData = parseForm();
 
     handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
   };
 
   const createExercises = async function (pathId: number, exerciseType: number, arrData: any[]) {
-    let created: number[] = [];
+    const created: number[] = [];
     for (const exer of arrData) {
       try {
-        let responseEx = await axios.post('/api/creator/exercise', {
+        const responseEx = await axios.post('/api/creator/exercise', {
           learningPathId: pathId,
           exerciseTypeId: exerciseType,
           data: JSON.stringify(exer)
@@ -153,6 +153,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
       await axios.post(`/api/creator/learning-path/${initialRecord.learningPathId}/import`, formData);
       setImportStart(false);
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       reloadExercise && reloadExercise();
     } catch (ex: any) {
       setError(ex.response?.data || ex.message);

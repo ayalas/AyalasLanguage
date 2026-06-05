@@ -26,7 +26,9 @@ export function LearningPathUpdatePage() {
         await createExercises(learningPathId, exerciseType, arrData);
       }
 
-      navigate('/home');
+      if (arrData !== null) { //empty array is ok, null means there was an error
+        navigate('/home');
+      }
     } catch (err: any) {
       setError(err?.message || String(err));
     }

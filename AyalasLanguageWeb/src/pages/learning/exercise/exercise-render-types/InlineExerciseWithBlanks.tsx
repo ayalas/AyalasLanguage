@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState, forwardRef, useImperativeHandle, type RefObject, useCallback } from 'react';
+import { Fragment, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';

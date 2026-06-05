@@ -9,7 +9,7 @@ export function ChangePasswordPage() {
   const [passwordChanged, setPasswordChanged] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     try {
       const resCheck = checkPasswordStrength(newPassword);

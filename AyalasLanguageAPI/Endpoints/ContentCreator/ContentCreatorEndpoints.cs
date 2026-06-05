@@ -30,7 +30,7 @@ public static class ContentCreatorEndpoints
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]
-    private static async Task<IResult> CreateLearningPath(CreateLearningPathDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> CreateLearningPath(CreateLearningPathDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
 
@@ -88,6 +88,7 @@ public static class ContentCreatorEndpoints
                 if (await db.LearningPaths.AnyAsync(lp => lp.NextLearningPathId == dto.NextLearningPathId
                     && lp.LearningPathId != prevPathId))
                 {
+                    logger.LogWarning("Next learning path {NextPathId} already has a previous path linked that is not the current previous path {PrevPathId}.", dto.NextLearningPathId, prevPathId);
                     return Results.BadRequest("Next learning path already has a previous path.");
                 }
             }
@@ -106,6 +107,7 @@ public static class ContentCreatorEndpoints
         if (dto.PrevLearningPathId != null && await db.LearningPaths.AnyAsync(lp => lp.PrevLearningPathId == dto.PrevLearningPathId
             && lp.LearningPathId != nextToUpdate))
         {
+            logger.LogWarning("Previous learning path {PrevPathId} already has a next path linked that is not the current next path {NextPathId}.", dto.PrevLearningPathId, nextToUpdate);
             return Results.BadRequest("Previous learning path already has a next path.");
         }
 
@@ -137,7 +139,7 @@ public static class ContentCreatorEndpoints
         return Results.Created($"/api/learning/path/{path.LearningPathId}", new CreateLearningPathResponseDto(path.LearningPathId));
     }
     [Authorize(Roles = "Admin,ContentCreator")]
-    private static async Task<IResult> ImportExercises(int id, IFormFile file, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> ImportExercises(int id, IFormFile file, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
 
@@ -162,7 +164,7 @@ public static class ContentCreatorEndpoints
         }
         foreach (ExerciseDto dto in dtoList)
         {
-            if (!ValidateExerciseData(dto.ExerciseTypeId, dto.Data))
+            if (!ValidateExerciseData(dto.ExerciseTypeId, dto.Data, logger))
                 return Results.BadRequest($"Invalid exercise data format for the specified exercise type. Type:{((ExerciseTypesEnum)dto.ExerciseTypeId).ToString()}. Data: {dto.Data}");
 
             var exercise = new Exercise
@@ -235,14 +237,13 @@ public static class ContentCreatorEndpoints
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]
-    private static async Task<IResult> CreateExercise(CreateExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> CreateExercise(CreateExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
-
         var learningPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.LearningPathId == dto.LearningPathId);
         if (learningPath == null) return Results.BadRequest("Learning path not found.");
 
-        if (!ValidateExerciseData(dto.ExerciseTypeId, dto.Data))
+        if (!ValidateExerciseData(dto.ExerciseTypeId, dto.Data, logger))
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
 
         var exercise = new Exercise
@@ -262,7 +263,7 @@ public static class ContentCreatorEndpoints
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]
-    private static async Task<IResult> EditExercise(int id, EditExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> EditExercise(int id, EditExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var exercise = await db.Exercises.FindAsync(id);
         if (exercise == null) return Results.NotFound();
@@ -270,7 +271,7 @@ public static class ContentCreatorEndpoints
         if (exercise.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        if (!ValidateExerciseData(id, dto.Data))
+        if (!ValidateExerciseData(id, dto.Data, logger))
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
 
         exercise.Data = dto.Data;
@@ -301,7 +302,7 @@ public static class ContentCreatorEndpoints
     /// <param name="exerciseTypeId"></param>
     /// <param name="data"></param>
     /// <returns></returns>
-    private static bool ValidateExerciseData(int exerciseTypeId, string data)
+    private static bool ValidateExerciseData(int exerciseTypeId, string data, ILogger<Program> logger)
     {
         if (string.IsNullOrEmpty(data))
             return false;
@@ -320,18 +321,26 @@ public static class ContentCreatorEndpoints
                 case (int)ExerciseTypesEnum.FromKnownToTargetBucket:
                     // Validate that data is a JSON object with question, options, and correct answer
                     var dtoBucket = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.BucketTranslateDto>(data);
-                    return dtoBucket != null
+                    if (!( dtoBucket != null
                            && !string.IsNullOrEmpty(dtoBucket.First)
                            && !string.IsNullOrEmpty(dtoBucket.Second)
                            && dtoBucket.ExtraOptions.Split(" ").Length >= Constants.BUCKET_EXTRA_MIN_COUNT
-                           && dtoBucket.ExtraOptions.Split(" ").Length <= Constants.BUCKET_EXTRA_MAX_COUNT;
+                           && dtoBucket.ExtraOptions.Split(" ").Length <= Constants.BUCKET_EXTRA_MAX_COUNT))
+                    {
+                        logger.LogWarning("Bucket exercise data validation failed. Data: {Data}", data);
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 default:
                     return false; // Assuming invalid for unknown types
             }
         }
-        catch
+        catch(Exception ex)
         {
-            //todo: log exception
+            logger.LogError(ex, "Error validating exercise data for exercise type {ExerciseTypeId}. Data: {Data}", exerciseTypeId, data);
             return false; // If any exception occurs during validation, consider it invalid
         }
     }
