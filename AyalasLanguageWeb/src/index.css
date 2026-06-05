@@ -1,6 +1,6 @@
 :root {
   --text: #6b6375;
-  --text-h: #08060d;
+  --text-h: #2D3748;
   --bg: #fff;
   --border: #e5e4e7;
   --code-bg: #f4f3ec;
@@ -67,7 +67,6 @@ body {
   box-sizing: border-box;
   border: none;
   padding-left: 10px;
-  padding-right: 10px;
 }
 
 h1,
@@ -82,7 +81,7 @@ h1 {
   letter-spacing: -1.68px;
   margin: 32px 0;
   @media (max-width: 1024px) {
-    font-size: 36px;
+    font-size: 28px;
     margin: 20px 0;
   }
 }
