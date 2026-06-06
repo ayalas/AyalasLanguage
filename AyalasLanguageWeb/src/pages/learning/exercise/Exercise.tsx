@@ -2,25 +2,26 @@ import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect 
 import { Link, useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History } from 'lucide-react';
 
-import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../../constants/learning';
+import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS, LANGUAGE_TO_POLLY_MAP } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
 import BucketListExercise from './exercise-render-types/bucket-list/BucketListExercise';
 import type { User } from '../../../types/shared/User';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
-import type { ExerciseInfo } from '../../../types/exercise/Exercise';
+import type { ExerciseData, ExerciseInfo } from '../../../types/exercise/Exercise';
+//import { puter } from "@heyputer/puter.js";
 
 type Props = {
-  exerciseInfo: ExerciseInfo;
-  moveNext: () => void;
-  childLoaded: (id: number) => void;
-  saveProgress: () => void;
-  restartLesson: () => void;
-  learningPathId?: number;
-  changeMistakesSetting: (val: boolean) => void;
-  practiseMistakesInThisPath?: boolean;
-  addMistake: (id: number) => Promise<void>;
+    exerciseInfo: ExerciseInfo;
+    moveNext: () => void;
+    childLoaded: (id: number) => void;
+    saveProgress: () => void;
+    restartLesson: () => void;
+    learningPathId?: number;
+    changeMistakesSetting: (val: boolean) => void;
+    practiseMistakesInThisPath?: boolean;
+    addMistake: (id: number) => Promise<void>;
 };
 
 export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake }, ref) => {
@@ -30,9 +31,25 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
 
+    /*const playAnswer = function () {
+        if (typeof exerciseInfo.data === 'string') {
+            const pollyLangCode = LANGUAGE_TO_POLLY_MAP[user?.languageSettings?.targetLanguageCode]
+            if (pollyLangCode != null && pollyLangCode != "") {
+                const parsed = JSON.parse(exerciseInfo.data) as ExerciseData;
+                if (parsed.Second != null && parsed.Second != "") {
+                    puter.ai.txt2speech(parsed.Second, pollyLangCode);
+                }
+            }
+        }
+    }*/
 
     const toggleAnswer = function () {
-        setDisplayAnswer(!displayAnswer);
+        const newValue = !displayAnswer;
+        setDisplayAnswer(newValue);
+
+        /*if (newValue) {
+            playAnswer();
+        }*/
     }
 
     const checkAnswer = function () {
@@ -72,6 +89,14 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
 
     useEffect(() => {
         childLoaded(exerciseInfo.exerciseId);
+        /*async function checkAuth() {
+            if (!puter.auth.isSignedIn()) {
+                // Note: browser popups usually require a direct user click event, 
+                // but you can check status or trigger it here if allowed by your flow.
+                await puter.auth.signIn(); 
+            }
+        }
+        checkAuth();*/
     }, [exerciseInfo, childLoaded]);
 
     return (

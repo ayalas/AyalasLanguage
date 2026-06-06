@@ -7,13 +7,13 @@ import { Save } from 'lucide-react';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { switchLanguage, reloadLanguageSettings } from '../../utils/languageUtils';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
-import type { User } from '../../types/shared/User';
+import type { User, AppLanguageCode } from '../../types/shared/User';
 
 type Language = {
   languageId?: number;
   englishName?: string;
   nativeName?: string;
-  code?: string;
+  code?: AppLanguageCode;
 };
 
 export function ProfilePage() {

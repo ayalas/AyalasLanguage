@@ -1,3 +1,5 @@
+import type { AppLanguageCode } from "../types/shared/User";
+
 export const PLACEHOLDERS = {
     KNOWN_LANGAUGE_PLACEHOLDER: "kkknownnn",
     TARGET_LANGAUGE_PLACEHOLDER: "tttargettt",
@@ -84,3 +86,51 @@ export const EXERCISE_GENERATIONS =
         ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 sentences in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, that I would have to translate to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Then preapre me a separate list with the full correct answers. In each list, separate each sentence with semi-colon. Do not include punctuations, just the sentences. For each sentence, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} words in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} that do not appear in the corresponding sentence. separate each such set of words with a semi-colon, and present this as a third list of wrong extra options.`
     }
 ];
+
+
+
+/**
+ * Maps custom application language codes to AWS Polly / Putter.js language codes.
+ * Returns `null` for languages currently unsupported by Amazon Polly.
+ */
+export const LANGUAGE_TO_POLLY_MAP: Record<AppLanguageCode, string | null> = {
+  en: 'en-US',   // English
+  ar: 'arb',     // Arabic (Standard Polly code)
+  da: 'da-DK',   // Danish
+  es: 'es-ES',   // Spanish
+  fr: 'fr-FR',   // French
+  de: 'de-DE',   // German
+  ja: 'ja-JP',   // Japanese
+  zh: 'cmn-CN',  // Mandarin Chinese
+  hi: 'hi-IN',   // Hindi
+  pt: 'pt-PT',   // Portuguese (Alternatively 'pt-BR' if you prefer Brazilian)
+  ru: 'ru-RU',   // Russian
+  bn: 'bn-IN',   // Bengali
+  ko: 'ko-KR',   // Korean
+  it: 'it-IT',   // Italian
+  tr: 'tr-TR',   // Turkish
+  vi: 'vi-VN',   // Vietnamese
+  ta: 'ta-IN',   // Tamil
+  el: 'el-GR',   // Greek
+  nl: 'nl-NL',   // Dutch
+  sv: 'sv-SE',   // Swedish
+  no: 'nb-NO',   // Norwegian (Bokmål)
+  pl: 'pl-PL',   // Polish
+  fi: 'fi-FI',   // Finnish
+  cs: 'cs-CZ',   // Czech
+  hu: 'hu-HU',   // Hungarian
+  th: 'th-TH',   // Thai
+  id: 'id-ID',   // Indonesian
+  ro: 'ro-RO',   // Romanian
+  he: 'he-IL',   // Hebrew
+  sk: 'sk-SK',   // Slovak
+  ca: 'ca-ES',   // Catalan
+
+  // --- Languages currently unsupported by Amazon Polly ---
+  te: null,      // Telugu
+  mr: null,      // Marathi
+  ur: null,      // Urdu
+  uk: null,      // Ukrainian
+  ms: null,      // Malay
+  fa: null,      // Persian
+} as const;

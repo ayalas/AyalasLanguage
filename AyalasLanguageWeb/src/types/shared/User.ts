@@ -1,8 +1,15 @@
+// Define a strict type for your custom language codes to ensure type safety
+export type AppLanguageCode = 
+  | 'en' | 'ar' | 'da' | 'es' | 'fr' | 'de' | 'ja' | 'zh' | 'hi' | 'pt' 
+  | 'ru' | 'bn' | 'ko' | 'it' | 'tr' | 'vi' | 'te' | 'mr' | 'ta' | 'ur' 
+  | 'el' | 'nl' | 'sv' | 'no' | 'pl' | 'fi' | 'cs' | 'hu' | 'th' | 'id' 
+  | 'ro' | 'uk' | 'he' | 'ms' | 'fa' | 'sk' | 'ca';
+  
 export interface Language {
   languageId?: number;
   englishName?: string;
   nativeName?: string;
-  code?: string;
+  code?: AppLanguageCode;
 }
 
 export interface LanguageSettings {
@@ -10,6 +17,7 @@ export interface LanguageSettings {
   knownLanguage?: string;
   targetLanguageEnglishName?: string;
   targetLanguageIsRightToLeft?: boolean;
+  targetLanguageCode: AppLanguageCode;
   otherUserLanguages?: Language[];
   // Added ID fields used across the app
   targetLanguageId?: number;

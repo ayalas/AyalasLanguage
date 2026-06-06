@@ -99,7 +99,8 @@ public static class AuthEndpoints
             user.TargetLanguage?.NativeName, user.KnownLanguageId,
             user.KnownLanguage?.NativeName, otherLanguages,
             user.TargetLanguage != null && user.TargetLanguage.IsRightToLeft,
-            user.TargetLanguage?.EnglishName);
+            user.TargetLanguage?.EnglishName,
+            user.TargetLanguage?.Code);
 
         return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, languageSettings);
     }
