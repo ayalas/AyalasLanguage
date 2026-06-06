@@ -72,7 +72,17 @@ export function getMissingParts(fullString: string, segments: string[]) {
         const missingEnd = fullString.indexOf(nextSegment, missingStart);
 
         if (missingEnd === -1) {
-            missingParts.push("");
+            //before quitting, see if there is a near match - a match by all but the first letter
+            const nearMatch = fullString.indexOf(nextSegment.slice(1), missingStart);
+            if (nearMatch !== -1) {
+                const missingWord = fullString.substring(missingStart, nearMatch).trim();
+                missingParts.push(missingWord);
+
+                currentIndex = nearMatch;
+            }
+            else {
+                missingParts.push("");
+            }
             continue;
         }
 

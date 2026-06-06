@@ -82,7 +82,7 @@ describe('getMissingParts function', () => {
         .toEqual([""]);
     });
 
-    it('handles arabic', () => {
+     it('handles arabic', () => {
         expect(
             getMissingParts(
                 "الطَّبِيبُ يَكْتُبُ الوَصْفَةَ بِالقَلَمِ لِلْمَرِيضِ",
@@ -90,6 +90,11 @@ describe('getMissingParts function', () => {
                 ['الطَّبِيبُ يَكْتُبُ الوَصْفَةَ', 'القَلَمِ', 'لْمَرِيضِ'] 
             )
         ).toEqual(['بِ', 'لِ']);
+    });
+
+    it('handles omitted letters in the middle of words', () => {
+        expect(getMissingParts(replaceCharsForLanguage('العربية',"الطَّبِيبُ يَكْتُبُ الوَصْفَةَ بِالقَلَمِ لِلْمَرِيضِ"), [replaceCharsForLanguage('العربية',"الطبيب يكتب الوصفة"), replaceCharsForLanguage('العربية',"القلم"), replaceCharsForLanguage('العربية',"المريض")]))
+        .toEqual([replaceCharsForLanguage('العربية',"بِ"), replaceCharsForLanguage('العربية',"لِ")]);
     });
 
     it('handles Studenten læser på universitetet', () => {
