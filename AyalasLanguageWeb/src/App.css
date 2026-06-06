@@ -155,7 +155,7 @@ label.form-label {
 
 .header-app-link {
   text-decoration: none;
-  color: inherit;
+  color: rgb(55, 194, 20);
   font-size: 24px;
 }
 
@@ -236,6 +236,15 @@ label.form-label {
   color: rgb(12, 66, 12);
 }
 
+.lucide-circle-dot-dashed {
+  color: rgb(255, 200, 1);
+}
+.lucide-eye {
+  color: rgb(1, 1, 232);
+}
+.lucide-rotate-ccw {
+  color: rgb(55, 194, 20);
+}
 .check-answer-button {
   background-color: rgb(55, 194, 20);
   color: white;

@@ -224,7 +224,7 @@ export function LessonPage() {
           {learningPathData && (
             <>
               <div className="form-header">
-                <h1>{`Level ${learningPathData.level}, ${learningPathData.chapter} ${learningPathData.name}`}</h1>
+                <h1>{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</h1>
               </div>
               {!currentExercise && (
                 <div className="form-row">
