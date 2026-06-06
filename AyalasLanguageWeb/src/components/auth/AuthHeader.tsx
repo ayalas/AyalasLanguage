@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, Link, useNavigate } from 'react-router-dom';
-import { SquareMenu } from 'lucide-react';
+import { SquareMenu, Volleyball } from 'lucide-react';
 import axios from 'axios';
 import { switchLanguage } from '../../utils/languageUtils';
 import {
@@ -113,7 +113,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
         ))}
       </div>
 
-      <div className="header-profile-name">{showLanguageNextToProfile ? `${selectedLanguage}, ` : ''}{user?.displayName}</div>
+      <div className="header-profile-container"><div className="header-profile-name">{showLanguageNextToProfile ? `${selectedLanguage}, ` : ''}{user?.displayName}<div className="header-score" title="Total Score"><Volleyball /> {user?.languageSettings?.score}</div></div></div>
       <Link ref={setReference as any} {...getReferenceProps()} to="#">
         <SquareMenu />
       </Link>

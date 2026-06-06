@@ -79,38 +79,38 @@ public static class LearningEndpoints
 
         int languageId = user.TargetLanguageId.Value;
 
-            var learningPathsWithStatus = await db.LearningPaths
-        .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value)
-        // 1. Correlate LearningPaths with the user's specific progress records
-        .GroupJoin(
-            db.UserProgresses.Where(up => up.UserId == userId),
-            lp => lp.LearningPathId,
-            up => up.LearningPathId,
-            (lp, userProgressGroup) => new { lp, userProgressGroup }
+        var learningPathsWithStatus = await db.LearningPaths
+    .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value)
+    // 1. Correlate LearningPaths with the user's specific progress records
+    .GroupJoin(
+        db.UserProgresses.Where(up => up.UserId == userId),
+        lp => lp.LearningPathId,
+        up => up.LearningPathId,
+        (lp, userProgressGroup) => new { lp, userProgressGroup }
+    )
+    // 2. Flatten the group into a true left outer join
+    .SelectMany(
+        x => x.userProgressGroup.DefaultIfEmpty(),
+        (x, up) => new LearningPathDto
+        (
+            x.lp.LearningPathId,
+            x.lp.Level,
+            x.lp.Chapter,
+            x.lp.Name,
+            // EF9 translates this conditional tree perfectly into a SQL CASE WHEN statement
+            up == null
+                ? (byte)UserProgressEnum.NotStarted
+                : up.ExerciseId == null
+                    ? (byte)UserProgressEnum.Done
+                    : (byte)UserProgressEnum.InProgress,
+            // EF9 optimizes this into a sub-select COUNT query
+            db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId),
+            x.lp.PrevLearningPathId,
+            x.lp.NextLearningPathId,
+            up != null && up.practiseMistakesInThisPath
         )
-        // 2. Flatten the group into a true left outer join
-        .SelectMany(
-            x => x.userProgressGroup.DefaultIfEmpty(),
-            (x, up) => new LearningPathDto
-            (
-                x.lp.LearningPathId,
-                x.lp.Level,
-                x.lp.Chapter,
-                x.lp.Name,
-                // EF9 translates this conditional tree perfectly into a SQL CASE WHEN statement
-                up == null 
-                    ? (byte)UserProgressEnum.NotStarted 
-                    : up.ExerciseId == null 
-                        ? (byte)UserProgressEnum.Done 
-                        : (byte)UserProgressEnum.InProgress,
-                // EF9 optimizes this into a sub-select COUNT query
-                db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId),
-                x.lp.PrevLearningPathId,
-                x.lp.NextLearningPathId,
-                up != null && up.practiseMistakesInThisPath
-            )
-        )
-        .ToListAsync();
+    )
+    .ToListAsync();
 
         // 2. Reorder the list based on PrevLearningPathId
         try
@@ -334,4 +334,5 @@ public static class LearningEndpoints
 
         return Results.NoContent();
     }
+
 }

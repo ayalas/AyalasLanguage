@@ -568,6 +568,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Property<bool>("IsLearning")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("Score")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("UserId", "LanguageId");
 
                     b.HasIndex("LanguageId");

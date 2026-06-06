@@ -12,7 +12,7 @@ namespace AyalasLanguageAPI.DTOs
     public record UserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes, SwitchLanguageDto Current);
     public record EditUserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes);
     public record SwitchLanguageDto(int? TargetLanguageId, int? KnownLanguageId);
-    public record CurrentLanguageResponseDto(int? TargetLanguageId,string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool TargetLanguageIsRightToLeft, string? TargetLanguageEnglishName, string? TargetLanguageCode);
+    public record CurrentLanguageResponseDto(int? TargetLanguageId,string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool TargetLanguageIsRightToLeft, string? TargetLanguageEnglishName, string? TargetLanguageCode, int Score);
     public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, CurrentLanguageResponseDto languageSettings);
     public record UserLanguageDto(int LanguageId, bool IsLearning);
 
@@ -54,4 +54,6 @@ namespace AyalasLanguageAPI.DTOs
     public record EditExerciseDto(
         string Data
     );
+
+    public record AddScoreDto(int ScoreToAdd);
 }

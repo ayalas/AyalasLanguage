@@ -71,7 +71,8 @@ public static class AuthEndpoints
             HttpOnly = true,   // ◄ CRITICAL: Darkens the cookie to JavaScript/React
             Secure = !BypassSecureCookies,     // ◄ Forces HTTPS in production
             SameSite = SameSiteMode.Strict // ◄ Protects against CSRF attacks
-            ,Expires = new DateTimeOffset(expires)
+            ,
+            Expires = new DateTimeOffset(expires)
         });
 
         return Results.Ok(new LoginResponseDto(expires, userIdDto));
@@ -84,6 +85,16 @@ public static class AuthEndpoints
             .Include(u => u.TargetLanguage)
             .FirstOrDefaultAsync(u => u.UserId == userId);
         if (user == null) return null;
+
+        int userScore = 0;
+        if (user.TargetLanguageId != null)
+        {
+            UserLanguage? userLanguage = await db.UserLanguages.FirstOrDefaultAsync(ul => ul.UserId == userId && ul.LanguageId == user.TargetLanguageId.Value && ul.IsLearning == true);
+            if (userLanguage != null)
+            {
+                userScore = userLanguage.Score;
+            }
+        }
 
         var otherLanguages = await db.UserLanguages
             .Include(ul => ul.Language)
@@ -100,7 +111,7 @@ public static class AuthEndpoints
             user.KnownLanguage?.NativeName, otherLanguages,
             user.TargetLanguage != null && user.TargetLanguage.IsRightToLeft,
             user.TargetLanguage?.EnglishName,
-            user.TargetLanguage?.Code);
+            user.TargetLanguage?.Code, userScore);
 
         return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, languageSettings);
     }

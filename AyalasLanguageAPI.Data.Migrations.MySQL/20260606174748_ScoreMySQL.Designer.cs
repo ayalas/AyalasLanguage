@@ -4,6 +4,7 @@ using AyalasLanguageAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AyalasLanguageAPI.Data.Migrations.MySQL
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    partial class AyalasLanguageDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260606174748_ScoreMySQL")]
+    partial class ScoreMySQL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -542,6 +545,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.Property<byte>("Role")
                         .HasColumnType("tinyint unsigned");
 
+                    b.Property<int>("Score")
+                        .HasColumnType("int");
+
                     b.Property<int?>("TargetLanguageId")
                         .HasColumnType("int");
 
@@ -584,9 +590,6 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
 
                     b.Property<bool>("IsLearning")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("int");
 
                     b.HasKey("UserId", "LanguageId");
 

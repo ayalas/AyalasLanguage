@@ -140,13 +140,10 @@ label.form-label {
   justify-content: flex-start;
   text-align: start;
   gap: 15px;
-  max-width: 70vw;
+  max-width: 90vw;
 }
 
-.header-profile-name {
-  display: inline-flex;
-  white-space: nowrap;
-}
+
 
 .header-title {
   text-align: start;
@@ -171,6 +168,22 @@ label.form-label {
   border: 0;
   display: inline-flex;
   min-height: 30px;
+}
+
+.header-profile-container {
+  display: inline-flex;
+  flex-direction: row;
+}
+
+.header-score {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.header-profile-name {
+  display: block;
+  white-space: nowrap;
 }
 
 .learning-lesson-link {

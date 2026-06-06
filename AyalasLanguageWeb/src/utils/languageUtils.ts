@@ -1,4 +1,4 @@
-import type { User } from '../types/shared/User';
+import type { LanguageSettings, User } from '../types/shared/User';
 
 export function replaceCharsForLanguage(language: string | undefined, str: string | undefined): string | undefined {
     if (!str) return str;
@@ -40,9 +40,13 @@ export function replaceCharsForLanguage(language: string | undefined, str: strin
 }
 
 export async function reloadLanguageSettings(axios: any, user: User, login: (u: User) => void) {
-    const newUser = { ...user } as User;
     const response = await axios.get('/api/profile/current');
-    newUser.languageSettings = response.data;
+    return setLanguageSettings(response.data, user, login);
+}
+
+export async function setLanguageSettings(languageSettings: LanguageSettings, user: User, login: (u: User) => void) {
+    const newUser = { ...user } as User;
+    newUser.languageSettings = languageSettings;
     login(newUser);
     return newUser;
 }

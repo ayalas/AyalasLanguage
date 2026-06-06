@@ -22,6 +22,7 @@ export interface LanguageSettings {
   // Added ID fields used across the app
   targetLanguageId?: number;
   knownLanguageId?: number;
+  score: number;
 }
 
 export interface User {

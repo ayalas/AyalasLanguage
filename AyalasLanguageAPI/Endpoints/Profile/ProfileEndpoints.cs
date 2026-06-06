@@ -19,6 +19,7 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             profileGroup.MapPost("/current", SwitchUserLanguages);
             profileGroup.MapGet("/current", GetCurrentLanguage);
             profileGroup.MapDelete("/{languageId:int}", DeleteOtherLanguage);
+            profileGroup.MapPost("/score", AddScoreToUser);
         }
 
         [Authorize]
@@ -188,6 +189,26 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             return Results.Ok();
         }
 
+        [Authorize]
+        public static async Task<IResult> AddScoreToUser(ClaimsPrincipal claim, AddScoreDto dto, AyalasLanguageDbContext db)
+        {
+            var userId = claim.GetUserId();
+            var user = await db.Users.FindAsync(userId);
+            if (user == null) return Results.NotFound();
+
+            if (user.TargetLanguageId == null)
+            {
+                return Results.BadRequest("User does not have a target language set.");
+            }
+            UserLanguage? userLanguage = await db.UserLanguages.FirstOrDefaultAsync(ul => ul.UserId == userId && ul.LanguageId == user.TargetLanguageId.Value && ul.IsLearning == true);
+            if (userLanguage == null) return Results.BadRequest("User does not have a target learning language set.");
+
+            userLanguage.Score += dto.ScoreToAdd;
+            await db.SaveChangesAsync();
+            UserIdDto? userIdDto = await AuthEndpoints.GetUserById(user.UserId, db);
+            return Results.Ok(userIdDto?.languageSettings);
+        }
+
         #region Helper Functions
         //helper function to add or update a user's language preference
         private static async Task AddLanguageToUser(int userId, int languageId, bool isLearning, AyalasLanguageDbContext db)
@@ -212,5 +233,5 @@ namespace AyalasLanguageAPI.Endpoints.Profile
         #endregion
 
     }
-    
+
 }

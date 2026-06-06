@@ -5,7 +5,7 @@ import { FilePenLine } from 'lucide-react';
 
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
-import { getMissingParts, replaceCharsForLanguage } from '../../utils/languageUtils';
+import { getMissingParts, replaceCharsForLanguage, setLanguageSettings } from '../../utils/languageUtils';
 import { Exercise } from './exercise/Exercise';
 import type { User } from '../../types/shared/User';
 import type { ExerciseInfo } from '../../types/exercise/Exercise';
@@ -24,13 +24,14 @@ function extractErrorMessage(err: unknown) {
 export function LessonPage() {
   const { learningPathId } = useParams();
   const [exercises, setExercises] = useState<LocalExercise[]>([]);
+  const [scoreToAdd, setScoreToAdd] = useState(0);
   const [learningPathData, setLearningPathData] = useState<Record<string, unknown> | null>(null);
   const [currentExercise, setCurrentExercise] = useState<LocalExercise | null>(null);
   const [practiseMistakesInThisPath, setPractiseMistakesInThisPath] = useState(false);
   const [error, setError] = useState('');
   const exerciseRefs = useRef<Map<number, ExerciseHandle | undefined>>(new Map());
   const navigate = useNavigate();
-  const { user } = useOutletContext<{ user: User | null }>();
+  const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
 
   const changeCurrentExercise = function (arrExercises: LocalExercise[], index: number) {
     const curItem = arrExercises[index] as LocalExercise;
@@ -43,11 +44,11 @@ export function LessonPage() {
       dataObj = JSON.parse(rawString) as ParsedExercise;
     } catch {
       dataObj = { First: rawString };
-     }
+    }
 
-  const targetLang = user?.languageSettings?.targetLanguage || '';
-  const firstData = replaceCharsForLanguage(targetLang, dataObj.First || '') || '';
-  const secondData = replaceCharsForLanguage(targetLang, dataObj.Second || '') || '';
+    const targetLang = user?.languageSettings?.targetLanguage || '';
+    const firstData = replaceCharsForLanguage(targetLang, dataObj.First || '') || '';
+    const secondData = replaceCharsForLanguage(targetLang, dataObj.Second || '') || '';
 
     if (curItem.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS) {
       const sentenceElements = (firstData || '').split(PLACEHOLDERS.BLANKS).map((s) => s.trim());
@@ -65,7 +66,7 @@ export function LessonPage() {
         exerciseObject: dataObj,
         sentenceElements: [firstData],
         answers: (secondData || '').trim().split(' '),
-  extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(' '),
+        extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(' '),
         index
       });
     } else if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
@@ -136,18 +137,30 @@ export function LessonPage() {
     }
   };
 
+  const setScore = async function (newScore: number) {
+    //add profile score
+    const res = await axios.post('/api/profile/score', { scoreToAdd: newScore });
+    setScoreToAdd(0);
+    setLanguageSettings(res.data, user, login);
+  };
+
   const moveNext = async function () {
     if (!currentExercise) return;
 
+    const newScore = scoreToAdd + 1;
+
     if ((currentExercise.index ?? 0) < exercises.length - 1) {
+      setScoreToAdd(newScore);
       changeCurrentExercise(exercises, (currentExercise.index ?? 0) + 1);
     } else {
       try {
+        await setScore(newScore);
+        //set path as done
         await axios.post('/api/learning/progress', { learningPathId });
         navigate('/home');
-       } catch (err: unknown) {
-         setError(extractErrorMessage(err));
-       }
+      } catch (err: unknown) {
+        setError(extractErrorMessage(err));
+      }
     }
   };
 
@@ -155,10 +168,13 @@ export function LessonPage() {
     try {
       if (!currentExercise) return;
 
-  const exCurInd = exercises.findIndex((e) => e.exerciseId == currentExercise.exerciseId);
+      const exCurInd = exercises.findIndex((e) => e.exerciseId == currentExercise.exerciseId);
       let exerId = null as number | null;
       if (exCurInd > 0) {
         exerId = currentExercise.exerciseId;
+      }
+      if (scoreToAdd > 0) {
+        await setScore(scoreToAdd);
       }
 
       if (exerId == null) {
@@ -187,24 +203,24 @@ export function LessonPage() {
         const res = await axios.get(`/api/learning/path/${learningPathId}/exercises`);
 
         if (res && res.data && res.data.length > 0) {
-    // Normalize exercise.data so downstream code can assume a string that may contain JSON
-    const exercisesTemp: LocalExercise[] = (res.data as ExerciseInfo[]).map((e) => ({
-      ...e,
-      data: typeof e.data === 'string' ? e.data : JSON.stringify(e.data)
-    }));
+          // Normalize exercise.data so downstream code can assume a string that may contain JSON
+          const exercisesTemp: LocalExercise[] = (res.data as ExerciseInfo[]).map((e) => ({
+            ...e,
+            data: typeof e.data === 'string' ? e.data : JSON.stringify(e.data)
+          }));
           setExercises(exercisesTemp);
           let exCurInd = 0;
           if (learningPathTemp.exerciseId != null) {
-                    exCurInd = exercisesTemp.findIndex((e) => e.exerciseId == learningPathTemp.exerciseId);
+            exCurInd = exercisesTemp.findIndex((e) => e.exerciseId == learningPathTemp.exerciseId);
             if (exCurInd < 0) {
               exCurInd = 0;
             }
           }
           changeCurrentExercise(exercisesTemp, exCurInd);
         }
-       } catch (err: unknown) {
-         setError(extractErrorMessage(err));
-       }
+      } catch (err: unknown) {
+        setError(extractErrorMessage(err));
+      }
     }
     getData();
     // changeCurrentExercise is stable in this file and intentionally omitted from deps

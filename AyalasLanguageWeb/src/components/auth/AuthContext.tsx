@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     };
 
-    void checkAuthStatus();
+    checkAuthStatus();
   }, [user]);
 
   const login = (userData: User | null) => setUser(userData);

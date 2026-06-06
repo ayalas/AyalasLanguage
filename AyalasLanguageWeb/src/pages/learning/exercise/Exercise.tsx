@@ -2,14 +2,14 @@ import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect 
 import { Link, useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History } from 'lucide-react';
 
-import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS, LANGUAGE_TO_POLLY_MAP } from '../../../constants/learning';
+import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
 import BucketListExercise from './exercise-render-types/bucket-list/BucketListExercise';
 import type { User } from '../../../types/shared/User';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
-import type { ExerciseData, ExerciseInfo } from '../../../types/exercise/Exercise';
+import type { ExerciseInfo } from '../../../types/exercise/Exercise';
 //import { puter } from "@heyputer/puter.js";
 
 type Props = {
@@ -31,6 +31,7 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
 
+    //requires ssl, so stopped
     /*const playAnswer = function () {
         if (typeof exerciseInfo.data === 'string') {
             const pollyLangCode = LANGUAGE_TO_POLLY_MAP[user?.languageSettings?.targetLanguageCode]
@@ -89,6 +90,7 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
 
     useEffect(() => {
         childLoaded(exerciseInfo.exerciseId);
+        //requires ssl, so stopped
         /*async function checkAuth() {
             if (!puter.auth.isSignedIn()) {
                 // Note: browser popups usually require a direct user click event, 

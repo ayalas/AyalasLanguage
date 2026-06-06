@@ -120,7 +120,7 @@ const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft =
                 className="keyboard-container"
                 style={{
                     direction: isRightToLeft ? 'rtl' : 'ltr',
-                    width: '85%',
+                    width: '100%',
                     maxWidth: '850px',
                     margin: '0',
                     justifyContent: 'flex-start',
