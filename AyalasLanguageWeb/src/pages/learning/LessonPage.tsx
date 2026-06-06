@@ -31,7 +31,7 @@ export function LessonPage() {
   const [error, setError] = useState('');
   const exerciseRefs = useRef<Map<number, ExerciseHandle | undefined>>(new Map());
   const navigate = useNavigate();
-  const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
+  const { user, login } = useOutletContext<{ user: User; login: (u: User) => void }>();
 
   const changeCurrentExercise = function (arrExercises: LocalExercise[], index: number) {
     const curItem = arrExercises[index] as LocalExercise;
