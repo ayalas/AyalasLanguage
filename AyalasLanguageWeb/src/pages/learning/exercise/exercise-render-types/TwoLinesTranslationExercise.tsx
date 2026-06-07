@@ -59,7 +59,7 @@ export const TwoLinesTranslationExercise = forwardRef<ExerciseHandle, Props>(({ 
         let alternativeFound = false;
         //go through alternative answers
         if (dataObj.Alternatives != null && dataObj.Alternatives.length > 0) {
-          for (const alternative in dataObj.Alternatives) {
+          for (const alternative of dataObj.Alternatives) {
             if (compareToAnswer(userAnswer, alternative)) {
               alternativeFound = true;
               break;

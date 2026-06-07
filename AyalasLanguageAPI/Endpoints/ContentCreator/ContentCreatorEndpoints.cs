@@ -278,13 +278,14 @@ public static class ContentCreatorEndpoints
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
 
         //see if Alternatives changed and we have a source exercise id
-        if (exercise.SourceExerciseId != null && (exercise.ExerciseTypeId == (int)ExerciseTypesEnum.FromKnownToTarget
-            || exercise.ExerciseTypeId == (int)ExerciseTypesEnum.FromTargetToKnown))
+        if (exercise.ExerciseTypeId == (int)ExerciseTypesEnum.FromKnownToTarget
+            || exercise.ExerciseTypeId == (int)ExerciseTypesEnum.FromTargetToKnown)
         {
             // get added alternatives
             List<string> addedAlternatives = [];
             var dtoSimpleNew = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(dto.Data);
             var dtoSimpleOld = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(exercise.Data);
+
             if (dtoSimpleNew != null && dtoSimpleNew.Alternatives != null && dtoSimpleNew.Alternatives.Length > 0)
             {
                 if (dtoSimpleOld == null || dtoSimpleOld.Alternatives == null || dtoSimpleOld.Alternatives.Length == 0)
