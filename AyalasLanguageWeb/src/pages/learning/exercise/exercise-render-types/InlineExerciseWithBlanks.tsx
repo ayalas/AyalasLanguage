@@ -71,6 +71,10 @@ export const InlineExerciseWithBlanks = forwardRef<ExerciseHandle, Props>((props
             }
 
             return canMoveNext;
+        },
+        getCurrentAnswer() {
+            //not applicable
+            return '';
         }
     }));
 

@@ -55,6 +55,7 @@ export const TwoLinesTranslationExercise = forwardRef<ExerciseHandle, Props>(({ 
       const userAnswer = thisQuestionRef?.getUserAnswer()?.trim().toLowerCase() ?? '';
       const dataObj = safeParseData(exerciseInfo.data);
 
+      if (dataObj == null || dataObj.Second === undefined) return false;
       if (!compareToAnswer(userAnswer, dataObj.Second)) {
         let alternativeFound = false;
         //go through alternative answers

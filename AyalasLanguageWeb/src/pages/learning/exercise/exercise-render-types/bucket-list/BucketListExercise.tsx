@@ -39,6 +39,10 @@ const BucketListExercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, se
     },
     setFocus() {
       // focus is not applicable for bucket-list, leave as no-op
+    },
+    getCurrentAnswer() {
+      //not applicable
+      return '';
     }
   }));
 
