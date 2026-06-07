@@ -44,6 +44,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.Property<int?>("LearningPathId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SourceExerciseId")
+                        .HasColumnType("int");
+
                     b.Property<byte>("Status")
                         .HasColumnType("tinyint unsigned");
 
@@ -60,6 +63,8 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.HasIndex("KnownLanguageId");
 
                     b.HasIndex("LearningPathId");
+
+                    b.HasIndex("SourceExerciseId");
 
                     b.HasIndex("TargetLanguageId");
 
@@ -636,6 +641,10 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         .WithMany("Exercises")
                         .HasForeignKey("LearningPathId");
 
+                    b.HasOne("AyalasLanguageAPI.Data.Model.Exercise", "SourceExercise")
+                        .WithMany("ChildExercises")
+                        .HasForeignKey("SourceExerciseId");
+
                     b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
                         .HasForeignKey("TargetLanguageId")
@@ -653,6 +662,8 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.Navigation("KnownLanguage");
 
                     b.Navigation("LearningPath");
+
+                    b.Navigation("SourceExercise");
 
                     b.Navigation("TargetLanguage");
 
@@ -785,6 +796,11 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.Navigation("LearningPath");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Exercise", b =>
+                {
+                    b.Navigation("ChildExercises");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Language", b =>

@@ -8,4 +8,5 @@ export interface ExerciseInputHandle {
 export interface ExerciseHandle {
   setFocus: () => void;
   checkAnswer: () => boolean;
+  getCurrentAnswer: () => string;
 }

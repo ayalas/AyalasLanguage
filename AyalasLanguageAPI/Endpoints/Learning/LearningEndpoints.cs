@@ -323,7 +323,8 @@ public static class LearningEndpoints
                 LearningPathId = learningPathForMistakes.LearningPathId,
                 ExerciseTypeId = exercise.ExerciseTypeId,
                 Data = exercise.Data,
-                UserId = userId
+                UserId = userId,
+                SourceExerciseId = exercise.SourceExerciseId ?? exercise.ExerciseId
             };
 
             db.Exercises.Add(exerciseToAdd);

@@ -231,7 +231,7 @@ public static class ContentCreatorEndpoints
         {
             nextPath.PrevLearningPathId = path.PrevLearningPathId;
         }
-        
+
         await db.SaveChangesAsync();
         return Results.NoContent();
     }
@@ -265,18 +265,80 @@ public static class ContentCreatorEndpoints
     [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> EditExercise(int id, EditExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
-        var exercise = await db.Exercises.FindAsync(id);
+        var exercise = await db.Exercises
+        .Include(e => e.ChildExercises)
+        .Include(e => e.SourceExercise)
+        .FirstOrDefaultAsync(e => e.ExerciseId == id);
         if (exercise == null) return Results.NotFound();
 
         if (exercise.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        if (!ValidateExerciseData(id, dto.Data, logger))
+        if (!ValidateExerciseData(exercise.ExerciseTypeId, dto.Data, logger))
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
+
+        //see if Alternatives changed and we have a source exercise id
+        if (exercise.SourceExerciseId != null && (exercise.ExerciseTypeId == (int)ExerciseTypesEnum.FromKnownToTarget
+            || exercise.ExerciseTypeId == (int)ExerciseTypesEnum.FromTargetToKnown))
+        {
+            // get added alternatives
+            List<string> addedAlternatives = [];
+            var dtoSimpleNew = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(dto.Data);
+            var dtoSimpleOld = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(exercise.Data);
+            if (dtoSimpleNew != null && dtoSimpleNew.Alternatives != null && dtoSimpleNew.Alternatives.Length > 0)
+            {
+                if (dtoSimpleOld == null || dtoSimpleOld.Alternatives == null || dtoSimpleOld.Alternatives.Length == 0)
+                {
+                    addedAlternatives.AddRange(dtoSimpleNew.Alternatives);
+                }
+                else
+                {
+                    foreach (string alternative in dtoSimpleNew.Alternatives)
+                    {
+                        if (!dtoSimpleOld.Alternatives.Contains(alternative))
+                            addedAlternatives.Add(alternative);
+                    }
+                }
+            }
+
+            //we have added alternatives - get source exercise id + all other exercises sourcing to it
+            //and update alternatives for them too
+            if (addedAlternatives.Count > 0)
+            {
+                string[] addedAlternativesArr = [.. addedAlternatives];
+                //update the source
+                if (exercise.SourceExercise != null)
+                {
+                    AddAlternativesToExercise(exercise.SourceExercise, addedAlternativesArr);
+                    //get the source children that are not this exercise
+                    var sourceChildren = await db.Exercises
+                    .Where(e => e.ExerciseId == exercise.SourceExerciseId
+                        && e.ExerciseId != id)
+                        .ToListAsync();
+                    //update the source children that are not this exercise
+                    if (sourceChildren != null && sourceChildren.Count > 0)
+                    {
+                        foreach(Exercise ex in sourceChildren)
+                        {
+                            AddAlternativesToExercise(ex, addedAlternativesArr);
+                        }
+                    }
+                }
+                //update this exercise children
+                if (exercise.ChildExercises != null && exercise.ChildExercises.Count > 0)
+                {
+                    foreach(Exercise ex in exercise.ChildExercises)
+                    {
+                        AddAlternativesToExercise(ex, addedAlternativesArr);
+                    }
+                }
+            }
+        }
 
         exercise.Data = dto.Data;
 
         await db.SaveChangesAsync();
+
         return Results.Ok();
     }
 
@@ -292,6 +354,38 @@ public static class ContentCreatorEndpoints
         db.Exercises.Remove(exercise);
         await db.SaveChangesAsync();
         return Results.NoContent();
+    }
+
+    private static void AddAlternativesToExercise(Exercise targetExercise, string[] addedAlternativesArr)
+    {
+        var dtoSimple2 = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(targetExercise.Data);
+        if (dtoSimple2 != null)
+        {
+            bool needUpdate = false;
+            if (dtoSimple2.Alternatives == null || dtoSimple2.Alternatives.Length == 0)
+            {
+                dtoSimple2.Alternatives = addedAlternativesArr;
+                needUpdate = true;
+            }
+            else
+            {
+                List<string> toAdd = [];
+                foreach (string alternative in addedAlternativesArr)
+                {
+                    if (!dtoSimple2.Alternatives.Contains(alternative))
+                        toAdd.Add(alternative);
+                }
+                needUpdate = (toAdd.Count > 0);
+                if (needUpdate)
+                {
+                    dtoSimple2.Alternatives = [.. dtoSimple2.Alternatives, .. toAdd];
+                }
+            }
+            if (needUpdate)
+            {
+                targetExercise.Data = System.Text.Json.JsonSerializer.Serialize(dtoSimple2);
+            }
+        }
     }
 
     /// <summary>
@@ -321,7 +415,7 @@ public static class ContentCreatorEndpoints
                 case (int)ExerciseTypesEnum.FromKnownToTargetBucket:
                     // Validate that data is a JSON object with question, options, and correct answer
                     var dtoBucket = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.BucketTranslateDto>(data);
-                    if (!( dtoBucket != null
+                    if (!(dtoBucket != null
                            && !string.IsNullOrEmpty(dtoBucket.First)
                            && !string.IsNullOrEmpty(dtoBucket.Second)
                            && dtoBucket.ExtraOptions.Split(" ").Length >= Constants.BUCKET_EXTRA_MIN_COUNT
@@ -338,7 +432,7 @@ public static class ContentCreatorEndpoints
                     return false; // Assuming invalid for unknown types
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             logger.LogError(ex, "Error validating exercise data for exercise type {ExerciseTypeId}. Data: {Data}", exerciseTypeId, data);
             return false; // If any exception occurs during validation, consider it invalid

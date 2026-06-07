@@ -2,6 +2,7 @@ export interface ExerciseData {
   First?: string;
   Second?: string;
   ExtraOptions?: string;
+  Alternatives?: string[];
 }
 
 export interface ExerciseInfo {

@@ -29,5 +29,8 @@ namespace AyalasLanguageAPI.Data.Model
         public virtual User User { get; set; } = null!;
 
         public byte Status { get; set; } = 0;
+        public int? SourceExerciseId { get; set; }
+        public virtual Exercise? SourceExercise { get; set; }
+        public virtual ICollection<Exercise> ChildExercises { get; set; } = new List<Exercise>();
     }
 }

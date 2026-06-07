@@ -17,16 +17,16 @@ type Props = {
   user?: User | null;
 };
 
-const safeParseSecond = (data: string | ExerciseData) => {
+const safeParseData = (data: string | ExerciseData) => {
   if (typeof data === 'string') {
     try {
       const parsed = JSON.parse(data) as ExerciseData;
-      return parsed.Second ?? '';
+      return parsed;
     } catch {
-      return '';
+      return null;
     }
   }
-  return (data as ExerciseData).Second ?? '';
+  return (data as ExerciseData);
 };
 
 export const TwoLinesTranslationExercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user }, ref) => {
@@ -37,19 +37,40 @@ export const TwoLinesTranslationExercise = forwardRef<ExerciseHandle, Props>(({ 
     setInputValue(value);
   }
 
+  function compareToAnswer(userAnswer: string, correctAnswer: string) {
+    const target = (replaceCharsForLanguage(user?.languageSettings?.targetLanguage ?? '', correctAnswer) ?? '').trim().toLowerCase();
+    return (userAnswer === target);
+  }
+
   useImperativeHandle(ref, () => ({
     setFocus() {
       inputRef.current?.setFocus();
+    },
+    getCurrentAnswer() {
+      return inputRef.current?.getUserAnswer()?.trim().toLowerCase() ?? '';
     },
     checkAnswer() {
       const thisQuestionRef = inputRef.current;
       let canMoveNext = true;
       const userAnswer = thisQuestionRef?.getUserAnswer()?.trim().toLowerCase() ?? '';
-      const secondRaw = safeParseSecond(exerciseInfo.data);
-      const target = (replaceCharsForLanguage(user?.languageSettings?.targetLanguage ?? '', secondRaw) ?? '').trim().toLowerCase();
-      if (userAnswer !== target) {
-        thisQuestionRef?.setToError();
-        canMoveNext = false;
+      const dataObj = safeParseData(exerciseInfo.data);
+
+      if (!compareToAnswer(userAnswer, dataObj.Second)) {
+        let alternativeFound = false;
+        //go through alternative answers
+        if (dataObj.Alternatives != null && dataObj.Alternatives.length > 0) {
+          for (const alternative in dataObj.Alternatives) {
+            if (compareToAnswer(userAnswer, alternative)) {
+              alternativeFound = true;
+              break;
+            }
+          }
+        }
+
+        if (!alternativeFound) {
+          thisQuestionRef?.setToError();
+          canMoveNext = false;
+        }
       }
 
       if (canMoveNext) {

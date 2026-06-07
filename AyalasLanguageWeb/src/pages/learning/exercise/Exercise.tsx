@@ -1,7 +1,7 @@
 import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History } from 'lucide-react';
-
+import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History, TicketPlus } from 'lucide-react';
+import axios from 'axios';
 import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
@@ -9,7 +9,7 @@ import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsEx
 import BucketListExercise from './exercise-render-types/bucket-list/BucketListExercise';
 import type { User } from '../../../types/shared/User';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
-import type { ExerciseInfo } from '../../../types/exercise/Exercise';
+import type { ExerciseData, ExerciseInfo } from '../../../types/exercise/Exercise';
 //import { puter } from "@heyputer/puter.js";
 
 type Props = {
@@ -31,26 +31,9 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
 
-    //requires ssl, so stopped
-    /*const playAnswer = function () {
-        if (typeof exerciseInfo.data === 'string') {
-            const pollyLangCode = LANGUAGE_TO_POLLY_MAP[user?.languageSettings?.targetLanguageCode]
-            if (pollyLangCode != null && pollyLangCode != "") {
-                const parsed = JSON.parse(exerciseInfo.data) as ExerciseData;
-                if (parsed.Second != null && parsed.Second != "") {
-                    puter.ai.txt2speech(parsed.Second, pollyLangCode);
-                }
-            }
-        }
-    }*/
-
     const toggleAnswer = function () {
         const newValue = !displayAnswer;
         setDisplayAnswer(newValue);
-
-        /*if (newValue) {
-            playAnswer();
-        }*/
     }
 
     const checkAnswer = function () {
@@ -79,12 +62,52 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
         return "";
     }
 
+    async function addAlternativeAnswer(e: React.MouseEvent<HTMLButtonElement>) {
+        e.preventDefault();
+        if (exerciseInfo.exerciseTypeId !== EXERCISE_TYPES.FROM_TARGET_TO_KNOWN &&
+            exerciseInfo.exerciseTypeId !== EXERCISE_TYPES.FROM_KNOWN_TO_TARGET) {
+            return;
+        }
+        //  const updatedAlternatives = [...(exerciseInfo.Alternatives || []), altAnswer];
+        let dataObj: ExerciseData;
+        if (typeof exerciseInfo.data === "string") {
+            dataObj = JSON.parse(exerciseInfo.data) as ExerciseData;
+        } else {
+            dataObj = exerciseInfo.data as ExerciseData;
+        }
+
+        const alternative = refExercise.current?.getCurrentAnswer?.();
+        if (alternative == null || alternative === "") {
+            return;
+        }
+        let updateNeeded = false;
+        if (dataObj.Alternatives == null) {
+            dataObj.Alternatives = [alternative];
+            updateNeeded = true;
+        }
+        else if (!dataObj.Alternatives.includes(alternative)) {
+            dataObj.Alternatives.push(alternative);
+            updateNeeded = true;
+        }
+
+        if (updateNeeded) {
+            const dataString = JSON.stringify(dataObj);
+            await axios.put(`/api/creator/exercise/${exerciseInfo.exerciseId}`, { Data: dataString });
+        }
+        setError("");
+        toggleAnswer();
+        moveNext();
+    }
+
     useImperativeHandle(ref, () => ({
         setFocus() {
             refExercise.current?.setFocus?.();
         },
         checkAnswer() {
             return refExercise.current?.checkAnswer?.() || false;
+        },
+        getCurrentAnswer() {
+            return refExercise.current?.getCurrentAnswer?.() || '';
         }
     }));
 
@@ -132,6 +155,13 @@ export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveN
                             <button type="button" onClick={readdMistakes} className="form-button" title="Readd my mistakes here"><History /></button>
                         </div>
                     )}
+                 {displayAnswer && error != "" 
+                 && (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_TARGET_TO_KNOWN 
+                    || exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET) && (
+                <div className="form-button-cell">
+                    <button type="button" className="form-button" title="Add alternative answer" onClick={addAlternativeAnswer}><TicketPlus /></button>
+                </div>
+                 )}
                 <div className="form-button-cell">
                     <Link to={`/author/path/${learningPathId}`} className="link-button" title="Edit lesson"><FilePenLine /></Link>
                 </div>

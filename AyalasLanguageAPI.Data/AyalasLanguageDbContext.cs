@@ -31,23 +31,6 @@ public class AyalasLanguageDbContext : DbContext
         modelBuilder.Entity<UserProgress>()
             .HasKey(up => new { up.UserId, up.LearningPathId });
 
-        //create indexes before foreign keys - important for mysql
-        /* modelBuilder.Entity<LearningPath>()
-         .HasIndex(p => p.PrevLearningPath)
-         .HasDatabaseName("IX_LearningPaths_PrevLearningPath");
-
-         modelBuilder.Entity<LearningPath>()
-         .HasIndex(p => p.NextLearningPathId)
-         .HasDatabaseName("IX_LearningPaths_NextLearningPathId");
-
-         modelBuilder.Entity<LearningPath>()
-         .HasIndex(p => p.TargetLanguageId)
-         .HasDatabaseName("IX_LearningPaths_TargetLanguageId");
-
-         modelBuilder.Entity<LearningPath>()
-         .HasIndex(p => p.KnownLanguageId)
-         .HasDatabaseName("IX_LearningPaths_KnownLanguageId");*/
-
         modelBuilder.Entity<LearningPath>()
             .HasIndex(p => new { p.TargetLanguageId, p.KnownLanguageId, p.Level, p.Chapter })
             .IsUnique();
