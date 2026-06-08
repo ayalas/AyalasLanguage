@@ -9,7 +9,7 @@ type Props = {
   setError: (s: string) => void;
   moveNext: () => void;
   displayAnswer?: boolean;
-  ref: React.RefObject<ExerciseHandle>;
+  ref: React.Ref<ExerciseHandle>;
 };
 
 const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, ref }: Props ) {

@@ -15,7 +15,7 @@ type Props = {
   displayAnswer?: boolean;
   parentCheckAnswer?: () => boolean;
   user?: User | null;
-  ref: React.RefObject<ExerciseHandle>;
+  ref: React.Ref<ExerciseHandle>;
 };
 
 const safeParseData = (data: string | ExerciseData) => {

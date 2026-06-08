@@ -1,9 +1,10 @@
 import { ArchiveRestore, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useImperativeHandle, useState } from "react";
+import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
 
 
 
-export function AlternativeLine({ alternative }: { alternative: string }) {
+export function AlternativeLine({ alternative, ref }: { alternative: string, ref: React.Ref<AlternativeHandle> }) {
     const [exists, setExists] = useState(true);
 
     function onDeleteClick(e: React.MouseEvent) {
@@ -12,19 +13,27 @@ export function AlternativeLine({ alternative }: { alternative: string }) {
         setExists(!exists);
     }
 
+    useImperativeHandle(ref, () => ({
+        exists() {
+            return exists;
+        }
+    }));
+
     return (
         <div className="form-row">
             <div className="content-line-part">
 
                 <div className="form-button-cell">
-                    <button type="button" className="form-button button-delete-item" onClick={onDeleteClick}>
+                    <button type="button" className="form-button button-delete-item" 
+                        title={exists? "Delete" : "Restore"}
+                    onClick={onDeleteClick}>
                         {exists && (
                             <Trash2 className="small-icon" />
                         ) || (
-                            <ArchiveRestore className="small-icon" />
-                        )}  
+                                <ArchiveRestore className="small-icon" />
+                            )}
                     </button>
-                    <label className={ exists? "form-label label-exists" : "form-label label-deleted"}>{alternative}</label>
+                    <label className={exists ? "form-label label-exists" : "form-label label-deleted"}>{alternative}</label>
                 </div>
             </div>
         </div>

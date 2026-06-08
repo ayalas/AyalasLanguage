@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { errorHandler } from "../../../utils/utils";
 import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
 import { ArrowBigLeft, LayersPlus } from "lucide-react";
-import type { ExerciseModel } from "../../../types/exercise/Exercise";
+import type { ExerciseData, ExerciseModel } from "../../../types/exercise/Exercise";
 import { EXERCISE_TYPES, EXERCISE_GENERATIONS } from "../../../constants/learning";
 import { AlternativeLine } from "./AlternativeLine";
+import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
 
 export function ExerciseUpdatePage() {
     const { exerciseId } = useParams();
@@ -16,13 +17,37 @@ export function ExerciseUpdatePage() {
     const [firstLine, setFirstLine] = useState('');
     const [secondLine, setSecondLine] = useState('');
     const [extraOptions, setExtraOptions] = useState('');
+    const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
     const navigate = useNavigate();
 
     async function onFormSubmit(e: React.SubmitEvent) {
         e.preventDefault();
         try {
-            console.log('todo');
 
+            const arr: string[] = [];
+            if (initialRecord?.exerciseObject?.Alternatives != null
+                && initialRecord?.exerciseObject?.Alternatives.length > 0
+            ) {
+                const map = alternativeRefs.current;
+                for (const [key, handle] of map.entries()) {
+                    if (handle.exists()) {
+                        arr.push(key);
+                    }
+                }
+            }
+
+            const dataToSend: ExerciseData = {
+                First: firstLine,
+                Second: secondLine,
+                ExtraOptions: extraOptions,
+                Alternatives: arr
+            };
+
+            const data = JSON.stringify(dataToSend);
+
+            await axios.put(`/api/creator/exercise/${exerciseId}`, { Data: data });
+
+            navigate(`/author/path/${initialRecord?.learningPathId}`);
         } catch (ex: unknown) {
             errorHandler(ex, setError);
         }
@@ -35,6 +60,8 @@ export function ExerciseUpdatePage() {
             navigate(`/author/path/${initialRecord?.learningPathId}`);
         }
     }
+
+
 
     useEffect(() => {
         async function loadAsync() {
@@ -120,10 +147,18 @@ export function ExerciseUpdatePage() {
                                     <div className="form-label-row">Alternatives</div>
                                 </div>
                                 {
-                                    initialRecord.exerciseObject.Alternatives.map((alternative) => (
-                                        <AlternativeLine key={alternative} alternative={alternative} />
-
-                                    ))}
+                                    initialRecord.exerciseObject.Alternatives.map((alternative) => {
+                                        const setRef = (el: AlternativeHandle) => {
+                                            if (el) {
+                                                alternativeRefs.current.set(alternative, el);
+                                            } else {
+                                                alternativeRefs.current.delete(alternative);
+                                            }
+                                        };
+                                        return (
+                                            <AlternativeLine ref={setRef} key={alternative} alternative={alternative} />
+                                        );
+                                    })}
                             </>)}
                     <div className="form-row">
                         <button className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>

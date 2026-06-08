@@ -22,7 +22,7 @@ type Props = {
     changeMistakesSetting: (val: boolean) => void;
     practiseMistakesInThisPath?: boolean;
     addMistake: (id: number) => Promise<void>;
-    ref: React.RefObject<ExerciseHandle>;
+    ref: React.Ref<ExerciseHandle>;
 };
 
 export const Exercise = function({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props ) {

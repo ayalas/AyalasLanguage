@@ -64,6 +64,10 @@ label.form-label {
   font-weight: 400;
 }
 
+label.label-deleted {
+  text-decoration: line-through;
+}
+
 .form-row {
   padding-bottom: 5px;
   line-height: min(40px);

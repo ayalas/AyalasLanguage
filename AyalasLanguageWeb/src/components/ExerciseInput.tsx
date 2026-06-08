@@ -10,7 +10,7 @@ interface Props {
   value?: string;
   onChange?: (value: string, customKey?: string) => void;
   customKey?: string;
-  ref?: React.RefObject<ExerciseInputHandle | null>;
+  ref?: React.Ref<ExerciseInputHandle | null>;
 }
 
 export const ExerciseInput = function(props: Props) {

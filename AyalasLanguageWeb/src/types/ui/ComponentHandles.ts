@@ -10,3 +10,7 @@ export interface ExerciseHandle {
   checkAnswer: () => boolean;
   getCurrentAnswer: () => string;
 }
+
+export interface AlternativeHandle {
+  exists: () => boolean;
+}

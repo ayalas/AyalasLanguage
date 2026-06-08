@@ -13,7 +13,7 @@ interface Props {
     displayAnswer?: boolean;
     parentCheckAnswer?: () => void;
     user?: User;
-    ref: React.RefObject<ExerciseHandle>;
+    ref: React.Ref<ExerciseHandle>;
 }
 
 export const InlineExerciseWithBlanks = function(props: Props) {

@@ -297,34 +297,50 @@ public static class ContentCreatorEndpoints
         {
             // get added alternatives
             List<string> addedAlternatives = [];
+            List<string> removedAlternatives = [];
             var dtoSimpleNew = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(dto.Data);
             var dtoSimpleOld = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(exercise.Data);
 
-            if (dtoSimpleNew != null && dtoSimpleNew.Alternatives != null && dtoSimpleNew.Alternatives.Length > 0)
+            if (dtoSimpleNew != null)
             {
                 if (dtoSimpleOld == null || dtoSimpleOld.Alternatives == null || dtoSimpleOld.Alternatives.Length == 0)
                 {
-                    addedAlternatives.AddRange(dtoSimpleNew.Alternatives);
+                    if (dtoSimpleNew.Alternatives != null && dtoSimpleNew.Alternatives.Length > 0)
+                        addedAlternatives.AddRange(dtoSimpleNew.Alternatives);
                 }
                 else
                 {
-                    foreach (string alternative in dtoSimpleNew.Alternatives)
+                    if (dtoSimpleNew.Alternatives != null && dtoSimpleNew.Alternatives.Length > 0)
                     {
-                        if (!dtoSimpleOld.Alternatives.Contains(alternative))
-                            addedAlternatives.Add(alternative);
+                        foreach (string alternative in dtoSimpleNew.Alternatives)
+                        {
+                            if (!dtoSimpleOld.Alternatives.Contains(alternative))
+                                addedAlternatives.Add(alternative);
+                        }
+
+                        foreach (string alternative in dtoSimpleOld.Alternatives)
+                        {
+                            if (!dtoSimpleNew.Alternatives.Contains(alternative))
+                                removedAlternatives.Add(alternative);
+                        }
+                    }
+                    else
+                    {
+                        removedAlternatives.AddRange(dtoSimpleOld.Alternatives);
                     }
                 }
             }
 
             //we have added alternatives - get source exercise id + all other exercises sourcing to it
             //and update alternatives for them too
-            if (addedAlternatives.Count > 0)
+            if (addedAlternatives.Count > 0 || removedAlternatives.Count > 0)
             {
                 string[] addedAlternativesArr = [.. addedAlternatives];
+                string[] removedAlternativesArr = [.. removedAlternatives];
                 //update the source
                 if (exercise.SourceExercise != null)
                 {
-                    AddAlternativesToExercise(exercise.SourceExercise, addedAlternativesArr);
+                    AddAlternativesToExercise(exercise.SourceExercise, addedAlternativesArr, removedAlternativesArr);
                     //get the source children that are not this exercise
                     var sourceChildren = await db.Exercises
                     .Where(e => e.ExerciseId == exercise.SourceExerciseId
@@ -333,18 +349,18 @@ public static class ContentCreatorEndpoints
                     //update the source children that are not this exercise
                     if (sourceChildren != null && sourceChildren.Count > 0)
                     {
-                        foreach(Exercise ex in sourceChildren)
+                        foreach (Exercise ex in sourceChildren)
                         {
-                            AddAlternativesToExercise(ex, addedAlternativesArr);
+                            AddAlternativesToExercise(ex, addedAlternativesArr, removedAlternativesArr);
                         }
                     }
                 }
                 //update this exercise children
                 if (exercise.ChildExercises != null && exercise.ChildExercises.Count > 0)
                 {
-                    foreach(Exercise ex in exercise.ChildExercises)
+                    foreach (Exercise ex in exercise.ChildExercises)
                     {
-                        AddAlternativesToExercise(ex, addedAlternativesArr);
+                        AddAlternativesToExercise(ex, addedAlternativesArr, removedAlternativesArr);
                     }
                 }
             }
@@ -371,7 +387,7 @@ public static class ContentCreatorEndpoints
         return Results.NoContent();
     }
 
-    private static void AddAlternativesToExercise(Exercise targetExercise, string[] addedAlternativesArr)
+    private static void AddAlternativesToExercise(Exercise targetExercise, string[] addedAlternativesArr, string[] removedAlternativesArr)
     {
         var dtoSimple2 = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(targetExercise.Data);
         if (dtoSimple2 != null)
@@ -379,23 +395,39 @@ public static class ContentCreatorEndpoints
             bool needUpdate = false;
             if (dtoSimple2.Alternatives == null || dtoSimple2.Alternatives.Length == 0)
             {
-                dtoSimple2.Alternatives = addedAlternativesArr;
-                needUpdate = true;
+                if (addedAlternativesArr.Length > 0)
+                {
+                    dtoSimple2.Alternatives = addedAlternativesArr;
+                    needUpdate = true;
+                }
             }
             else
             {
                 List<string> toAdd = [];
-                foreach (string alternative in addedAlternativesArr)
+                List<string> toPersist = [];
+                if (addedAlternativesArr.Length > 0)
                 {
-                    if (!dtoSimple2.Alternatives.Contains(alternative))
-                        toAdd.Add(alternative);
+                    foreach (string alternative in addedAlternativesArr)
+                    {
+                        if (!dtoSimple2.Alternatives.Contains(alternative))
+                            toAdd.Add(alternative);
+                    }
                 }
-                needUpdate = (toAdd.Count > 0);
+                if (removedAlternativesArr.Length > 0)
+                {
+                    foreach (string alternative in dtoSimple2.Alternatives)
+                    {
+                        if (!removedAlternativesArr.Contains(alternative))
+                            toPersist.Add(alternative);
+                    }
+                }
+                needUpdate = toAdd.Count > 0 || toPersist.Count < dtoSimple2.Alternatives.Length;
                 if (needUpdate)
                 {
-                    dtoSimple2.Alternatives = [.. dtoSimple2.Alternatives, .. toAdd];
+                    dtoSimple2.Alternatives = [.. toPersist, .. toAdd];
                 }
             }
+
             if (needUpdate)
             {
                 targetExercise.Data = System.Text.Json.JsonSerializer.Serialize(dtoSimple2);
