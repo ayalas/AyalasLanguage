@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Save } from 'lucide-react';
 import { AuthHeader } from '../../components/auth/AuthHeader';
-import { checkPasswordStrength, generatePasswordFeedback } from '../../utils/utils';
+import { checkPasswordStrength, errorHandler, generatePasswordFeedback } from '../../utils/utils';
 
 export function ChangePasswordPage() {
   const [oldPassword, setOldPassword] = useState('');
@@ -33,7 +33,7 @@ export function ChangePasswordPage() {
         setError(`${response.statusText} (${response.status})`);
       }
     } catch (err) {
-      console.error('Login error:', err);
+      errorHandler(err, setError);
     }
   };
 

@@ -6,6 +6,7 @@ import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
 import { AuthHeader } from '../components/auth/AuthHeader';
 import { LEANRING_STATUS } from '../constants/learning';
 import type { User } from '../types/shared/User';
+import { errorHandler } from '../utils/utils';
 
 export default function Homepage() {
   const [learningPath, setLearningPath] = useState<any[]>([]);
@@ -41,8 +42,8 @@ export default function Homepage() {
 
           setLearningPath(transformedArray);
         }
-      } catch (err: any) {
-        setError(err?.message || String(err));
+      } catch (err: unknown) {
+        errorHandler(err, setError);
       }
     };
 

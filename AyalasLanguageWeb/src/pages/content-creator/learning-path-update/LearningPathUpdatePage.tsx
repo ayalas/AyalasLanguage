@@ -5,8 +5,10 @@ import axios from 'axios';
 import { AuthHeader } from '../../../components/auth/AuthHeader';
 
 import { LearningPathAuthoringForm } from '../../../components/content-creator/LearningPathAuthoringForm';
-import { ExerciseLineForDelete } from './ExerciseLineForDelete';
+import { ExerciseLine } from './ExerciseLine';
 import { AUTHOR_ACCESS } from '../../../constants/learning';
+import type { ExerciseModel } from '../../../types/exercise/Exercise';
+import { errorHandler } from '../../../utils/utils';
 
 export function LearningPathUpdatePage() {
   const [initialRecord, setInitialRecord] = useState<any | null>(null);
@@ -29,18 +31,18 @@ export function LearningPathUpdatePage() {
       if (arrData !== null) { //empty array is ok, null means there was an error
         navigate('/home');
       }
-    } catch (err: any) {
-      setError(err?.message || String(err));
+    } catch (err: unknown) {
+      errorHandler(err, setError);
     }
   };
 
   async function loadExercises() {
     try {
       if (Number(learningPathId) > 0) {
-        const res = await axios.get(`/api/learning/path/${learningPathId}/exercises`);
-        const exercisesTemp: any[] = [];
+        const res = await axios.get<ExerciseModel[]>(`/api/learning/path/${learningPathId}/exercises`);
+        const exercisesTemp: ExerciseModel[] = [];
         for (const ex of res.data) {
-          const newExercise: any = { ...ex };
+          const newExercise: ExerciseModel = { ...ex };
           try {
             newExercise.exerciseObject = JSON.parse(ex.data);
           } catch {
@@ -51,8 +53,8 @@ export function LearningPathUpdatePage() {
         }
         setExistingExercises(exercisesTemp);
       }
-    } catch (err: any) {
-      setUpdateFormError(err?.message || String(err));
+    } catch (err: unknown) {
+      errorHandler(err, setUpdateFormError);
     }
   }
 
@@ -86,7 +88,7 @@ export function LearningPathUpdatePage() {
             <h2>Existing exercises</h2>
           </div>
           {existingExercises.map((existing) => (
-            <ExerciseLineForDelete key={existing.exerciseId} exerciseInfo={existing} />
+            <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
           ))}
         </div>
       )}

@@ -14,3 +14,11 @@ export interface ExerciseInfo {
   sentenceElements?: string[];
   extraItems?: string[];
 }
+
+export interface ExerciseModel {
+  exerciseId: number;
+  exerciseTypeId: number;
+  data: string;
+  Access: number;
+  exerciseObject?: ExerciseData;
+}

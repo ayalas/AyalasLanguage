@@ -3,7 +3,7 @@ import { useOutletContext, useNavigate, useSearchParams } from 'react-router-dom
 import { LayersPlus, Trash, FileUp, FileDown, Ban } from 'lucide-react';
 import axios from 'axios';
 
-import { removeLastCharIfMatch, downloadFile } from '../../utils/utils';
+import { removeLastCharIfMatch, downloadFile, errorHandler } from '../../utils/utils';
 import { EXERCISE_GENERATIONS, PLACEHOLDERS, AUTHOR_ACCESS, EXERCISE_TYPES } from '../../constants/learning';
 import type { User } from '../../types/shared/User';
 
@@ -110,8 +110,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     try {
       await axios.delete(`/api/creator/learning-path/${initialRecord.learningPathId}`);
       navigate('/home');
-    } catch (ex: any) {
-      setError(ex.message);
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
     }
   };
 
@@ -155,8 +155,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       setImportStart(false);
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       reloadExercise && reloadExercise();
-    } catch (ex: any) {
-      setError(ex.response?.data || ex.message);
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
     }
   }
 
@@ -178,8 +178,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       if (response && response.ok) {
         downloadFile(await response.blob(), `${title}-exercises-${initialRecord.learningPathId}.json`);
       }
-    } catch (ex: any) {
-      setError(ex.message);
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
     }
   }
 
@@ -199,8 +199,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             setChapter(Number(initChapter));
           }
         }
-      } catch (ex: any) {
-        setError(ex.message);
+      } catch (ex: unknown) {
+        errorHandler(ex, setError);
       }
     }
     execAsync();

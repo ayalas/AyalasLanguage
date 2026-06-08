@@ -10,16 +10,10 @@ import { Exercise } from './exercise/Exercise';
 import type { User } from '../../types/shared/User';
 import type { ExerciseInfo } from '../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../types/ui/ComponentHandles';
+import { errorHandler } from '../../utils/utils';
 
 type LocalExercise = ExerciseInfo & { data: string | ParsedExercise; exerciseObject?: ParsedExercise; index?: number };
 type ParsedExercise = { First?: string; Second?: string; ExtraOptions?: string };
-
-function extractErrorMessage(err: unknown) {
-  if (err && typeof err === 'object' && 'message' in err) {
-    return (err as { message?: string }).message || String(err);
-  }
-  return String(err);
-}
 
 export function LessonPage() {
   const { learningPathId } = useParams();
@@ -117,7 +111,7 @@ export function LessonPage() {
 
       setPractiseMistakesInThisPath(readd);
     } catch (err: unknown) {
-      setError(extractErrorMessage(err));
+      errorHandler(err, setError);
     }
   };
 
@@ -125,7 +119,7 @@ export function LessonPage() {
     try {
       await axios.post('/api/learning/mistake', { exerciseId });
     } catch (err: unknown) {
-      setError(extractErrorMessage(err));
+      errorHandler(err, setError);
     }
   };
 
@@ -159,7 +153,7 @@ export function LessonPage() {
         await axios.post('/api/learning/progress', { learningPathId });
         navigate('/home');
       } catch (err: unknown) {
-        setError(extractErrorMessage(err));
+        errorHandler(err, setError);
       }
     }
   };
@@ -194,7 +188,7 @@ export function LessonPage() {
 
       navigate('/home');
     } catch (err: unknown) {
-      setError(extractErrorMessage(err));
+      errorHandler(err, setError);
     }
   };
 
@@ -228,7 +222,7 @@ export function LessonPage() {
           changeCurrentExercise(exercisesTemp, exCurInd);
         }
       } catch (err: unknown) {
-        setError(extractErrorMessage(err));
+        errorHandler(err, setError);
       }
     }
     getData();

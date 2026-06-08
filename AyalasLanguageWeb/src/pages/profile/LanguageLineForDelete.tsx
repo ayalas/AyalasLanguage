@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Trash2 } from 'lucide-react';
 import type { User } from '../../types/shared/User';
+import { errorHandler } from '../../utils/utils';
 
 export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguageSettings }:
   { languageInfo: any; user: User | null; login: (u: User) => void; reloadLanguageSettings: (a: any, u: any, l: any) => void }) {
@@ -14,8 +15,8 @@ export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguag
       await axios.delete(`/api/profile/${languageInfo.languageId}`);
       setExists(false); //disappear from screen
       reloadLanguageSettings(axios, user, login);
-    } catch (err: any) {
-      setError(err?.message || String(err));
+    } catch (err: unknown) {
+      errorHandler(err, setError);
     }
   }
   return (

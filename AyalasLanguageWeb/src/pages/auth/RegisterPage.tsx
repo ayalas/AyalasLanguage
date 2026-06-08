@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User as UserIcon } from 'lucide-react';
-import { checkPasswordStrength, generatePasswordFeedback, isValidEmail } from '../../utils/utils';
+import { checkPasswordStrength, errorHandler, generatePasswordFeedback, isValidEmail } from '../../utils/utils';
 
 export function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
@@ -41,8 +41,8 @@ export function RegisterPage() {
         else
           setError(`${response.statusText} (${response.status})`);
       }
-    } catch (err: any) {
-      setError(err.message || String(err));
+    } catch (err: unknown) {
+      errorHandler(err, setError);
     }
   };
 

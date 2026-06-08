@@ -4,6 +4,7 @@ import axios from 'axios';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 
 import { LearningPathAuthoringForm } from '../../components/content-creator/LearningPathAuthoringForm';
+import { errorHandler } from '../../utils/utils';
 
 export function LearningPathCreatePage() {
   const navigate = useNavigate();
@@ -31,11 +32,11 @@ export function LearningPathCreatePage() {
       } else {
         navigate(`/author/path/${learningPathId}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (learningPathId > 0) {
         await axios.delete(`/api/creator/learning-path/${learningPathId}`);
       }
-      setError(err?.message || String(err));
+      errorHandler(err, setError);
     }
   };
 
