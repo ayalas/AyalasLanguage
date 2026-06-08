@@ -8,6 +8,7 @@ import { AuthHeader } from '../../components/auth/AuthHeader';
 import { switchLanguage, reloadLanguageSettings } from '../../utils/languageUtils';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
 import type { User, AppLanguageCode } from '../../types/shared/User';
+import { errorHandler } from '../../utils/utils';
 
 type Language = {
   languageId?: number;
@@ -76,8 +77,7 @@ export function ProfilePage() {
   await switchLanguage(axios, user, login, Number(targetLanguage), Number(knownLanguage));
       navigate('/home');
     } catch (err: unknown) {
-      const msg = (err && typeof err === 'object' && 'message' in err) ? (err as { message?: string }).message || String(err) : String(err);
-      setError(msg);
+      errorHandler(err, setError);
     }
   };
 
