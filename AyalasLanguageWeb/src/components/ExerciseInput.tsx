@@ -1,4 +1,4 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle, useRef } from 'react';
+import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { replaceCharsForLanguage } from '../utils/languageUtils';
 import type { ExerciseInputHandle } from '../types/ui/ComponentHandles';
@@ -10,10 +10,11 @@ interface Props {
   value?: string;
   onChange?: (value: string, customKey?: string) => void;
   customKey?: string;
+  ref?: React.RefObject<ExerciseInputHandle | null>;
 }
 
-export const ExerciseInput = forwardRef<ExerciseInputHandle, Props>((props, ref) => {
-  const { charWidth = 20, checkAnswer, value, onChange = () => {}, customKey } = props;
+export const ExerciseInput = function(props: Props) {
+  const { charWidth = 20, checkAnswer, value, onChange = () => {}, customKey, ref } = props;
   const [internalData, setInternalData] = useState<string>('');
   const [errorState, setErrorState] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);

@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useState, useImperativeHandle } from 'react';
 import { BucketListItem } from './BucketListItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExerciseInfo } from '../../../../../types/exercise/Exercise';
@@ -9,9 +9,10 @@ type Props = {
   setError: (s: string) => void;
   moveNext: () => void;
   displayAnswer?: boolean;
+  ref: React.RefObject<ExerciseHandle>;
 };
 
-const BucketListExercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, setError, moveNext, displayAnswer }, ref) => {
+const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, ref }: Props ) {
   const [bucketList, setBucketList] = useState<string[]>([]);
   const [answerList, setAnswerList] = useState<string[]>([]);
 

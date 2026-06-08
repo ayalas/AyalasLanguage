@@ -2,10 +2,13 @@ import { useState } from 'react';
 import axios from 'axios';
 import { SquarePen, Trash2 } from 'lucide-react';
 import { AUTHOR_ACCESS } from '../../../constants/learning';
+import { useNavigate } from 'react-router-dom';
+import type { ExerciseModel } from '../../../types/exercise/Exercise';
 
-export function ExerciseLine({ exerciseInfo }: { exerciseInfo: any }) {
+export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExerciseModel }) {
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
+  const navigate = useNavigate();
 
   async function onDeleteClick(e: React.MouseEvent) {
     e.preventDefault();
@@ -16,9 +19,11 @@ export function ExerciseLine({ exerciseInfo }: { exerciseInfo: any }) {
       errorHandler(err, setError);
     }
   }
+  
   function onEditClick(e: React.MouseEvent) {
     e.preventDefault();
 
+    navigate(`/author/exercise/${exerciseInfo.exerciseId}`)
   }
   return (
     <>

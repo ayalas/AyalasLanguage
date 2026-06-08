@@ -1,4 +1,4 @@
-import { Fragment, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
+import { Fragment, useRef, useState, useImperativeHandle, useCallback } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
@@ -13,10 +13,11 @@ interface Props {
     displayAnswer?: boolean;
     parentCheckAnswer?: () => void;
     user?: User;
+    ref: React.RefObject<ExerciseHandle>;
 }
 
-export const InlineExerciseWithBlanks = forwardRef<ExerciseHandle, Props>((props: Props, ref) => {
-    const { exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user } = props;
+export const InlineExerciseWithBlanks = function(props: Props) {
+    const { exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, ref } = props;
     const questionsRefMap = useRef<Map<string, ExerciseInputHandle | undefined>>(new Map());
     const [valueFromKeyboard, setValueFromKeyboard] = useState("");
     const currentInputKey = useRef("");

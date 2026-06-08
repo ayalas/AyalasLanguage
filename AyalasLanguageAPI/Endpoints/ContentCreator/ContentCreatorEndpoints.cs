@@ -23,6 +23,7 @@ public static class ContentCreatorEndpoints
         creator.MapPost("/learning-path/{id}/import", ImportExercises).DisableAntiforgery();
         creator.MapDelete("/learning-path/{id}", DeleteLearningPath);
         // Exercise Creation
+        creator.MapGet("/exercise/{id}", GetExercise);
         creator.MapPost("/exercise", CreateExercise);
         creator.MapPut("/exercise/{id}", EditExercise); // Allow PUT for idempotent updates
         creator.MapDelete("/exercise/{id}", DeleteExercise);
@@ -260,6 +261,19 @@ public static class ContentCreatorEndpoints
         await db.SaveChangesAsync();
 
         return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", new CreateExerciseResponseDto(exercise.ExerciseId));
+    }
+
+    [Authorize(Roles = "Admin,ContentCreator")]
+    private static async Task<IResult> GetExercise(int id, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var exercise = await db.Exercises
+        .FirstOrDefaultAsync(e => e.ExerciseId == id);
+        if (exercise == null) return Results.NotFound();
+
+        if (exercise.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
+            return Results.Forbid();
+
+        return Results.Ok(new ExerciseDto(exercise.ExerciseId, exercise.ExerciseTypeId, exercise.Data, (byte)UserAccessEnum.CanEdit, exercise.LearningPathId));
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]

@@ -12,9 +12,11 @@ import Homepage from './pages/Homepage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { LearningPathCreatePage } from './pages/content-creator/LearningPathCreatePage';
 import { LearningPathUpdatePage } from './pages/content-creator/learning-path-update/LearningPathUpdatePage';
+import { ExerciseUpdatePage } from './pages/content-creator/exercise-update/ExerciseUpdatePage';
 import { LessonPage } from './pages/learning/LessonPage';
 
 import './App.css'
+
 
 function App() {
   
@@ -34,6 +36,7 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/author/path/:learningPathId" element={<LearningPathUpdatePage />} />
             <Route path="/author/path" element={<LearningPathCreatePage />} />
+            <Route path="/author/exercise/:exerciseId" element={<ExerciseUpdatePage />} />
             <Route path="/path/:learningPathId" element={<LessonPage />} />
           </Route>
 

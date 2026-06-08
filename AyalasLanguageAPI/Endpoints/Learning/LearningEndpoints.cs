@@ -244,6 +244,7 @@ public static class LearningEndpoints
     private static async Task<IResult> GetExercises(int pathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
+        bool isAdmin = claim.IsInRole("Admin");
         //get user exercise types
         var userExerciseTypes = await db.UserExerciseTypes.Where(ue => ue.UserId == userId).Select(ue => ue.ExerciseTypeId).ToListAsync();
 
@@ -261,8 +262,8 @@ public static class LearningEndpoints
             )
             .OrderBy(e => e.ExerciseId) // Ensure consistent ordering
             .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data,
-                e.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
-            ))
+                isAdmin || e.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
+            , null))
             .ToListAsync();
 
         return Results.Ok(exercises);

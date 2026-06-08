@@ -19,6 +19,7 @@ export interface ExerciseModel {
   exerciseId: number;
   exerciseTypeId: number;
   data: string;
-  Access: number;
+  access: number;
   exerciseObject?: ExerciseData;
+  learningPathId?: number
 }

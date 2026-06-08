@@ -1,4 +1,4 @@
-import { Fragment, forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
+import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History, TicketPlus } from 'lucide-react';
 import axios from 'axios';
@@ -22,9 +22,10 @@ type Props = {
     changeMistakesSetting: (val: boolean) => void;
     practiseMistakesInThisPath?: boolean;
     addMistake: (id: number) => Promise<void>;
+    ref: React.RefObject<ExerciseHandle>;
 };
 
-export const Exercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake }, ref) => {
+export const Exercise = function({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props ) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);

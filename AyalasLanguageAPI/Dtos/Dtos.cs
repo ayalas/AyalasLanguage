@@ -31,7 +31,7 @@ namespace AyalasLanguageAPI.DTOs
 
     public record AddMistakeDto(int ExerciseId);
     // Exercise DTOs
-    public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access);
+    public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access, int? LearningPathId);
 
     // Content Creator DTOs
     public record CreateLearningPathDto(

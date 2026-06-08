@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { useImperativeHandle, useRef, useState } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { EXERCISE_TYPES } from '../../../../constants/learning';
@@ -15,6 +15,7 @@ type Props = {
   displayAnswer?: boolean;
   parentCheckAnswer?: () => boolean;
   user?: User | null;
+  ref: React.RefObject<ExerciseHandle>;
 };
 
 const safeParseData = (data: string | ExerciseData) => {
@@ -29,7 +30,7 @@ const safeParseData = (data: string | ExerciseData) => {
   return (data as ExerciseData);
 };
 
-export const TwoLinesTranslationExercise = forwardRef<ExerciseHandle, Props>(({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user }, ref) => {
+export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user , ref}:Props) {
   const inputRef = useRef<ExerciseInputHandle | null>(null);
   const [inputValue, setInputValue] = useState('');
 

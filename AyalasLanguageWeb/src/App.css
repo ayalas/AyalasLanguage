@@ -60,6 +60,8 @@ label.form-label {
   width: 100%;
   text-align: start;
   white-space: nowrap;
+  color: #000000;
+  font-weight: 400;
 }
 
 .form-row {
