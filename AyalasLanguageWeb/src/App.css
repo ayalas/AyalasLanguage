@@ -240,6 +240,11 @@ label.form-label {
   margin: 4px 0; 
 }
 
+.lucide-arrow-big-left {
+  color: rgb(55, 194, 20);
+  stroke-width: 4px;
+}
+
 .lucide-square-menu {
   width: 36px;
   height: 36px;
@@ -332,4 +337,10 @@ label.form-label {
 
 .keyboard-container {
   padding-top: 10px;
+}
+
+.button-back {
+  font-weight: 800;
+  color: rgb(55, 194, 20);
+  border-color: rgb(55, 194, 20);
 }

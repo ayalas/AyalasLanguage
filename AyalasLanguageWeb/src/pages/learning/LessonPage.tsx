@@ -1,7 +1,7 @@
 import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { FilePenLine } from 'lucide-react';
+import { ArrowBigLeft, FilePenLine } from 'lucide-react';
 
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
@@ -164,6 +164,15 @@ export function LessonPage() {
     }
   };
 
+  const onBackClick = function(e: React.MouseEvent) {
+    e.preventDefault();
+
+    if (currentExercise == null) return;
+    if ((currentExercise.index ?? 0) > 0) {
+      changeCurrentExercise(exercises, (currentExercise.index ?? 0) - 1);
+    }
+  }
+
   const saveProgress = async function () {
     try {
       if (!currentExercise) return;
@@ -268,6 +277,12 @@ export function LessonPage() {
                 changeMistakesSetting={changeMistakesSetting}
                 practiseMistakesInThisPath={practiseMistakesInThisPath}
                 addMistake={addMistake} />
+                { currentExercise && (currentExercise.index ?? 0) > 0 && (
+                  <div className="form-row">
+                  <button className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
+                </div>
+                )}
+                
             </>
           )}
         </form>
