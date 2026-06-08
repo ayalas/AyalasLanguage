@@ -78,7 +78,7 @@ export const ExerciseInput = function(props: Props) {
       style={inputStyle}
     />
   );
-});
+};
 
 export default ExerciseInput;
 // ...existing code...

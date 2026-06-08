@@ -97,6 +97,6 @@ const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayA
       )}
     </>
   );
-});
+};
 
 export default BucketListExercise;

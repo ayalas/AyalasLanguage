@@ -127,6 +127,6 @@ export const InlineExerciseWithBlanks = function(props: Props) {
             />
         </>
     );
-});
+};
 
 export default InlineExerciseWithBlanks;

@@ -199,6 +199,6 @@ export const Exercise = function({ exerciseInfo, moveNext, childLoaded, saveProg
             </div>
         </Fragment>
     );
-});
+};
 
 export default Exercise;

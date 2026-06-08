@@ -110,7 +110,7 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
       )}
     </>
   );
-});
+};
 
 export default TwoLinesTranslationExercise;
 // ...existing code...
