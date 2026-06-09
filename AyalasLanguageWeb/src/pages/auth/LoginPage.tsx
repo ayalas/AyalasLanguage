@@ -4,9 +4,11 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
 import { useAuth } from '../../components/auth/useAuth';
+import { errorHandler } from '../../utils/utils';
 
 export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
+  const [error, setError] = useState('');
   const searchUserName = searchParams.get('user') ?? '';
   const [email, setEmail] = useState<string>(searchUserName);
   const [password, setPassword] = useState<string>('');
@@ -32,10 +34,10 @@ export default function LoginPage(): React.ReactElement {
         }
         navigate('/home');
       } else {
-        alert('Invalid credentials');
+        setError('Invalid credentials');
       }
     } catch (err) {
-      console.error('Login error:', err);
+      errorHandler(err, setError);
     }
   };
 
@@ -50,6 +52,11 @@ export default function LoginPage(): React.ReactElement {
             <button type="submit" className="login-button" title="Log In"><LogIn /></button>
           </div>
         </div>
+        {error !== "" && (
+          <div className="form-row">
+            <label className="form-error">{error}</label>
+          </div>
+        )}
         <div className="form-input-row">
           <div className="form-label-cell">
             <label className="form-label">Email</label>

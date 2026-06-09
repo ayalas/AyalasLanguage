@@ -120,13 +120,13 @@ export function ExerciseUpdatePage() {
                     <div className="form-label-row">First line</div>
                     <div className="form-row">
                         <div className="form-input-row">
-                            <input type="text" required={true} value={firstLine} onChange={(e) => { setFirstLine(e.target.value) }} />
+                            <textarea className="text-area-minimal" required={true} value={firstLine} onChange={(e) => { setFirstLine(e.target.value) }} />
                         </div>
                     </div>
                     <div className="form-label-row">Second line</div>
                     <div className="form-row">
                         <div className="form-input-row">
-                            <input type="text" required={true} value={secondLine} onChange={(e) => { setSecondLine(e.target.value) }} />
+                            <textarea className="text-area-minimal" required={true} value={secondLine} onChange={(e) => { setSecondLine(e.target.value) }} />
                         </div>
                     </div>
                     {initialRecord != null && initialRecord.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
