@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Humanizer;
+using System.Security.Cryptography;
 
 namespace AyalasLanguageAPI.Endpoints;
 
@@ -20,7 +22,9 @@ public static class AuthEndpoints
         auth.MapPost("/register", RegisterUser);
         auth.MapPost("/login", LoginUser);
         auth.MapPost("/logout", LogoutUser);
-        auth.MapPost("/change-password", ChangeUserPassword);
+        auth.MapPost("/account", ChangeAccount);
+        auth.MapPost("/confirm", ConfirmEmailStart);
+        auth.MapGet("/confirm/:token", ConfirmEmailEnd);
         auth.MapGet("/me", CheckAuthStatus);
         //not implementing email confirmation, forgot password, or other features for this demo - but they would go here
     }
@@ -113,7 +117,7 @@ public static class AuthEndpoints
             user.TargetLanguage?.EnglishName,
             user.TargetLanguage?.Code, userScore);
 
-        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, languageSettings);
+        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, languageSettings);
     }
 
     [Authorize]
@@ -140,7 +144,7 @@ public static class AuthEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> RegisterUser(RegisterDto dto, AyalasLanguageDbContext db)
+    private static async Task<IResult> RegisterUser(RegisterDto dto, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
     {
 
         if (await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName) != null)
@@ -159,12 +163,14 @@ public static class AuthEndpoints
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
+        SendConfirmationEmail(user, db, logger, config);
+
         return Results.Created($"/api/users/{user.UserId}",
             new RegisterResponseDto(user.UserId, user.DisplayName, user.UserName, user.Role));
     }
 
     [Authorize]
-    private static async Task<IResult> ChangeUserPassword(ClaimsPrincipal claim, ChangePasswordDto dto, AyalasLanguageDbContext db)
+    private static async Task<IResult> ChangeAccount(ClaimsPrincipal claim, ChangeAccountDto dto, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
@@ -176,9 +182,135 @@ public static class AuthEndpoints
             return Results.BadRequest("Old password is incorrect.");
         }
 
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        if (dto.NewPassword != null && dto.NewPassword.Length > 0)
+        {
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        }
+
+        if (dto.NewUserName != null && dto.NewUserName.Length > 0 && dto.NewUserName != user.UserName)
+        {
+            if (user.EmailConfirmed)
+            {
+                //cannot change confirmed address
+                return Results.Forbid();
+            }
+
+            if (await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.NewUserName) != null)
+            {
+                return Results.Conflict("Username already exists.");
+            }
+
+            user.UserName = dto.NewUserName;
+        }
         await db.SaveChangesAsync();
 
-        return Results.NoContent();
+        UserIdDto? userIdDto = await GetUserById(user.UserId, db);
+        return Results.Ok(userIdDto);
+    }
+
+    [Authorize]
+    private static async Task<IResult> ConfirmEmailStart(ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
+    {
+        var userId = claim.GetUserId();
+        var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+        if (user == null) return Results.NotFound();
+
+        if (user.EmailConfirmed)
+            return Results.Conflict("Email address already confirmed");
+
+        if (user.ConfirmationEmailSent != null)
+        {
+            DateTime minTimeForResend = user.ConfirmationEmailSent.Value.AddHours(config.GetValue<int>("EmailConfirmation:ResendDelayInHours"));
+            if (DateTime.UtcNow.CompareTo(minTimeForResend) < 0)
+            {
+                return Results.Conflict("An email address confirmation has already been sent earlier for this account. Go to your inbox and click the confirmation link within the email sent to you, or retry this in a few hours.");
+            }
+        }
+
+        SendConfirmationEmail(user, db, logger, config);
+
+        return Results.Ok();
+    }
+
+    [Authorize]    
+    private static async Task<IResult> ConfirmEmailEnd(ClaimsPrincipal claim, string token, AyalasLanguageDbContext db, IConfiguration config)
+    {
+        var userId = claim.GetUserId();
+        var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+        if (user == null) return Results.NotFound();
+
+        if (user.EmailConfirmed)
+        {
+            return Results.BadRequest("Email address is already confirmed for this account.");
+        }
+
+        if (user.EmailConfirmationToken == null || user.ConfirmationEmailSent == null)
+        {
+            return Results.Forbid();
+        }
+
+        DateTime dtTokenExpires = user.ConfirmationEmailSent.Value.AddHours(config.GetValue<int>("EmailConfirmation:ExpiresInHours"));
+
+        if (!BCrypt.Net.BCrypt.Verify(token, user.EmailConfirmationToken))
+        {
+            return Results.BadRequest("Invalid token.");
+        }
+
+        if (DateTime.UtcNow.CompareTo(dtTokenExpires) < 0)
+        {
+            return Results.Conflict("Token expired. Please resend an email address confirmation through the account page.");
+        }
+
+        user.EmailConfirmationReceived = DateTime.UtcNow;
+        user.EmailConfirmed = true;
+        user.EmailConfirmationToken = null;
+        await db.SaveChangesAsync();
+
+        UserIdDto? userIdDto = await GetUserById(user.UserId, db);
+        return Results.Ok(userIdDto);
+    }
+    private static async void SendConfirmationEmail(User user, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
+    {
+        try
+        {
+            (string rawToken, string hashedToken) = GenerateToken();
+
+            user.EmailConfirmationToken = hashedToken;
+            user.ConfirmationEmailSent = DateTime.UtcNow;
+            await db.SaveChangesAsync();
+
+            string? confirmPageAddress = $"{config.GetValue<string>("EmailConfirmation:ClientAddress")}{rawToken}";
+
+            string emailContent = $"<div>Please confirm your email address by opening this <a href=\"{confirmPageAddress}\">confirmation link</a> in your browser.</div>";
+
+            //todo: implement
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Email confirmation send failed");
+        }
+    }
+
+    private static (string RawToken, string HashedToken) GenerateToken()
+    {
+        // 1. Generate a cryptographically secure random byte array
+        byte[] tokenBytes = new byte[64];
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            rng.GetBytes(tokenBytes);
+        }
+
+        // 2. Convert to a URL-safe Base64 string
+        string rawToken = Convert.ToBase64String(tokenBytes)
+            .Replace('+', '-')
+            .Replace('/', '_')
+            .TrimEnd('='); // Removes the padding character
+
+        // 3. Hash the raw token for safe database storage (using BCrypt)
+        string hashedToken = BCrypt.Net.BCrypt.HashPassword(rawToken);
+
+        return (rawToken, hashedToken);
     }
 }

@@ -8,6 +8,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
@@ -32,8 +33,7 @@ export function RegisterPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        navigate(`/login?user=${data.userName}`);
+        setSuccess(true);
       } else {
         if (response.status == 409) {
           setError("User already exists");
@@ -52,44 +52,61 @@ export function RegisterPage() {
         <div className="form-header">
           <h1>Register</h1>
         </div>
-        <div className="form-row">
-          <div className="form-input-row">
-            <button type="submit" className="form-button" title="Register"><UserIcon /></button>
+        {!success && (
+          <div className="form-row">
+            <div className="form-input-row">
+              <button type="submit" className="form-button"><UserIcon /> Complete Registration</button>
+            </div>
           </div>
-        </div>
+        )}
         {error !== "" && (
           <div className="form-row">
             <label className="form-error">{error}</label>
           </div>
         )}
-        <div className="form-row">
-          <div className="form-label-cell">
-            <label className="form-label">Display Name</label>
+        {success && (
+          <>
+          <div className="form-row">
+            <h3>Account created successfully.</h3>
           </div>
-          <div className="form-input-cell">
-            <input type="text" value={displayName} className="form-input" onChange={e => setDisplayName(e.target.value)} />
+          <div className="form-row">
+            <div className="form-content-row">An email address confirmation request has been sent to '{email}'. Please confirm your email, so you'll be able to recover your account, in case you forget your password. </div>
+            <div className="form-content-row">You can do this now, or later on, after you&nbsp;<Link to={`/login?user=${email}`}>log in</Link>&nbsp;and experience with the app.</div>
           </div>
-        </div>
-        <div className="form-row">
-          <div className="form-label-cell">
-            <label className="form-label">Email</label>
-          </div>
-          <div className="form-input-cell">
-            <input type="text" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
-          </div>
-        </div>
-        <div className="form-row">
-          <div className="form-label-cell">
-            <label className="form-label">Password</label>
-          </div>
-          <div className="form-input-cell">
-            <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
-          </div>
-        </div>
+          </>
+        ) || (
+            <>
+              <div className="form-row">
+                <div className="form-label-cell">
+                  <label className="form-label">Display Name</label>
+                </div>
+                <div className="form-input-cell">
+                  <input type="text" value={displayName} className="form-input" onChange={e => setDisplayName(e.target.value)} />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-label-cell">
+                  <label className="form-label">Email</label>
+                </div>
+                <div className="form-input-cell">
+                  <input type="text" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-label-cell">
+                  <label className="form-label">Password</label>
+                </div>
+                <div className="form-input-cell">
+                  <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                </div>
+              </div>
 
-        <div className="form-row">
-          <div className="login-register-line">Or <Link to="/login">Login</Link> with an existing account</div>
-        </div>
+              <div className="form-row">
+                <div className="login-register-line">Or <Link to="/login">Log in</Link> with an existing account</div>
+              </div>
+            </>
+          )
+        }
       </form>
     </div>
   );

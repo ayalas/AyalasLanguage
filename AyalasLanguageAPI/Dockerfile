@@ -36,8 +36,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 WORKDIR /app
 
 ARG BUILD_ENV
+ARG CLIENT_CONFIRM_URL
 
 ENV ASPNETCORE_ENVIRONMENT=$BUILD_ENV
+ENV EmailConfirmation:ClientAddress=$CLIENT_CONFIRM_URL
 
 # Setup data directory with correct permissions
 USER root

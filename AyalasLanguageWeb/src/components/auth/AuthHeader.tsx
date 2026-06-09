@@ -125,8 +125,8 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
           {...getFloatingProps()}
         >
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            <li className="menu-line"><Link to='/profile' className="menu-item">Profile</Link></li>
-            <li className="menu-line"><Link to='/change-password' className="menu-item">Change Password</Link></li>
+            <li className="menu-line"><Link to='/profile' className="menu-item">Profile settings</Link></li>
+            <li className="menu-line"><Link to='/account' className="menu-item">Manage account</Link></li>
             <hr className="menu-delimiter" />
             <li className="menu-line"><button onClick={logoutAction} className="menu-item">Logout</button></li>
           </ul>

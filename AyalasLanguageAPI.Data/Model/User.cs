@@ -25,6 +25,15 @@ namespace AyalasLanguageAPI.Data.Model
         public int? KnownLanguageId { get; set; }
         public virtual Language? KnownLanguage { get; set; }
 
+        public bool EmailConfirmed {get; set;} = false;
+
+        public DateTime? ConfirmationEmailSent {get; set;}
+
+        [StringLength(1024)]
+        public string? EmailConfirmationToken { get; set; } = null!;
+
+        public DateTime? EmailConfirmationReceived {get; set;}
+
         // Navigation properties
         public virtual ICollection<UserLanguage> UserLanguages { get; set; } = new List<UserLanguage>();
         public virtual ICollection<LearningPath> LearningPaths { get; set; } = new List<LearningPath>();

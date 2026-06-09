@@ -26,8 +26,10 @@ export interface LanguageSettings {
 }
 
 export interface User {
-  id?: number | string;
+  userId: number;
   displayName?: string;
+  userName: string;
+  role: number;
+  emailConfirmed: boolean;
   languageSettings?: LanguageSettings;
-  [key: string]: unknown;
 }

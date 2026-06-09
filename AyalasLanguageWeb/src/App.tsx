@@ -7,13 +7,14 @@ import LandingPage from './LandingPage';
 import LoginPage from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 //authenticated
-import { ChangePasswordPage } from './pages/auth/ChangePasswordPage';
+import { AccountPage } from './pages/auth/AccountPage';
 import Homepage from './pages/Homepage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { LearningPathCreatePage } from './pages/content-creator/LearningPathCreatePage';
 import { LearningPathUpdatePage } from './pages/content-creator/learning-path-update/LearningPathUpdatePage';
 import { ExerciseUpdatePage } from './pages/content-creator/exercise-update/ExerciseUpdatePage';
 import { LessonPage } from './pages/learning/LessonPage';
+import { ConfirmEmailPage } from './pages/auth/ConfirmEmailPage';
 
 import './App.css'
 
@@ -32,12 +33,13 @@ function App() {
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Homepage />} />
-            <Route path="/change-password" element={<ChangePasswordPage />} />
+            <Route path="/account" element={<AccountPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/author/path/:learningPathId" element={<LearningPathUpdatePage />} />
             <Route path="/author/path" element={<LearningPathCreatePage />} />
             <Route path="/author/exercise/:exerciseId" element={<ExerciseUpdatePage />} />
             <Route path="/path/:learningPathId" element={<LessonPage />} />
+            <Route path="/confirm/:token" element={ <ConfirmEmailPage/>} />
           </Route>
 
           {/* Fallback 404 Route */}

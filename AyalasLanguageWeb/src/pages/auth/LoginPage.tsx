@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import type { FormEvent } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
@@ -49,7 +48,7 @@ export default function LoginPage(): React.ReactElement {
         </div>
         <div className="form-row">
           <div className="form-button-cell">
-            <button type="submit" className="login-button" title="Log In"><LogIn /></button>
+            <button type="submit" className="login-button"><LogIn /> Log In</button>
           </div>
         </div>
         {error !== "" && (
