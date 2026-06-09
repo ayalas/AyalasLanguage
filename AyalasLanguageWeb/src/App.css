@@ -100,6 +100,9 @@ label.label-deleted {
 
 .form-input {
   min-height: 24px;
+  border: 1px solid #35bd4e;
+  border-radius: 3px;
+  font-size: 18px;
 }
 
 .home-container {
@@ -195,6 +198,12 @@ label.label-deleted {
 .header-profile-name {
   display: block;
   white-space: nowrap;
+}
+
+.learning-lesson {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  line-height: min(40px);
 }
 
 .learning-lesson-link {

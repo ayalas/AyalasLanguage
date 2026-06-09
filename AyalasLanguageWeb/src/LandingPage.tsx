@@ -6,12 +6,12 @@ export default function LandingPage() {
       <div>
         <h1>Ayala's Language App</h1>
 
-        <p>
+        <div className="form-row">
           <Link className="home-link" to="/home">Login</Link> to the language app
-        </p>
-        <p>
+        </div>
+        <div className="form-row">
           <Link className="home-link" to="/register">Register</Link> a new account
-        </p>
+        </div>
       </div>
     </section>
   );
