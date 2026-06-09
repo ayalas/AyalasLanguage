@@ -23,6 +23,8 @@ public static class AuthEndpoints
         auth.MapPost("/login", LoginUser);
         auth.MapPost("/logout", LogoutUser);
         auth.MapPost("/account", ChangeAccount);
+        auth.MapPost("/forgot", ForgotPasswordStart);
+        auth.MapPost("/reset", ForgotPasswordEnd);
         auth.MapPost("/confirm", ConfirmEmailStart);
         auth.MapGet("/confirm/:token", ConfirmEmailEnd);
         auth.MapGet("/me", CheckAuthStatus);
@@ -221,7 +223,7 @@ public static class AuthEndpoints
 
         if (user.ConfirmationEmailSent != null)
         {
-            DateTime minTimeForResend = user.ConfirmationEmailSent.Value.AddHours(config.GetValue<int>("EmailConfirmation:ResendDelayInHours"));
+            DateTime minTimeForResend = user.ConfirmationEmailSent.Value.AddHours(config.GetValue<int>("EmailConfirmation:ResendDelayHours"));
             if (DateTime.UtcNow.CompareTo(minTimeForResend) < 0)
             {
                 return Results.Conflict("An email address confirmation has already been sent earlier for this account. Go to your inbox and click the confirmation link within the email sent to you, or retry this in a few hours.");
@@ -230,10 +232,10 @@ public static class AuthEndpoints
 
         SendConfirmationEmail(user, db, logger, config);
 
-        return Results.Ok();
+        return Results.Accepted();
     }
 
-    [Authorize]    
+    [Authorize]
     private static async Task<IResult> ConfirmEmailEnd(ClaimsPrincipal claim, string token, AyalasLanguageDbContext db, IConfiguration config)
     {
         var userId = claim.GetUserId();
@@ -251,7 +253,7 @@ public static class AuthEndpoints
             return Results.Forbid();
         }
 
-        DateTime dtTokenExpires = user.ConfirmationEmailSent.Value.AddHours(config.GetValue<int>("EmailConfirmation:ExpiresInHours"));
+        DateTime dtTokenExpires = user.ConfirmationEmailSent.Value.AddHours(config.GetValue<int>("EmailConfirmation:TokenExpirationHours"));
 
         if (!BCrypt.Net.BCrypt.Verify(token, user.EmailConfirmationToken))
         {
@@ -271,21 +273,88 @@ public static class AuthEndpoints
         UserIdDto? userIdDto = await GetUserById(user.UserId, db);
         return Results.Ok(userIdDto);
     }
+
+    private static async Task<IResult> ForgotPasswordStart(ForgotPasswordDto dto, AyalasLanguageDbContext db, IConfiguration config)
+    {
+        var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
+        if (user == null)
+            return Results.NotFound();
+
+        if (!user.EmailConfirmed)
+        {
+            return Results.Conflict("Cannot reset password for an account of unconfirmed email address.");
+        }
+
+        if (user.ForgotEmailSent != null)
+        {
+            DateTime minTimeForResend = user.ForgotEmailSent.Value.AddMinutes(config.GetValue<int>("ForgotPassword:ResendDelayMinutes"));
+            if (DateTime.UtcNow.CompareTo(minTimeForResend) < 0)
+            {
+                return Results.Conflict("An password reset email has already been sent earlier for this account. Go to your inbox and click the link within the email sent to you to reset your password, or retry this in a few minutes.");
+            }
+        }
+
+        (string rawToken, string hashedToken) = Utils.Utils.GenerateToken();
+
+        user.ForgotPasswordToken = hashedToken;
+        user.ForgotEmailSent = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        string? resetPwdPage = $"{config.GetValue<string>("ClientBaseAddress")}{Constants.CLIENT_RELATIVE_PATH_RESET_PASSWORD}{rawToken}?user={user.UserName}";
+
+        string emailTitle = "Ayala's Language App: reset your password";
+        string emailContent = $"<p>Choose a new password for your account in this <a href=\"{resetPwdPage}\">link</a>. Notice the link expires shortly.</p>";
+
+        await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config);
+
+        return Results.Accepted();
+    }
+    
+    private static async Task<IResult> ForgotPasswordEnd(ResetPasswordDto dto, AyalasLanguageDbContext db, IConfiguration config)
+    {
+        var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
+        if (user == null) return Results.NotFound();
+
+        if (user.ForgotPasswordToken == null || user.ForgotEmailSent == null)
+        {
+            return Results.Forbid();
+        }
+
+        DateTime dtTokenExpires = user.ForgotEmailSent.Value.AddMinutes(config.GetValue<int>("ForgotPassword:TokenExpirationMinutes"));
+
+        if (!BCrypt.Net.BCrypt.Verify(dto.Token, user.ForgotPasswordToken))
+        {
+            return Results.BadRequest("Invalid token.");
+        }
+
+        if (DateTime.UtcNow.CompareTo(dtTokenExpires) < 0)
+        {
+            return Results.Conflict("Token expired. Please try again in a few minutes.");
+        }
+
+        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        user.ForgotPasswordToken = null;
+        user.ForgotEmailReceived = DateTime.UtcNow;
+        await db.SaveChangesAsync();
+
+        return Results.Ok();
+    }
     private static async void SendConfirmationEmail(User user, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
     {
         try
         {
-            (string rawToken, string hashedToken) = GenerateToken();
+            (string rawToken, string hashedToken) = Utils.Utils.GenerateToken();
 
             user.EmailConfirmationToken = hashedToken;
             user.ConfirmationEmailSent = DateTime.UtcNow;
             await db.SaveChangesAsync();
 
-            string? confirmPageAddress = $"{config.GetValue<string>("EmailConfirmation:ClientAddress")}{rawToken}";
+            string? confirmPageAddress = $"{config.GetValue<string>("ClientBaseAddress")}{Constants.CLIENT_RELATIVE_PATH_CONFIRM_EMAIL}{rawToken}";
 
-            string emailContent = $"<div>Please confirm your email address by opening this <a href=\"{confirmPageAddress}\">confirmation link</a> in your browser.</div>";
+            string emailTitle = "Ayala's Language App: Confirm your email address";
+            string emailContent = $"<p>Please confirm your email address by opening this <a href=\"{confirmPageAddress}\">confirmation link</a> in your browser.</p>";
 
-            //todo: implement
+            await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config);
         }
         catch (Exception ex)
         {
@@ -293,24 +362,5 @@ public static class AuthEndpoints
         }
     }
 
-    private static (string RawToken, string HashedToken) GenerateToken()
-    {
-        // 1. Generate a cryptographically secure random byte array
-        byte[] tokenBytes = new byte[64];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(tokenBytes);
-        }
-
-        // 2. Convert to a URL-safe Base64 string
-        string rawToken = Convert.ToBase64String(tokenBytes)
-            .Replace('+', '-')
-            .Replace('/', '_')
-            .TrimEnd('='); // Removes the padding character
-
-        // 3. Hash the raw token for safe database storage (using BCrypt)
-        string hashedToken = BCrypt.Net.BCrypt.HashPassword(rawToken);
-
-        return (rawToken, hashedToken);
-    }
+    
 }

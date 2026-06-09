@@ -34,6 +34,11 @@ namespace AyalasLanguageAPI.Data.Model
 
         public DateTime? EmailConfirmationReceived {get; set;}
 
+        [StringLength(1024)]
+        public string? ForgotPasswordToken { get; set; } = null!;
+        public DateTime? ForgotEmailSent {get; set;}
+        public DateTime? ForgotEmailReceived {get; set;}
+
         // Navigation properties
         public virtual ICollection<UserLanguage> UserLanguages { get; set; } = new List<UserLanguage>();
         public virtual ICollection<LearningPath> LearningPaths { get; set; } = new List<LearningPath>();

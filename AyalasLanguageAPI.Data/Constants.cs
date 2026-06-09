@@ -89,4 +89,7 @@ public static class Constants
 
     public const string APP_COOKIE_NAME = "AyalasLanguageAppCookie";
     public const string CONFIG_BYPASS_SECURE_COOKIES_KEY = "BypassSecureCookies";
+
+    public const string CLIENT_RELATIVE_PATH_CONFIRM_EMAIL = "confirm/";
+    public const string CLIENT_RELATIVE_PATH_RESET_PASSWORD = "reset/";
 }
