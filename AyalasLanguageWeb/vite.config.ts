@@ -2,6 +2,8 @@ import { defineConfig } from 'vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import mkcert from 'vite-plugin-mkcert'
+import fs from 'fs'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,9 +15,16 @@ export default defineConfig({
     mkcert()
   ],
   server: {
+    port: 5173,
+    host: '0.0.0.0',
+    https: {
+      // Read the certificate and key files from your directory
+      key: fs.readFileSync(path.resolve(__dirname, '../cert/localhost+2-key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, '../cert/localhost+2.pem')),
+    },
     proxy: {
       '/api/': {
-        target: 'https://127.0.0.1:7010',
+        target: 'https://localhost:7010',
         changeOrigin: true,
         secure: false
       }

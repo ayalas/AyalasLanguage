@@ -29,6 +29,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
                        Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
 });
 
+app.UseWebSockets();
+
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();
 

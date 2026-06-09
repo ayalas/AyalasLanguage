@@ -9,3 +9,4 @@ bin/
 obj/
 *.dll
 dist/
+cert/

@@ -2,7 +2,7 @@ import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'reac
 import { Link, useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History, TicketPlus } from 'lucide-react';
 import axios from 'axios';
-import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, PLACEHOLDERS } from '../../../constants/learning';
+import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
@@ -10,7 +10,8 @@ import BucketListExercise from './exercise-render-types/bucket-list/BucketListEx
 import type { User } from '../../../types/shared/User';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import type { ExerciseData, ExerciseInfo } from '../../../types/exercise/Exercise';
-//import { puter } from "@heyputer/puter.js";
+import { puter } from "@heyputer/puter.js";
+import { initializePuter, isSecure } from '../../../utils/utils';
 
 type Props = {
     exerciseInfo: ExerciseInfo;
@@ -25,17 +26,44 @@ type Props = {
     ref: React.Ref<ExerciseHandle>;
 };
 
-export const Exercise = function({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props ) {
+export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
 
+
+    const playAnswer = function () {
+        try {
+            if (isSecure() && typeof exerciseInfo.data === 'string') {
+                const langCode = user?.languageSettings?.targetLanguageCode;
+                if (langCode != undefined) {
+                    const pollyLangCode = LANGUAGE_TO_POLLY_MAP[langCode]
+                    if (pollyLangCode != null && pollyLangCode != "") {
+                        const parsed = JSON.parse(exerciseInfo.data) as ExerciseData;
+                        if (parsed.Second != null && parsed.Second != "") {
+                            puter.ai.txt2speech(parsed.Second, pollyLangCode);
+                        }
+                    }
+                }
+            }
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+
     const toggleAnswer = function () {
         const newValue = !displayAnswer;
         setDisplayAnswer(newValue);
+
+        if (newValue) {
+            playAnswer();
+        }
     }
+
+
 
     const checkAnswer = function () {
         const success = refExercise.current?.checkAnswer?.() || false;
@@ -114,15 +142,8 @@ export const Exercise = function({ exerciseInfo, moveNext, childLoaded, saveProg
 
     useEffect(() => {
         childLoaded(exerciseInfo.exerciseId);
-        //requires ssl, so stopped
-        /*async function checkAuth() {
-            if (!puter.auth.isSignedIn()) {
-                // Note: browser popups usually require a direct user click event, 
-                // but you can check status or trigger it here if allowed by your flow.
-                await puter.auth.signIn(); 
-            }
-        }
-        checkAuth();*/
+        //requires ssl
+        initializePuter();
     }, [exerciseInfo, childLoaded]);
 
     return (
@@ -156,13 +177,13 @@ export const Exercise = function({ exerciseInfo, moveNext, childLoaded, saveProg
                             <button type="button" onClick={readdMistakes} className="form-button" title="Readd my mistakes here"><History /></button>
                         </div>
                     )}
-                 {displayAnswer && error != "" 
-                 && (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_TARGET_TO_KNOWN 
-                    || exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET) && (
-                <div className="form-button-cell">
-                    <button type="button" className="form-button" title="Add alternative answer" onClick={addAlternativeAnswer}><TicketPlus /></button>
-                </div>
-                 )}
+                {displayAnswer && error != ""
+                    && (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_TARGET_TO_KNOWN
+                        || exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET) && (
+                        <div className="form-button-cell">
+                            <button type="button" className="form-button" title="Add alternative answer" onClick={addAlternativeAnswer}><TicketPlus /></button>
+                        </div>
+                    )}
                 <div className="form-button-cell">
                     <Link to={`/author/path/${learningPathId}`} className="link-button" title="Edit lesson"><FilePenLine /></Link>
                 </div>
