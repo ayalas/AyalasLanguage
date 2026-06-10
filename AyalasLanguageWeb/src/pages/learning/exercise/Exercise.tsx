@@ -153,35 +153,35 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                     exerciseInfo.exerciseTypeId != EXERCISE_TYPES.MATCHING && (
                         <>
                             <div className="form-button-cell">
-                                <button type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks /></button>
+                                <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks /></button>
                             </div>
                             <div className="form-button-cell">
-                                <button type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>
+                                <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>
                             </div>
                         </>
                     )
                 }
 
                 <div className="form-button-cell">
-                    <button type="button" onClick={saveProgress} className="form-button" title="Save progress"><CircleDotDashed /></button>
+                    <button data-testid="save-progress" type="button" onClick={saveProgress} className="form-button" title="Save progress"><CircleDotDashed /></button>
                 </div>
                 <div className="form-button-cell">
-                    <button type="button" onClick={restartLesson} className="form-button" title="Restart lesson"><RotateCcw /></button>
+                    <button data-testid="restart-lesson" type="button" onClick={restartLesson} className="form-button" title="Restart lesson"><RotateCcw /></button>
                 </div>
                 {practiseMistakesInThisPath && (
                     <div className="form-button-cell">
-                        <button type="button" onClick={cancelMistakesAdd} className="form-button" title="Cancel readding my mistakes here"><Ban /></button>
+                        <button data-testid="cancel-readding" type="button" onClick={cancelMistakesAdd} className="form-button" title="Cancel readding my mistakes here"><Ban /></button>
                     </div>
                 ) || (
                         <div className="form-button-cell">
-                            <button type="button" onClick={readdMistakes} className="form-button" title="Readd my mistakes here"><History /></button>
+                            <button data-testid="readd-mistakes" type="button" onClick={readdMistakes} className="form-button" title="Readd my mistakes here"><History /></button>
                         </div>
                     )}
                 {displayAnswer && error != ""
                     && (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_TARGET_TO_KNOWN
                         || exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET) && (
                         <div className="form-button-cell">
-                            <button type="button" className="form-button" title="Add alternative answer" onClick={addAlternativeAnswer}><TicketPlus /></button>
+                            <button data-testid="add-alternative-answer" type="button" className="form-button" title="Add alternative answer" onClick={addAlternativeAnswer}><TicketPlus /></button>
                         </div>
                     )}
                 <div className="form-button-cell">

@@ -105,10 +105,10 @@ export function AccountPage() {
             </div>
             <div className="form-row">
               <div className="form-button-cell">
-                <button type="submit" className="form-button"><Save /> Save Changes</button>
+                <button data-testid="save" type="submit" className="form-button"><Save /> Save Changes</button>
               </div>
               <div className="form-button-cell">
-                <button type="button" className="form-button" onClick={confirmEmail}><Send /> Confirm Email Address</button>
+                <button data-testid="send" type="button" className="form-button" onClick={confirmEmail}><Send /> Confirm Email Address</button>
               </div>
             </div>
             {error !== "" && (
@@ -118,26 +118,26 @@ export function AccountPage() {
             )}
             <div className="form-row">
               <div className="form-label-cell">
-                <label htmlFor="current-password" className="form-label">Current Password</label>
+                <label className="form-label">Current Password</label>
               </div>
               <div className="form-input-cell">
-                <input id="current-password" type="password" required={true} className="form-input" value={oldPassword} onChange={e => setOldPassword(e.target.value)} />
+                <input data-testid="current-password" type="password" required={true} className="form-input" value={oldPassword} onChange={e => setOldPassword(e.target.value)} />
               </div>
             </div>
             <div className="form-row">
               <div className="form-label-cell">
-                <label htmlFor="new-password" className="form-label">New Password - Optional: Fill only to change your password</label>
+                <label className="form-label">New Password - Optional: Fill only to change your password</label>
               </div>
               <div className="form-input-cell">
-                <input id="new-password" type="password" className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                <input data-testid="new-password" type="password" className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
               </div>
             </div>
             <div className="form-row">
               <div className="form-label-cell">
-                <label htmlFor="new-password-confirm" className="form-label">Confirm New Password</label>
+                <label className="form-label">Confirm New Password</label>
               </div>
               <div className="form-input-cell">
-                <input id="new-password-confirm" type="password" className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
+                <input data-testid="confirm-new-password" type="password" className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
               </div>
             </div>
             <div className="form-row">
@@ -155,10 +155,10 @@ export function AccountPage() {
             {!user?.emailConfirmed && (
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label htmlFor="new-email-address" className="form-label">New Email Address - Optional: Fill only to change your email address</label>
+                  <label className="form-label">New Email Address - Optional: Fill only to change your email address</label>
                 </div>
                 <div className="form-input-cell">
-                  <input id="new-email-address" type="text" className="form-input" value={newUserName} onChange={e => setNewUserName(e.target.value)} />
+                  <input data-testid="new-email-address" type="text" className="form-input" value={newUserName} onChange={e => setNewUserName(e.target.value)} />
                 </div>
               </div>
             )}

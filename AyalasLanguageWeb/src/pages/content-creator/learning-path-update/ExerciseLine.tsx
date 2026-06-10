@@ -34,10 +34,10 @@ export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExerciseModel }) 
             {exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT && (
               <>
               <div className="form-button-cell">
-              <button type="button" className="form-button button-delete-item" onClick={onDeleteClick}>
+              <button data-testid="delete-item" type="button" className="form-button button-delete-item" onClick={onDeleteClick}>
                 <Trash2 className="small-icon" />
               </button>
-              <button type="button" className="form-button button-edit-item" onClick={onEditClick}>
+              <button data-testid="edit-item" type="button" className="form-button button-edit-item" onClick={onEditClick}>
                 <SquarePen className="small-icon" />
               </button>
                </div>

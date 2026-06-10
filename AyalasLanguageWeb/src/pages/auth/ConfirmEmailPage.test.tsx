@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ConfirmEmailPage } from './ConfirmEmailPage'; // Adjust path as needed
 import { errorHandler } from '../../utils/utils';
 import type { User } from '../../types/shared/User';
+import disableClientValidation from '../../utils/test-utils/disableClientValidation';
 
 // 1. Mock external dependencies
 vi.mock('axios');

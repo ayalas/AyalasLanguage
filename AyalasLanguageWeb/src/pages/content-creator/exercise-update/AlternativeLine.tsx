@@ -24,7 +24,7 @@ export function AlternativeLine({ alternative, ref }: { alternative: string, ref
             <div className="content-line-part">
 
                 <div className="form-button-cell">
-                    <button type="button" className="form-button button-delete-item" 
+                    <button data-testid="delete-or-restore" type="button" className="form-button button-delete-item" 
                         title={exists? "Delete" : "Restore"}
                     onClick={onDeleteClick}>
                         {exists && (

@@ -14,7 +14,7 @@ export const BucketListItem: React.FC<Props> = ({ itemValue, position, itemClick
 
   return (
     <div className="bucket-list-item-cell">
-      <button className="bucket-list-item-button" onClick={clickButton}>{itemValue}</button>
+      <button data-testid="click-button" className="bucket-list-item-button" onClick={clickButton}>{itemValue}</button>
     </div>
   );
 };

@@ -45,7 +45,7 @@ export const MatchWordItem: React.FC<Props> = ({ itemValue, matchingValue, setSe
 
   return (
     <div className="match-word-item-cell">
-      <button className={className} onClick={clickButton}>{itemValue}</button>
+      <button data-testid="click-button" className={className} onClick={clickButton}>{itemValue}</button>
     </div>
   );
 };

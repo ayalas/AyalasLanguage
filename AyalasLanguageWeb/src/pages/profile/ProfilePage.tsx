@@ -92,7 +92,7 @@ export function ProfilePage() {
             </div>
             <div className="form-row">
               <div className="form-input-row">
-                <button type="submit" className="form-button" title="Save">
+                <button data-testid="save" type="submit" className="form-button" title="Save">
                   <Save />
                 </button>
               </div>

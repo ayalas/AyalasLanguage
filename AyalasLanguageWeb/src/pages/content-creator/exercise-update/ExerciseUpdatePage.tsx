@@ -103,7 +103,7 @@ export function ExerciseUpdatePage() {
                     </div>
                     <div className="form-row">
                         <div className="form-button-cell">
-                            <button type="submit" className="form-button" title="Save"><LayersPlus /></button>
+                            <button data-testid="save" type="submit" className="form-button" title="Save"><LayersPlus /></button>
                         </div>
                     </div>
                     {error !== '' && (
@@ -161,7 +161,7 @@ export function ExerciseUpdatePage() {
                                     })}
                             </>)}
                     <div className="form-row">
-                        <button className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
+                        <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
                     </div>
                 </form>
             </div>

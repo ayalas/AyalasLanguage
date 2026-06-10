@@ -8,6 +8,7 @@ import { useAuth } from '../../components/auth/useAuth';
 import { errorHandler } from '../../utils/utils';
 import LoginPage from './LoginPage'; // Adjust this path to match your actual file structure
 import type { AuthContextType } from '../../components/auth/types';
+import disableClientValidation from '../../utils/test-utils/disableClientValidation';
 
 // --- External Mocks ---
 
@@ -57,9 +58,9 @@ describe('LoginPage Component', () => {
     render(<LoginPage />);
 
     expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
+    expect(screen.getByTestId('email')).toBeInTheDocument();
+    expect(screen.getByTestId('password')).toBeInTheDocument();
+    expect(screen.getByTestId('log-in')).toBeInTheDocument();
     expect(screen.getByText(/register/i)).toBeInTheDocument();
   });
 
@@ -71,7 +72,7 @@ describe('LoginPage Component', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i) as HTMLInputElement;
+    const emailInput = screen.getByTestId('email') as HTMLInputElement;
     expect(emailInput.value).toBe('testuser@example.com');
   });
 
@@ -93,9 +94,11 @@ describe('LoginPage Component', () => {
 
     render(<LoginPage />);
 
-    const emailInput = screen.getByLabelText(/email/i);
-    const passwordInput = screen.getByLabelText(/password/i);
-    const submitButton = screen.getByRole('button', { name: /log in/i });
+    disableClientValidation();
+
+    const emailInput = screen.getByTestId('email');
+    const passwordInput = screen.getByTestId('password');
+    const submitButton = screen.getByTestId('log-in');
 
     await user.type(emailInput, 'test@example.com');
     await user.type(passwordInput, 'password123');
@@ -133,9 +136,11 @@ describe('LoginPage Component', () => {
 
     render(<LoginPage />);
 
-    await user.type(screen.getByLabelText(/email/i), 'newuser@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'password123');
-    await user.click(screen.getByRole('button', { name: /log in/i }));
+    disableClientValidation();
+
+    await user.type(screen.getByTestId('email'), 'newuser@example.com');
+    await user.type(screen.getByTestId('password'), 'password123');
+    await user.click(screen.getByTestId('log-in'));
 
     expect(mockLogin).toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
@@ -150,9 +155,11 @@ describe('LoginPage Component', () => {
 
     render(<LoginPage />);
 
-    await user.type(screen.getByLabelText(/email/i), 'wrong@example.com');
-    await user.type(screen.getByLabelText(/password/i), 'wrongpass');
-    await user.click(screen.getByRole('button', { name: /log in/i }));
+    disableClientValidation();
+
+    await user.type(screen.getByTestId('email'), 'wrong@example.com');
+    await user.type(screen.getByTestId('password'), 'wrongpass');
+    await user.click(screen.getByTestId('log-in'));
 
     expect(errorHandler).toHaveBeenCalledWith(fakeError, expect.any(Function));
   });

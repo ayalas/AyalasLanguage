@@ -223,21 +223,21 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         </div>
         <div className="form-row">
           <div className="form-button-cell">
-            <button type="submit" className="form-button" title="Save"><LayersPlus /></button>
+            <button data-testid="save" type="submit" className="form-button" title="Save"><LayersPlus /></button>
           </div>
           {initialRecord && (
             <>
               <div className="form-button-cell">
-                <button type="button" onClick={onImportExercises} className="form-button" title="Import Exercises"><FileDown /></button>
+                <button data-testid="import-exercises" type="button" onClick={onImportExercises} className="form-button" title="Import Exercises"><FileDown /></button>
               </div>
               <div className="form-button-cell">
-                <button type="button" onClick={onExportExercises} className="form-button" title="Export Exercises"><FileUp /></button>
+                <button data-testid="export-exercises" type="button" onClick={onExportExercises} className="form-button" title="Export Exercises"><FileUp /></button>
               </div>
             </>
           )}
           {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && initialRecord.exerciseCount == 0 && (
             <div className="form-button-cell">
-              <button type="button" onClick={deleteLesson} className="form-button" title="Delete lesson"><Trash /></button>
+              <button data-testid="delete-lesson" type="button" onClick={deleteLesson} className="form-button" title="Delete lesson"><Trash /></button>
             </div>
           )}
         </div>
@@ -254,7 +254,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                 <input type="file" onChange={handleFileChange} accept=".json" />
               </div>
               <div className="form-input-row">
-                <button type="button" onClick={cancelImport} className="form-button" title="Cancel"><Ban /> Cancel</button>
+                <button data-testid="cancel" type="button" onClick={cancelImport} className="form-button" title="Cancel"><Ban /> Cancel</button>
               </div>
             </div>
           </>

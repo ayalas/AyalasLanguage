@@ -24,7 +24,7 @@ export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguag
       {exists && (
         <div className="form-row">
           <div className="content-line-part">
-            <button type="button" className="form-button button-delete-item" onClick={onButtonClick}>
+            <button data-testid="delete-item" type="button" className="form-button button-delete-item" onClick={onButtonClick}>
               <Trash2 className="small-icon" />
             </button>
             {languageInfo.nativeName} ({languageInfo.englishName})

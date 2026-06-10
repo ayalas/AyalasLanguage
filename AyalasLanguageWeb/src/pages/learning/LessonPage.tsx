@@ -273,7 +273,7 @@ export function LessonPage() {
                 addMistake={addMistake} />
                 { currentExercise && (currentExercise.index ?? 0) > 0 && (
                   <div className="form-row">
-                  <button className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
+                  <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
                 </div>
                 )}
                 

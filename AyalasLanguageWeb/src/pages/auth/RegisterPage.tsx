@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { User as UserIcon } from 'lucide-react';
+import axios from 'axios';
 import { checkPasswordStrength, errorHandler, generatePasswordFeedback, isValidEmail } from '../../utils/utils';
 
 export function RegisterPage() {
@@ -43,21 +44,9 @@ export function RegisterPage() {
         return;
       }
 
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayname: displayName, username: email, password: newPasswordTrimmed })
-      });
+      await axios.post('/api/auth/register',
+        { displayname: displayName, username: email, password: newPasswordTrimmed });
 
-      if (response.ok) {
-        setSuccess(true);
-      } else {
-        if (response.status == 409) {
-          setError("User already exists");
-        }
-        else
-          setError(`${response.statusText} (${response.status})`);
-      }
     } catch (err: unknown) {
       errorHandler(err, setError);
     }
@@ -65,14 +54,14 @@ export function RegisterPage() {
 
   return (
     <div className="form-container">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} data-testid="main-form">
         <div className="form-header">
           <h1>Register</h1>
         </div>
         {!success && (
           <div className="form-row">
             <div className="form-input-row">
-              <button type="submit" className="form-button"><UserIcon /> Complete Registration</button>
+              <button type="submit" data-testid="complete-registration" className="form-button"><UserIcon /> Complete Registration</button>
             </div>
           </div>
         )}
@@ -95,34 +84,34 @@ export function RegisterPage() {
             <>
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label htmlFor="display-name" className="form-label">Display Name</label>
+                  <label className="form-label">Display Name</label>
                 </div>
                 <div className="form-input-cell">
-                  <input id="display-name" type="text" value={displayName} className="form-input" onChange={e => setDisplayName(e.target.value)} />
+                  <input data-testid="display-name" type="text" value={displayName} required={true} className="form-input" onChange={e => setDisplayName(e.target.value)} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label htmlFor="email" className="form-label">Email</label>
+                  <label className="form-label">Email</label>
                 </div>
                 <div className="form-input-cell">
-                  <input id="email" type="text" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+                  <input data-testid="email" type="text" value={email} required={true} className="form-input" onChange={e => setEmail(e.target.value)} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label htmlFor="password" className="form-label">Password</label>
+                  <label className="form-label">Password</label>
                 </div>
                 <div className="form-input-cell">
-                  <input id="password" type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                  <input data-testid="password" type="password" required={true} className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label htmlFor="confirm-password" className="form-label">Confirm Password</label>
+                  <label className="form-label">Confirm Password</label>
                 </div>
                 <div className="form-input-cell">
-                  <input id="confirm-password" type="password" required={true} className="form-input" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
+                  <input data-testid="confirm-password" type="password" required={true} className="form-input" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
                 </div>
               </div>
 
