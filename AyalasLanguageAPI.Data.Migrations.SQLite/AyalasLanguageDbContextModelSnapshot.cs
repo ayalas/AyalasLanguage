@@ -514,9 +514,32 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime?>("ConfirmationEmailSent")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("EmailConfirmationReceived")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("EmailConfirmationToken")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime?>("ForgotEmailReceived")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ForgotEmailSent")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ForgotPasswordToken")
+                        .HasMaxLength(1024)
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("KnownLanguageId")

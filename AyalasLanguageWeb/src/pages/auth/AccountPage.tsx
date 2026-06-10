@@ -9,6 +9,7 @@ import { checkPasswordStrength, errorHandler, generatePasswordFeedback } from '.
 export function AccountPage() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [accountChanged, setAccountChanged] = useState(false);
   const [emailConfirmationSent, setEmailConfirmationSent] = useState(false);
   const [error, setError] = useState("");
@@ -32,8 +33,27 @@ export function AccountPage() {
     e.preventDefault();
     try {
       let newPasswordTrimmed: string = "";
+      const newUserNameTrimmed = newUserName.trim();
       if (newPassword != null && newPassword.length > 0) {
         newPasswordTrimmed = newPassword.trim();
+
+        if (newPasswordConfirm == null) {
+          setError("Must fill New Password Confirm, if New Password is filled.");
+          return;
+        }
+
+        const newPasswordConfirmTrimmed = newPasswordConfirm.trim();
+
+        if (newPasswordTrimmed.length == 0) {
+          setError("New Password and Password Confirm are required. New Password contains only whitespace.")
+          return;
+        }
+
+        if (newPasswordTrimmed != newPasswordConfirmTrimmed) {
+          setError("New Password and Password Confirm must be identical.")
+          return;
+        }
+
         const resCheck = checkPasswordStrength(newPasswordTrimmed);
         if (!resCheck.isValid) {
           const feedback = generatePasswordFeedback(resCheck.checks);
@@ -42,12 +62,14 @@ export function AccountPage() {
         }
       }
 
-      if (newPasswordTrimmed == "" && newUserName == "") {
+      
+
+      if (newPasswordTrimmed == "" && newUserNameTrimmed == "") {
         setError("Nothing to save. This page allows you to change password and email address (unless confirmed).");
         return;
       }
 
-      const res = await axios.post('/api/auth/account', { newUserName, oldPassword, newPassword: newPasswordTrimmed });
+      const res = await axios.post('/api/auth/account', { newUserName: newUserNameTrimmed, oldPassword, newPassword: newPasswordTrimmed });
 
       login(res.data);
 
@@ -69,12 +91,12 @@ export function AccountPage() {
           </div>
         ) : emailConfirmationSent ? (
           <>
-          <div className="form-row">
-            <h3>Email address confirmation sent successfully.</h3>
-          </div>
-          <div className="form-row">
-            <div className="form-content-row">An email address confirmation request has been sent to '{user?.userName}'. Please confirm your email, so you'll be able to recover your account, in case you forget your password. </div>
-          </div>
+            <div className="form-row">
+              <h3>Email address confirmation sent successfully.</h3>
+            </div>
+            <div className="form-row">
+              <div className="form-content-row">An email address confirmation request has been sent to '{user?.userName}'. Please confirm your email, so you'll be able to recover your account, in case you forget your password. </div>
+            </div>
           </>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -96,18 +118,26 @@ export function AccountPage() {
             )}
             <div className="form-row">
               <div className="form-label-cell">
-                <label className="form-label">Old Password</label>
+                <label htmlFor="current-password" className="form-label">Current Password</label>
               </div>
               <div className="form-input-cell">
-                <input type="password" required={true} className="form-input" value={oldPassword} onChange={e => setOldPassword(e.target.value)} />
+                <input id="current-password" type="password" required={true} className="form-input" value={oldPassword} onChange={e => setOldPassword(e.target.value)} />
               </div>
             </div>
             <div className="form-row">
               <div className="form-label-cell">
-                <label className="form-label">New Password - Optional: Fill only to change your password</label>
+                <label htmlFor="new-password" className="form-label">New Password - Optional: Fill only to change your password</label>
               </div>
               <div className="form-input-cell">
-                <input type="password" className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                <input id="new-password" type="password" className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-label-cell">
+                <label htmlFor="new-password-confirm" className="form-label">Confirm New Password</label>
+              </div>
+              <div className="form-input-cell">
+                <input id="new-password-confirm" type="password" className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
               </div>
             </div>
             <div className="form-row">
@@ -125,10 +155,10 @@ export function AccountPage() {
             {!user?.emailConfirmed && (
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label className="form-label">New Email Address - Optional: Fill only to change your email address</label>
+                  <label htmlFor="new-email-address" className="form-label">New Email Address - Optional: Fill only to change your email address</label>
                 </div>
                 <div className="form-input-cell">
-                  <input type="text" className="form-input" value={newUserName} onChange={e => setNewUserName(e.target.value)} />
+                  <input id="new-email-address" type="text" className="form-input" value={newUserName} onChange={e => setNewUserName(e.target.value)} />
                 </div>
               </div>
             )}

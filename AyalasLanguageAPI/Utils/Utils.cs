@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 namespace AyalasLanguageAPI.Utils;
 public static class Utils
 {
-    public static async Task SendEmail(string to, string subject, string body, IConfiguration config)
+    internal static async Task SendEmail(string to, string subject, string body, IConfiguration config, ILogger<Program> logger)
     {
         string? sender = config.GetValue<string>("EmailSettings:Sender");
         
@@ -12,7 +12,7 @@ public static class Utils
             throw new Exception("Config error: missing EmailConfirmation configurations.");
         }
         //todo: implement
-
+        logger.LogTrace("Email fake send:\nTo:{To}\nFrom:{From}\nSubject:{Subject}\nContent:{Body}", to, sender, subject, body );
     }
 
     public static (string RawToken, string HashedToken) GenerateToken()

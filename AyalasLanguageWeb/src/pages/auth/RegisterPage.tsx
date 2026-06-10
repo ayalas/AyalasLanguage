@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { User as UserIcon } from 'lucide-react';
 import { checkPasswordStrength, errorHandler, generatePasswordFeedback, isValidEmail } from '../../utils/utils';
 
@@ -7,9 +7,9 @@ export function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -19,7 +19,24 @@ export function RegisterPage() {
         return;
       }
 
-      const resCheck = checkPasswordStrength(password);
+      if (password == null || passwordConfirm == null) {
+        setError("Password and Password Confirm are required.")
+        return;
+      }
+
+      const newPasswordTrimmed = password.trim();
+      const newPasswordConfirmTrimmed = passwordConfirm.trim();
+      if (newPasswordTrimmed.length == 0) {
+        setError("Password and Password Confirm are required. Password contains only whitespace.")
+        return;
+      }
+
+      if (newPasswordTrimmed != newPasswordConfirmTrimmed) {
+        setError("Password and Password Confirm must be identical.")
+        return;
+      }
+
+      const resCheck = checkPasswordStrength(newPasswordTrimmed);
       if (!resCheck.isValid) {
         const feedback = generatePasswordFeedback(resCheck.checks);
         setError(feedback.message);
@@ -29,7 +46,7 @@ export function RegisterPage() {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayname: displayName, username: email, password })
+        body: JSON.stringify({ displayname: displayName, username: email, password: newPasswordTrimmed })
       });
 
       if (response.ok) {
@@ -66,38 +83,46 @@ export function RegisterPage() {
         )}
         {success && (
           <>
-          <div className="form-row">
-            <h3>Account created successfully.</h3>
-          </div>
-          <div className="form-row">
-            <div className="form-content-row">An email address confirmation request has been sent to '{email}'. Please confirm your email, so you'll be able to recover your account, in case you forget your password. </div>
-            <div className="form-content-row">You can do this now, or later on, after you&nbsp;<Link to={`/login?user=${email}`}>log in</Link>&nbsp;and experience with the app.</div>
-          </div>
+            <div className="form-row">
+              <h3>Account created successfully.</h3>
+            </div>
+            <div className="form-row">
+              <div className="form-content-row">An email address confirmation request has been sent to '{email}'. Please confirm your email, so you'll be able to recover your account, in case you forget your password. </div>
+              <div className="form-content-row">You can do this now, or later on, after you&nbsp;<Link to={`/login?user=${email}`}>log in</Link>&nbsp;and experience with the app.</div>
+            </div>
           </>
         ) || (
             <>
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label className="form-label">Display Name</label>
+                  <label htmlFor="display-name" className="form-label">Display Name</label>
                 </div>
                 <div className="form-input-cell">
-                  <input type="text" value={displayName} className="form-input" onChange={e => setDisplayName(e.target.value)} />
+                  <input id="display-name" type="text" value={displayName} className="form-input" onChange={e => setDisplayName(e.target.value)} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label className="form-label">Email</label>
+                  <label htmlFor="email" className="form-label">Email</label>
                 </div>
                 <div className="form-input-cell">
-                  <input type="text" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+                  <input id="email" type="text" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-label-cell">
-                  <label className="form-label">Password</label>
+                  <label htmlFor="password" className="form-label">Password</label>
                 </div>
                 <div className="form-input-cell">
-                  <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                  <input id="password" type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-label-cell">
+                  <label htmlFor="confirm-password" className="form-label">Confirm Password</label>
+                </div>
+                <div className="form-input-cell">
+                  <input id="confirm-password" type="password" required={true} className="form-input" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
                 </div>
               </div>
 

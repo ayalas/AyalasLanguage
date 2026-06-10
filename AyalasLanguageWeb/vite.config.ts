@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import mkcert from 'vite-plugin-mkcert'
@@ -14,6 +14,12 @@ export default defineConfig({
     }),
     mkcert()
   ],
+  test: {
+    // This line tells Vitest to simulate a browser environment for all tests
+    environment: 'jsdom', 
+    globals: true, // Optional: allows you to use describe, it, expect without importing them
+    setupFiles: ['./vitest.setup.ts'],
+  },
   server: {
     port: 5173,
     host: '0.0.0.0',

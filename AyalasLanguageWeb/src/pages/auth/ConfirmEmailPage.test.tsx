@@ -1,0 +1,97 @@
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import axios from 'axios';
+import { ConfirmEmailPage } from './ConfirmEmailPage'; // Adjust path as needed
+import { errorHandler } from '../../utils/utils';
+import type { User } from '../../types/shared/User';
+
+// 1. Mock external dependencies
+vi.mock('axios');
+vi.mock('../../utils/utils', () => ({
+  errorHandler: vi.fn((err, setError) => setError('Mocked error message')),
+}));
+
+// Mock AuthHeader component to keep the test light
+vi.mock('../../components/auth/AuthHeader', () => ({
+  AuthHeader: () => <div data-testid="auth-header">Mocked Auth Header</div>,
+}));
+
+// Create stable mock functions for react-router-dom hooks
+const mockLogin = vi.fn();
+let mockToken: string | undefined = 'test-token-123';
+
+vi.mock('react-router-dom', () => ({
+  useParams: () => ({ token: mockToken }),
+  useOutletContext: () => ({ login: mockLogin }),
+}));
+
+describe('ConfirmEmailPage', () => {
+  const mockUser: User = {
+    id: '1',
+    email: 'test@example.com',
+    // add any other required fields from your User type here
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockToken = 'test-token-123'; // Reset token default
+  });
+
+  it('renders headers correctly', () => {
+    render(<ConfirmEmailPage />);
+    
+    expect(screen.getByTestId('auth-header')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /email addrss confirmation/i })).toBeInTheDocument();
+  });
+
+  it('successfully confirms email and calls login when a token is present', async () => {
+    // Arrange: Mock axios.get to return a successful promise
+    vi.mocked(axios.get).mockResolvedValueOnce({ data: mockUser });
+
+    // Act
+    render(<ConfirmEmailPage />);
+
+    // Assert API call
+    expect(axios.get).toHaveBeenCalledWith(`/api/auth/confirm/${encodeURIComponent('test-token-123')}`);
+
+    // Assert UI updates asynchronously
+    await waitFor(() => {
+      expect(mockLogin).toHaveBeenCalledWith(mockUser);
+      expect(screen.getByRole('heading', { name: /email address confirmed successfully/i })).toBeInTheDocument();
+    });
+    
+    // Ensure no error is displayed
+    expect(screen.queryByText('Mocked error message')).not.toBeInTheDocument();
+  });
+
+  it('displays an error if no token is received from parameters', async () => {
+    // Arrange: Simulate missing token
+    mockToken = undefined;
+
+    // Act
+    render(<ConfirmEmailPage />);
+
+    // Assert error display immediately
+    expect(screen.getByText('Error: no token received.')).toBeInTheDocument();
+    expect(axios.get).not.toHaveBeenCalled();
+    expect(mockLogin).not.toHaveBeenCalled();
+  });
+
+  it('handles API errors gracefully using the errorHandler utility', async () => {
+    // Arrange: Mock axios to reject
+    const apiError = new Error('Network Error');
+    vi.mocked(axios.get).mockRejectedValueOnce(apiError);
+
+    // Act
+    render(<ConfirmEmailPage />);
+
+    // Assert errorHandler integration
+    await waitFor(() => {
+      expect(errorHandler).toHaveBeenCalledWith(apiError, expect.any(Function));
+      expect(screen.getByText('Mocked error message')).toBeInTheDocument();
+    });
+
+    // Ensure success screen isn't visible
+    expect(screen.queryByRole('heading', { name: /email address confirmed successfully/i })).not.toBeInTheDocument();
+  });
+});

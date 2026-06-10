@@ -1,11 +1,12 @@
 
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
 import { AuthProvider } from './components/auth/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LandingPage from './LandingPage';
 import LoginPage from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 //authenticated
 import { AccountPage } from './pages/auth/AccountPage';
 import Homepage from './pages/Homepage';
@@ -15,11 +16,15 @@ import { LearningPathUpdatePage } from './pages/content-creator/learning-path-up
 import { ExerciseUpdatePage } from './pages/content-creator/exercise-update/ExerciseUpdatePage';
 import { LessonPage } from './pages/learning/LessonPage';
 import { ConfirmEmailPage } from './pages/auth/ConfirmEmailPage';
+import axios from 'axios';
 
 import './App.css'
 
-
 function App() {
+  useEffect(() => {
+    //allow backend to write auth cookie
+    axios.defaults.withCredentials = true;
+  }, [])
   
   return (
     <AuthProvider>
@@ -29,6 +34,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/confirm/:reset" element={ <ResetPasswordPage/>} />
 
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>

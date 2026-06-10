@@ -4,6 +4,7 @@ import { LogIn } from 'lucide-react';
 
 import { useAuth } from '../../components/auth/useAuth';
 import { errorHandler } from '../../utils/utils';
+import axios from 'axios';
 
 export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
@@ -14,27 +15,17 @@ export default function LoginPage(): React.ReactElement {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: email, password }),
-        credentials: 'include',
-      });
+      const response = await axios.post('/api/auth/login', { username: email, password });
 
-      if (response.ok) {
-        const data = await response.json();
-        login(data.user);
-        if (data.user.languageSettings?.knownLanguageId == null || data.user.languageSettings?.targetLanguageId == null) {
-          navigate('/profile');
-          return;
-        }
-        navigate('/home');
-      } else {
-        setError('Invalid credentials');
+      login(response.data.user);
+      if (response.data.user.languageSettings?.knownLanguageId == null || response.data.user.languageSettings?.targetLanguageId == null) {
+        navigate('/profile');
+        return;
       }
+      navigate('/home');
     } catch (err) {
       errorHandler(err, setError);
     }
@@ -58,18 +49,18 @@ export default function LoginPage(): React.ReactElement {
         )}
         <div className="form-input-row">
           <div className="form-label-cell">
-            <label className="form-label">Email</label>
+            <label htmlFor="email" className="form-label">Email</label>
           </div>
           <div className="form-input-cell">
-            <input type="text" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+            <input id="email" type="text" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
           </div>
         </div>
         <div className="form-input-row">
           <div className="form-label-cell">
-            <label className="form-label">Password</label>
+            <label htmlFor="password" className="form-label">Password</label>
           </div>
           <div className="form-input-cell">
-            <input type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+            <input id="password" type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
         </div>
         <div className="form-row">

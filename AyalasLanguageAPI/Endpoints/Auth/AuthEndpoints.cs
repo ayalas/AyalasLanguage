@@ -274,7 +274,7 @@ public static class AuthEndpoints
         return Results.Ok(userIdDto);
     }
 
-    private static async Task<IResult> ForgotPasswordStart(ForgotPasswordDto dto, AyalasLanguageDbContext db, IConfiguration config)
+    private static async Task<IResult> ForgotPasswordStart(ForgotPasswordDto dto, AyalasLanguageDbContext db, IConfiguration config, ILogger<Program> logger)
     {
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
         if (user == null)
@@ -305,7 +305,7 @@ public static class AuthEndpoints
         string emailTitle = "Ayala's Language App: reset your password";
         string emailContent = $"<p>Choose a new password for your account in this <a href=\"{resetPwdPage}\">link</a>. Notice the link expires shortly.</p>";
 
-        await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config);
+        await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config, logger);
 
         return Results.Accepted();
     }
@@ -354,7 +354,7 @@ public static class AuthEndpoints
             string emailTitle = "Ayala's Language App: Confirm your email address";
             string emailContent = $"<p>Please confirm your email address by opening this <a href=\"{confirmPageAddress}\">confirmation link</a> in your browser.</p>";
 
-            await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config);
+            await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config, logger);
         }
         catch (Exception ex)
         {
