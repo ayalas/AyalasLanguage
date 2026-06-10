@@ -80,7 +80,7 @@ export function ResetPasswordPage() {
                                 <h3>Password changed successfully.</h3>
                             </div>
                             <div className="form-row">
-                                <div className="form-content-row"><Link to={`/login?user=${userName}`}>Log in</Link>&nbsp;and experience with the app.</div>
+                                <div className="form-content-row"><Link to={`/login?user=${encodeURIComponent(userName)}`}>Log in</Link>&nbsp;and experience with the app.</div>
                             </div>
                         </>
                     ) : (
