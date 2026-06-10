@@ -34,7 +34,7 @@ export function ConfirmEmailPage() {
             <AuthHeader />
             <div className="form-container">
                 <div className="form-header">
-                    <h1>Email addrss confirmation</h1>
+                    <h1>Email address confirmation</h1>
                 </div>
                 {error !== "" && (
                     <div className="form-row">

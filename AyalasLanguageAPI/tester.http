@@ -1,9 +1,10 @@
 @hostname = localhost
-@port = 5097
-@host = http://{{hostname}}:{{port}}
+@port = 7010
+@host = https://{{hostname}}:{{port}}
 @contentType = application/json
-@userName = "ayala"
-@password = "123123"
+@userName = "ayalaswisa@proton.me"
+@password = "Aa@123456"
+
 
 ### Register a new user
 # @name registerUser
@@ -27,19 +28,21 @@ Content-Type: {{contentType}}
   "password": {{password}}
 }
 
-###
-
-@token = {{login.response.body.token}}
 
 ### auth me
 GET {{host}}/api/auth/me
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
+
+### Test confirm email
+GET {{host}}/api/auth/confirm/D05FFUbHqgH444
+Content-Type: {{contentType}}
+
 
 ### Change password
 POST {{host}}/api/auth/change-password
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "oldPassword": "SecurePassword123",
@@ -49,7 +52,7 @@ Authorization: Bearer {{token}}
 ### update profile - set display name, languages, and exercise types
 POST {{host}}/api/profile
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "DisplayName": "John Doe 2",
@@ -81,20 +84,20 @@ Authorization: Bearer {{token}}
 
 ### get user profile
 GET {{host}}/api/profile
-Authorization: Bearer {{token}}
+
 
 ### get all available languages
 GET {{host}}/api/static/languages
-Authorization: Bearer {{token}}
+
 
 ### get current language
 GET {{host}}/api/profile/current
-Authorization: Bearer {{token}}
+
 
 ### switch current language
 POST {{host}}/api/profile/current
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "TargetLanguageId": 4,
@@ -104,18 +107,18 @@ Authorization: Bearer {{token}}
 ### Get the learning path for current language
 ### status 1 means it's done
 GET {{host}}/api/learning/path
-Authorization: Bearer {{token}}
+
 
 ###
 GET {{host}}/api/learning/path/24
-Authorization: Bearer {{token}}
+
 
 
 ### Create a Learning Path
 # @name createLearningPath1
 POST {{host}}/api/creator/learning-path
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "level": 1,
@@ -128,7 +131,7 @@ Authorization: Bearer {{token}}
 ### Create a Learning Path
 POST {{host}}/api/creator/learning-path
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "level": 1,
@@ -140,7 +143,7 @@ Authorization: Bearer {{token}}
 ### Update user progress to done for a specific learning path item
 POST {{host}}/api/learning/progress
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "learningPathId": 1
@@ -148,12 +151,12 @@ Authorization: Bearer {{token}}
 
 ### Delete user progress for a specific learning path item (mark as not done)
 DELETE {{host}}/api/learning/progress/1
-Authorization: Bearer {{token}}
+
 
 ### Edit learning path
 PUT {{host}}/api/creator/learning-path/2
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "level": 2,
@@ -165,12 +168,12 @@ Authorization: Bearer {{token}}
 ### delete learning paths
 DELETE {{host}}/api/creator/learning-path/29
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 ### Create a simple Exercise for the Path created above
 POST {{host}}/api/creator/exercise
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "learningPathId": 1,
@@ -181,7 +184,7 @@ Authorization: Bearer {{token}}
 ### Create a simple Exercise for the Path created above
 POST {{host}}/api/creator/exercise
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "learningPathId": 1,
@@ -192,7 +195,7 @@ Authorization: Bearer {{token}}
 ### Edit the Exercise created above
 PUT {{host}}/api/creator/exercise/1
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "data": "{\"KnownText\": \"How do you say Goodbye?\", \"TargetText\": \"Adiós\"}"
@@ -201,7 +204,7 @@ Authorization: Bearer {{token}}
 ### Create a fillin the blanks exercise for the Path created above
 POST {{host}}/api/creator/exercise
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "learningPathId": 1,
@@ -212,7 +215,7 @@ Authorization: Bearer {{token}}
 ### Create a Matching Exercise for the Path created above
 POST {{host}}/api/creator/exercise
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "learningPathId": 1,
@@ -223,7 +226,7 @@ Authorization: Bearer {{token}}
 ### Create a bucket list exercise for the Path created above
 POST {{host}}/api/creator/exercise
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 {
   "learningPathId": 1,
@@ -234,12 +237,11 @@ Authorization: Bearer {{token}}
 ### Delete the Exercise created above
 DELETE {{host}}/api/creator/exercise/321
 Content-Type: {{contentType}}
-Authorization: Bearer {{token}}
+
 
 ### Get exercises for a learning path
 GET {{host}}/api/learning/path/26/exercises
-Authorization: Bearer {{token}}
+
 
 ### Logout
 POST {{host}}/api/auth/logout
-Authorization: Bearer {{token}}

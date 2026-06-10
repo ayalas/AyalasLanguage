@@ -26,7 +26,7 @@ public static class AuthEndpoints
         auth.MapPost("/forgot", ForgotPasswordStart);
         auth.MapPost("/reset", ForgotPasswordEnd);
         auth.MapPost("/confirm", ConfirmEmailStart);
-        auth.MapGet("/confirm/:token", ConfirmEmailEnd);
+        auth.MapGet("/confirm/{token}", ConfirmEmailEnd);
         auth.MapGet("/me", CheckAuthStatus);
         //not implementing email confirmation, forgot password, or other features for this demo - but they would go here
     }
@@ -236,11 +236,12 @@ public static class AuthEndpoints
     }
 
     [Authorize]
-    private static async Task<IResult> ConfirmEmailEnd(ClaimsPrincipal claim, string token, AyalasLanguageDbContext db, IConfiguration config)
+    private static async Task<IResult> ConfirmEmailEnd(string token, ClaimsPrincipal claim, AyalasLanguageDbContext db, IConfiguration config)
     {
         var userId = claim.GetUserId();
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-
+  
+        
         if (user == null) return Results.NotFound();
 
         if (user.EmailConfirmed)
@@ -260,7 +261,7 @@ public static class AuthEndpoints
             return Results.BadRequest("Invalid token.");
         }
 
-        if (DateTime.UtcNow.CompareTo(dtTokenExpires) < 0)
+        if (DateTime.UtcNow.CompareTo(dtTokenExpires) > 0)
         {
             return Results.Conflict("Token expired. Please resend an email address confirmation through the account page.");
         }
@@ -327,7 +328,7 @@ public static class AuthEndpoints
             return Results.BadRequest("Invalid token.");
         }
 
-        if (DateTime.UtcNow.CompareTo(dtTokenExpires) < 0)
+        if (DateTime.UtcNow.CompareTo(dtTokenExpires) > 0)
         {
             return Results.Conflict("Token expired. Please try again in a few minutes.");
         }

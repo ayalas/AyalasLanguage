@@ -38,6 +38,13 @@ body {
   padding-left: 10px;
   padding-right: 10px;
 }
+.form-cell-footer {
+  text-align: start;
+  color: #2D3748;
+  line-height: min(20px);
+  padding-left: 10px;
+  padding-right: 10px;
+}
 .form-label-row {
   text-align: start;
   color: #2D3748;
@@ -103,6 +110,10 @@ label.label-deleted {
   border: 1px solid #35bd4e;
   border-radius: 3px;
   font-size: 18px;
+}
+
+input:required:invalid {
+  border: 2px solid rgb(180, 27, 27);
 }
 
 .home-container {

@@ -39,7 +39,7 @@ export default function LoginPage(): React.ReactElement {
         </div>
         <div className="form-row">
           <div className="form-button-cell">
-            <button data-testid="log-in" type="submit" className="login-button"><LogIn /> Log In</button>
+            <button data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
           </div>
         </div>
         {error !== "" && (
@@ -52,7 +52,7 @@ export default function LoginPage(): React.ReactElement {
             <label className="form-label">Email</label>
           </div>
           <div className="form-input-cell">
-            <input data-testid="email" type="email" value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+            <input data-testid="email" type="email" required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
           </div>
         </div>
         <div className="form-input-row">
@@ -60,7 +60,7 @@ export default function LoginPage(): React.ReactElement {
             <label className="form-label">Password</label>
           </div>
           <div className="form-input-cell">
-            <input data-testid="password" type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+            <input data-testid="password" required={true} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
         </div>
         <div className="form-row">

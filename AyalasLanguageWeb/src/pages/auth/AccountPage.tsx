@@ -62,7 +62,7 @@ export function AccountPage() {
         }
       }
 
-      
+
 
       if (newPasswordTrimmed == "" && newUserNameTrimmed == "") {
         setError("Nothing to save. This page allows you to change password and email address (unless confirmed).");
@@ -101,15 +101,18 @@ export function AccountPage() {
         ) : (
           <form onSubmit={handleSubmit}>
             <div className="form-header">
-              <h1>Account details</h1>
+              <h1>Account Details</h1>
             </div>
             <div className="form-row">
               <div className="form-button-cell">
                 <button data-testid="save" type="submit" className="form-button"><Save /> Save Changes</button>
               </div>
-              <div className="form-button-cell">
-                <button data-testid="send" type="button" className="form-button" onClick={confirmEmail}><Send /> Confirm Email Address</button>
-              </div>
+              {!user?.emailConfirmed && (
+                <div className="form-button-cell">
+                  <button data-testid="send" type="button" className="form-button" onClick={confirmEmail}><Send /> Confirm Email Address</button>
+                </div>
+              )}
+
             </div>
             {error !== "" && (
               <div className="form-row">
@@ -118,49 +121,63 @@ export function AccountPage() {
             )}
             <div className="form-row">
               <div className="form-label-cell">
+                <label className="form-label">Email Address: {user?.userName}</label>
+              </div>
+              <div className="form-cell-footer">{user?.emailConfirmed && (
+                <> Confirmed (cannot be changed)</>
+              ) || (
+                  <> Please confirm your email address by clicking Confirm Email Address above.</>
+                )}</div>
+            </div>
+            <div className="form-row">
+              <div className="form-label-cell">
                 <label className="form-label">Current Password</label>
               </div>
+
+            </div>
+            <div className="form-row">
               <div className="form-input-cell">
                 <input data-testid="current-password" type="password" required={true} className="form-input" value={oldPassword} onChange={e => setOldPassword(e.target.value)} />
               </div>
             </div>
+
             <div className="form-row">
               <div className="form-label-cell">
-                <label className="form-label">New Password - Optional: Fill only to change your password</label>
+                <label className="form-label">New Password</label>
               </div>
+
+            </div>
+            <div className="form-row">
               <div className="form-input-cell">
                 <input data-testid="new-password" type="password" className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
               </div>
+              <div className="form-cell-footer">Fill only to change your password and click Save Changes</div>
             </div>
             <div className="form-row">
               <div className="form-label-cell">
                 <label className="form-label">Confirm New Password</label>
               </div>
+            </div>
+            <div className="form-row">
               <div className="form-input-cell">
                 <input data-testid="confirm-new-password" type="password" className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
               </div>
             </div>
-            <div className="form-row">
-              <div className="form-label-cell">
-                <label className="form-label">Email Address - {user?.emailConfirmed && (
-                  <> confirmed (Cannot be changed)</>
-                ) || (
-                    <> Please confirm by clicking Confirm Email Address above.</>
-                  )}</label>
-              </div>
-              <div className="form-input-cell">
-                <label className="form-label-content" >{user?.userName}</label>
-              </div>
-            </div>
+
             {!user?.emailConfirmed && (
-              <div className="form-row">
-                <div className="form-label-cell">
-                  <label className="form-label">New Email Address - Optional: Fill only to change your email address</label>
+              <>
+                <div className="form-row">
+                  <div className="form-label-cell">
+                    <label className="form-label">New Email Address</label>
+                  </div>
                 </div>
-                <div className="form-input-cell">
-                  <input data-testid="new-email-address" type="text" className="form-input" value={newUserName} onChange={e => setNewUserName(e.target.value)} />
+                <div className="form-row">
+                  <div className="form-input-cell">
+                    <input data-testid="new-email-address" type="text" className="form-input" value={newUserName} onChange={e => setNewUserName(e.target.value)} />
+                  </div>
+                  <div className="form-cell-footer">Fill only to change your email address and click Save Changes.</div>
                 </div>
-              </div>
+              </>
             )}
           </form>
         )}
