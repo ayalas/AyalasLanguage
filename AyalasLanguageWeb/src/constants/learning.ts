@@ -43,6 +43,13 @@ export const AUTHOR_ACCESS =
     CAN_EDIT: 2
 } as const;
 
+export const ROLE_TYPE = 
+{
+    LEARNER: 1,
+    CONTENT_CREATOR: 2,
+    ADMIN: 3
+} as const;
+
 export const EXERCISE_GENERATIONS = 
 [
     {

@@ -48,9 +48,9 @@ export function ProfilePage() {
   }, [user?.languageSettings]);
 
   const validateForm = function (onlyClear?: boolean) {
-    if (knownLanguage === '' || targetLanguage === '') {
+    if (knownLanguage == '' || targetLanguage == '') {
       if (!onlyClear) {
-        setError('Please select langauge to learn and language you know.');
+        setError('Please select language to learn and language you know.');
       }
       return false;
     }
@@ -107,7 +107,7 @@ export function ProfilePage() {
                 <label className="form-label">Language to Learn</label>
               </div>
               <div className="form-input-cell">
-                <select required id="target-langauge" className="form-select" value={targetLanguage} onChange={changeTargetLanguage}>
+                <select required data-testid="target-language" className="form-select" value={targetLanguage} onChange={changeTargetLanguage}>
                   <option value="" disabled>
                     -- Please choose an option --
                   </option>
@@ -124,7 +124,7 @@ export function ProfilePage() {
                 <label className="form-label">Language I Know</label>
               </div>
               <div className="form-input-cell">
-                <select required id="known-langauge" className="form-select" value={knownLanguage} onChange={changeKnownLanguage}>
+                <select required data-testid="known-language" className="form-select" value={knownLanguage} onChange={changeKnownLanguage}>
                   <option value="" disabled>
                     -- Please choose an option --
                   </option>

@@ -4,7 +4,7 @@ import axios from 'axios';
 import { ConfirmEmailPage } from './ConfirmEmailPage'; // Adjust path as needed
 import { errorHandler } from '../../utils/utils';
 import type { User } from '../../types/shared/User';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import { ROLE_TYPE } from '../../constants/learning';
 
 // 1. Mock external dependencies
 vi.mock('axios');
@@ -28,9 +28,10 @@ vi.mock('react-router-dom', () => ({
 
 describe('ConfirmEmailPage', () => {
   const mockUser: User = {
-    id: '1',
-    email: 'test@example.com',
-    // add any other required fields from your User type here
+    userId: 1,
+    userName: 'test@example.com',
+    emailConfirmed: false,
+    role: ROLE_TYPE.CONTENT_CREATOR
   };
 
   beforeEach(() => {
@@ -38,11 +39,14 @@ describe('ConfirmEmailPage', () => {
     mockToken = 'test-token-123'; // Reset token default
   });
 
-  it('renders headers correctly', () => {
+  it('renders headers correctly', async () => {
     render(<ConfirmEmailPage />);
-    
-    expect(screen.getByTestId('auth-header')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: /email addrss confirmation/i })).toBeInTheDocument();
+
+    expect(await screen.findByTestId('auth-header')).toBeInTheDocument();
+
+    expect(await screen.findByRole('heading', {
+      name: /email addrss confirmation/i
+    })).toBeInTheDocument();
   });
 
   it('successfully confirms email and calls login when a token is present', async () => {
@@ -60,7 +64,7 @@ describe('ConfirmEmailPage', () => {
       expect(mockLogin).toHaveBeenCalledWith(mockUser);
       expect(screen.getByRole('heading', { name: /email address confirmed successfully/i })).toBeInTheDocument();
     });
-    
+
     // Ensure no error is displayed
     expect(screen.queryByText('Mocked error message')).not.toBeInTheDocument();
   });

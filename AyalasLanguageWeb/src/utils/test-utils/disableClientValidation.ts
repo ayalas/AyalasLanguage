@@ -10,6 +10,12 @@ const disableClientValidation = () => {
   requiredInputs.forEach(input => {
     input.removeAttribute('required');
   });
+
+  // 3. Remove the required attribute from all selects
+  const requiredSelects = document.querySelectorAll('select[required]');
+  requiredSelects.forEach(select => {
+    select.removeAttribute('required');
+  });
 };
 
 export default disableClientValidation;
