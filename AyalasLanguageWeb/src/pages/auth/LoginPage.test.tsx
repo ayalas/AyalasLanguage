@@ -20,8 +20,6 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: vi.fn(),
     useSearchParams: vi.fn(),
-    // Link can remain unmocked or mocked lightly if needed, 
-    // but the actual component works fine within jsdom if we don't strict-test its routing side-effects here
     Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
   };
 });
@@ -54,7 +52,7 @@ describe('LoginPage Component', () => {
   });
 
   it('renders login form elements correctly', () => {
-    mockGetSearchParams.mockReturnValue(null); // No query param
+    mockGetSearchParams.mockReturnValue(null);
 
     render(<LoginPage />);
 
@@ -81,7 +79,6 @@ describe('LoginPage Component', () => {
     mockGetSearchParams.mockReturnValue(null);
     const user = userEvent.setup();
 
-    // Mock successful API response with languages populated
     mockedAxios.post.mockResolvedValueOnce({
       data: {
         user: {
@@ -108,7 +105,13 @@ describe('LoginPage Component', () => {
       username: 'test@example.com',
       password: 'password123',
     });
-    expect(mockTargetLogin).toHaveBeenCalled();
+    expect(mockLogin).toHaveBeenCalledWith({
+      username: 'test@example.com',
+      languageSettings: {
+        knownLanguageId: 1,
+        targetLanguageId: 2,
+      },
+    });
     expect(mockNavigate).toHaveBeenCalledWith('/home');
   });
 
@@ -116,7 +119,6 @@ describe('LoginPage Component', () => {
     mockGetSearchParams.mockReturnValue(null);
     const user = userEvent.setup();
 
-    // Mock response missing language setup
     mockedAxios.post.mockResolvedValueOnce({
       data: {
         user: {
@@ -135,6 +137,7 @@ describe('LoginPage Component', () => {
     await user.type(screen.getByLabelText(/password/i), 'password123');
     await user.click(screen.getByRole('button', { name: /log in/i }));
 
+    expect(mockLogin).toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
   });
 
