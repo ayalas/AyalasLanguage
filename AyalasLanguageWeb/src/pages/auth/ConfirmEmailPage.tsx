@@ -40,7 +40,7 @@ export function ConfirmEmailPage() {
                 </div>
                 {error !== "" && (
                     <div className="form-row">
-                        <label className="form-error">{error}</label>
+                        <label data-testid="error" className="form-error">{error}</label>
                     </div>
                 )}
                 {success && (

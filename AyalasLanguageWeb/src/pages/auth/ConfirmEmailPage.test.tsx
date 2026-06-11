@@ -45,7 +45,7 @@ describe('ConfirmEmailPage', () => {
     expect(await screen.findByTestId('auth-header')).toBeInTheDocument();
 
     expect(await screen.findByRole('heading', {
-      name: /email addrss confirmation/i
+      name: /email address confirmation/i
     })).toBeInTheDocument();
   });
 
@@ -56,14 +56,15 @@ describe('ConfirmEmailPage', () => {
     // Act
     render(<ConfirmEmailPage />);
 
-    // Assert API call
+    await waitFor(() => {
+      expect(axios.get).toHaveBeenCalledTimes(1);
+    });
+
+
     expect(axios.get).toHaveBeenCalledWith(`/api/auth/confirm/${encodeURIComponent('test-token-123')}`);
 
-    // Assert UI updates asynchronously
-    await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith(mockUser);
-      expect(screen.getByRole('heading', { name: /email address confirmed successfully/i })).toBeInTheDocument();
-    });
+    expect(mockLogin).toHaveBeenCalledWith(mockUser);
+    expect(screen.getByRole('heading', { name: /email address confirmed successfully/i })).toBeInTheDocument();
 
     // Ensure no error is displayed
     expect(screen.queryByText('Mocked error message')).not.toBeInTheDocument();

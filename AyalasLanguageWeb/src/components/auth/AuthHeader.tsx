@@ -14,6 +14,7 @@ import {
   useInteractions
 } from '@floating-ui/react';
 import type { User } from '../../types/shared/User';
+import { errorHandler } from '../../utils/utils';
 
 type OutletAuthContext = {
   user?: User | null;
@@ -29,6 +30,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
   const [selectedLanguage, setSelectedLanguage] = useState('');
   const [showLanguageNextToProfile, setShowLanguageNextToProfile] = useState(!hideAppTitle);
   const { user, logout, login } = useOutletContext<OutletAuthContext>();
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,17 +65,13 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
   const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
 
   const logoutAction = async function () {
-    const response = await fetch('/api/auth/logout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include'
-    });
-
-    if (response.ok) {
+    try {
+      await axios.post('/api/auth/logout');
       logout?.();
       navigate(`/`);
-    } else {
-      alert(`${response.statusText} (${response.status})`);
+    }
+    catch (err) {
+      errorHandler(err, setError);
     }
   }
 
@@ -82,56 +80,65 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
     try {
       const val = Number(e.target.value);
       setSelectedLanguageId(val);
-  const fn = switchLanguage as unknown as SwitchLanguageFunc;
-  const newUser = await fn(axios, user, login, val, user?.languageSettings?.knownLanguageId);
-  setSelectedLanguage(newUser.languageSettings?.targetLanguage ?? '');
+      const fn = switchLanguage as unknown as SwitchLanguageFunc;
+      const newUser = await fn(axios, user, login, val, user?.languageSettings?.knownLanguageId);
+      setSelectedLanguage(newUser.languageSettings?.targetLanguage ?? '');
     } catch (err) {
       console.error('Language switch error:', err);
     }
   }
 
   return (
-    <div className="header-row">
-      <div className="header-title">
-        {!hideAppTitle && (
-          <Link className="header-app-link" to="/home">Ayala's Language App</Link>
-  ) || (user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
-          <div className="header-input-cell">
-            <select id="language-picker" className="header-select" value={String(selectedLanguageId)} onChange={onChangeLanguage} >
-              <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguage}</option>
-              {
-                user.languageSettings.otherUserLanguages.map((lang: any) => {
-                  return (
-                    <option key={lang.languageId} value={lang.languageId}>
-                      {lang.nativeName}
-                    </option>
-                  );
-                })
-              }
-            </select>
-          </div>
-        ))}
-      </div>
-
-      <div className="header-profile-container"><div className="header-profile-name">{showLanguageNextToProfile ? `${selectedLanguage}, ` : ''}{user?.displayName}<div className="header-score" title="Total Score"><Volleyball /> {user?.languageSettings?.score}</div></div></div>
-      <Link ref={setReference as any} {...getReferenceProps()} to="#">
-        <SquareMenu />
-      </Link>
-
-      {isOpen && (
-        <div className="menu-container"
-          ref={setFloating}
-          style={{ ...floatingStyles }}
-          {...getFloatingProps()}
-        >
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            <li className="menu-line"><Link to='/profile' className="menu-item">Profile settings</Link></li>
-            <li className="menu-line"><Link to='/account' className="menu-item">Manage account</Link></li>
-            <hr className="menu-delimiter" />
-            <li className="menu-line"><button onClick={logoutAction} className="menu-item">Logout</button></li>
-          </ul>
+    <>
+      <div className="header-row">
+        <div className="header-title">
+          {!hideAppTitle && (
+            <Link className="header-app-link" to="/home">Ayala's Language App</Link>
+          ) || (user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
+            <div className="header-input-cell">
+              <select id="language-picker" className="header-select" value={String(selectedLanguageId)} onChange={onChangeLanguage} >
+                <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguage}</option>
+                {
+                  user.languageSettings.otherUserLanguages.map((lang: any) => {
+                    return (
+                      <option key={lang.languageId} value={lang.languageId}>
+                        {lang.nativeName}
+                      </option>
+                    );
+                  })
+                }
+              </select>
+            </div>
+          ))}
         </div>
-      )}
-    </div>
+
+        <div className="header-profile-container"><div className="header-profile-name">{showLanguageNextToProfile ? `${selectedLanguage}, ` : ''}{user?.displayName}<div className="header-score" title="Total Score"><Volleyball /> {user?.languageSettings?.score}</div></div></div>
+        <Link ref={setReference as any} {...getReferenceProps()} to="#">
+          <SquareMenu />
+        </Link>
+
+        {isOpen && (
+          <div className="menu-container"
+            ref={setFloating}
+            style={{ ...floatingStyles }}
+            {...getFloatingProps()}
+          >
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+              <li className="menu-line"><Link to='/profile' className="menu-item">Profile settings</Link></li>
+              <li className="menu-line"><Link to='/account' className="menu-item">Manage account</Link></li>
+              <hr className="menu-delimiter" />
+              <li className="menu-line"><button onClick={logoutAction} className="menu-item">Logout</button></li>
+            </ul>
+          </div>
+        )}
+      </div>
+      {
+        error !== '' && (
+          <div className="form-row">
+            <label className="form-error">{error}</label>
+          </div>
+        )
+      }
+    </>
   );
 }
