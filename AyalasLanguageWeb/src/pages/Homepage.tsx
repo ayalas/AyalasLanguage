@@ -78,18 +78,18 @@ export default function Homepage() {
                         <div className="learning-lesson">
                           {path.chapter} <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
                           {isDone && (
-                     <Check className="learning-progress-img" aria-label="done" />
+                            <span title="Done"><Check className="learning-progress-img" /></span>
                           )}
                           {isInProgress && (
-                     <CircleDotDashed className="learning-progress-img" aria-label="in progress" />
+                            <span title="In progress"><CircleDotDashed className="learning-progress-img" /></span>
                           )}
                           {path.practiseMistakesInThisPath && (
-                     <History className="learning-progress-img" aria-label="mistakes will be readded to this lesson" />
+                            <span title="Mistakes will be readded to this lesson"><History className="learning-progress-img" /></span>
                           )}
-                          <div className="content-line-part">[{path.exerciseCount}]</div>
+                          <div className="content-line-part" title={`${path.exerciseCount} exercises`}>[{path.exerciseCount}]</div>
                         </div>
                         <div className="learning-level-creator">
-                          <Link to={`/author/path?level=${path.level}&chapter=${path.chapter+1}&prev=${path.learningPathId}${level.paths.length -1 == index? '' : `&next=${level.paths[index+1].learningPathId}`}`} title="Generate more exercises here"><LayersPlus /></Link>
+                          <Link to={`/author/path?level=${path.level}&chapter=${path.chapter + 1}&prev=${path.learningPathId}${level.paths.length - 1 == index ? '' : `&next=${level.paths[index + 1].learningPathId}`}`} title="Generate more exercises here"><LayersPlus /></Link>
                         </div>
                       </Fragment>
                     );
@@ -104,11 +104,11 @@ export default function Homepage() {
             But you can <Link to="/author/path">add ones yourself!</Link>
           </div>
         )) || (
-          <div className="learning-path-empty">
-            You have not selected which language to learn.<br />
-            Go to <Link to="/profile">the profile page</Link> to choose one!
-          </div>
-        )}
+            <div className="learning-path-empty">
+              You have not selected which language to learn.<br />
+              Go to <Link to="/profile">the profile page</Link> to choose one!
+            </div>
+          )}
       </div>
     </>
   );
