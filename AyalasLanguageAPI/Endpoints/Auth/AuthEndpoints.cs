@@ -46,7 +46,7 @@ public static class AuthEndpoints
         // 1. Find user (In production, use a proper password hasher!)
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
         if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
-            return Results.Unauthorized();
+            return Results.Conflict("Invalid credentials. Please try again with your correct email and password.");
 
         // 2. Generate a unique token: improve this in production (e.g. JWT or GUID + HMAC)
         var tokenContent = TokenGenerator.GenerateToken(); // Implement a secure token generator
@@ -151,7 +151,7 @@ public static class AuthEndpoints
 
         if (await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName) != null)
         {
-            return Results.Conflict("Username already exists.");
+            return Results.Conflict("User already exists.");
         }
 
         var user = new User
@@ -279,7 +279,7 @@ public static class AuthEndpoints
     {
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
         if (user == null)
-            return Results.NotFound();
+            return Results.Conflict("Email not found.");
 
         if (!user.EmailConfirmed)
         {

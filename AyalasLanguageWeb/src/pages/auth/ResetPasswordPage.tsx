@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { checkPasswordStrength, errorHandler, generatePasswordFeedback } from '../../utils/utils';
 import { Save } from 'lucide-react';
+import { PublicHeader } from '../../components/PublicHeader';
 
 export function ResetPasswordPage() {
     const { token } = useParams();
@@ -69,6 +70,7 @@ export function ResetPasswordPage() {
 
     return (
         <>
+            <PublicHeader />
             <div className="form-container">
                 <form onSubmit={handleSubmit}>
                     <div className="form-header">

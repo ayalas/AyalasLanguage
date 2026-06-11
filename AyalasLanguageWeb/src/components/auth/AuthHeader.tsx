@@ -15,6 +15,7 @@ import {
 } from '@floating-ui/react';
 import type { User } from '../../types/shared/User';
 import { errorHandler } from '../../utils/utils';
+import imgLogo from '../../assets/logo.jpg';
 
 type OutletAuthContext = {
   user?: User | null;
@@ -93,7 +94,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
       <div className="header-row">
         <div className="header-title">
           {!hideAppTitle && (
-            <Link className="header-app-link" to="/home">Ayala's Language App</Link>
+            <Link className="header-app-link" to="/home"><img className="logo" src={imgLogo} /></Link>
           ) || (user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
             <div className="header-input-cell">
               <select id="language-picker" className="header-select" value={String(selectedLanguageId)} onChange={onChangeLanguage} >

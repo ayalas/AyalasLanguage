@@ -5,6 +5,7 @@ import { LogIn } from 'lucide-react';
 import { useAuth } from '../../components/auth/useAuth';
 import { errorHandler } from '../../utils/utils';
 import axios from 'axios';
+import { PublicHeader } from '../../components/PublicHeader';
 
 export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
@@ -32,44 +33,47 @@ export default function LoginPage(): React.ReactElement {
   };
 
   return (
-    <div className="form-container">
-      <form onSubmit={handleSubmit}>
-        <div className="form-header">
-          <h1>Login</h1>
-        </div>
-        <div className="form-row">
-          <div className="form-button-cell">
-            <button data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
+    <>
+      <PublicHeader />
+      <div className="form-container">
+        <form onSubmit={handleSubmit}>
+          <div className="form-header">
+            <h1>Login</h1>
           </div>
-        </div>
-        {error !== "" && (
           <div className="form-row">
-            <label className="form-error">{error}</label>
+            <div className="form-button-cell">
+              <button data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
+            </div>
           </div>
-        )}
-        <div className="form-input-row">
-          <div className="form-label-cell">
-            <label className="form-label">Email</label>
+          {error !== "" && (
+            <div className="form-row">
+              <label className="form-error">{error}</label>
+            </div>
+          )}
+          <div className="form-input-row">
+            <div className="form-label-cell">
+              <label className="form-label">Email</label>
+            </div>
+            <div className="form-input-cell">
+              <input data-testid="email" type="email" required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+            </div>
           </div>
-          <div className="form-input-cell">
-            <input data-testid="email" type="email" required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+          <div className="form-input-row">
+            <div className="form-label-cell">
+              <label className="form-label">Password</label>
+            </div>
+            <div className="form-input-cell">
+              <input data-testid="password" required={true} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+            </div>
           </div>
-        </div>
-        <div className="form-input-row">
-          <div className="form-label-cell">
-            <label className="form-label">Password</label>
+          <div className="form-row">
+            <div className="login-register-line"><Link to={`/forgot?user=${encodeURIComponent(email)}`}>Forgot your password?</Link></div>
           </div>
-          <div className="form-input-cell">
-            <input data-testid="password" required={true} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+          <div className="form-row">
+            <div className="login-register-line">Or <Link to="/register">Register</Link> a new account</div>
           </div>
-        </div>
-        <div className="form-row">
-          <div className="login-register-line"><Link to={`/forgot?user=${encodeURIComponent(email)}`}>Forgot your password?</Link></div>
-        </div>
-        <div className="form-row">
-          <div className="login-register-line">Or <Link to="/register">Register</Link> a new account</div>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   );
 }

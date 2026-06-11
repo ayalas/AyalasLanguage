@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
+import { PublicHeader } from './components/PublicHeader';
 
 export default function LandingPage() {
   return (
+    <>
+    <PublicHeader />
     <section id="center">
       <div>
-        <h1>Ayala's Language App</h1>
-
         <div className="form-row">
           <Link className="home-link" to="/home">Login</Link> to the language app
         </div>
@@ -14,5 +15,6 @@ export default function LandingPage() {
         </div>
       </div>
     </section>
+    </>
   );
 }

@@ -7,6 +7,7 @@ import { AuthHeader } from '../components/auth/AuthHeader';
 import { LEANRING_STATUS } from '../constants/learning';
 import type { User } from '../types/shared/User';
 import { errorHandler } from '../utils/utils';
+import imgLogo from '../assets/logo.jpg';
 
 export default function Homepage() {
   const [learningPath, setLearningPath] = useState<any[]>([]);
@@ -53,7 +54,7 @@ export default function Homepage() {
     <>
       <AuthHeader hideAppTitle={true} />
       <div className="home-container">
-        <h1>Ayala's Language App</h1>
+        <img className="logo" src={imgLogo} />
         {error !== '' && (
           <div className="form-row">
             <label className="form-error">{error}</label>

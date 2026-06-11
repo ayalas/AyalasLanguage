@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { errorHandler, isValidEmail } from '../../utils/utils';
 import { Send } from 'lucide-react';
+import { PublicHeader } from '../../components/PublicHeader';
 
 export function ForgotPage() {
     const [error, setError] = useState("");
@@ -15,7 +16,7 @@ export function ForgotPage() {
             setEmail(searchParams.get('user') ?? '');
         }
         runAsync();
-    },[searchParams]);
+    }, [searchParams]);
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
@@ -36,6 +37,7 @@ export function ForgotPage() {
 
     return (
         <>
+            <PublicHeader />
             <div className="form-container">
                 <form onSubmit={handleSubmit} data-testid="main-form">
                     <div className="form-header">
