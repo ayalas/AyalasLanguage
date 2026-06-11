@@ -251,10 +251,10 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             <div className="form-label-row">Please select an exercises json file for import and click Import Exercises again</div>
             <div className="form-row">
               <div className="form-input-row">
-                <input type="file" onChange={handleFileChange} accept=".json" />
+                <input data-testid="import-file" type="file" onChange={handleFileChange} accept=".json" />
               </div>
               <div className="form-input-row">
-                <button data-testid="cancel" type="button" onClick={cancelImport} className="form-button" title="Cancel"><Ban /> Cancel</button>
+                <button data-testid="cancel-import" type="button" onClick={cancelImport} className="form-button" title="Cancel"><Ban /> Cancel</button>
               </div>
             </div>
           </>
@@ -262,19 +262,19 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         <div className="form-label-row">Level</div>
         <div className="form-row">
           <div className="form-input-row">
-            <input type="number" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} value={level} onChange={(e) => { setLevel(Number(e.target.value)) }} />
+            <input type="number" data-testid="level" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} value={level} onChange={(e) => { setLevel(Number(e.target.value)) }} />
           </div>
         </div>
         <div className="form-label-row">Chapter</div>
         <div className="form-row">
           <div className="form-input-row">
-            <input type="number" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
+            <input type="number" data-testid="chapter" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
           </div>
         </div>
         <div className="form-label-row">Title</div>
         <div className="form-row">
           <div className="form-input-row">
-            <input type="text" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onChange={(e) => { setTitle(e.target.value) }} />
+            <input type="text" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onChange={(e) => { setTitle(e.target.value) }} />
           </div>
         </div>
         <div className="form-header">
@@ -283,7 +283,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         <div className="form-label-row">Exercise Type</div>
         <div className="form-row">
           <div className="form-input-row">
-            <select required id="exercise-type" className="form-select" value={exerciseType} onChange={onChangeExerciseType}>
+            <select required data-testid="exercise-type" className="form-select" value={exerciseType} onChange={onChangeExerciseType}>
               <option value="0" disabled>-- Please choose an option --</option>
               {EXERCISE_GENERATIONS.map((exType) => (
                 <option key={exType.type} value={exType.type}>{exType.name}</option>
@@ -299,14 +299,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         <div className="form-label-row">First set of words/sentences</div>
         <div className="form-row">
           <div className="form-input-row">
-            <textarea className="text-area-wide" value={firstSet} onChange={(e) => { setFirstSet(e.target.value) }} />
+            <textarea data-testid="first-set" className="text-area-wide" value={firstSet} onChange={(e) => { setFirstSet(e.target.value) }} />
           </div>
           <div className="form-content-row">{firstSetDesc}</div>
         </div>
         <div className="form-label-row">Second set of words/sentences</div>
         <div className="form-row">
           <div className="form-input-row">
-            <textarea className="text-area-wide" value={secondSet} onChange={(e) => { setSecondSet(e.target.value) }} />
+            <textarea data-testid="second-set" className="text-area-wide" value={secondSet} onChange={(e) => { setSecondSet(e.target.value) }} />
           </div>
           <div className="form-content-row">{secondSetDesc}</div>
         </div>
@@ -315,7 +315,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             <div className="form-label-row">Wrong Extra Options</div>
             <div className="form-row">
               <div className="form-input-row">
-                <textarea className="text-area-wide" value={wrongExtraOptions} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
+                <textarea data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
               </div>
             </div>
           </>
