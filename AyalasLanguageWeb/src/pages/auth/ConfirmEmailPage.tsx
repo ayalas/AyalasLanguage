@@ -28,7 +28,9 @@ export function ConfirmEmailPage() {
             }
         }
         SendAsync();
-    }, [login, token]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[token]);
+
     return (
         <>
             <AuthHeader />

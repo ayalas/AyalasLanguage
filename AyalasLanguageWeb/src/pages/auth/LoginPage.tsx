@@ -15,7 +15,7 @@ export default function LoginPage(): React.ReactElement {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: SubmitEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     try {
       const response = await axios.post('/api/auth/login', { username: email, password });
@@ -62,6 +62,9 @@ export default function LoginPage(): React.ReactElement {
           <div className="form-input-cell">
             <input data-testid="password" required={true} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
+        </div>
+        <div className="form-row">
+          <div className="login-register-line"><Link to={`/forgot?user=${encodeURIComponent(email)}`}>Forgot your password?</Link></div>
         </div>
         <div className="form-row">
           <div className="login-register-line">Or <Link to="/register">Register</Link> a new account</div>

@@ -7,6 +7,7 @@ import LandingPage from './LandingPage';
 import LoginPage from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
+import { ForgotPage } from './pages/auth/ForgotPage';
 //authenticated
 import { AccountPage } from './pages/auth/AccountPage';
 import Homepage from './pages/Homepage';
@@ -34,6 +35,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot" element={<ForgotPage />} />
           <Route path="/reset/:token" element={ <ResetPasswordPage/>} />
 
           {/* Secured/Protected Routes */}
