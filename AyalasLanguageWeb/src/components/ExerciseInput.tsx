@@ -67,7 +67,7 @@ export const ExerciseInput = function(props: Props) {
   };
 
   return (
-    <input
+    <input data-testid="input-element"
       ref={inputRef}
       type="text"
       value={internalData}
