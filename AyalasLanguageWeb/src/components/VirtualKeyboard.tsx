@@ -128,7 +128,7 @@ const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft =
                     display: showKeyboard ? 'block' : 'none'
                 }}
             >
-                <div className="simple-keyboard" />
+                <div data-testid="keyboard" className="simple-keyboard" />
             </div>
             <div className="form-label-center-row">
                 <a className="form-link" href="#" onClick={(e) => { e.preventDefault(); toggleKeyboard(); }}>{showKeyboard ? 'Hide' : 'Show'} Keyboard</a>
