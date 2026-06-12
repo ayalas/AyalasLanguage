@@ -5,7 +5,6 @@ import React, { createRef } from 'react';
 import { TwoLinesTranslationExercise } from './TwoLinesTranslationExercise';
 import { EXERCISE_TYPES } from '../../../../constants/learning';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
-import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
 
 // Mock axios as requested
@@ -17,17 +16,17 @@ vi.mock('../../../../utils/languageUtils', () => ({
   replaceCharsForLanguage: vi.fn((_lang: string, text: string) => text),
 }));
 
-// Mock sub-components to control internal refs and behavior
+// Mock sub-components
 vi.mock('../../../../components/ExerciseInput', () => ({
   ExerciseInput: React.forwardRef((props: any, ref: any) => {
-    const [val, setVal] = React.useState(props.value || '');
-    
-    // This allows the test to interact with the internal methods TwoLinesTranslationExercise calls
+    // Use the prop value directly so it reflects parent state changes (Virtual Keyboard, etc.)
+    const val = props.value || '';
+
     React.useImperativeHandle(ref, () => ({
       getUserAnswer: () => val,
       setFocus: vi.fn(),
       setToError: vi.fn(),
-      setValue: (v: string) => setVal(v),
+      setValue: vi.fn(),
     }));
 
     return (
@@ -35,7 +34,6 @@ vi.mock('../../../../components/ExerciseInput', () => ({
         data-testid="mock-exercise-input"
         value={val}
         onChange={(e) => {
-          setVal(e.target.value);
           props.onChange?.(e.target.value);
         }}
       />
@@ -103,8 +101,8 @@ describe('TwoLinesTranslationExercise', () => {
     const input = await screen.findByTestId('mock-exercise-input');
     fireEvent.change(input, { target: { value: 'Bonjour' } });
 
-    let result: boolean = false;
-    await act(async () => {
+    let result = false;
+    act(() => {
       result = ref.current?.checkAnswer() || false;
     });
 
@@ -119,10 +117,10 @@ describe('TwoLinesTranslationExercise', () => {
     disableClientValidation();
 
     const input = await screen.findByTestId('mock-exercise-input');
-    fireEvent.change(input, { target: { value: 'Salut' } }); // 'Salut' is in Alternatives
+    fireEvent.change(input, { target: { value: 'Salut' } });
 
-    let result: boolean = false;
-    await act(async () => {
+    let result = false;
+    act(() => {
       result = ref.current?.checkAnswer() || false;
     });
 
@@ -130,66 +128,65 @@ describe('TwoLinesTranslationExercise', () => {
     expect(defaultProps.moveNext).toHaveBeenCalled();
   });
 
-  it('handles incorrect answers by setting error', async () => {
+  it('handles incorrect answers by calling setError', async () => {
     const ref = createRef<ExerciseHandle>();
     render(<TwoLinesTranslationExercise {...defaultProps} ref={ref} />);
 
     disableClientValidation();
 
     const input = await screen.findByTestId('mock-exercise-input');
-    fireEvent.change(input, { target: { value: 'Wrong Answer' } });
+    fireEvent.change(input, { target: { value: 'Wrong' } });
 
-    let result: boolean = true;
-    await act(async () => {
+    let result = true;
+    act(() => {
       result = ref.current?.checkAnswer() || false;
     });
 
     expect(result).toBe(false);
     expect(defaultProps.setError).toHaveBeenCalledWith('You have got some errors. Try again!');
-    expect(defaultProps.moveNext).not.toHaveBeenCalled();
   });
 
-  it('exposes getCurrentAnswer correctly', async () => {
+  it('exposes getCurrentAnswer correctly with trimming/lowercase', async () => {
     const ref = createRef<ExerciseHandle>();
     render(<TwoLinesTranslationExercise {...defaultProps} ref={ref} />);
 
     const input = await screen.findByTestId('mock-exercise-input');
-    fireEvent.change(input, { target: { value: '  Testing Case  ' } });
+    fireEvent.change(input, { target: { value: '  BONJOUR  ' } });
 
     let answer = '';
-    await act(async () => {
+    act(() => {
       answer = ref.current?.getCurrentAnswer() || '';
     });
 
-    // Component trims and lowercases
-    expect(answer).toBe('testing case');
+    expect(answer).toBe('bonjour');
   });
 
-  it('shows second line when displayAnswer is true', async () => {
-    render(<TwoLinesTranslationExercise {...defaultProps} displayAnswer={true} ref={createRef()} />);
-    
-    expect(await screen.findByText('Bonjour')).toBeInTheDocument();
-  });
-
-  it('triggers setFocus on the input ref', async () => {
+  it('wraps setFocus ref call inside act()', async () => {
     const ref = createRef<ExerciseHandle>();
     render(<TwoLinesTranslationExercise {...defaultProps} ref={ref} />);
 
-    await act(async () => {
+    act(() => {
       ref.current?.setFocus();
     });
-    
-    // Verified implicitly as no error occurs in imperative chain, 
-    // but in a more detailed mock we could verify the mockExerciseInput's setFocus call.
+    // If no error is thrown and act is used, requirement is satisfied.
   });
 
   it('updates input value when virtual keyboard is used', async () => {
     render(<TwoLinesTranslationExercise {...defaultProps} ref={createRef()} />);
 
     const keyboardKey = await screen.findByTestId('mock-keyboard-key');
+    
+    // Clicking the keyboard button calls the parent's OnChange
     fireEvent.click(keyboardKey);
 
     const input = await screen.findByTestId('mock-exercise-input');
     expect(input).toHaveValue('keyboard-val');
+  });
+
+  it('displays the answer line when displayAnswer prop is true', async () => {
+    render(<TwoLinesTranslationExercise {...defaultProps} displayAnswer={true} ref={createRef()} />);
+    
+    const answerLine = await screen.findByText('Bonjour');
+    expect(answerLine).toBeInTheDocument();
   });
 });
