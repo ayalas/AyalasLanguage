@@ -1,7 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
-import mkcert from 'vite-plugin-mkcert'
 import fs from 'fs'
 import path from 'path'
 
@@ -11,8 +10,7 @@ export default defineConfig({
     react(), // Standard React fast refresh
     babel({
       presets: [reactCompilerPreset()] // Handles the React Compiler automatically
-    }),
-    mkcert()
+    })
   ],
   test: {
     // This line tells Vitest to simulate a browser environment for all tests
@@ -22,11 +20,11 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    host: '0.0.0.0',
+    host: 'langapp.xyz',
     https: {
       // Read the certificate and key files from your directory
-      key: fs.readFileSync(path.resolve(__dirname, '../cert/private.key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, '../cert/public.key.pem')),
+      key: fs.readFileSync(path.resolve(__dirname, '../cert/langapp.xyz+2-key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, '../cert/langapp.xyz+2.pem')),
     },
     proxy: {
       '/api/': {

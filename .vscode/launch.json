@@ -20,7 +20,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Launch Chrome against localhost",
-            "url": "https://localhost:7010",
+            "url": "https://langapp.xyz:5173",
             "webRoot": "${workspaceFolder}/AyalasLanguageWeb",
             "userDataDir": true,
             "sourceMaps": true,

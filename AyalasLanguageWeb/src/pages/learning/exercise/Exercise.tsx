@@ -34,16 +34,33 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
     const { user } = useOutletContext() as { user?: User };
 
 
-    const playAnswer = function () {
+    const playAnswer = async function () {
         try {
-            if (isSecure() && typeof exerciseInfo.data === 'string') {
+
+            if (isSecure()) {
                 const langCode = user?.languageSettings?.targetLanguageCode;
                 if (langCode != undefined) {
-                    const pollyLangCode = LANGUAGE_TO_POLLY_MAP[langCode]
-                    if (pollyLangCode != null && pollyLangCode != "") {
-                        const parsed = JSON.parse(exerciseInfo.data) as ExerciseData;
+                    const pollyObject = LANGUAGE_TO_POLLY_MAP[langCode]
+                    if (pollyObject != null) {
+                        let parsed: ExerciseData;
+                        if (typeof exerciseInfo.data === 'string') {
+                            parsed = JSON.parse(exerciseInfo.data) as ExerciseData;
+                        }
+                        else {
+                            parsed = exerciseInfo.data;
+                        }
                         if (parsed.Second != null && parsed.Second != "") {
-                            puter.ai.txt2speech(parsed.Second, pollyLangCode);
+                            const options = {
+                                provider: 'aws-polly',
+                                voice: pollyObject.voice,
+                                test_mode: false,
+                                engine: pollyObject.engine,
+                                language: pollyObject.language,
+                                ssml: false
+                            };
+
+                            const result = await puter.ai.txt2speech(parsed.Second, options) as HTMLAudioElement;
+                            await result.play();
                         }
                     }
                 }
