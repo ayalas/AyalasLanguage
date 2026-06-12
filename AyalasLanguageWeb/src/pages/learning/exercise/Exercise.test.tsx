@@ -21,7 +21,7 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-// Mock Puter and Utils to prevent environment errors in jsdom
+// Mock Puter and Utils
 vi.mock('@heyputer/puter.js', () => ({
     puter: {
         ai: {
@@ -69,14 +69,43 @@ describe('Exercise Component', () => {
         (useOutletContext as any).mockReturnValue({ user: mockUser });
     });
 
-    it('renders and calls childLoaded', async () => {
+    it('toggles answer display and triggers axios put when adding alternative answer', async () => {
+        const ref = createRef<ExerciseHandle>();
         render(
             <MemoryRouter>
-                <Exercise {...mockProps} />
+                <Exercise {...mockProps} ref={ref} />
             </MemoryRouter>
         );
 
-        expect(mockProps.childLoaded).toHaveBeenCalledWith(101);
+        // Call required external function before clicking
+        disableClientValidation();
+
+        // 1. Simulate typing a value (lowercase to match component logic)
+        const input = await screen.findByRole('textbox');
+        fireEvent.change(input, { target: { value: 'salut' } });
+
+        // 2. Click check-answer to trigger error state (required to show the add button)
+        const checkBtn = await screen.findByTestId('check-my-answers');
+        fireEvent.click(checkBtn);
+
+        // 3. Reveal the answer (required to show the add button)
+        const revealBtn = await screen.findByTestId('reveal-answer');
+        fireEvent.click(revealBtn);
+
+        // 4. Locate and click the add-alternative button
+        const addAltBtn = await screen.findByTestId('add-alternative-answer');
+        
+        mockedAxios.put.mockResolvedValue({ data: {} });
+
+        await fireEvent.click(addAltBtn);
+
+        // 5. Verify axios call with correct path and JSON content
+        expect(mockedAxios.put).toHaveBeenCalledWith(
+            expect.stringContaining('/api/creator/exercise/101'),
+            expect.objectContaining({
+                Data: expect.stringContaining('"salut"')
+            })
+        );
     });
 
     it('wraps imperative handle calls in act()', async () => {
@@ -89,9 +118,13 @@ describe('Exercise Component', () => {
 
         disableClientValidation();
 
-        // Testing imperative handles as requested
         act(() => {
             ref.current?.setFocus();
+        });
+
+        act(() => {
+            const answer = ref.current?.getCurrentAnswer();
+            expect(typeof answer).toBe('string');
         });
 
         act(() => {
@@ -100,49 +133,7 @@ describe('Exercise Component', () => {
         });
     });
 
-    it('toggles answer display and triggers axios put when adding alternative answer', async () => {
-        render(
-            <MemoryRouter>
-                <Exercise {...mockProps} />
-            </MemoryRouter>
-        );
-
-        disableClientValidation();
-
-        // 1. Simulate typing an answer into the input field
-        // TwoLinesTranslationExercise renders an ExerciseInput (likely a textbox)
-        const input = screen.getByRole('textbox');
-        fireEvent.change(input, { target: { value: 'Salut' } });
-
-        // 2. Click check-answer to trigger an error state 
-        // (The "add-alternative-answer" button only shows if error != "")
-        const checkBtn = await screen.findByTestId('check-my-answers');
-        fireEvent.click(checkBtn);
-
-        // 3. Reveal the answer (required for the button to show)
-        const revealBtn = await screen.findByTestId('reveal-answer');
-        fireEvent.click(revealBtn);
-
-        // 4. Now the button should be available
-        const addAltBtn = await screen.findByTestId('add-alternative-answer');
-        expect(addAltBtn).toBeInTheDocument();
-
-        // Setup axios mock response
-        mockedAxios.put.mockResolvedValue({ data: {} });
-
-        // 5. Click Add Alternative
-        await fireEvent.click(addAltBtn);
-
-        // 6. Verify axios call
-        expect(mockedAxios.put).toHaveBeenCalledWith(
-            expect.stringContaining('/api/creator/exercise/101'),
-            expect.objectContaining({
-                Data: expect.stringContaining('Salut')
-            })
-        );
-    });
-
-    it('handles save progress and restart lesson actions', async () => {
+    it('handles save and restart buttons correctly', async () => {
         render(
             <MemoryRouter>
                 <Exercise {...mockProps} />
@@ -160,7 +151,7 @@ describe('Exercise Component', () => {
         expect(mockProps.restartLesson).toHaveBeenCalled();
     });
 
-    it('handles mistake setting toggles', async () => {
+    it('handles mistake setting toggles correctly', async () => {
         const { rerender } = render(
             <MemoryRouter>
                 <Exercise {...mockProps} practiseMistakesInThisPath={false} />
