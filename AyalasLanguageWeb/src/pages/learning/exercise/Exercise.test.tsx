@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Exercise } from './Exercise';
 import { MemoryRouter, useOutletContext } from 'react-router-dom';
@@ -7,6 +7,7 @@ import React, { createRef } from 'react';
 import { EXERCISE_TYPES } from '../../../constants/learning';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
+import userEvent from '@testing-library/user-event'; // 1. Import userEvent
 
 // Mock axios as requested
 vi.mock('axios');
@@ -70,42 +71,47 @@ describe('Exercise Component', () => {
     });
 
     it('toggles answer display and triggers axios put when adding alternative answer', async () => {
+        const user = userEvent.setup(); // 2. Setup user
         const ref = createRef<ExerciseHandle>();
+
         render(
             <MemoryRouter>
                 <Exercise {...mockProps} ref={ref} />
             </MemoryRouter>
         );
 
-        // Call required external function before clicking
         disableClientValidation();
 
-        // 1. Simulate typing a value (lowercase to match component logic)
         const input = await screen.findByRole('textbox');
-        fireEvent.change(input, { target: { value: 'salut' } });
+        await user.type(input, 'salut'); // 3. Use await user.type
 
-        // 2. Click check-answer to trigger error state (required to show the add button)
         const checkBtn = await screen.findByTestId('check-my-answers');
-        fireEvent.click(checkBtn);
+        await user.click(checkBtn);
 
-        // 3. Reveal the answer (required to show the add button)
         const revealBtn = await screen.findByTestId('reveal-answer');
-        fireEvent.click(revealBtn);
+        await user.click(revealBtn);
 
-        // 4. Locate and click the add-alternative button
         const addAltBtn = await screen.findByTestId('add-alternative-answer');
-        
+
         mockedAxios.put.mockResolvedValue({ data: {} });
 
-        await fireEvent.click(addAltBtn);
+        // 4. Click the button
+        await user.click(addAltBtn);
 
-        // 5. Verify axios call with correct path and JSON content
-        expect(mockedAxios.put).toHaveBeenCalledWith(
-            expect.stringContaining('/api/creator/exercise/101'),
-            expect.objectContaining({
-                Data: expect.stringContaining('"salut"')
-            })
-        );
+        // 5. CRITICAL: Wait for the mock to have been called.
+        // This ensures the async logic inside the component has executed.
+        await waitFor(() => {
+            expect(mockedAxios.put).toHaveBeenCalledWith(
+                expect.stringContaining('/api/creator/exercise/101'),
+                expect.objectContaining({
+                    Data: expect.stringContaining('"salut"')
+                })
+            );
+        });
+
+        // 6. Optional: If clicking "add" makes the button disappear or 
+        // changes the text, wait for that specific UI change too.
+        // await waitForElementToBeRemoved(() => screen.queryByTestId('add-alternative-answer'));
     });
 
     it('wraps imperative handle calls in act()', async () => {
