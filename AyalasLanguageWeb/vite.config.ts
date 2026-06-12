@@ -25,12 +25,12 @@ export default defineConfig({
     host: '0.0.0.0',
     https: {
       // Read the certificate and key files from your directory
-      key: fs.readFileSync(path.resolve(__dirname, '../cert/localhost+2-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, '../cert/localhost+2.pem')),
+      key: fs.readFileSync(path.resolve(__dirname, '../cert/private.key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, '../cert/public.key.pem')),
     },
     proxy: {
       '/api/': {
-        target: 'https://localhost:7010',
+        target: 'https://langapp.xyz:7010',
         changeOrigin: true,
         secure: false
       }
