@@ -36,8 +36,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       return [];
     }
 
-  const arrFirstSet = (removeLastCharIfMatch(firstSet.trim(), ';') ?? '').split(';');
-  const arrSecondSet = (removeLastCharIfMatch(secondSet.trim(), ';') ?? '').split(';');
+    const arrFirstSet = (removeLastCharIfMatch(firstSet.trim(), ';') ?? '').split(';');
+    const arrSecondSet = (removeLastCharIfMatch(secondSet.trim(), ';') ?? '').split(';');
 
     if (!arrFirstSet || arrFirstSet.length === 0 || !arrSecondSet || arrSecondSet.length === 0) {
       return [];
@@ -50,7 +50,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
     let arrExtraOptions: string[] = [];
     if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
-  arrExtraOptions = (removeLastCharIfMatch(wrongExtraOptions.trim(), ';') ?? '').split(';');
+      arrExtraOptions = (removeLastCharIfMatch(wrongExtraOptions.trim(), ';') ?? '').split(';');
       if (arrFirstSet.length != arrExtraOptions.length) {
         setError(`Must have a match between the number of words/sentences and sets of extra options. Found ${arrFirstSet.length} on the first set, and ${arrExtraOptions.length} on the wrong extra options.`);
         return null;
@@ -174,10 +174,10 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   async function onExportExercises(e: React.MouseEvent) {
     try {
       e.preventDefault();
-      const response = await fetch(`/api/learning/path/${initialRecord.learningPathId}/exercises`, { credentials: 'include' });
-      if (response && response.ok) {
-        downloadFile(await response.blob(), `${title}-exercises-${initialRecord.learningPathId}.json`);
-      }
+      const response = await axios.get(`/api/learning/path/${initialRecord.learningPathId}/exercises`, {
+        responseType: 'blob' // This is the equivalent of .blob()
+      });
+      downloadFile(response.data, `${title}-exercises-${initialRecord.learningPathId}.json`);
     } catch (ex: unknown) {
       errorHandler(ex, setError);
     }

@@ -31,7 +31,7 @@ vi.mock('../../utils/utils', () => ({
 
 describe('LearningPathAuthoringForm', () => {
   const mockNavigate = vi.fn();
-  const mockHandleSubmit = vi.fn((setError, createExercises, level, chapter, title, type, arrData) => {
+  const mockHandleSubmit = vi.fn((_setError, createExercises, _level, _chapter, _title, type, arrData) => {
       // Simulate the behavior of calling the callback passed to handleSubmit
       if (arrData != null && arrData.length > 0) {
         createExercises(123, type, arrData);
@@ -173,7 +173,7 @@ describe('LearningPathAuthoringForm', () => {
 
     // Mock fetch for the export functionality
     const mockBlob = new Blob(['{}'], { type: 'application/json' });
-    global.fetch = vi.fn().mockResolvedValue({
+    globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
       blob: () => Promise.resolve(mockBlob),
     } as Response);
@@ -191,7 +191,7 @@ describe('LearningPathAuthoringForm', () => {
     fireEvent.click(exportBtn);
 
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(mockedAxios.get).toHaveBeenCalledWith(
         '/api/learning/path/789/exercises', 
         expect.any(Object)
       );
