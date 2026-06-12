@@ -1,16 +1,15 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
 import BucketListExercise from './BucketListExercise';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
+import { EXERCISE_TYPES } from '../../../../../constants/learning';
 
 // Mock axios
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
 
 // Mock the utils library
 vi.mock('../../../../../utils/utils', () => ({
@@ -22,6 +21,8 @@ describe('BucketListExercise', () => {
   const mockMoveNext = vi.fn();
 
   const exerciseInfoMock: ExerciseInfo = {
+    exerciseId: 1,
+    exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET,
     data: JSON.stringify({ First: 'Header', Second: 'Footer' }),
     answers: ['Apple', 'Banana'],
     extraItems: ['Cherry'],

@@ -3,13 +3,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import { MemoryRouter } from 'react-router-dom';
 import { ExerciseLine } from './ExerciseLine';
-import { AUTHOR_ACCESS } from '../../../constants/learning';
+import type { ExerciseModel } from '../../../types/exercise/Exercise';
+import { AUTHOR_ACCESS, EXERCISE_TYPES } from '../../../constants/learning';
 import { errorHandler } from '../../../utils/utils';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
 
 // Mock axios
 vi.mock('axios');
-const mockedAxios = axios as vi.Mocked<typeof axios>;
+ const mockedAxios = vi.mocked(axios);
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
@@ -23,13 +24,15 @@ vi.mock('react-router-dom', async () => {
 
 // Mock errorHandler utility
 vi.mock('../../../utils/utils', () => ({
-  errorHandler: vi.fn((err, setError) => setError('Mocked Error Message')),
+  errorHandler: vi.fn((_err, setError) => setError('Mocked Error Message')),
 }));
 
 describe('ExerciseLine Component', () => {
-  const mockExercise = {
-    exerciseId: '123',
+  const mockExercise: ExerciseModel = {
+    exerciseId: 123,
+    exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
     access: AUTHOR_ACCESS.CAN_EDIT,
+    data: '{First: \'Sample Exercise Content\'}',
     exerciseObject: {
       First: 'Sample Exercise Content',
     },
@@ -111,13 +114,12 @@ describe('ExerciseLine Component', () => {
 
   it('does not show edit/delete buttons if user does not have edit access', () => {
     const readOnlyExercise = {
-      ...mockExercise,
-      access: 'READ_ONLY', // Any value that is not CAN_EDIT
+      ...mockExercise
     };
-
+    readOnlyExercise.access = AUTHOR_ACCESS.LEARNER;
     render(
       <MemoryRouter>
-        <ExerciseLine exerciseInfo={readOnlyExercise as any} />
+        <ExerciseLine exerciseInfo={readOnlyExercise as ExerciseModel} />
       </MemoryRouter>
     );
 

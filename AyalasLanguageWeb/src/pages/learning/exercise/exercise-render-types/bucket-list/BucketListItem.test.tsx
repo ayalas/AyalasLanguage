@@ -1,13 +1,10 @@
-import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import axios from 'axios';
 import BucketListItem from './BucketListItem';
 import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
 
 // Mock axios as requested
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
 
 describe('BucketListItem', () => {
   const mockProps = {

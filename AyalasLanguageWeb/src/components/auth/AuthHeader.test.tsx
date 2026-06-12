@@ -26,7 +26,7 @@ vi.mock('../../utils/languageUtils', () => ({
 }));
 
 vi.mock('../../utils/utils', () => ({
-  errorHandler: vi.fn((err, cb) => cb('Mock Error')),
+  errorHandler: vi.fn((_err, cb) => cb('Mock Error')),
 }));
 
 // Mocking Lucide icons to simplify DOM
@@ -42,7 +42,7 @@ interface User {
   displayName: string;
   userName: string;
   emailConfirmed: boolean;
-  role: ROLE_TYPE.CONTENT_CREATOR;
+  role: number;
   languageSettings: {
     targetLanguageId: number;
     targetLanguage: string;

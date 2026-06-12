@@ -171,12 +171,15 @@ describe('LearningPathAuthoringForm', () => {
       access: AUTHOR_ACCESS.CAN_EDIT
     };
 
-    // Mock fetch for the export functionality
-    const mockBlob = new Blob(['{}'], { type: 'application/json' });
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      blob: () => Promise.resolve(mockBlob),
-    } as Response);
+    // 1. Create a mock blob to represent the file data
+    const mockBlob = new Blob(['{"exercises": []}'], { type: 'application/json' });
+    
+    // 2. Mock axios.get to return an object with a 'data' property containing the blob
+    mockedAxios.get.mockResolvedValue({
+      data: mockBlob,
+      status: 200,
+      statusText: 'OK'
+    });
 
     render(
       <LearningPathAuthoringForm 
@@ -191,11 +194,17 @@ describe('LearningPathAuthoringForm', () => {
     fireEvent.click(exportBtn);
 
     await waitFor(() => {
+      // 3. Verify axios was called with the correct URL and responseType
       expect(mockedAxios.get).toHaveBeenCalledWith(
         '/api/learning/path/789/exercises', 
-        expect.any(Object)
+        { responseType: 'blob' }
       );
-      expect(downloadFile).toHaveBeenCalledWith(mockBlob, expect.stringContaining('789.json'));
+      
+      // 4. Verify downloadFile was called with the blob from response.data
+      expect(downloadFile).toHaveBeenCalledWith(
+        mockBlob, 
+        'Export Test-exercises-789.json'
+      );
     });
   });
 

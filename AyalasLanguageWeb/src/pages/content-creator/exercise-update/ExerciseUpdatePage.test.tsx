@@ -5,11 +5,10 @@ import axios from "axios";
 import { MemoryRouter, useNavigate, useParams } from "react-router-dom";
 import { EXERCISE_TYPES } from "../../../constants/learning";
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
-import React, { forwardRef, useImperativeHandle } from "react";
 
 // 1. Mock Axios
 vi.mock("axios");
-const mockedAxios = axios as vi.Mocked<typeof axios>;
+const mockedAxios = vi.mocked(axios);
 
 // 2. Mock React Router Hooks
 vi.mock("react-router-dom", async () => {

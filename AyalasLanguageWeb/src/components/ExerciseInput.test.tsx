@@ -25,7 +25,7 @@ vi.mock('react-router-dom', () => ({
 
 // Mock language utils
 vi.mock('../utils/languageUtils', () => ({
-    replaceCharsForLanguage: vi.fn((lang, val) => val),
+    replaceCharsForLanguage: vi.fn((_lang, val) => val),
 }));
 
 describe('ExerciseInput Component', () => {

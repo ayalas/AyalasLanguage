@@ -48,6 +48,8 @@ export function RegisterPage() {
       await axios.post('/api/auth/register',
         { displayname: displayName, username: email, password: newPasswordTrimmed });
 
+      setSuccess(true);
+
     } catch (err: unknown) {
       errorHandler(err, setError);
     }

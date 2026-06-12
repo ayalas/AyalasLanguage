@@ -121,7 +121,7 @@ describe('AccountPage Component', () => {
         // 1. Provide a structurally sound object for checkPasswordStrength
         vi.mocked(checkPasswordStrength).mockReturnValueOnce({
             isValid: false,
-            checks: { length: false, uppercase: false, lowercase: true, number: false, special: false }
+            checks: { hasMinLength: false, hasUppercase: false, hasLowercase: true, hasNumber: false, hasSpecialChar: false }
         });
 
         // 2. Provide a structurally sound object for generatePasswordFeedback

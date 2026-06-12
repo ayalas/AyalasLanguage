@@ -1,3 +1,5 @@
+import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
@@ -24,7 +26,7 @@ vi.mock('../../utils/languageUtils', () => ({
 }));
 
 vi.mock('../../utils/utils', () => ({
-  errorHandler: vi.fn((err, cb) => cb('Mocked Error Message')),
+  errorHandler: vi.fn((cb) => cb('Mocked Error Message')),
 }));
 
 // Mock Lucide icons to avoid cluttering snapshots/logs

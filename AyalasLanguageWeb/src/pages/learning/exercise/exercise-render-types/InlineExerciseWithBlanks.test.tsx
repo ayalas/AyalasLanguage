@@ -1,14 +1,13 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
 import React, { createRef } from 'react';
 import { InlineExerciseWithBlanks } from './InlineExerciseWithBlanks';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
+import { EXERCISE_TYPES } from '../../../../constants/learning';
 
 // Mock axios as requested
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
 
 // Mock external utilities
 vi.mock('../../../../utils/languageUtils', () => ({
@@ -56,6 +55,7 @@ describe('InlineExerciseWithBlanks', () => {
   const mockProps = {
     exerciseInfo: {
       exerciseId: 101,
+      exerciseTypeId: 0,
       sentenceElements: ['The ', ' is ', '.'],
       answers: ['cat', 'black'],
       data: JSON.stringify({ Second: 'Translated sentence' }),
@@ -76,6 +76,7 @@ describe('InlineExerciseWithBlanks', () => {
   });
 
   it('renders sentence parts and input elements', async () => {
+    mockProps.exerciseInfo.exerciseTypeId = EXERCISE_TYPES.FILL_IN_THE_BLANKS;
     render(<InlineExerciseWithBlanks {...mockProps} ref={createRef()} />);
 
     expect(await screen.findByText('The')).toBeInTheDocument();
@@ -86,6 +87,7 @@ describe('InlineExerciseWithBlanks', () => {
 
   it('validates correct answers via checkAnswer handle', async () => {
     const ref = createRef<ExerciseHandle>();
+    mockProps.exerciseInfo.exerciseTypeId = EXERCISE_TYPES.FILL_IN_THE_BLANKS;
     render(<InlineExerciseWithBlanks {...mockProps} ref={ref} />);
 
     disableClientValidation();
@@ -107,6 +109,7 @@ describe('InlineExerciseWithBlanks', () => {
 
   it('sets error when answers are incorrect', async () => {
     const ref = createRef<ExerciseHandle>();
+    mockProps.exerciseInfo.exerciseTypeId = EXERCISE_TYPES.FILL_IN_THE_BLANKS;
     render(<InlineExerciseWithBlanks {...mockProps} ref={ref} />);
 
     disableClientValidation();
@@ -124,6 +127,7 @@ describe('InlineExerciseWithBlanks', () => {
   });
 
   it('updates the focused input when virtual keyboard is used', async () => {
+    mockProps.exerciseInfo.exerciseTypeId = EXERCISE_TYPES.FILL_IN_THE_BLANKS;
     render(<InlineExerciseWithBlanks {...mockProps} ref={createRef()} />);
 
     // 1. Focus the second input
@@ -140,6 +144,7 @@ describe('InlineExerciseWithBlanks', () => {
 
   it('calls setFocus on the first input via handle', async () => {
     const ref = createRef<ExerciseHandle>();
+    mockProps.exerciseInfo.exerciseTypeId = EXERCISE_TYPES.FILL_IN_THE_BLANKS;
     render(<InlineExerciseWithBlanks {...mockProps} ref={ref} />);
 
     act(() => {
@@ -149,6 +154,7 @@ describe('InlineExerciseWithBlanks', () => {
   });
 
   it('displays the translation line when displayAnswer is true', async () => {
+    mockProps.exerciseInfo.exerciseTypeId = EXERCISE_TYPES.FILL_IN_THE_BLANKS;
     render(<InlineExerciseWithBlanks {...mockProps} displayAnswer={true} ref={createRef()} />);
 
     const translation = await screen.findByText('Translated sentence');
@@ -157,6 +163,7 @@ describe('InlineExerciseWithBlanks', () => {
 
   it('returns empty string for getCurrentAnswer as it is not applicable', async () => {
     const ref = createRef<ExerciseHandle>();
+    mockProps.exerciseInfo.exerciseTypeId = EXERCISE_TYPES.FILL_IN_THE_BLANKS;
     render(<InlineExerciseWithBlanks {...mockProps} ref={ref} />);
 
     let answer = 'init';

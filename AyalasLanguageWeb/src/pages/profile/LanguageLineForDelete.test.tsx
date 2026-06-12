@@ -23,8 +23,8 @@ describe('LanguageLineForDelete', () => {
   };
 
   const mockUser: User = {
-    id: 1,
-    username: 'testuser',
+    userId: 1,
+    userName: 'testuser',
     languageSettings: {
       targetLanguageId: 1,
       knownLanguageId: 2,
@@ -86,7 +86,7 @@ describe('LanguageLineForDelete', () => {
     mockedAxios.delete.mockRejectedValueOnce(new Error(errorMessage));
 
     // Mock errorHandler to simulate setting the error string
-    vi.mocked(errorHandler).mockImplementation((err, setError) => {
+    vi.mocked(errorHandler).mockImplementation((_err, setError) => {
       setError(errorMessage);
     });
 

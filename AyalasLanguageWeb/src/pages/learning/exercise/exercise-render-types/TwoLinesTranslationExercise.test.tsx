@@ -1,6 +1,5 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
 import React, { createRef } from 'react';
 import { TwoLinesTranslationExercise } from './TwoLinesTranslationExercise';
 import { EXERCISE_TYPES } from '../../../../constants/learning';
@@ -9,7 +8,6 @@ import disableClientValidation from '../../../../utils/test-utils/disableClientV
 
 // Mock axios as requested
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
 
 // Mock external utilities
 vi.mock('../../../../utils/languageUtils', () => ({

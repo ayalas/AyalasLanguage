@@ -132,7 +132,7 @@ describe('RegisterPage Component', () => {
     vi.mocked(axios.post).mockRejectedValue(errorInstance);
 
     // Simulated custom behavior for the errorHandler to populate the error message box
-    vi.mocked(errorHandler).mockImplementation((err, setError) => {
+    vi.mocked(errorHandler).mockImplementation((_err, setError) => {
       setError('Registration failed from server');
     });
 

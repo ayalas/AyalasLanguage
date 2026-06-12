@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Exercise } from './Exercise';
 import { MemoryRouter, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
-import React, { createRef } from 'react';
+import { createRef } from 'react';
 import { EXERCISE_TYPES } from '../../../constants/learning';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
@@ -54,6 +54,7 @@ describe('Exercise Component', () => {
         changeMistakesSetting: vi.fn(),
         practiseMistakesInThisPath: false,
         addMistake: vi.fn().mockResolvedValue(undefined),
+        ref: { current: null },
     };
 
     const mockUser = {

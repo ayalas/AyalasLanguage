@@ -67,7 +67,7 @@ describe('ResetPasswordPage', () => {
 
         // Default: password is considered strong
         mockedCheckPasswordStrength.mockReturnValue({ isValid: true, checks: {} as never });
-        mockedGeneratePasswordFeedback.mockReturnValue({ message: '' });
+        mockedGeneratePasswordFeedback.mockReturnValue({ isValid: true, message: '', missing: [] });
 
         // Default: axios.post resolves successfully
         mockedAxios.post.mockResolvedValue({ data: {} });
@@ -176,8 +176,9 @@ describe('ResetPasswordPage', () => {
 
     it('shows the feedback message when the password is not strong enough', async () => {
         mockedCheckPasswordStrength.mockReturnValue({ isValid: false, checks: {} as never });
-        mockedGeneratePasswordFeedback.mockReturnValue({
+        mockedGeneratePasswordFeedback.mockReturnValue({ isValid: false,
             message: 'Password must be at least 8 characters.',
+            missing: ['length']
         });
 
         renderPage();

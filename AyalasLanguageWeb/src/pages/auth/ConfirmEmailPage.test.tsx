@@ -9,7 +9,7 @@ import { ROLE_TYPE } from '../../constants/learning';
 // 1. Mock external dependencies
 vi.mock('axios');
 vi.mock('../../utils/utils', () => ({
-  errorHandler: vi.fn((err, setError) => setError('Mocked error message')),
+  errorHandler: vi.fn((_err, setError) => setError('Mocked error message')),
 }));
 
 // Mock AuthHeader component to keep the test light

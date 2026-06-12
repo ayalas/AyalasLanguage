@@ -1,14 +1,12 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
-import React from 'react';
 import MatchWordsExercise from './MatchWordsExercise';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
+import { EXERCISE_TYPES } from '../../../../../constants/learning';
 
 // Mock axios as requested
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
 
 // Mock randomized sequence to be predictable (returning original indices)
 vi.mock('../../../../../utils/utils', () => ({
@@ -43,6 +41,7 @@ describe('MatchWordsExercise', () => {
   const mockProps = {
     exerciseInfo: {
       exerciseId: 501,
+      exerciseTypeId: EXERCISE_TYPES.MATCHING,
       sentenceElements: ['Hello', 'Apple'],
       answers: ['Bonjour', 'Pomme'],
     } as any,

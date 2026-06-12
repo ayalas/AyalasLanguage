@@ -1,15 +1,10 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
-import React from 'react';
 import { MatchWordItem } from './MatchWordItem';
-import type { MatchSelection } from './MatchWordItem';
 import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
 
 // Mock axios as requested
 vi.mock('axios');
-const mockedAxios = vi.mocked(axios);
-
 
 describe('MatchWordItem', () => {
   const mockProps = {
@@ -58,7 +53,7 @@ describe('MatchWordItem', () => {
   it('updates UI to "done" state when parent calls the provided setToDone function', async () => {
     let capturedSetToDone: () => void = () => {};
     
-    const mockSetSelected = vi.fn((obj, doneFn) => {
+    const mockSetSelected = vi.fn((_obj, doneFn) => {
       capturedSetToDone = doneFn;
     });
 
@@ -86,7 +81,7 @@ describe('MatchWordItem', () => {
   it('updates UI to "error" state when parent calls the provided setErrorState function', async () => {
     let capturedSetErrorState: (v: boolean) => void = () => {};
     
-    const mockSetSelected = vi.fn((obj, doneFn, errorFn) => {
+    const mockSetSelected = vi.fn((_obj, _doneFn, errorFn) => {
       capturedSetErrorState = errorFn;
     });
 
@@ -111,7 +106,7 @@ describe('MatchWordItem', () => {
 
   it('maintains state correctly through multiple class changes', async () => {
     let captured: any = {};
-    const mockSetSelected = vi.fn((obj, doneFn, errorFn) => {
+    const mockSetSelected = vi.fn((_obj, doneFn, errorFn) => {
       captured = { doneFn, errorFn };
     });
 
