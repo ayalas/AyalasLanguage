@@ -17,8 +17,22 @@ Set-Location ..
 # 3. Build Frontend (Web)
 Write-Host "Building Frontend Web..." -ForegroundColor Cyan
 Set-Location $webRoot
+
+# Optional: Ensure the script stops if npm install fails
 npm install
+if ($LASTEXITCODE -ne 0) { throw "Frontend npm install failed" }
+
+# Run tests before building
+Write-Host "Running Tests..." -ForegroundColor Yellow
+npx vitest run
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Frontend Tests failed! Stopping build." -ForegroundColor Red
+    exit 1  # or 'throw' to stop the script
+}
+
 npm run build
+if ($LASTEXITCODE -ne 0) { throw "Frontend Build failed" }
+
 Set-Location ..
 
 # 4. Copy API Dist to Web Publish Directory
