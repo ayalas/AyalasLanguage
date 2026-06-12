@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'; // Import act
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { ExerciseInput } from './ExerciseInput'; // Adjust path as needed
 import { useOutletContext } from 'react-router-dom';
@@ -84,19 +84,26 @@ describe('ExerciseInput Component', () => {
         disableClientValidation();
 
         const input = await screen.findByTestId('input-element');
+
         // Test setValue and focus
-        ref.current?.setValue('New Value');
+        // Wrap direct ref method calls that update state in act()
+        act(() => {
+            ref.current?.setValue('New Value');
+        });
         await waitFor(() => {
             expect(input).toHaveValue('New Value');
          });
+
         // Test setToError (changes background color)
-        ref.current?.setToError();
-        
+        // Wrap direct ref method calls that update state in act()
+        act(() => {
+            ref.current?.setToError();
+        });
         await waitFor(() => {
             expect(input).toHaveStyle({ backgroundColor: 'rgb(228, 180, 180)' });
         });
 
-        // Test getUserAnswer (calls the utility function)
+        // Test getUserAnswer (does not update state, no act needed)
         (replaceCharsForLanguage as any).mockReturnValue('processed-value');
         const answer = ref.current?.getUserAnswer();
 
@@ -113,12 +120,15 @@ describe('ExerciseInput Component', () => {
         const input = await screen.findByTestId('input-element');
 
         // Trigger error
-        ref.current?.setToError();
+        // Wrap direct ref method calls that update state in act()
+        act(() => {
+            ref.current?.setToError();
+        });
         await waitFor(() => {
             expect(input).toHaveStyle({ backgroundColor: 'rgb(228, 180, 180)' });
         });
 
-        // Typing should clear the error
+        // Typing should clear the error (fireEvent.change is typically wrapped in act internally)
         fireEvent.change(input, { target: { value: 'Fixed' } });
         await waitFor(() => {
             expect(input).toHaveStyle({ backgroundColor: 'rgb(255, 255, 255)' });
