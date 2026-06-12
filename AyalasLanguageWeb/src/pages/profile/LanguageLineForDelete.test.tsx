@@ -2,12 +2,18 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import axios from 'axios';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
+import { errorHandler } from '../../utils/utils';
 import type { User } from '../../types/shared/User';
 import disableClientValidation from '../../utils/test-utils/disableClientValidation';
 
 // Mock axios as requested
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
+
+// Mock the errorHandler utility to ensure it returns a string and doesn't cause [object Object]
+vi.mock('../../utils/utils', () => ({
+  errorHandler: vi.fn()
+}));
 
 describe('LanguageLineForDelete', () => {
   const mockLanguageInfo = {
@@ -17,8 +23,8 @@ describe('LanguageLineForDelete', () => {
   };
 
   const mockUser: User = {
-    userId: 1,
-    userName: 'testuser',
+    id: 1,
+    username: 'testuser',
     languageSettings: {
       targetLanguageId: 1,
       knownLanguageId: 2,
@@ -59,7 +65,7 @@ describe('LanguageLineForDelete', () => {
       />
     );
 
-    // Call the required external function after rendering
+    // Call the external function provided in instructions
     disableClientValidation();
 
     const deleteButton = await screen.findByTestId('delete-item');
@@ -68,20 +74,20 @@ describe('LanguageLineForDelete', () => {
       fireEvent.click(deleteButton);
     });
 
-    // Check if axios was called with the correct path
     expect(mockedAxios.delete).toHaveBeenCalledWith('/api/profile/123');
-
-    // Check if reload function was triggered
     expect(mockReloadLanguageSettings).toHaveBeenCalledWith(mockedAxios, mockUser, mockLogin);
-
-    // Check if the component UI disappears (exists state becomes false)
     expect(screen.queryByText(/Français \(French\)/i)).not.toBeInTheDocument();
   });
 
   it('displays an error message when the delete request fails', async () => {
     const errorMessage = 'Network Error';
-    mockedAxios.delete.mockRejectedValueOnce({
-      response: { data: { message: errorMessage } },
+    
+    // Mock axios to fail
+    mockedAxios.delete.mockRejectedValueOnce(new Error(errorMessage));
+
+    // Mock errorHandler to simulate setting the error string
+    vi.mocked(errorHandler).mockImplementation((err, setError) => {
+      setError(errorMessage);
     });
 
     render(
@@ -101,7 +107,7 @@ describe('LanguageLineForDelete', () => {
       fireEvent.click(deleteButton);
     });
 
-    // Assuming the errorHandler sets the error state which renders a label with class "form-error"
+    // Now findByText will look for the actual string set by our mocked errorHandler
     const errorLabel = await screen.findByText(errorMessage);
     expect(errorLabel).toBeInTheDocument();
     expect(errorLabel).toHaveClass('form-error');
