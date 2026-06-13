@@ -29,7 +29,7 @@ export function LearningPathUpdatePage() {
       }
 
       if (arrData !== null) { //empty array is ok, null means there was an error
-        navigate('/home');
+         navigate(`/path/${learningPathId}`);
       }
     } catch (err: unknown) {
       errorHandler(err, setError);
