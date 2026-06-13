@@ -19,6 +19,7 @@ vi.mock('../../../../../utils/utils', () => ({
 describe('BucketListExercise', () => {
   const mockSetError = vi.fn();
   const mockMoveNext = vi.fn();
+  const mockPlayTargetText = vi.fn();
 
   const exerciseInfoMock: ExerciseInfo = {
     exerciseId: 1,
@@ -42,6 +43,7 @@ describe('BucketListExercise', () => {
         exerciseInfo={exerciseInfoMock}
         setError={mockSetError}
         moveNext={mockMoveNext}
+        playTargetText={mockPlayTargetText}
         ref={ref}
       />
     );
@@ -86,6 +88,7 @@ describe('BucketListExercise', () => {
         exerciseInfo={exerciseInfoMock}
         setError={mockSetError}
         moveNext={mockMoveNext}
+        playTargetText={mockPlayTargetText}
         ref={ref}
       />
     );
@@ -118,6 +121,7 @@ describe('BucketListExercise', () => {
         exerciseInfo={exerciseInfoMock}
         setError={mockSetError}
         moveNext={mockMoveNext}
+        playTargetText={mockPlayTargetText}
         ref={ref}
       />
     );

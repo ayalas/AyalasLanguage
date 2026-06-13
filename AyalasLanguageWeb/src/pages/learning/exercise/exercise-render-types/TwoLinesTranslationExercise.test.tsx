@@ -73,6 +73,7 @@ describe('TwoLinesTranslationExercise', () => {
     moveNext: vi.fn(),
     displayAnswer: false,
     user: mockUser,
+    playTargetText: vi.fn()
   };
 
   beforeEach(() => {

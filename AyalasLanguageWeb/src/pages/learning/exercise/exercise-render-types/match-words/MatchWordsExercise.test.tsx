@@ -47,6 +47,7 @@ describe('MatchWordsExercise', () => {
     } as any,
     setError: vi.fn(),
     moveNext: vi.fn(),
+    playTargetText: vi.fn(),
     addMistake: vi.fn().mockResolvedValue(undefined),
   };
 
