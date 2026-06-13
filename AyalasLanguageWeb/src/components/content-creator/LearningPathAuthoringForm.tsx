@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate, useSearchParams } from 'react-router-dom';
-import { LayersPlus, Trash, FileUp, FileDown, Ban } from 'lucide-react';
+import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen } from 'lucide-react';
 import axios from 'axios';
 
-import { removeLastCharIfMatch, downloadFile, errorHandler } from '../../utils/utils';
+import { removeLastCharIfMatch, downloadFile, errorHandler, initializePuter, parseLLMResponse } from '../../utils/utils';
 import { EXERCISE_GENERATIONS, PLACEHOLDERS, AUTHOR_ACCESS, EXERCISE_TYPES } from '../../constants/learning';
 import type { User } from '../../types/shared/User';
+import type { ExerciseData } from '../../types/exercise/Exercise';
+import puter from '@heyputer/puter.js';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: any; initialRecord?: any; reloadExercise?: () => void }) {
@@ -24,60 +26,148 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [firstSetDesc, setFirstSetDesc] = useState('');
   const [secondSetDesc, setSecondSetDesc] = useState('');
   const [aiInstructions, setAIInstructions] = useState('');
+  const [aiInstructionsAuto, setAIInstructionsAuto] = useState('');
   const [searchParams] = useSearchParams();
   const initLevel = searchParams.get('level');
   const initChapter = searchParams.get('chapter');
   const navigate = useNavigate();
+  const [puterSignedIn, setPuterSignedIn] = useState(false);
+  const [usePuterAI, setUsePuterAI] = useState(true);
 
   const { user } = useOutletContext<{ user: User | null }>();
 
-  const parseForm = function () {
-    if (firstSet == '' || secondSet == '') {
-      return [];
+  const parseForm = async function () {
+    let arrObjects: ExerciseData[] = [];
+    if (!usePuterAI) {
+      if (firstSet == '' || secondSet == '') {
+        return [];
+      }
+
+      const arrFirstSet = (removeLastCharIfMatch(firstSet.trim(), ';') ?? '').split(';');
+      const arrSecondSet = (removeLastCharIfMatch(secondSet.trim(), ';') ?? '').split(';');
+
+      if (!arrFirstSet || arrFirstSet.length === 0 || !arrSecondSet || arrSecondSet.length === 0) {
+        return [];
+      }
+
+      if (arrFirstSet.length != arrSecondSet.length) {
+        setError(`Must have a match between the number of words/sentences on both sets. Found ${arrFirstSet.length} on the first set, and ${arrSecondSet.length} on the second set.`);
+        return null;
+      }
+
+      let arrExtraOptions: string[] = [];
+      if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
+        arrExtraOptions = (removeLastCharIfMatch(wrongExtraOptions.trim(), ';') ?? '').split(';');
+        if (arrFirstSet.length != arrExtraOptions.length) {
+          setError(`Must have a match between the number of words/sentences and sets of extra options. Found ${arrFirstSet.length} on the first set, and ${arrExtraOptions.length} on the wrong extra options.`);
+          return null;
+        }
+      }
+
+      for (let i = 0; i < arrFirstSet.length; i++) {
+        const objExerciseData: ExerciseData = {
+          First: arrFirstSet[i].trim(),
+          Second: arrSecondSet[i].trim()
+        };
+        if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
+          objExerciseData.ExtraOptions = arrExtraOptions[i].trim();
+        }
+        arrObjects.push(objExerciseData);
+      }
     }
+    else { //use AI to generate exercises
+      if (exerciseType == 0) {
+        setError('Select Exercise Type to generate exercises automatically.');
+        return null;
+      }
 
-    const arrFirstSet = (removeLastCharIfMatch(firstSet.trim(), ';') ?? '').split(';');
-    const arrSecondSet = (removeLastCharIfMatch(secondSet.trim(), ';') ?? '').split(';');
+      let tempPuterSignin = puterSignedIn;
+      if (!tempPuterSignin) {
+        tempPuterSignin = (await initializePuter() == true);
+        setPuterSignedIn(tempPuterSignin);
+      }
 
-    if (!arrFirstSet || arrFirstSet.length === 0 || !arrSecondSet || arrSecondSet.length === 0) {
-      return [];
-    }
+      if (!tempPuterSignin) {
+        setError('Sign-in to the AI engine failed. Switch to manual use of AI or try again.');
+        return null;
+      }
 
-    if (arrFirstSet.length != arrSecondSet.length) {
-      setError(`Must have a match between the number of words/sentences on both sets. Found ${arrFirstSet.length} on the first set, and ${arrSecondSet.length} on the second set.`);
-      return null;
-    }
+      if (aiInstructionsAuto == '') {
+        setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
+        return null;
+      }
+      const response = await puter.ai.chat(aiInstructionsAuto);
+      if (response != undefined && response.message != undefined) {
+        // Extract the raw string response
+        const rawText = response.message.content.toString();
+        // Parse the string into a JSON object
+        let jsonOutput: unknown;
+        try {
+          jsonOutput = parseLLMResponse(rawText);
+        }
+        catch {
+          setError('Automated generation did not return in the expected result format. Switch to manual use of AI or try again.');
+          console.log('Error parsing puter.ai.chat response', rawText);
+          return null;
+        }
+        if (!Array.isArray(jsonOutput)) {
+          setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
+          console.log(jsonOutput);
+          return null;
+        }
+        else {
+          //verify that has at least one element that can be assigned to ExerciseData
+          if (jsonOutput.length == 0) {
+            setError('Automated generation returned an empty result. Switch to manual use of AI or try again.');
+            return null;
+          }
+          else {
+            //validate array structure
+            let isValid = true;
+            for (const item of jsonOutput) {
+              if (!(typeof item === 'object') && item !== null && !Array.isArray(item)) {
+                isValid = false;
+                break;
+              }
+              if (!('First' in item) || !('Second' in item)
+                || (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && !('ExtraOptions' in item))) {
+                isValid = false;
+                break;
+              }
 
-    let arrExtraOptions: string[] = [];
-    if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
-      arrExtraOptions = (removeLastCharIfMatch(wrongExtraOptions.trim(), ';') ?? '').split(';');
-      if (arrFirstSet.length != arrExtraOptions.length) {
-        setError(`Must have a match between the number of words/sentences and sets of extra options. Found ${arrFirstSet.length} on the first set, and ${arrExtraOptions.length} on the wrong extra options.`);
+              if ((typeof (item as Record<string, unknown>).First !== 'string') || (typeof (item as Record<string, unknown>).Second !== 'string')
+                || (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (typeof (item as Record<string, unknown>).ExtraOptions !== 'string'))) {
+                isValid = false;
+                break;
+              }
+            }
+
+            if (!isValid) {
+              setError('Automated generation returned the expected result structure. Switch to manual use of AI or try again.');
+              return null;
+            }
+
+            arrObjects = jsonOutput;
+          }
+        }
+      }
+      else {
+        setError('Automated generation did not return a result. Switch to manual use of AI or try again.');
         return null;
       }
     }
-
-    const arrObjects: any[] = [];
-    for (let i = 0; i < arrFirstSet.length; i++) {
-      const objExerciseData: any = {
-        First: arrFirstSet[i].trim(),
-        Second: arrSecondSet[i].trim()
-      };
-      if (exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
-        objExerciseData.ExtraOptions = arrExtraOptions[i].trim();
-      }
-      arrObjects.push(objExerciseData);
-    }
-
     setError('');
     return arrObjects;
   };
 
-  const onFormSubmit = function (e: React.SubmitEvent) {
+  const onFormSubmit = async function (e: React.SubmitEvent) {
     e.preventDefault();
-    const arrData = parseForm();
+    const arrData = await parseForm();
 
-    handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
+    //error is displayed when arrData is null
+    if (arrData != null) {
+      handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
+    }
   };
 
   const createExercises = async function (pathId: number, exerciseType: number, arrData: any[]) {
@@ -115,11 +205,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     }
   };
 
-  const handleExerciseTypeLogic = function (exrTypeValue: number) {
-    const exType = EXERCISE_GENERATIONS.find((ex) => ex.type == exrTypeValue) as any;
-    setExerciseTypeDesc(exType.description);
-
-    let aiDesc = exType.ai_instruction as string;
+  const replaceAIInstructionsPlaceholders = function (aiDesc: string): string {
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '');
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguage || '');
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.LEVEL_PLACEHOLDER, String(level));
@@ -128,12 +214,25 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     if (subject == '') {
       subject = 'any language exchange';
     }
-    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.SUBJECT_PLACEHOLDER, subject);
+    return aiDesc.replaceAll(PLACEHOLDERS.SUBJECT_PLACEHOLDER, subject);
+  };
 
+  const handleExerciseTypeLogic = function (exrTypeValue: number) {
+    const exType = EXERCISE_GENERATIONS.find((ex) => ex.type == exrTypeValue) as any;
+    setExerciseTypeDesc(exType.description);
+    let aiDesc: string;
+    //manual ai instructions
+    aiDesc = replaceAIInstructionsPlaceholders(exType.ai_instruction as string);
     setAIInstructions(aiDesc);
+    //automatic ai instructions (returning json)
+    aiDesc = replaceAIInstructionsPlaceholders(exType.ai_instruction_auto as string);
+    setAIInstructionsAuto(aiDesc);
+
     setFirstSetDesc(exType.first_data_instructions);
     setSecondSetDesc(exType.second_data_instructions);
   };
+
+
 
   const onChangeExerciseType = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     setExerciseType(Number(e.target.value));
@@ -186,6 +285,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   useEffect(() => {
     async function execAsync() {
       try {
+        const tempPuterSignin = (await initializePuter() == true);
+        setPuterSignedIn(tempPuterSignin);
+        if (!tempPuterSignin) {
+          //default to manual use of AI if could not sign in
+          setUsePuterAI(false);
+        }
+
         if (initialRecord != null) {
           setLevel(initialRecord.level);
           setChapter(initialRecord.chapter);
@@ -223,7 +329,12 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         </div>
         <div className="form-row">
           <div className="form-button-cell">
-            <button data-testid="save" type="submit" className="form-button" title="Save"><LayersPlus /></button>
+            <button data-testid="save" type="submit" className="form-button" title="Save and Generate Exercises"><LayersPlus /></button>
+          </div>
+          <div className="form-button-cell">
+            <button data-testid="switch-ai-use" type="button" onClick={() => { setUsePuterAI(!usePuterAI) }} className="form-button"
+              title={usePuterAI ? "Automated AI use (click to Switch to manual use)" : "Manual AI use (click to Switch to automated use)"}>{usePuterAI && (<Workflow />) || (<UserPen />)}
+            </button>
           </div>
           {initialRecord && (
             <>
@@ -271,14 +382,12 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             <input type="number" data-testid="chapter" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
           </div>
         </div>
-        <div className="form-label-row">Title</div>
+        <div className="form-label-row">Subject</div>
         <div className="form-row">
           <div className="form-input-row">
             <input type="text" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onChange={(e) => { setTitle(e.target.value) }} />
           </div>
-        </div>
-        <div className="form-header">
-          <h2>Exercise Generator</h2>
+          <div className="form-content-row">AI will generate exercises on this subject.</div>
         </div>
         <div className="form-label-row">Exercise Type</div>
         <div className="form-row">
@@ -292,34 +401,37 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           </div>
           <div className="form-content-row">{exerciseTypeDesc}</div>
         </div>
-        <div className="form-label-row">AI instructions</div>
-        <div className="form-row">
-          <div className="form-content-row">{aiInstructions}</div>
-        </div>
-        <div className="form-label-row">First set of words/sentences</div>
-        <div className="form-row">
-          <div className="form-input-row">
-            <textarea data-testid="first-set" className="text-area-wide" value={firstSet} onChange={(e) => { setFirstSet(e.target.value) }} />
-          </div>
-          <div className="form-content-row">{firstSetDesc}</div>
-        </div>
-        <div className="form-label-row">Second set of words/sentences</div>
-        <div className="form-row">
-          <div className="form-input-row">
-            <textarea data-testid="second-set" className="text-area-wide" value={secondSet} onChange={(e) => { setSecondSet(e.target.value) }} />
-          </div>
-          <div className="form-content-row">{secondSetDesc}</div>
-        </div>
-        {exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
+        {!usePuterAI && (
           <>
-            <div className="form-label-row">Wrong Extra Options</div>
+            <div className="form-label-row">AI instructions</div>
+            <div className="form-row">
+              <div className="form-content-row">{aiInstructions}</div>
+            </div>
+            <div className="form-label-row">First set of words/sentences</div>
             <div className="form-row">
               <div className="form-input-row">
-                <textarea data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
+                <textarea data-testid="first-set" className="text-area-wide" value={firstSet} onChange={(e) => { setFirstSet(e.target.value) }} />
               </div>
+              <div className="form-content-row">{firstSetDesc}</div>
             </div>
-          </>
-        )}
+            <div className="form-label-row">Second set of words/sentences</div>
+            <div className="form-row">
+              <div className="form-input-row">
+                <textarea data-testid="second-set" className="text-area-wide" value={secondSet} onChange={(e) => { setSecondSet(e.target.value) }} />
+              </div>
+              <div className="form-content-row">{secondSetDesc}</div>
+            </div>
+            {exerciseType == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
+              <>
+                <div className="form-label-row">Wrong Extra Options</div>
+                <div className="form-row">
+                  <div className="form-input-row">
+                    <textarea data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
+                  </div>
+                </div>
+              </>
+            )}
+          </>)}
       </form>
     </div>
   );

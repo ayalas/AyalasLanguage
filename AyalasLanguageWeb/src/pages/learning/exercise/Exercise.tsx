@@ -32,6 +32,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
     const [displayAnswer, setDisplayAnswer] = useState(false);
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
+    const [puterSignedIn, setPuterSignedIn] = useState(false);
 
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
@@ -42,6 +43,17 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                 if (langCode != undefined) {
                     const pollyObject = LANGUAGE_TO_POLLY_MAP[langCode]
                     if (pollyObject != null) {
+                        
+                        let tempPuterSignin = puterSignedIn;
+                        if (!tempPuterSignin) {
+                            tempPuterSignin = (await initializePuter() == true);
+                            setPuterSignedIn(tempPuterSignin);
+                        }
+                        
+                        if (!tempPuterSignin) {
+                            return;
+                        }
+
                         let parsed: ExerciseData;
                         if (typeof exerciseInfo.data === 'string') {
                             parsed = JSON.parse(exerciseInfo.data) as ExerciseData;
@@ -160,8 +172,10 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
 
     useEffect(() => {
         childLoaded(exerciseInfo.exerciseId);
-        //requires ssl
-        initializePuter();
+        async function runAsync() {
+            setPuterSignedIn(await initializePuter() == true);
+        }
+        runAsync();
     }, [exerciseInfo, childLoaded]);
 
     return (

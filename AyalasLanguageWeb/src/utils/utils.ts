@@ -8,9 +8,25 @@ export async function initializePuter() {
     if (!puter.auth.isSignedIn()) {
       // Note: browser popups usually require a direct user click event, 
       // but you can check status or trigger it here if allowed by your flow.
-      await puter.auth.signIn();
+      const res = await puter.auth.signIn();
+      return res.success;
+    }
+    else {
+      return true;
     }
   }
+  return false;
+}
+
+export function parseLLMResponse(rawString: string) {
+  // Regex looks for ```json [content] ``` or just ``` [content] ```
+  const regex = /```(?:json)?\s*([\s\S]*?)\s*```/;
+  const match = rawString.match(regex);
+
+  // If a match is found, use the captured group, otherwise try the raw string
+  const cleanJson = match ? match[1] : rawString;
+
+  return JSON.parse(cleanJson.trim());
 }
 
 export function errorHandler(err: unknown, func: (arg: string) => void) {
