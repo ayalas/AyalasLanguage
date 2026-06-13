@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageAPI.Data.Model;
 
@@ -13,6 +14,7 @@ public class UserProgress
     public virtual User User { get; set; } = null!;
 
     public int? ExerciseId { get; set; }= null!;
+    [DeleteBehavior(DeleteBehavior.Cascade)]
     public virtual Exercise Exercise { get; set; } = null!;
 
     public bool practiseMistakesInThisPath { get; set; } = false;

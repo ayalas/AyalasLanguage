@@ -35,6 +35,8 @@ namespace AyalasLanguageAPI.DTOs
     // Exercise DTOs
     public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access, int? LearningPathId);
 
+    public record NextChapterDto(int Level, decimal ChapterHint);
+    public record NextChapterResponseDto(decimal Chapter);
     // Content Creator DTOs
     public record CreateLearningPathDto(
         uint Level,

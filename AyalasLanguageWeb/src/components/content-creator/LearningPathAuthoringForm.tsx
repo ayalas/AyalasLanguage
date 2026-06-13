@@ -8,6 +8,7 @@ import { EXERCISE_GENERATIONS, PLACEHOLDERS, AUTHOR_ACCESS, EXERCISE_TYPES } fro
 import type { User } from '../../types/shared/User';
 import type { ExerciseData } from '../../types/exercise/Exercise';
 import puter from '@heyputer/puter.js';
+import type { NextChapterResponse } from '../../types/creator/creator';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: any; initialRecord?: any; reloadExercise?: () => void }) {
@@ -77,6 +78,9 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     }
     else { //use AI to generate exercises
       if (exerciseType == 0) {
+        if (initialRecord != null) {
+          return [];
+        }
         setError('Select Exercise Type to generate exercises automatically.');
         return null;
       }
@@ -298,12 +302,17 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setTitle(initialRecord.name);
           setAccess(initialRecord.access);
         } else {
+          let tempLevel = 1;
           if (initLevel !== '' && Number(initLevel) > 0) {
-            setLevel(Number(initLevel));
+            tempLevel = Number(initLevel);
+            setLevel(tempLevel);
           }
+          let hintChapter = 1;
           if (initChapter !== '' && Number(initChapter) > 0) {
-            setChapter(Number(initChapter));
+            hintChapter = Number(initChapter);
           }
+          const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { Level: tempLevel, ChapterHint: hintChapter});
+          setChapter(res.data.chapter);
         }
       } catch (ex: unknown) {
         errorHandler(ex, setError);
@@ -379,7 +388,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         <div className="form-label-row">Chapter</div>
         <div className="form-row">
           <div className="form-input-row">
-            <input type="number" data-testid="chapter" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
+            <input type="number" data-testid="chapter" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
           </div>
         </div>
         <div className="form-label-row">Subject</div>

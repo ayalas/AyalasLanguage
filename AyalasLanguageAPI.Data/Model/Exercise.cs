@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageAPI.Data.Model
 {
@@ -30,6 +31,7 @@ namespace AyalasLanguageAPI.Data.Model
 
         public byte Status { get; set; } = 0;
         public int? SourceExerciseId { get; set; }
+        [DeleteBehavior(DeleteBehavior.SetNull)]
         public virtual Exercise? SourceExercise { get; set; }
         public virtual ICollection<Exercise> ChildExercises { get; set; } = new List<Exercise>();
     }

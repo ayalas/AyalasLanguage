@@ -12,7 +12,7 @@ namespace AyalasLanguageAPI.Data.Model
         public uint Level { get; set; }
 
         [Required]
-        public byte Chapter { get; set; }
+        public decimal Chapter { get; set; }
 
         [StringLength(128)]
         public string? Name { get; set; }

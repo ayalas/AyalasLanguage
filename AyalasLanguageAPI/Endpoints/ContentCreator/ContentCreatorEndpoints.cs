@@ -22,12 +22,44 @@ public static class ContentCreatorEndpoints
         creator.MapPut("/learning-path/{id}", EditLearningPath); // Allow PUT for idempotent updates
         creator.MapPost("/learning-path/{id}/import", ImportExercises).DisableAntiforgery();
         creator.MapDelete("/learning-path/{id}", DeleteLearningPath);
+        creator.MapPost("/next-chapter", NextChapter);
         // Exercise Creation
         creator.MapGet("/exercise/{id}", GetExercise);
         creator.MapPost("/exercise", CreateExercise);
         creator.MapPut("/exercise/{id}", EditExercise); // Allow PUT for idempotent updates
         creator.MapDelete("/exercise/{id}", DeleteExercise);
 
+    }
+
+    [Authorize(Roles = "Admin,ContentCreator")]
+    private static async Task<IResult> NextChapter(NextChapterDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+
+        var user = await db.Users.FindAsync(userId);
+        if (user == null) return Results.BadRequest("User not found.");
+
+        if (user.KnownLanguageId == null || user.TargetLanguageId == null)
+            return Results.BadRequest("User must have known and target languages set.");
+
+        decimal chapterFrom = dto.ChapterHint - 1;
+        decimal chapterTo = dto.ChapterHint + 1;
+
+        var paths = await db.LearningPaths.Where(lp => lp.TargetLanguageId == user.TargetLanguageId &&
+            lp.KnownLanguageId == user.KnownLanguageId
+            && lp.Level == dto.Level
+            && lp.Chapter >= chapterFrom && lp.Chapter <= chapterTo).OrderBy(lp => lp.Chapter).Select(lp => new NextChapterResponseDto(lp.Chapter)).ToArrayAsync();
+
+        if (paths != null && paths.Length > 0)
+        {
+            if (paths.Any(p => p.Chapter == dto.ChapterHint))
+            {
+                //if the desired chapter exists we need to find the closest to it
+                return Results.Ok(new NextChapterResponseDto(FindPath(paths, dto.ChapterHint, dto.ChapterHint != 1 )));
+            }
+        }
+
+        return Results.Ok(new NextChapterResponseDto(dto.ChapterHint));
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]
@@ -484,5 +516,83 @@ public static class ContentCreatorEndpoints
             logger.LogError(ex, "Error validating exercise data for exercise type {ExerciseTypeId}. Data: {Data}", exerciseTypeId, data);
             return false; // If any exception occurs during validation, consider it invalid
         }
+    }
+
+    private static decimal FindPath(NextChapterResponseDto[] paths, decimal chapterHint, bool goUp)
+    {
+        //get the number and the one closest to it on the same direction
+        int index = Array.FindIndex(paths, p => p.Chapter == chapterHint);
+        int? nextIndex = null;
+        if (goUp && index < paths.Length -1)
+            nextIndex = index + 1;
+        else if (!goUp && index > 0)
+            nextIndex = index - 1;
+
+        if (nextIndex == null)
+            return GetNextFraction(chapterHint, goUp);
+
+        decimal nextNumber = paths[nextIndex.Value].Chapter;
+
+        return GetClosestMatch(chapterHint, nextNumber, goUp);
+    }
+
+    private static decimal GetClosestMatch(decimal chapterHint, decimal nextNumber, bool goUp)
+    {
+        decimal next = GetNextInSeries(chapterHint, goUp);
+
+        //we must not exceed or be equal to nextNumber
+        if ((goUp && next >= nextNumber) || (!goUp && next <= nextNumber))
+        {
+            next = GetNextFraction(chapterHint, goUp);
+            if ((goUp && next >= nextNumber) || (!goUp && next <= nextNumber))
+            {
+                decimal step = 0;
+
+                step = GetNextFraction(nextNumber, goUp) - nextNumber;
+                return step + chapterHint;
+            }
+        }
+
+        return next;
+    }
+
+    private static decimal GetNextFraction(decimal input, bool up)
+    {
+        // 1. Extract the scale (number of decimal places) from the decimal
+        // decimal.GetBits returns 4 ints. The 4th int contains the scale.
+        int[] bits = decimal.GetBits(input);
+        int scale = (bits[3] >> 16) & 0x7F;
+
+        // 2. We want to add a '1' at the next decimal place (scale + 1)
+        // C# decimals support up to 28-29 decimal places.
+        if (scale >= 28)
+            throw new OverflowException("Decimal precision limit reached.");
+
+        // 3. Create a decimal that represents 10^-(scale + 1)
+        // The constructor parameters are: (low, mid, high, isNegative, scale)
+        decimal increment = new decimal(1, 0, 0, false, (byte)(scale + 1));
+
+        if (up)
+            return input + increment;
+        else
+            return input - increment;
+    }
+
+    public static decimal GetNextInSeries(decimal input, bool up)
+    {
+        // 1. Extract the current scale (number of decimal places)
+        int[] bits = decimal.GetBits(input);
+        int scale = (bits[3] >> 16) & 0x7F;
+
+        // 2. Create an increment that is '1' at that specific scale
+        // For scale 0, increment is 1
+        // For scale 1, increment is 0.1
+        // For scale 2, increment is 0.01
+        decimal increment = new decimal(1, 0, 0, false, (byte)scale);
+
+        if (up)
+            return input + increment;
+        else
+            return input - increment;
     }
 }
