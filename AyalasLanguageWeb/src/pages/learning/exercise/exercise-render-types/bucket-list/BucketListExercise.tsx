@@ -9,10 +9,11 @@ type Props = {
   setError: (s: string) => void;
   moveNext: () => void;
   displayAnswer?: boolean;
+  playTargetText: (s: string) => void;
   ref: React.Ref<ExerciseHandle>;
 };
 
-const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, ref }: Props ) {
+const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, playTargetText, ref }: Props ) {
   const [bucketList, setBucketList] = useState<string[]>([]);
   const [answerList, setAnswerList] = useState<string[]>([]);
 
@@ -69,6 +70,7 @@ const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayA
   }
 
   function bucketListItemClicked(itemValue: string, position: number) {
+    playTargetText(itemValue);
     setAnswerList([...answerList, itemValue]);
     setBucketList(bucketList.filter((_, ind) => ind !== position));
   }

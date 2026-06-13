@@ -105,42 +105,40 @@ export const LANGUAGE_TO_POLLY_MAP: Record<
   { language: string; engine: 'standard' | 'neural' | 'long-form' | 'generative'; voice: string } | null
 > = {
   en: { language: 'en-US', engine: 'generative', voice: 'Ruth' },    // English (US) - Generative supported
-  ar: { language: 'arb', engine: 'neural', voice: 'Zeina' },        // Arabic - Neural supported
+  ar: { language: 'arb', engine: 'standard', voice: 'Zeina' },        // Arabic - ONLY Standard supported
   da: { language: 'da-DK', engine: 'standard', voice: 'Naja' },     // Danish - ONLY Standard supported
   es: { language: 'es-ES', engine: 'neural', voice: 'Lucia' },      // Spanish (Spain) - Neural supported
   fr: { language: 'fr-FR', engine: 'neural', voice: 'Lea' },        // French - Neural supported
   de: { language: 'de-DE', engine: 'neural', voice: 'Vicki' },      // German - Neural supported
-  ja: { language: 'ja-JP', engine: 'neural', voice: 'Mizuki' },     // Japanese - Neural supported
+  ja: { language: 'ja-JP', engine: 'standard', voice: 'Mizuki' },     // Japanese - ONLY Standard supported
   zh: { language: 'cmn-CN', engine: 'neural', voice: 'Zhiyu' },     // Mandarin Chinese - Neural supported
-  hi: { language: 'hi-IN', engine: 'neural', voice: 'Aditi' },      // Hindi - Neural supported
+  hi: { language: 'hi-IN', engine: 'standard', voice: 'Aditi' },      // Hindi - ONLY Standard supported
   pt: { language: 'pt-PT', engine: 'neural', voice: 'Ines' },       // Portuguese (Portugal) - Neural supported
   ru: { language: 'ru-RU', engine: 'standard', voice: 'Tatyana' },  // Russian - ONLY Standard supported
-  bn: { language: 'bn-IN', engine: 'neural', voice: 'Kajal' },      // Bengali - Neural supported
   ko: { language: 'ko-KR', engine: 'neural', voice: 'Seoyeon' },    // Korean - Neural supported
   it: { language: 'it-IT', engine: 'neural', voice: 'Bianca' },     // Italian - Neural supported
-  tr: { language: 'tr-TR', engine: 'neural', voice: 'Filiz' },      // Turkish - Neural supported
-  vi: { language: 'vi-VN', engine: 'neural', voice: 'Thi Tuyen' },  // Vietnamese - Neural supported
-  ta: { language: 'ta-IN', engine: 'standard', voice: 'Valluvar' }, // Tamil - ONLY Standard supported (Male only)
-  el: { language: 'el-GR', engine: 'standard', voice: 'Athina' },   // Greek - ONLY Standard supported
+  tr: { language: 'tr-TR', engine: 'standard', voice: 'Filiz' },      // Turkish - ONLY Standard supported
   nl: { language: 'nl-NL', engine: 'neural', voice: 'Laura' },      // Dutch - Neural supported
-  sv: { language: 'sv-SE', engine: 'neural', voice: 'Astrid' },     // Swedish - Neural supported
-  no: { language: 'nb-NO', engine: 'neural', voice: 'Liv' },        // Norwegian - Neural supported
-  pl: { language: 'pl-PL', engine: 'neural', voice: 'Maja' },       // Polish - Neural supported
+  sv: { language: 'sv-SE', engine: 'standard', voice: 'Astrid' },     // Swedish - ONLY Standard supported
+  no: { language: 'nb-NO', engine: 'standard', voice: 'Liv' },        // Norwegian - ONLY Standard supported
+  pl: { language: 'pl-PL', engine: 'standard', voice: 'Maja' },       // Polish - ONLY Standard supported
   fi: { language: 'fi-FI', engine: 'neural', voice: 'Suvi' },       // Finnish - Neural supported
-  cs: { language: 'cs-CZ', engine: 'standard', voice: 'Jitka' },    // Czech - ONLY Standard supported
-  hu: { language: 'hu-HU', engine: 'standard', voice: 'Kinga' },    // Hungarian - ONLY Standard supported
-  th: { language: 'th-TH', engine: 'standard', voice: 'Kanya' },    // Thai - ONLY Standard supported
-  id: { language: 'id-ID', engine: 'neural', voice: 'Putri' },      // Indonesian - Neural supported
+  cs: { language: 'cs-CZ', engine: 'neural', voice: 'Jitka' },    // Czech - ONLY Standard supported
   ro: { language: 'ro-RO', engine: 'standard', voice: 'Carmen' },   // Romanian - ONLY Standard supported
-  he: { language: 'he-IL', engine: 'standard', voice: 'Hila' },     // Hebrew - ONLY Standard supported
-  sk: { language: 'sk-SK', engine: 'standard', voice: 'Barbora' },  // Slovak - ONLY Standard supported
   ca: { language: 'ca-ES', engine: 'neural', voice: 'Arlet' },      // Catalan - Neural supported
-
-  // --- Updated Support ---
-  te: { language: 'te-IN', engine: 'neural', voice: 'Shruti' },     // Telugu - Neural supported
-  mr: { language: 'mr-IN', engine: 'neural', voice: 'Aditi' },      // Marathi - Neural supported
-
+ 
   // --- Languages currently unsupported by Amazon Polly ---
+  te: null,
+  mr: null,
+  sk: null,
+  he: null,
+  th: null, 
+  id: null, 
+  hu: null,
+  el: null, 
+  ta: null,
+  vi: null, 
+  bn: null,
   ur: null,      // Urdu
   uk: null,      // Ukrainian
   ms: null,      // Malay

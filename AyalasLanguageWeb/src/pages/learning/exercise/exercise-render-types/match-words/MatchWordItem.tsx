@@ -12,6 +12,7 @@ type Props = {
   itemValue: string;
   matchingValue: string;
   setSelected: (matchObject: MatchSelection | null, setToDone: () => void, setToError: (v: boolean) => void) => void;
+  
 };
 
 export const MatchWordItem: React.FC<Props> = ({ itemValue, matchingValue, setSelected }) => {

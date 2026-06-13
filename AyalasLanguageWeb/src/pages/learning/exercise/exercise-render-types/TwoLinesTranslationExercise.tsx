@@ -1,4 +1,4 @@
-import { useImperativeHandle, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { EXERCISE_TYPES } from '../../../../constants/learning';
@@ -7,6 +7,7 @@ import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles';
 import type { User } from '../../../../types/shared/User';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
+import { CirclePlay } from 'lucide-react';
 
 type Props = {
   exerciseInfo: ExerciseInfo;
@@ -15,6 +16,7 @@ type Props = {
   displayAnswer?: boolean;
   parentCheckAnswer?: () => boolean;
   user?: User | null;
+  playTargetText: (s: string) => void;
   ref: React.Ref<ExerciseHandle>;
 };
 
@@ -30,7 +32,7 @@ const safeParseData = (data: string | ExerciseData) => {
   return (data as ExerciseData);
 };
 
-export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user , ref}:Props) {
+export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText , ref}:Props) {
   const inputRef = useRef<ExerciseInputHandle | null>(null);
   const [inputValue, setInputValue] = useState('');
 
@@ -88,10 +90,19 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
   const first = (typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).First ?? ''; } catch { return ''; } })() : (exerciseInfo.data as ExerciseData).First) ?? '';
   const second = (typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).Second ?? ''; } catch { return ''; } })() : (exerciseInfo.data as ExerciseData).Second) ?? '';
 
+  useEffect(() => {
+    if (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_TARGET_TO_KNOWN) {
+      //play the sentence shown
+      playTargetText(first);
+    }
+  }, [])
+
   return (
     <>
-      <div className="form-row">
-        <div className="form-label-row">{first}</div>
+      <div className="form-row-play">
+        <div className="form-play-container">{first}{ exerciseInfo.exerciseTypeId === EXERCISE_TYPES.FROM_TARGET_TO_KNOWN && (
+          <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(first)}><CirclePlay /></button></div>
+        )}</div>
       </div>
       <div className={`${exerciseInfo.exerciseTypeId === EXERCISE_TYPES.FROM_KNOWN_TO_TARGET ? 'form-row answer' : 'form-row'}`}>
         <ExerciseInput
@@ -103,7 +114,10 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
         />
       </div>
       {displayAnswer && (
-        <div className="form-label-row">{second}</div>
+        <div className="form-row-play"><div className="form-play-container">{second}
+        { exerciseInfo.exerciseTypeId === EXERCISE_TYPES.FROM_KNOWN_TO_TARGET && (
+          <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(second)}><CirclePlay /></button>
+        )}</div></div>
       )}
       {exerciseInfo.exerciseTypeId === EXERCISE_TYPES.FROM_KNOWN_TO_TARGET && (
         <VirtualKeyboard languageCode={(user?.languageSettings?.targetLanguageEnglishName ?? 'en').toLowerCase()} isRightToLeft={true} onChange={OnChange} value={inputValue} />

@@ -34,9 +34,9 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
     const { user } = useOutletContext() as { user?: User };
 
 
-    const playAnswer = async function () {
+    const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
-
+            
             if (isSecure()) {
                 const langCode = user?.languageSettings?.targetLanguageCode;
                 if (langCode != undefined) {
@@ -49,7 +49,8 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                         else {
                             parsed = exerciseInfo.data;
                         }
-                        if (parsed.Second != null && parsed.Second != "") {
+                        textToPlay = textToPlay!= null? textToPlay: parsed.Second;
+                        if (textToPlay != null && textToPlay != "") {
                             const options = {
                                 provider: 'aws-polly',
                                 voice: pollyObject.voice,
@@ -59,7 +60,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                                 ssml: false
                             };
 
-                            const result = await puter.ai.txt2speech(parsed.Second, options) as HTMLAudioElement;
+                            const result = await puter.ai.txt2speech(textToPlay, options) as HTMLAudioElement;
                             await result.play();
                         }
                     }
@@ -75,8 +76,8 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
         const newValue = !displayAnswer;
         setDisplayAnswer(newValue);
 
-        if (newValue) {
-            playAnswer();
+        if (newValue && exerciseInfo.exerciseTypeId !== EXERCISE_TYPES.FROM_TARGET_TO_KNOWN) {
+            playTargetText();
         }
     }
 
@@ -119,7 +120,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
         if (typeof exerciseInfo.data === "string") {
             dataObj = JSON.parse(exerciseInfo.data) as ExerciseData;
         } else {
-            dataObj = exerciseInfo.data as ExerciseData;
+            dataObj = {...exerciseInfo.data} as ExerciseData;
         }
 
         const alternative = refExercise.current?.getCurrentAnswer?.();
@@ -223,16 +224,16 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                 ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.MATCHING && (
                     <MatchWordsExercise
                         exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} addMistake={addMistake} />
+                        moveNext={moveNext} addMistake={addMistake} playTargetText={playTargetText} />
                 ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
                     <BucketListExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer} />
+                        moveNext={moveNext} displayAnswer={displayAnswer} playTargetText={playTargetText} />
                 )) || (
                         <TwoLinesTranslationExercise ref={refExercise}
                             exerciseInfo={exerciseInfo} setError={setError}
                             moveNext={moveNext} displayAnswer={displayAnswer}
-                            parentCheckAnswer={checkAnswer} user={user} />
+                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
                     ))}
             </div>
         </Fragment>

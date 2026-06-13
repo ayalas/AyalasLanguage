@@ -53,6 +53,7 @@ body {
 .form-label-row {
   text-align: start;
   color: #2D3748;
+  align-content: center;
 }
 .form-label-center-row {
   text-align: center;
@@ -85,6 +86,10 @@ label.label-deleted {
   line-height: min(40px);
 }
 
+.form-row-play {
+  padding-bottom: 5px;
+}
+
 .form-select {
   display: inline-flex;
   min-height: 30px;
@@ -115,6 +120,14 @@ label.label-deleted {
   border: 1px solid #35bd4e;
   border-radius: 3px;
   font-size: 18px;
+}
+
+.form-play-container {
+  display: flex;          /* 1. Turn on flexbox */
+  align-items: center;    /* 2. Vertically center the text and the button */
+  text-align: start;
+  color: #2D3748;
+  gap: 4px;              /* 3. Add a small gap between text and button */
 }
 
 input:required:invalid {
@@ -300,6 +313,10 @@ input:required:invalid {
 .lucide-rotate-ccw {
   color: rgb(55, 194, 20);
 }
+.lucide-circle-play {
+  color: rgb(55, 194, 20);
+  display: block;
+}
 .check-answer-button {
   background-color: rgb(55, 194, 20);
   color: white;
@@ -309,6 +326,20 @@ input:required:invalid {
   width: 18px;
   height: 18px;
   margin-left: 5px;
+}
+
+/*.playButtonContainer {
+  padding-left: 8px;
+  display: inline-flex;
+  height: 40px;
+  align-items: buttom;    
+}*/
+.play-button {
+  height: 24px;
+  width: 24px;  
+  border: 0;
+  padding: 0;
+  margin-left: 8px;
 }
 
 .small-icon {

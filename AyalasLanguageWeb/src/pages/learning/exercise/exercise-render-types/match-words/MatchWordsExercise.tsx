@@ -9,9 +9,10 @@ type Props = {
   setError: (s: string) => void;
   moveNext: () => void;
   addMistake: (id: number) => Promise<void> | void;
+  playTargetText: (s: string) => void;
 };
 
-const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext, addMistake }) => {
+const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext, addMistake, playTargetText }) => {
   const [matches, setMatchs] = useState<Array<{ Column1: { First: string; Second: string }; Column2: { First: string; Second: string } }>>([]);
   const [countDone, setCountDone] = useState<number>(0);
   const [column1Selected, setColumn1Selected] = useState<MatchSelection | null>(null);
@@ -69,6 +70,9 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
   }
 
   function onColumn2Selected(matchObject: MatchSelection | null, setToDone: () => void, setToError: (b: boolean) => void) {
+    if (matchObject != null && matchObject.itemValue != null) {
+      playTargetText(matchObject.itemValue);
+    }
     onColumnSelected(matchObject, setToDone, setToError, column2Selected, column1Selected, setColumn2Selected, setColumn1Selected);
   }
 
