@@ -43,23 +43,35 @@ public static class ContentCreatorEndpoints
             return Results.BadRequest("User must have known and target languages set.");
 
         decimal chapterFrom = dto.ChapterHint - 1;
+        if (chapterFrom < 0) chapterFrom = 0;
         decimal chapterTo = dto.ChapterHint + 1;
 
         var paths = await db.LearningPaths.Where(lp => lp.TargetLanguageId == user.TargetLanguageId &&
             lp.KnownLanguageId == user.KnownLanguageId
             && lp.Level == dto.Level
-            && lp.Chapter >= chapterFrom && lp.Chapter <= chapterTo).OrderBy(lp => lp.Chapter).Select(lp => new NextChapterResponseDto(lp.Chapter)).ToArrayAsync();
+            && lp.Chapter >= chapterFrom && lp.Chapter <= chapterTo).Select(lp => new NextChapterResponseDto(lp.Chapter)).ToArrayAsync();
+
+        decimal hint = dto.ChapterHint;
 
         if (paths != null && paths.Length > 0)
         {
-            if (paths.Any(p => p.Chapter == dto.ChapterHint))
+            if (dto.ChapterHint == 0 || paths.Any(p => p.Chapter == dto.ChapterHint))
             {
+                NextChapterResponseDto[] sortedArray = [.. paths.OrderBy(p=> p.Chapter)];
+                if (dto.ChapterHint == 0)
+                {
+                    hint = sortedArray[0].Chapter;
+                }
                 //if the desired chapter exists we need to find the closest to it
-                return Results.Ok(new NextChapterResponseDto(FindPath(paths, dto.ChapterHint, dto.ChapterHint != 1 )));
+                return Results.Ok(new NextChapterResponseDto(FindPath(sortedArray, hint, dto.ChapterHint != 0 )));
             }
         }
 
-        return Results.Ok(new NextChapterResponseDto(dto.ChapterHint));
+        //if the hint is zero and we did not find 1 - return 1
+        if (hint == 0)
+            return Results.Ok(new NextChapterResponseDto(1));
+        
+        return Results.Ok(new NextChapterResponseDto(hint));
     }
 
     [Authorize(Roles = "Admin,ContentCreator")]
@@ -72,6 +84,16 @@ public static class ContentCreatorEndpoints
 
         if (user.KnownLanguageId == null || user.TargetLanguageId == null)
             return Results.BadRequest("User must have known and target languages set.");
+
+        if (dto.Chapter <= 0)
+        {
+            return Results.BadRequest("Level must be a positive number.");
+        }
+
+        if (await IsOtherLearningPathFoundWith(user.TargetLanguageId.Value, user.KnownLanguageId.Value, dto.Level, dto.Chapter, null, db))
+        {
+            return Results.BadRequest("Another lesson already exists with with these level and chapter values.");
+        }
 
         LearningPath? prevPath = null;
         LearningPath? nextPath = null;
@@ -225,6 +247,16 @@ public static class ContentCreatorEndpoints
 
         if (path.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
             return Results.Forbid();
+
+        if (dto.Chapter <= 0)
+        {
+            return Results.BadRequest("Chapter must be a positive number.");
+        }
+
+        if (await IsOtherLearningPathFoundWith(path.TargetLanguageId, path.KnownLanguageId, dto.Level, dto.Chapter, path.LearningPathId, db))
+        {
+            return Results.BadRequest("Another lesson already exists with with these level and chapter values.");
+        }
 
         path.Level = dto.Level;
         path.Chapter = dto.Chapter;
@@ -518,6 +550,24 @@ public static class ContentCreatorEndpoints
         }
     }
 
+    private static async Task<bool> IsOtherLearningPathFoundWith(int targetLanguageId, int knownLanguageId, uint level, decimal chapter, int? currentLearningPathId, AyalasLanguageDbContext db)
+    {
+        var learningPath = await db.LearningPaths.Where(lp => lp.KnownLanguageId == knownLanguageId 
+            && lp.TargetLanguageId == targetLanguageId
+            && lp.Level == level
+            && lp.Chapter == chapter ).FirstOrDefaultAsync();
+
+       if (learningPath == null )
+        {
+            return false;
+        }
+        if (currentLearningPathId != null && learningPath.LearningPathId == currentLearningPathId.Value)
+        {
+            return false;
+        }
+        return true;
+    }
+
     private static decimal FindPath(NextChapterResponseDto[] paths, decimal chapterHint, bool goUp)
     {
         //get the number and the one closest to it on the same direction
@@ -528,10 +578,18 @@ public static class ContentCreatorEndpoints
         else if (!goUp && index > 0)
             nextIndex = index - 1;
 
+        decimal nextNumber;
         if (nextIndex == null)
-            return GetNextFraction(chapterHint, goUp);
+        {
+            nextNumber = GetNextInSeries(chapterHint, goUp);
+            if (nextNumber == 0)
+            {
+                return GetNextFraction(chapterHint, goUp);
+            }
+            return nextNumber;
+        }
 
-        decimal nextNumber = paths[nextIndex.Value].Chapter;
+        nextNumber = paths[nextIndex.Value].Chapter;
 
         return GetClosestMatch(chapterHint, nextNumber, goUp);
     }

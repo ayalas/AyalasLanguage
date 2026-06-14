@@ -25,8 +25,8 @@ namespace AyalasLanguageAPI.DTOs
     public record LanguageDto(int LanguageId, string? Code, string EnglishName, string? NativeName);
     
     // Learning Path & Progress
-    public record LearningPathDto(int LearningPathId, uint Level, byte Chapter, string? Name,  int? Status = null,  int ExerciseCount = 0, int? PrevLearningPathId = null, int? NextLearningPathId = null, bool practiseMistakesInThisPath = false);
-    public record LearningPathSingleDto(int LearningPathId, uint Level, byte Chapter, string? Name,  int? Status = null, int? ExerciseId = null,  int ExerciseCount = 0, int? PrevLearningPathId = null, int? NextLearningPathId = null, byte Access = 0, bool practiseMistakesInThisPath = false);
+    public record LearningPathDto(int LearningPathId, uint Level, decimal Chapter, string? Name,  int? Status = null,  int ExerciseCount = 0, int? PrevLearningPathId = null, int? NextLearningPathId = null, bool practiseMistakesInThisPath = false);
+    public record LearningPathSingleDto(int LearningPathId, uint Level, decimal Chapter, string? Name,  int? Status = null, int? ExerciseId = null,  int ExerciseCount = 0, int? PrevLearningPathId = null, int? NextLearningPathId = null, byte Access = 0, bool practiseMistakesInThisPath = false);
 
     
     public record UpdateProgressDto(int LearningPathId, int? exerciseId, bool? practiseMistakesInThisPath);
@@ -40,13 +40,13 @@ namespace AyalasLanguageAPI.DTOs
     // Content Creator DTOs
     public record CreateLearningPathDto(
         uint Level,
-        byte Chapter,
+        decimal Chapter,
         string? Name,
         int? PrevLearningPathId = null,
         int? NextLearningPathId = null
     );
     public record CreateLearningPathResponseDto(int LearningPathId);
-    public record EditLearningPathDto(uint Level, byte Chapter, string? Name);
+    public record EditLearningPathDto(uint Level, decimal Chapter, string? Name);
     
     public record CreateExerciseDto(
         int? LearningPathId, 

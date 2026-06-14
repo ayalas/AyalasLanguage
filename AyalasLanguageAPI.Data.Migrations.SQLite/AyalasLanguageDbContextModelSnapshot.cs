@@ -440,8 +440,8 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<byte>("Chapter")
-                        .HasColumnType("INTEGER");
+                    b.Property<decimal>("Chapter")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("KnownLanguageId")
                         .HasColumnType("INTEGER");
@@ -649,7 +649,8 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasOne("AyalasLanguageAPI.Data.Model.Exercise", "SourceExercise")
                         .WithMany("ChildExercises")
-                        .HasForeignKey("SourceExerciseId");
+                        .HasForeignKey("SourceExerciseId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("AyalasLanguageAPI.Data.Model.Language", "TargetLanguage")
                         .WithMany()
@@ -783,7 +784,8 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                 {
                     b.HasOne("AyalasLanguageAPI.Data.Model.Exercise", "Exercise")
                         .WithMany()
-                        .HasForeignKey("ExerciseId");
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "LearningPath")
                         .WithMany()

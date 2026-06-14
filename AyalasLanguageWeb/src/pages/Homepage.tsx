@@ -90,7 +90,7 @@ export default function Homepage() {
                           <div className="content-line-part" title={`${path.exerciseCount} exercises`}>[{path.exerciseCount}]</div>
                         </div>
                         <div className="learning-level-creator">
-                          <Link to={`/author/path?level=${path.level}&chapter=${path.chapter + 1}&prev=${path.learningPathId}${level.paths.length - 1 == index ? '' : `&next=${level.paths[index + 1].learningPathId}`}`} title="Generate more exercises here"><LayersPlus /></Link>
+                          <Link to={`/author/path?level=${path.level}&chapter=${path.chapter}&prev=${path.learningPathId}${level.paths.length - 1 == index ? '' : `&next=${level.paths[index + 1].learningPathId}`}`} title="Generate more exercises here"><LayersPlus /></Link>
                         </div>
                       </Fragment>
                     );

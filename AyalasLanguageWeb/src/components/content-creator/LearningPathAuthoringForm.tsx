@@ -307,7 +307,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             tempLevel = Number(initLevel);
             setLevel(tempLevel);
           }
-          let hintChapter = 1;
+          let hintChapter = 0;
           if (initChapter !== '' && Number(initChapter) > 0) {
             hintChapter = Number(initChapter);
           }
@@ -388,7 +388,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         <div className="form-label-row">Chapter</div>
         <div className="form-row">
           <div className="form-input-row">
-            <input type="number" data-testid="chapter" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
+            <input type="number" data-testid="chapter" min="0.01" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
           </div>
         </div>
         <div className="form-label-row">Subject</div>
