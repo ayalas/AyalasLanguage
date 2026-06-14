@@ -3,6 +3,8 @@ import { BucketListItem } from './BucketListItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
+import { EXERCISE_TYPES } from '../../../../../constants/learning';
+import { CirclePlay } from 'lucide-react';
 
 type Props = {
   exerciseInfo: ExerciseInfo;
@@ -13,9 +15,10 @@ type Props = {
   ref: React.Ref<ExerciseHandle>;
 };
 
-const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, playTargetText, ref }: Props ) {
+const BucketListExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, playTargetText, ref }: Props) {
   const [bucketList, setBucketList] = useState<string[]>([]);
   const [answerList, setAnswerList] = useState<string[]>([]);
+  const [second, setSecond] = useState('');
 
   useImperativeHandle(ref, () => ({
     checkAnswer() {
@@ -51,6 +54,12 @@ const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayA
   useEffect(() => {
     async function execAsync() {
       if (exerciseInfo && exerciseInfo.answers && exerciseInfo.answers.length > 0 && exerciseInfo.extraItems && exerciseInfo.extraItems.length > 0) {
+        if (typeof exerciseInfo.data === 'string') {
+          setSecond(JSON.parse(exerciseInfo.data).Second);
+        }
+        else if (typeof exerciseInfo.data.Second === 'string') {
+          setSecond(exerciseInfo.data.Second);
+        }
         const wordsListTemp = [...exerciseInfo.extraItems, ...exerciseInfo.answers];
         const sequence = getRandomizedSequence(wordsListTemp.length);
         const wordsListRandomized: string[] = [];
@@ -95,7 +104,9 @@ const BucketListExercise = function({ exerciseInfo, setError, moveNext, displayA
         </div>
       )}
       {displayAnswer && (
-        <div className="form-label-row">{(typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).Second; } catch { return ''; } })() : exerciseInfo.data.Second) || ''}</div>
+        <div className="form-row-play"><div className="form-play-container">{second}
+          <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(second)}><CirclePlay /></button>
+        </div></div>
       )}
     </>
   );
