@@ -3,8 +3,9 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExerciseUpdatePage } from "./ExerciseUpdatePage"; // Adjust path
 import axios from "axios";
 import { MemoryRouter, useNavigate, useParams } from "react-router-dom";
-import { EXERCISE_TYPES } from '../../../types/exercise/Exercise';
+import { EXERCISE_TYPES, type ExerciseData, type ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
+import { AUTHOR_ACCESS } from "../../../constants/learning";
 
 // 1. Mock Axios
 vi.mock("axios");
@@ -48,15 +49,18 @@ describe("ExerciseUpdatePage", () => {
     const mockNavigate = vi.fn();
     const mockExerciseId = "123";
 
-    const mockExerciseData = {
-        id: 123,
-        learningPathId: 456,
-        exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET,
-        data: JSON.stringify({
+    const objData:ExerciseData = {
             First: "Hello",
             Second: "World",
             Alternatives: ["Alt 1", "Alt 2"]
-        })
+        };
+    const mockExerciseData:ExtendedExerciseInfo = {
+        exerciseId: 123,
+        learningPathId: 456,
+        exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET,
+        exerciseObject: objData,
+        data: JSON.stringify(objData),
+        access: AUTHOR_ACCESS.CAN_EDIT
     };
 
     beforeEach(() => {

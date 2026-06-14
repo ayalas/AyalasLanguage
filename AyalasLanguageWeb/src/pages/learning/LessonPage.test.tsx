@@ -4,8 +4,9 @@ import axios from 'axios';
 import React from 'react';
 import { MemoryRouter, useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { LessonPage } from './LessonPage';
-import { EXERCISE_TYPES } from '../../types/exercise/Exercise';
+import { EXERCISE_TYPES, type ExerciseInfo } from '../../types/exercise/Exercise';
 import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import { AUTHOR_ACCESS } from '../../constants/learning';
 
 // Mock axios as requested
 vi.mock('axios');
@@ -70,9 +71,9 @@ describe('LessonPage', () => {
     exerciseId: 101,
   };
 
-  const mockExercises = [
-    { exerciseId: 101, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{}" },
-    { exerciseId: 102, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{}" },
+  const mockExercises: ExerciseInfo[] = [
+    { exerciseId: 101, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{ first: 'can', second: 'will' }", access: AUTHOR_ACCESS.CAN_EDIT },
+    { exerciseId: 102, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{ first: 'cat', second: 'dog' }", access: AUTHOR_ACCESS.CAN_EDIT },
   ];
 
   beforeEach(() => {

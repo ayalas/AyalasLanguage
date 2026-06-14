@@ -1,10 +1,11 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React, { createRef } from 'react';
 import { TwoLinesTranslationExercise } from './TwoLinesTranslationExercise';
-import { EXERCISE_TYPES } from '../../../../types/exercise/Exercise';
+import { EXERCISE_TYPES, type ExerciseData, type ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
+import { AUTHOR_ACCESS } from '../../../../constants/learning';
 
 // Mock axios as requested
 vi.mock('axios');
@@ -50,14 +51,17 @@ vi.mock('../../../../components/VirtualKeyboard', () => ({
 
 
 describe('TwoLinesTranslationExercise', () => {
-  const mockExerciseInfo = {
-    exerciseId: 123,
-    exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
-    data: JSON.stringify({
+  const objData: ExerciseData = {
       First: 'Hello',
       Second: 'Bonjour',
       Alternatives: ['Salut']
-    }),
+    };
+  const mockExerciseInfo:ExtendedExerciseInfo = {
+    exerciseId: 123,
+    exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
+    data: JSON.stringify(objData),
+    exerciseObject: objData,
+    access: AUTHOR_ACCESS.CAN_EDIT,
   };
 
   const mockUser = {
@@ -68,7 +72,7 @@ describe('TwoLinesTranslationExercise', () => {
   } as any;
 
   const defaultProps = {
-    exerciseInfo: mockExerciseInfo as any,
+    exerciseInfo: mockExerciseInfo,
     setError: vi.fn(),
     moveNext: vi.fn(),
     displayAnswer: false,
@@ -83,9 +87,14 @@ describe('TwoLinesTranslationExercise', () => {
   it('renders correctly and allows typing', async () => {
     render(<TwoLinesTranslationExercise {...defaultProps} ref={createRef()} />);
 
-    expect(await screen.findByText('Hello')).toBeInTheDocument();
+    let helloElement: HTMLElement | undefined;
+    await waitFor(async () => {
+      helloElement = await screen.findByText('Hello');
+    });
+    expect(helloElement).toBeInTheDocument();
+
     const input = await screen.findByTestId('mock-exercise-input');
-    
+
     fireEvent.change(input, { target: { value: 'Bonjour' } });
     expect(input).toHaveValue('Bonjour');
   });
@@ -174,7 +183,7 @@ describe('TwoLinesTranslationExercise', () => {
     render(<TwoLinesTranslationExercise {...defaultProps} ref={createRef()} />);
 
     const keyboardKey = await screen.findByTestId('mock-keyboard-key');
-    
+
     // Clicking the keyboard button calls the parent's OnChange
     fireEvent.click(keyboardKey);
 
@@ -184,7 +193,7 @@ describe('TwoLinesTranslationExercise', () => {
 
   it('displays the answer line when displayAnswer prop is true', async () => {
     render(<TwoLinesTranslationExercise {...defaultProps} displayAnswer={true} ref={createRef()} />);
-    
+
     const answerLine = await screen.findByText('Bonjour');
     expect(answerLine).toBeInTheDocument();
   });

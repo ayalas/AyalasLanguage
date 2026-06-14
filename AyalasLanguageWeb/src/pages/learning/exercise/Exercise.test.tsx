@@ -30,8 +30,8 @@ vi.mock('@heyputer/puter.js', () => ({
             txt2speech: vi.fn(),
         },
         auth: {
-          isSignedIn: vi.fn(() => false),
-          signIn: vi.fn()
+            isSignedIn: vi.fn(() => false),
+            signIn: vi.fn()
         }
     },
 }));
@@ -98,12 +98,17 @@ describe('Exercise Component', () => {
         const revealBtn = await screen.findByTestId('reveal-answer');
         await user.click(revealBtn);
 
-        const addAltBtn = await screen.findByTestId('add-alternative-answer');
+        let addAltBtn: HTMLElement | undefined;
+        await waitFor(async () => {
+            addAltBtn = await screen.findByTestId('add-alternative-answer');
+        });
 
         mockedAxios.put.mockResolvedValue({ data: {} });
 
         // 4. Click the button
-        await user.click(addAltBtn);
+        expect(addAltBtn).not.toBe(undefined);
+
+        await user.click(addAltBtn as HTMLElement);
 
         // 5. CRITICAL: Wait for the mock to have been called.
         // This ensures the async logic inside the component has executed.

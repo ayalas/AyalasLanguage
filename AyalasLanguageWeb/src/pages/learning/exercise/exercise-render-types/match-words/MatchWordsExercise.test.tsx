@@ -3,7 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MatchWordsExercise from './MatchWordsExercise';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
-import { EXERCISE_TYPES } from '../../../../../types/exercise/Exercise';
+import { EXERCISE_TYPES, type ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
+import { AUTHOR_ACCESS } from '../../../../../constants/learning';
 
 // Mock axios as requested
 vi.mock('axios');
@@ -42,9 +43,11 @@ describe('MatchWordsExercise', () => {
     exerciseInfo: {
       exerciseId: 501,
       exerciseTypeId: EXERCISE_TYPES.MATCHING,
+      data: '',
       sentenceElements: ['Hello', 'Apple'],
       answers: ['Bonjour', 'Pomme'],
-    } as any,
+      access: AUTHOR_ACCESS.CAN_EDIT,
+    } as ExtendedExerciseInfo,
     setError: vi.fn(),
     moveNext: vi.fn(),
     playTargetText: vi.fn(),
@@ -129,6 +132,6 @@ describe('MatchWordsExercise', () => {
   it('randomizes the second column using getRandomizedSequence on mount', async () => {
     render(<MatchWordsExercise {...mockProps} />);
     
-    expect(getRandomizedSequence).toHaveBeenCalledWith(mockProps.exerciseInfo.sentenceElements.length);
+    expect(getRandomizedSequence).toHaveBeenCalledWith(mockProps?.exerciseInfo?.sentenceElements?.length);
   });
 });
