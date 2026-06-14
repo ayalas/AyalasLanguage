@@ -4,13 +4,14 @@ import axios from 'axios';
 import { ArrowBigLeft, FilePenLine } from 'lucide-react';
 
 import { AuthHeader } from '../../components/auth/AuthHeader';
-import { EXERCISE_TYPES, PLACEHOLDERS } from '../../constants/learning';
+import { PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts, replaceCharsForLanguage, setLanguageSettings } from '../../utils/languageUtils';
 import { Exercise } from './exercise/Exercise';
 import type { User } from '../../types/shared/User';
 import type { ExerciseInfo } from '../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../types/ui/ComponentHandles';
 import { errorHandler } from '../../utils/utils';
+import { focusOnLoad, getExtraOptionsSeparator, hasExtraOptions, hasSingleBucketAnswer, isMatchingType, usesInlineExerciseWithBlanks } from '../../logic/ExerciseTypeLogic';
 
 type LocalExercise = ExerciseInfo & { data: string | ParsedExercise; exerciseObject?: ParsedExercise; index?: number };
 type ParsedExercise = { First?: string; Second?: string; ExtraOptions?: string };
@@ -44,7 +45,7 @@ export function LessonPage() {
     const firstData = replaceCharsForLanguage(targetLang, dataObj.First || '') || '';
     const secondData = replaceCharsForLanguage(targetLang, dataObj.Second || '') || '';
 
-    if (curItem.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS) {
+    if (usesInlineExerciseWithBlanks(curItem.exerciseTypeId)) {
       const sentenceElements = (firstData || '').split(PLACEHOLDERS.BLANKS).map((s) => s.trim());
       const answers = getMissingParts(secondData || '', sentenceElements);
       setCurrentExercise({
@@ -54,24 +55,25 @@ export function LessonPage() {
         answers,
         index
       });
-    } else if (curItem.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
+    } else if (hasExtraOptions(curItem.exerciseTypeId)) {
+      const separator = getExtraOptionsSeparator(curItem.exerciseTypeId);
+      let tempAnswers: string[];
+      const secondAsStr = (secondData || '').trim();
+      if (hasSingleBucketAnswer(curItem.exerciseTypeId)) {
+        tempAnswers = [secondAsStr];
+      }
+      else {
+        tempAnswers = secondAsStr.split(separator);
+      }
       setCurrentExercise({
         ...curItem,
         exerciseObject: dataObj,
         sentenceElements: [firstData],
-        answers: (secondData || '').trim().split(' '),
-        extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(' '),
+        answers: tempAnswers,
+        extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(separator),
         index
       });
-    } else if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING) {
-      setCurrentExercise({
-        ...curItem,
-        data: dataObj,
-        sentenceElements: [firstData],
-        answers: [secondData],
-        index
-      });
-    } else {
+    } else if (isMatchingType(curItem.exerciseTypeId)) {
       const sentenceElements = (firstData || '').split(',');
       const answers = (secondData || '').split(',');
 
@@ -84,8 +86,17 @@ export function LessonPage() {
         index
       });
     }
+    else { //all other types
+      setCurrentExercise({
+        ...curItem,
+        data: dataObj,
+        sentenceElements: [firstData],
+        answers: [secondData],
+        index
+      });
+    }
 
-    if (curItem.exerciseTypeId != EXERCISE_TYPES.MATCHING && curItem.exerciseTypeId != EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
+    if (focusOnLoad(curItem.exerciseTypeId)) {
       const refItem = exerciseRefs.current.get(curItem.exerciseId);
       refItem?.setFocus();
     }
@@ -93,7 +104,7 @@ export function LessonPage() {
 
   const childLoaded = function (exerciseId: number) {
     if (exerciseId == currentExercise?.exerciseId) {
-      if (currentExercise.exerciseTypeId != EXERCISE_TYPES.MATCHING && currentExercise.exerciseTypeId != EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET) {
+      if (focusOnLoad(currentExercise.exerciseTypeId)) {
         const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
         refItem?.setFocus();
       }
@@ -158,7 +169,7 @@ export function LessonPage() {
     }
   };
 
-  const onBackClick = function(e: React.MouseEvent) {
+  const onBackClick = function (e: React.MouseEvent) {
     e.preventDefault();
 
     if (currentExercise == null) return;
@@ -271,12 +282,12 @@ export function LessonPage() {
                 changeMistakesSetting={changeMistakesSetting}
                 practiseMistakesInThisPath={practiseMistakesInThisPath}
                 addMistake={addMistake} />
-                { currentExercise && (currentExercise.index ?? 0) > 0 && (
-                  <div className="form-row">
+              {currentExercise && (currentExercise.index ?? 0) > 0 && (
+                <div className="form-row">
                   <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
                 </div>
-                )}
-                
+              )}
+
             </>
           )}
         </form>

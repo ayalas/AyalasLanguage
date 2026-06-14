@@ -3,8 +3,8 @@ import { BucketListItem } from './BucketListItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
-import { EXERCISE_TYPES } from '../../../../../constants/learning';
 import { CirclePlay } from 'lucide-react';
+import { hasSingleBucketAnswer } from '../../../../../logic/ExerciseTypeLogic';
 
 type Props = {
   exerciseInfo: ExerciseInfo;
@@ -20,9 +20,8 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   const [answerList, setAnswerList] = useState<string[]>([]);
   const [second, setSecond] = useState('');
 
-  useImperativeHandle(ref, () => ({
-    checkAnswer() {
-      let canMoveNext = true;
+  function checkAnswerInternal() {
+    let canMoveNext = true;
       if (answerList.length === (exerciseInfo.answers?.length || 0)) {
         for (let i = 0; i < answerList.length; i++) {
           if (answerList[i].toLowerCase() !== (exerciseInfo.answers?.[i]?.toLowerCase() || '')) {
@@ -41,6 +40,11 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       }
 
       return canMoveNext;
+  }
+
+  useImperativeHandle(ref, () => ({
+    checkAnswer() {
+      return checkAnswerInternal();
     },
     setFocus() {
       // focus is not applicable for bucket-list, leave as no-op
@@ -60,13 +64,13 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         else if (typeof exerciseInfo.data.Second === 'string') {
           setSecond(exerciseInfo.data.Second);
         }
-        const wordsListTemp = [...exerciseInfo.extraItems, ...exerciseInfo.answers];
-        const sequence = getRandomizedSequence(wordsListTemp.length);
-        const wordsListRandomized: string[] = [];
+        const optionsListTemp = [...exerciseInfo.extraItems, ...exerciseInfo.answers];
+        const sequence = getRandomizedSequence(optionsListTemp.length);
+        const optionsListRandomized: string[] = [];
         for (let i = 0; i < sequence.length; i++) {
-          wordsListRandomized.push(wordsListTemp[sequence[i]]);
+          optionsListRandomized.push(optionsListTemp[sequence[i]]);
         }
-        setBucketList(wordsListRandomized);
+        setBucketList(optionsListRandomized);
       }
     }
 
@@ -80,8 +84,16 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
 
   function bucketListItemClicked(itemValue: string, position: number) {
     playTargetText(itemValue);
-    setAnswerList([...answerList, itemValue]);
-    setBucketList(bucketList.filter((_, ind) => ind !== position));
+    
+    if (hasSingleBucketAnswer(exerciseInfo.exerciseTypeId)) {
+      setBucketList([...answerList, ...bucketList.filter((_, ind) => ind !== position)]);
+      setAnswerList([itemValue]);
+      checkAnswerInternal();
+    }
+    else {
+      setBucketList(bucketList.filter((_, ind) => ind !== position));
+      setAnswerList([...answerList, itemValue]);
+    }
   }
 
   return (

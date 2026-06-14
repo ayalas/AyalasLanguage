@@ -10,6 +10,7 @@ using AyalasLanguageAPI.DTOs;
 using AyalasLanguageAPI.Data.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using AyalasLanguageAPI.Logic;
 
 public static class ContentCreatorEndpoints
 {
@@ -57,20 +58,20 @@ public static class ContentCreatorEndpoints
         {
             if (dto.ChapterHint == 0 || paths.Any(p => p.Chapter == dto.ChapterHint))
             {
-                NextChapterResponseDto[] sortedArray = [.. paths.OrderBy(p=> p.Chapter)];
+                NextChapterResponseDto[] sortedArray = [.. paths.OrderBy(p => p.Chapter)];
                 if (dto.ChapterHint == 0)
                 {
                     hint = sortedArray[0].Chapter;
                 }
                 //if the desired chapter exists we need to find the closest to it
-                return Results.Ok(new NextChapterResponseDto(FindPath(sortedArray, hint, dto.ChapterHint != 0 )));
+                return Results.Ok(new NextChapterResponseDto(FindPath(sortedArray, hint, dto.ChapterHint != 0)));
             }
         }
 
         //if the hint is zero and we did not find 1 - return 1
         if (hint == 0)
             return Results.Ok(new NextChapterResponseDto(1));
-        
+
         return Results.Ok(new NextChapterResponseDto(hint));
     }
 
@@ -356,8 +357,7 @@ public static class ContentCreatorEndpoints
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
 
         //see if Alternatives changed and we have a source exercise id
-        if (exercise.ExerciseTypeId == (int)ExerciseTypesEnum.FromKnownToTarget
-            || exercise.ExerciseTypeId == (int)ExerciseTypesEnum.FromTargetToKnown)
+        if (((ExerciseTypesEnum)exercise.ExerciseTypeId).SupportsAlternativeAnswers())
         {
             // get added alternatives
             List<string> addedAlternatives = [];
@@ -514,33 +514,31 @@ public static class ContentCreatorEndpoints
 
         try
         {
-            switch (exerciseTypeId)
+            ExerciseTypesEnum type = (ExerciseTypesEnum)exerciseTypeId;
+            if (!type.HasExtraOptions())
             {
-                case (int)ExerciseTypesEnum.FromKnownToTarget:
-                case (int)ExerciseTypesEnum.FromTargetToKnown:
-                case (int)ExerciseTypesEnum.FillInTheBlanks:
-                case (int)ExerciseTypesEnum.Matching:
-                    // Validate that data is a JSON array of options
-                    var dtoSimple = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(data);
-                    return dtoSimple != null && !string.IsNullOrEmpty(dtoSimple.First) && !string.IsNullOrEmpty(dtoSimple.Second);
-                case (int)ExerciseTypesEnum.FromKnownToTargetBucket:
-                    // Validate that data is a JSON object with question, options, and correct answer
-                    var dtoBucket = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.BucketTranslateDto>(data);
-                    if (!(dtoBucket != null
-                           && !string.IsNullOrEmpty(dtoBucket.First)
-                           && !string.IsNullOrEmpty(dtoBucket.Second)
-                           && dtoBucket.ExtraOptions.Split(" ").Length >= Constants.BUCKET_EXTRA_MIN_COUNT
-                           && dtoBucket.ExtraOptions.Split(" ").Length <= Constants.BUCKET_EXTRA_MAX_COUNT))
-                    {
-                        logger.LogWarning("Bucket exercise data validation failed. Data: {Data}", data);
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                default:
-                    return false; // Assuming invalid for unknown types
+                // Validate that data is a JSON array of options
+                var dtoSimple = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(data);
+                return dtoSimple != null && !string.IsNullOrEmpty(dtoSimple.First) && !string.IsNullOrEmpty(dtoSimple.Second);
+            }
+            else
+            {
+                string separator = type.ExtraOptionsSeparator();
+                // Validate that data is a JSON object with question, options, and correct answer
+                var dtoBucket = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.BucketTranslateDto>(data);
+                if (!(dtoBucket != null
+                       && !string.IsNullOrEmpty(dtoBucket.First)
+                       && !string.IsNullOrEmpty(dtoBucket.Second)
+                       && dtoBucket.ExtraOptions.Split(separator).Length >= Constants.BUCKET_EXTRA_MIN_COUNT
+                       && dtoBucket.ExtraOptions.Split(separator).Length <= Constants.BUCKET_EXTRA_MAX_COUNT))
+                {
+                    logger.LogWarning("Bucket exercise data validation failed. Data: {Data}", data);
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
         catch (Exception ex)
@@ -552,12 +550,12 @@ public static class ContentCreatorEndpoints
 
     private static async Task<bool> IsOtherLearningPathFoundWith(int targetLanguageId, int knownLanguageId, uint level, decimal chapter, int? currentLearningPathId, AyalasLanguageDbContext db)
     {
-        var learningPath = await db.LearningPaths.Where(lp => lp.KnownLanguageId == knownLanguageId 
+        var learningPath = await db.LearningPaths.Where(lp => lp.KnownLanguageId == knownLanguageId
             && lp.TargetLanguageId == targetLanguageId
             && lp.Level == level
-            && lp.Chapter == chapter ).FirstOrDefaultAsync();
+            && lp.Chapter == chapter).FirstOrDefaultAsync();
 
-       if (learningPath == null )
+        if (learningPath == null)
         {
             return false;
         }
@@ -573,7 +571,7 @@ public static class ContentCreatorEndpoints
         //get the number and the one closest to it on the same direction
         int index = Array.FindIndex(paths, p => p.Chapter == chapterHint);
         int? nextIndex = null;
-        if (goUp && index < paths.Length -1)
+        if (goUp && index < paths.Length - 1)
             nextIndex = index + 1;
         else if (!goUp && index > 0)
             nextIndex = index - 1;

@@ -5,9 +5,11 @@ import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
 import { ArrowBigLeft, LayersPlus } from "lucide-react";
 import type { ExerciseData, ExerciseModel } from "../../../types/exercise/Exercise";
-import { EXERCISE_TYPES, EXERCISE_GENERATIONS } from "../../../constants/learning";
+import { EXERCISE_GENERATIONS } from "../../../constants/learning";
+import {type ExerciseType} from '../../../types/exercise/Exercise';
 import { AlternativeLine } from "./AlternativeLine";
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
+import { hasExtraOptions } from "../../../logic/ExerciseTypeLogic";
 
 export function ExerciseUpdatePage() {
     const { exerciseId } = useParams();
@@ -84,6 +86,9 @@ export function ExerciseUpdatePage() {
                         if (exerciseTemp.exerciseObject.Second != null) {
                             setSecondLine(exerciseTemp.exerciseObject.Second);
                         }
+                        if (hasExtraOptions(exerciseTemp.exerciseTypeId)) {
+                            setExtraOptions(exerciseTemp.exerciseObject.ExtraOptions as string);
+                        }
                     }
                 }
             } catch (err: unknown) {
@@ -129,7 +134,7 @@ export function ExerciseUpdatePage() {
                             <textarea data-testid="second-line" className="text-area-minimal" required={true} value={secondLine} onChange={(e) => { setSecondLine(e.target.value) }} />
                         </div>
                     </div>
-                    {initialRecord != null && initialRecord.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
+                    {initialRecord != null && hasExtraOptions(initialRecord.exerciseTypeId) && (
                         <>
                             <div className="form-label-row">Extra Options</div>
                             <div className="form-row">

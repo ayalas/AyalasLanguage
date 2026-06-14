@@ -1,3 +1,16 @@
+export const EXERCISE_TYPES = 
+{
+    FROM_KNOWN_TO_TARGET: 1,
+    FROM_TARGET_TO_KNOWN: 2,
+    FILL_IN_THE_BLANKS: 3,
+    MATCHING: 4,
+    FROM_KNOWN_TO_TARGET_BUCKET: 5,
+    COMMON_RESPONSES_BUCKET: 6,
+    COMMON_RESPONSES: 7
+} as const;
+
+export type ExerciseType = typeof EXERCISE_TYPES[keyof typeof EXERCISE_TYPES];
+
 export interface ExerciseData {
   First?: string;
   Second?: string;
@@ -7,7 +20,7 @@ export interface ExerciseData {
 
 export interface ExerciseInfo {
   exerciseId: number;
-  exerciseTypeId: number;
+  exerciseTypeId: ExerciseType;
   // backend stores data as a JSON string; allow both until fully normalized
   data: string | ExerciseData;
   answers?: string[];
@@ -17,7 +30,7 @@ export interface ExerciseInfo {
 
 export interface ExerciseModel {
   exerciseId: number;
-  exerciseTypeId: number;
+  exerciseTypeId: ExerciseType;
   data: string;
   access: number;
   exerciseObject?: ExerciseData;

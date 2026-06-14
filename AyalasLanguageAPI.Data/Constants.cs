@@ -35,7 +35,9 @@ public enum ExerciseTypesEnum
     FromTargetToKnown = 2,
     FillInTheBlanks = 3,
     Matching = 4,
-    FromKnownToTargetBucket = 5
+    FromKnownToTargetBucket = 5,
+    CommonResponsesBucket = 6,
+    CommonResponses = 7
 }
 
 public enum LanguageEnum

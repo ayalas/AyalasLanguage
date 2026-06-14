@@ -4,7 +4,7 @@ import { Exercise } from './Exercise';
 import { MemoryRouter, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { createRef } from 'react';
-import { EXERCISE_TYPES } from '../../../constants/learning';
+import { EXERCISE_TYPES } from '../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
 import userEvent from '@testing-library/user-event'; // 1. Import userEvent

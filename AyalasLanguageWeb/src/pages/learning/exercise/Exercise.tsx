@@ -2,7 +2,7 @@ import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'reac
 import { Link, useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History, TicketPlus } from 'lucide-react';
 import axios from 'axios';
-import { EXERCISE_TYPES, EXERCISE_TYPE_INSTRUCTIONS, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
+import { EXERCISE_TYPE_INSTRUCTIONS, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
@@ -12,6 +12,7 @@ import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import type { ExerciseData, ExerciseInfo } from '../../../types/exercise/Exercise';
 import { puter } from "@heyputer/puter.js";
 import { initializePuter, isSecure } from '../../../utils/utils';
+import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayRevealedAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
 
 type Props = {
     exerciseInfo: ExerciseInfo;
@@ -37,19 +38,19 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
-            
+
             if (isSecure()) {
                 const langCode = user?.languageSettings?.targetLanguageCode;
                 if (langCode != undefined) {
                     const pollyObject = LANGUAGE_TO_POLLY_MAP[langCode]
                     if (pollyObject != null) {
-                        
+
                         let tempPuterSignin = puterSignedIn;
                         if (!tempPuterSignin) {
                             tempPuterSignin = (await initializePuter() == true);
                             setPuterSignedIn(tempPuterSignin);
                         }
-                        
+
                         if (!tempPuterSignin) {
                             return;
                         }
@@ -61,7 +62,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                         else {
                             parsed = exerciseInfo.data;
                         }
-                        textToPlay = textToPlay!= null? textToPlay: parsed.Second;
+                        textToPlay = textToPlay != null ? textToPlay : parsed.Second;
                         if (textToPlay != null && textToPlay != "") {
                             const options = {
                                 provider: 'aws-polly',
@@ -88,7 +89,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
         const newValue = !displayAnswer;
         setDisplayAnswer(newValue);
 
-        if (newValue && exerciseInfo.exerciseTypeId !== EXERCISE_TYPES.FROM_TARGET_TO_KNOWN) {
+        if (newValue && shouldPlayRevealedAnswer(exerciseInfo.exerciseTypeId)) {
             playTargetText();
         }
     }
@@ -123,16 +124,14 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
 
     async function addAlternativeAnswer(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        if (exerciseInfo.exerciseTypeId !== EXERCISE_TYPES.FROM_TARGET_TO_KNOWN &&
-            exerciseInfo.exerciseTypeId !== EXERCISE_TYPES.FROM_KNOWN_TO_TARGET) {
+        if (!supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) {
             return;
         }
-        //  const updatedAlternatives = [...(exerciseInfo.Alternatives || []), altAnswer];
         let dataObj: ExerciseData;
         if (typeof exerciseInfo.data === "string") {
             dataObj = JSON.parse(exerciseInfo.data) as ExerciseData;
         } else {
-            dataObj = {...exerciseInfo.data} as ExerciseData;
+            dataObj = { ...exerciseInfo.data } as ExerciseData;
         }
 
         const alternative = refExercise.current?.getCurrentAnswer?.();
@@ -182,15 +181,17 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
             <div className="form-row">
                 {
-                    exerciseInfo.exerciseTypeId != EXERCISE_TYPES.MATCHING && (
-                        <>
-                            <div className="form-button-cell">
-                                <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks /></button>
-                            </div>
-                            <div className="form-button-cell">
-                                <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>
-                            </div>
-                        </>
+                    showCheckAnswers(exerciseInfo.exerciseTypeId) && (
+                        <div className="form-button-cell">
+                            <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks /></button>
+                        </div>
+                    )
+                }
+                {
+                    canRevealAnswers(exerciseInfo.exerciseTypeId) && (
+                        <div className="form-button-cell">
+                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>
+                        </div>
                     )
                 }
 
@@ -210,8 +211,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                         </div>
                     )}
                 {displayAnswer && error != ""
-                    && (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_TARGET_TO_KNOWN
-                        || exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET) && (
+                    && (supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) && (
                         <div className="form-button-cell">
                             <button data-testid="add-alternative-answer" type="button" className="form-button" title="Add alternative answer" onClick={addAlternativeAnswer}><TicketPlus /></button>
                         </div>
@@ -230,16 +230,16 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                     </div>
                 )}
 
-                {exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FILL_IN_THE_BLANKS && (
+                {usesInlineExerciseWithBlanks(exerciseInfo.exerciseTypeId) && (
                     <InlineExerciseWithBlanks ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer}
                         parentCheckAnswer={checkAnswer} user={user} />
-                ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.MATCHING && (
+                ) || (isMatchingType(exerciseInfo.exerciseTypeId) && (
                     <MatchWordsExercise
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} addMistake={addMistake} playTargetText={playTargetText} />
-                ) || (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET && (
+                ) || (hasExtraOptions(exerciseInfo.exerciseTypeId) && (
                     <BucketListExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer} playTargetText={playTargetText} />

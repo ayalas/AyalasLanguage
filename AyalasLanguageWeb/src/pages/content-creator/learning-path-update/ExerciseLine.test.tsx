@@ -4,7 +4,8 @@ import axios from 'axios';
 import { MemoryRouter } from 'react-router-dom';
 import { ExerciseLine } from './ExerciseLine';
 import type { ExerciseModel } from '../../../types/exercise/Exercise';
-import { AUTHOR_ACCESS, EXERCISE_TYPES } from '../../../constants/learning';
+import { EXERCISE_TYPES } from '../../../types/exercise/Exercise';
+import { AUTHOR_ACCESS } from '../../../constants/learning';
 import { errorHandler } from '../../../utils/utils';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
 

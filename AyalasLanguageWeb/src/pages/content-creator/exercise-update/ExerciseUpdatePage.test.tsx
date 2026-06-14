@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExerciseUpdatePage } from "./ExerciseUpdatePage"; // Adjust path
 import axios from "axios";
 import { MemoryRouter, useNavigate, useParams } from "react-router-dom";
-import { EXERCISE_TYPES } from "../../../constants/learning";
+import { EXERCISE_TYPES } from '../../../types/exercise/Exercise';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
 
 // 1. Mock Axios

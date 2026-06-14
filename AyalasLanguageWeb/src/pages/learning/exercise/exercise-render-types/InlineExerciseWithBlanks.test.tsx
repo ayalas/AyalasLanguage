@@ -4,7 +4,7 @@ import React, { createRef } from 'react';
 import { InlineExerciseWithBlanks } from './InlineExerciseWithBlanks';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
-import { EXERCISE_TYPES } from '../../../../constants/learning';
+import { EXERCISE_TYPES } from '../../../../types/exercise/Exercise';
 
 // Mock axios as requested
 vi.mock('axios');

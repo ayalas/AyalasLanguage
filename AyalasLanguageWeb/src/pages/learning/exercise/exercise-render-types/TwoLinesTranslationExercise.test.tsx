@@ -2,7 +2,7 @@ import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React, { createRef } from 'react';
 import { TwoLinesTranslationExercise } from './TwoLinesTranslationExercise';
-import { EXERCISE_TYPES } from '../../../../constants/learning';
+import { EXERCISE_TYPES } from '../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
 

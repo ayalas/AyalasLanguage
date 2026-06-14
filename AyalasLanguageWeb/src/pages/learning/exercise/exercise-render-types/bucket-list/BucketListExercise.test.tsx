@@ -6,7 +6,7 @@ import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
-import { EXERCISE_TYPES } from '../../../../../constants/learning';
+import { EXERCISE_TYPES } from '../../../../../types/exercise/Exercise';
 
 // Mock axios
 vi.mock('axios');

@@ -1,13 +1,13 @@
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
-import { EXERCISE_TYPES } from '../../../../constants/learning';
 import type { ExerciseData, ExerciseInfo } from '../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles';
 import type { User } from '../../../../types/shared/User';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { CirclePlay } from 'lucide-react';
+import { shouldPlayQuestion, shouldPlayRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';
 
 type Props = {
   exerciseInfo: ExerciseInfo;
@@ -91,7 +91,7 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
   const second = (typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).Second ?? ''; } catch { return ''; } })() : (exerciseInfo.data as ExerciseData).Second) ?? '';
 
   useEffect(() => {
-    if (exerciseInfo.exerciseTypeId == EXERCISE_TYPES.FROM_TARGET_TO_KNOWN) {
+    if (shouldPlayQuestion(exerciseInfo.exerciseTypeId)) {
       //play the sentence shown
       playTargetText(first);
     }
@@ -100,11 +100,11 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
   return (
     <>
       <div className="form-row-play">
-        <div className="form-play-container">{first}{ exerciseInfo.exerciseTypeId === EXERCISE_TYPES.FROM_TARGET_TO_KNOWN && (
+        <div className="form-play-container">{first}{ shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
           <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(first)}><CirclePlay /></button></div>
         )}</div>
       </div>
-      <div className={`${exerciseInfo.exerciseTypeId === EXERCISE_TYPES.FROM_KNOWN_TO_TARGET ? 'form-row answer' : 'form-row'}`}>
+      <div className="form-row answer">
         <ExerciseInput
           ref={inputRef}
           charWidth={2 + (second?.length ?? 0)}
@@ -115,11 +115,11 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
       </div>
       {displayAnswer && (
         <div className="form-row-play"><div className="form-play-container">{second}
-        { exerciseInfo.exerciseTypeId === EXERCISE_TYPES.FROM_KNOWN_TO_TARGET && (
+        { shouldPlayRevealedAnswer(exerciseInfo.exerciseTypeId) && (
           <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(second)}><CirclePlay /></button>
         )}</div></div>
       )}
-      {exerciseInfo.exerciseTypeId === EXERCISE_TYPES.FROM_KNOWN_TO_TARGET && (
+      {useVirtualKeyboard(exerciseInfo.exerciseTypeId) && (
         <VirtualKeyboard languageCode={(user?.languageSettings?.targetLanguageEnglishName ?? 'en').toLowerCase()} isRightToLeft={true} onChange={OnChange} value={inputValue} />
       )}
     </>

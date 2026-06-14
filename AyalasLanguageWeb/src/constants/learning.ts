@@ -1,3 +1,4 @@
+import { EXERCISE_TYPES } from "../types/exercise/Exercise";
 import type { AppLanguageCode } from "../types/shared/User";
 
 export const PLACEHOLDERS = {
@@ -6,15 +7,6 @@ export const PLACEHOLDERS = {
     BLANKS: "___",
     SUBJECT_PLACEHOLDER: "sssubjectsss",
     LEVEL_PLACEHOLDER: 'llllevelllll'
-} as const;
-
-export const EXERCISE_TYPES = 
-{
-    FROM_KNOWN_TO_TARGET: 1,
-    FROM_TARGET_TO_KNOWN: 2,
-    FILL_IN_THE_BLANKS: 3,
-    MATCHING: 4,
-    FROM_KNOWN_TO_TARGET_BUCKET: 5
 } as const;
 
 const TOP_LEVEL = 100;
@@ -96,8 +88,28 @@ export const EXERCISE_GENERATIONS =
         description:"Generate sentences in the langauge you know to translate to the langauge you are learning from a bucket list.",
         first_data_instructions: "Sentences in the langauge you know, separated by semi-colon(;)",
         second_data_instructions: "Sentences in the langauge you are learning, separated by semi-colon(;)",
+        extra_options_instructions: "Sets of words that are wrong choises in the translated sentence. Each word separated by space. Each set separated by semi-colon(;)",
         ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 sentences in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, that I would have to translate to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Then preapre me a separate list with the full correct answers. In each list, separate each sentence with semi-colon. Do not include punctuations, just the sentences. For each sentence, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} words in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} that do not appear in the corresponding sentence. separate each such set of words with a semi-colon, and present this as a third list of wrong extra options.`,
         ai_instruction_auto: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER} (on a scale of 1 to ${TOP_LEVEL}). Prepare for me 10 translation exercises on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}. In each exercise I would have to translate from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Do not include punctuations, just the sentences. For each sentence, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} wrong extra words in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}, separated only by whitespace, that do not appear in the corresponding translated sentence. Return the result as a raw JSON array of objects in this format: {First: string, Second: string, ExtraOptions: string} where First would be the sentence in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, Second would be the sentence in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} and ExtraOptions would be the whitespace-separated list of words in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} that do not appear in the corresponding translated sentence.`
+    },
+    {
+        type: EXERCISE_TYPES.COMMON_RESPONSES_BUCKET,
+        name: "Common responses with bucket list",
+        description:"Generate sentences in the langauge are learning that have common answers - choose the right one from a bucket list.",
+        first_data_instructions: "Sentences in the langauge you are learning that have common answers, separated by semi-colon(;)",
+        second_data_instructions: "The correct common responses in the langauge you are learning to those sentences, separated by semi-colon(;)",
+        extra_options_instructions: "Sets of wrong responses to each sentence. Each response separated by comma(,). Each set that corresponds to the sentence to respond to - separated by semi-colon(;)",
+        ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 sentences in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, that have common responses to. I would have to choose from a few options the correct response in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Then preapre me a separate list with the full correct answers. In each list, separate each sentence with semi-colon. Do not include punctuations, just the sentences. For each response, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} wrong responses in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}, separated by a comma(,). separate each such set of wrong responses with a semi-colon, and present this as a third list of wrong extra options.`,
+        ai_instruction_auto: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER} (on a scale of 1 to ${TOP_LEVEL}). Prepare for me 10 exercises on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}. In each exercise I would have to choose a common response to the sentence presented. Both the sentence and the responses are in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Do not include punctuations, just the sentences and responses. For each correct response, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} wrong extra responses, separated by comma(,). Return the result as a raw JSON array of objects in this format: {First: string, Second: string, ExtraOptions: string - separated by commas} where First would be the sentence to respond to, Second would be the correct response and ExtraOptions would be the comma-separated list of wrong responses to the presented sentence in First.`
+    },
+    {
+        type: EXERCISE_TYPES.COMMON_RESPONSES_BUCKET,
+        name: "Common responses",
+        description:"Generate sentences in the langauge are learning that have common answers - write the right one.",
+        first_data_instructions: "Sentences in the langauge you are learning that have common answers, separated by semi-colon(;)",
+        second_data_instructions: "The correct common responses in the langauge you are learning to those sentences, separated by semi-colon(;)",
+        ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 25 sentences in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, that have common responses to. I would have to write the correct response in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Then preapre me a separate list with the full correct answers. In each list, separate each sentence with semi-colon. Do not include punctuations, just the sentences.`,
+        ai_instruction_auto: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER} (on a scale of 1 to ${TOP_LEVEL}). Prepare for me 25 exercises on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}. In each exercise I would have to write a common response to the sentence presented. Both the sentence and the responses are in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Do not include punctuations, just the sentences and responses. Return the result as a raw JSON array of objects in this format: {First: string, Second: string} where First would be the sentence to respond to and Second would be the correct response.`
     }
 ];
 

@@ -4,7 +4,7 @@ import axios from 'axios';
 import React from 'react';
 import { MemoryRouter, useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { LessonPage } from './LessonPage';
-import { EXERCISE_TYPES } from '../../constants/learning';
+import { EXERCISE_TYPES } from '../../types/exercise/Exercise';
 import disableClientValidation from '../../utils/test-utils/disableClientValidation';
 
 // Mock axios as requested

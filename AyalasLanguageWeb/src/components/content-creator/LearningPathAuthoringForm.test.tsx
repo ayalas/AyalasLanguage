@@ -4,7 +4,8 @@ import { LearningPathAuthoringForm } from './LearningPathAuthoringForm'; // Adju
 import axios from 'axios';
 import * as router from 'react-router-dom';
 import { downloadFile } from '../../utils/utils';
-import { AUTHOR_ACCESS, EXERCISE_TYPES } from '../../constants/learning';
+import { AUTHOR_ACCESS } from '../../constants/learning';
+import { EXERCISE_TYPES } from '../../types/exercise/Exercise';
 import disableClientValidation from '../../utils/test-utils/disableClientValidation';
 
 // Mock axios
