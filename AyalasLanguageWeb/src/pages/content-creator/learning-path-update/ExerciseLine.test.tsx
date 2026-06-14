@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import { MemoryRouter } from 'react-router-dom';
 import { ExerciseLine } from './ExerciseLine';
-import type { ExerciseModel } from '../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { EXERCISE_TYPES } from '../../../types/exercise/Exercise';
 import { AUTHOR_ACCESS } from '../../../constants/learning';
 import { errorHandler } from '../../../utils/utils';
@@ -29,7 +29,7 @@ vi.mock('../../../utils/utils', () => ({
 }));
 
 describe('ExerciseLine Component', () => {
-  const mockExercise: ExerciseModel = {
+  const mockExercise: ExtendedExerciseInfo = {
     exerciseId: 123,
     exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
     access: AUTHOR_ACCESS.CAN_EDIT,
@@ -120,7 +120,7 @@ describe('ExerciseLine Component', () => {
     readOnlyExercise.access = AUTHOR_ACCESS.LEARNER;
     render(
       <MemoryRouter>
-        <ExerciseLine exerciseInfo={readOnlyExercise as ExerciseModel} />
+        <ExerciseLine exerciseInfo={readOnlyExercise as ExtendedExerciseInfo} />
       </MemoryRouter>
     );
 

@@ -8,6 +8,7 @@ import { EXERCISE_TYPES } from '../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
 import userEvent from '@testing-library/user-event'; // 1. Import userEvent
+import { AUTHOR_ACCESS } from '../../../constants/learning';
 
 // Mock axios as requested
 vi.mock('axios');
@@ -49,6 +50,7 @@ describe('Exercise Component', () => {
             data: JSON.stringify({ First: 'Hello', Second: 'Bonjour', Alternatives: [] }),
             sentenceElements: ['Part 1'],
             answers: ['Answer 1'],
+            access: AUTHOR_ACCESS.CAN_EDIT,
         },
         moveNext: vi.fn(),
         childLoaded: vi.fn(),

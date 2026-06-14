@@ -4,7 +4,7 @@ using AyalasLanguageAPI.Data.Model;
 
 namespace AyalasLanguageAPI.Logic;
 
-public static class ExerciseTypeExtensions
+internal static class ExerciseTypeExtensions
 {
     public static bool SupportsAlternativeAnswers(this ExerciseTypesEnum type) => type switch
     {

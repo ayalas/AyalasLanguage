@@ -1,26 +1,32 @@
-import { Fragment, useRef, useState, useImperativeHandle, useCallback } from 'react';
+import { Fragment, useRef, useState, useImperativeHandle, useCallback, useEffect } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
-import type { ExerciseInfo } from '../../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
 import type { User } from '../../../../types/shared/User';
 import type { ExerciseInputHandle, ExerciseHandle } from '../../../../types/ui/ComponentHandles';
+import { shouldPlayRevealedAnswer, showTranslationOnRevealedAnswer } from '../../../../logic/ExerciseTypeLogic';
+import { CirclePlay } from 'lucide-react';
 
 interface Props {
-    exerciseInfo: ExerciseInfo;
+    exerciseInfo: ExtendedExerciseInfo;
     setError: (s: string) => void;
     moveNext: () => void;
     displayAnswer?: boolean;
     parentCheckAnswer?: () => void;
     user?: User;
+    playTargetText: (s: string) => Promise<void>;
     ref: React.Ref<ExerciseHandle>;
 }
 
-export const InlineExerciseWithBlanks = function(props: Props) {
-    const { exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, ref } = props;
+export const InlineExerciseWithBlanks = function (props: Props) {
+    const { exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText, ref } = props;
     const questionsRefMap = useRef<Map<string, ExerciseInputHandle | undefined>>(new Map());
     const [valueFromKeyboard, setValueFromKeyboard] = useState("");
     const currentInputKey = useRef("");
+    const [second, setSecond] = useState('');
+    const [translation, setTranslation] = useState('');
+
 
     const onChangeFromKeyboard = useCallback((input: string) => {
         if (currentInputKey.current !== "") {
@@ -79,6 +85,19 @@ export const InlineExerciseWithBlanks = function(props: Props) {
         }
     }));
 
+    useEffect(() => {
+        async function runAsync() {
+
+            if (exerciseInfo.exerciseObject == null) return;
+
+            setSecond(exerciseInfo.exerciseObject.Second as string);
+            if (exerciseInfo.exerciseObject.Translation != null) {
+                setTranslation(exerciseInfo.exerciseObject.Translation as string);
+            }
+        }
+        runAsync();
+    }, [exerciseInfo])
+
     return (
         <>
             <div className="form-label-row answer">
@@ -119,7 +138,15 @@ export const InlineExerciseWithBlanks = function(props: Props) {
                     })
                 }</div>
             {displayAnswer && (
-                <div className="form-label-row">{(typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).Second; } catch { return ''; } })() : exerciseInfo.data.Second) || ''}</div>
+                <div className="form-row-play">
+                    <div className="form-play-container">{second}
+                        {shouldPlayRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+                            <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
+                        )}</div>
+                    {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+                        <div className="form-content-row">{translation}</div>
+                    )}
+                </div>
             )}
             <VirtualKeyboard languageCode={user?.languageSettings?.targetLanguageEnglishName?.toLowerCase() || ''} isRightToLeft={true}
                 onChange={onChangeFromKeyboard}

@@ -1,13 +1,13 @@
 import { useEffect, useState, useImperativeHandle } from 'react';
 import { BucketListItem } from './BucketListItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExerciseData, ExerciseInfo } from '../../../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
-import { hasSingleBucketAnswer, shouldPlayQuestion } from '../../../../../logic/ExerciseTypeLogic';
+import { hasSingleBucketAnswer, shouldPlayQuestion, showTranslationOnRevealedAnswer } from '../../../../../logic/ExerciseTypeLogic';
 
 type Props = {
-  exerciseInfo: ExerciseInfo;
+  exerciseInfo: ExtendedExerciseInfo;
   setError: (s: string) => void;
   moveNext: () => void;
   displayAnswer?: boolean;
@@ -20,6 +20,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   const [answerList, setAnswerList] = useState<string[]>([]);
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
+  const [translation, setTranslation] = useState('');
 
   function checkAnswerInternal(altAnswers: (string)[] = []) {
     let canMoveNext = true;
@@ -73,17 +74,13 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
 
   useEffect(() => {
     async function execAsync() {
-      if (exerciseInfo && exerciseInfo.answers && exerciseInfo.answers.length > 0 && exerciseInfo.extraItems && exerciseInfo.extraItems.length > 0) {
+      if (exerciseInfo && exerciseInfo.exerciseObject != null && exerciseInfo.answers && exerciseInfo.answers.length > 0 && exerciseInfo.extraItems && exerciseInfo.extraItems.length > 0) {
 
-        let tempExerciseData: ExerciseData;
-        if (typeof exerciseInfo.data === 'string') {
-          tempExerciseData = JSON.parse(exerciseInfo.data);
+        setFirst(exerciseInfo.exerciseObject.First as string);
+        setSecond(exerciseInfo.exerciseObject.Second as string);
+        if (showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && exerciseInfo.exerciseObject.Translation != null) {
+          setTranslation(exerciseInfo.exerciseObject.Translation as string);
         }
-        else {
-          tempExerciseData = { ...exerciseInfo.data }
-        }
-        setFirst(tempExerciseData.First as string);
-        setSecond(tempExerciseData.Second as string);
         const optionsListTemp = [...exerciseInfo.extraItems, ...exerciseInfo.answers];
         const sequence = getRandomizedSequence(optionsListTemp.length);
         const optionsListRandomized: string[] = [];
@@ -94,7 +91,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
 
         if (shouldPlayQuestion(exerciseInfo.exerciseTypeId)) {
           //play the sentence shown
-          await playTargetText(tempExerciseData.First as string);
+          await playTargetText(exerciseInfo.exerciseObject.First as string);
         }
       }
     }
@@ -124,8 +121,8 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   return (
     <>
       <div className="form-row-play">
-        <div className="form-play-container">{first}{ shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
-          <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(first)}><CirclePlay /></button></div>
+        <div className="form-play-container">{first}{shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
+          <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={async() => await playTargetText(first)}><CirclePlay /></button></div>
         )}</div>
       </div>
       {answerList && (
@@ -143,9 +140,14 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         </div>
       )}
       {displayAnswer && (
-        <div className="form-row-play"><div className="form-play-container">{second}
-          <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(second)}><CirclePlay /></button>
-        </div></div>
+        <div className="form-row-play">
+          <div className="form-play-container">{second}
+            <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={async() => await playTargetText(second)}><CirclePlay /></button>
+          </div>
+          {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+            <div className="form-content-row">{translation}</div>
+          )}
+        </div>
       )}
     </>
   );

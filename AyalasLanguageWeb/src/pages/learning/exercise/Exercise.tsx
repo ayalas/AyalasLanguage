@@ -9,13 +9,13 @@ import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsEx
 import BucketListExercise from './exercise-render-types/bucket-list/BucketListExercise';
 import type { User } from '../../../types/shared/User';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
-import type { ExerciseData, ExerciseInfo } from '../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { puter } from "@heyputer/puter.js";
 import { initializePuter, isSecure } from '../../../utils/utils';
 import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayRevealedAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
 
 type Props = {
-    exerciseInfo: ExerciseInfo;
+    exerciseInfo: ExtendedExerciseInfo;
     moveNext: () => void;
     childLoaded: (id: number) => void;
     saveProgress: () => void;
@@ -39,7 +39,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
 
-            if (isSecure()) {
+            if (isSecure() && exerciseInfo.exerciseObject != null) {
                 const langCode = user?.languageSettings?.targetLanguageCode;
                 if (langCode != undefined) {
                     const pollyObject = LANGUAGE_TO_POLLY_MAP[langCode]
@@ -55,14 +55,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                             return;
                         }
 
-                        let parsed: ExerciseData;
-                        if (typeof exerciseInfo.data === 'string') {
-                            parsed = JSON.parse(exerciseInfo.data) as ExerciseData;
-                        }
-                        else {
-                            parsed = exerciseInfo.data;
-                        }
-                        textToPlay = textToPlay != null ? textToPlay : parsed.Second;
+                        textToPlay = textToPlay != null ? textToPlay : exerciseInfo.exerciseObject.Second;
                         if (textToPlay != null && textToPlay != "") {
                             const options = {
                                 provider: 'aws-polly',
@@ -93,8 +86,6 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
             playTargetText();
         }
     }
-
-
 
     const checkAnswer = function () {
         const success = refExercise.current?.checkAnswer?.() || false;
@@ -127,19 +118,15 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
         if (!supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) {
             return;
         }
-        let dataObj: ExerciseData;
-        if (typeof exerciseInfo.data === "string") {
-            dataObj = JSON.parse(exerciseInfo.data) as ExerciseData;
-        } else {
-            dataObj = { ...exerciseInfo.data } as ExerciseData;
-        }
-
+        if (exerciseInfo.exerciseObject == null) return;
+        const dataObj = {...exerciseInfo.exerciseObject};
+          
         const alternative = refExercise.current?.getCurrentAnswer?.();
         if (alternative == null || alternative === "") {
             return;
         }
         let updateNeeded = false;
-        if (dataObj.Alternatives == null) {
+        if (dataObj?.Alternatives == null) {
             dataObj.Alternatives = [alternative];
             updateNeeded = true;
         }
@@ -234,7 +221,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                     <InlineExerciseWithBlanks ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer}
-                        parentCheckAnswer={checkAnswer} user={user} />
+                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
                 ) || (isMatchingType(exerciseInfo.exerciseTypeId) && (
                     <MatchWordsExercise
                         exerciseInfo={exerciseInfo} setError={setError}
@@ -244,10 +231,10 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer} playTargetText={playTargetText} />
                 )) || (
-                        <TwoLinesTranslationExercise ref={refExercise}
-                            exerciseInfo={exerciseInfo} setError={setError}
-                            moveNext={moveNext} displayAnswer={displayAnswer}
-                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
+                    <TwoLinesTranslationExercise ref={refExercise}
+                        exerciseInfo={exerciseInfo} setError={setError}
+                        moveNext={moveNext} displayAnswer={displayAnswer}
+                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
                     ))}
             </div>
         </Fragment>

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import MatchWordItem from './MatchWordItem';
 import type { MatchSelection } from './MatchWordItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExerciseInfo } from '../../../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
 
 type Props = {
-  exerciseInfo: ExerciseInfo;
+  exerciseInfo: ExtendedExerciseInfo;
   setError: (s: string) => void;
   moveNext: () => void;
   addMistake: (id: number) => Promise<void> | void;

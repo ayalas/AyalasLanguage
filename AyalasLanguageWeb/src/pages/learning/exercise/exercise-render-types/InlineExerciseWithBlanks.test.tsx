@@ -5,6 +5,7 @@ import { InlineExerciseWithBlanks } from './InlineExerciseWithBlanks';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
 import { EXERCISE_TYPES, type ExerciseType } from '../../../../types/exercise/Exercise';
+import { AUTHOR_ACCESS } from '../../../../constants/learning';
 
 // Mock axios as requested
 vi.mock('axios');
@@ -59,10 +60,12 @@ describe('InlineExerciseWithBlanks', () => {
       sentenceElements: ['The ', ' is ', '.'],
       answers: ['cat', 'black'],
       data: JSON.stringify({ Second: 'Translated sentence' }),
+      access: AUTHOR_ACCESS.CAN_EDIT,
     },
     setError: vi.fn(),
     moveNext: vi.fn(),
     displayAnswer: false,
+    playTargetText: vi.fn(),
     user: {
       languageSettings: {
         targetLanguage: 'English',

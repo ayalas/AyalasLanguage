@@ -4,7 +4,7 @@ import { errorHandler } from "../../../utils/utils";
 import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
 import { ArrowBigLeft, LayersPlus } from "lucide-react";
-import type { ExerciseData, ExerciseModel } from "../../../types/exercise/Exercise";
+import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from "../../../types/exercise/Exercise";
 import { EXERCISE_GENERATIONS } from "../../../constants/learning";
 import { AlternativeLine } from "./AlternativeLine";
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
@@ -14,7 +14,7 @@ export function ExerciseUpdatePage() {
     const { exerciseId } = useParams();
     const [error, setError] = useState('');
     const [typeName, setTypeName] = useState('');
-    const [initialRecord, setInitialRecord] = useState<ExerciseModel | null>(null);
+    const [initialRecord, setInitialRecord] = useState<ExtendedExerciseInfo | null>(null);
     const [firstLine, setFirstLine] = useState('');
     const [secondLine, setSecondLine] = useState('');
     const [extraOptions, setExtraOptions] = useState('');
@@ -68,8 +68,8 @@ export function ExerciseUpdatePage() {
         async function loadAsync() {
             try {
                 if (Number(exerciseId) > 0) {
-                    const res = await axios.get<ExerciseModel>(`/api/creator/exercise/${exerciseId}`);
-                    const exerciseTemp: ExerciseModel = { ...res.data };
+                    const res = await axios.get<ExerciseInfo>(`/api/creator/exercise/${exerciseId}`);
+                    const exerciseTemp: ExtendedExerciseInfo = { ...res.data };
                     if (exerciseTemp.data != null && exerciseTemp.data != "") {
                         exerciseTemp.exerciseObject = JSON.parse(exerciseTemp.data);
                     }

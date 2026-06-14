@@ -3,10 +3,10 @@ import axios from 'axios';
 import { SquarePen, Trash2 } from 'lucide-react';
 import { AUTHOR_ACCESS } from '../../../constants/learning';
 import { useNavigate } from 'react-router-dom';
-import type { ExerciseModel } from '../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { errorHandler } from '../../../utils/utils';
 
-export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExerciseModel }) {
+export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseInfo }) {
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
   const navigate = useNavigate();

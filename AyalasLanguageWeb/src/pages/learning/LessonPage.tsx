@@ -8,42 +8,35 @@ import { PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts, replaceCharsForLanguage, setLanguageSettings } from '../../utils/languageUtils';
 import { Exercise } from './exercise/Exercise';
 import type { User } from '../../types/shared/User';
-import type { ExerciseInfo } from '../../types/exercise/Exercise';
+import type { ExerciseInfo, ExtendedExerciseInfo } from '../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../types/ui/ComponentHandles';
 import { errorHandler } from '../../utils/utils';
 import { focusOnLoad, getExtraOptionsSeparator, hasExtraOptions, hasSingleBucketAnswer, isMatchingType, usesInlineExerciseWithBlanks } from '../../logic/ExerciseTypeLogic';
-
-type LocalExercise = ExerciseInfo & { data: string | ParsedExercise; exerciseObject?: ParsedExercise; index?: number };
-type ParsedExercise = { First?: string; Second?: string; ExtraOptions?: string };
+import { safeParseData } from '../../logic/ExerciseDataLogic';
 
 export function LessonPage() {
   const { learningPathId } = useParams();
-  const [exercises, setExercises] = useState<LocalExercise[]>([]);
+  const [exercises, setExercises] = useState<ExerciseInfo[]>([]);
   const [scoreToAdd, setScoreToAdd] = useState(0);
   const [learningPathData, setLearningPathData] = useState<Record<string, unknown> | null>(null);
-  const [currentExercise, setCurrentExercise] = useState<LocalExercise | null>(null);
+  const [currentExercise, setCurrentExercise] = useState<ExtendedExerciseInfo | null>(null);
   const [practiseMistakesInThisPath, setPractiseMistakesInThisPath] = useState(false);
   const [error, setError] = useState('');
   const exerciseRefs = useRef<Map<number, ExerciseHandle | undefined>>(new Map());
   const navigate = useNavigate();
   const { user, login } = useOutletContext<{ user: User; login: (u: User) => void }>();
 
-  const changeCurrentExercise = function (arrExercises: LocalExercise[], index: number) {
-    const curItem = arrExercises[index] as LocalExercise;
+  const changeCurrentExercise = function (arrExercises: ExerciseInfo[], index: number) {
+    const curItem = arrExercises[index] as ExerciseInfo;
 
     // Defensive: ensure curItem and curItem.data are present
     const raw = curItem?.data;
-    const rawString = typeof raw === 'string' ? raw : JSON.stringify(raw || {});
-    let dataObj: ParsedExercise;
-    try {
-      dataObj = JSON.parse(rawString) as ParsedExercise;
-    } catch {
-      dataObj = { First: rawString };
-    }
+    const dataObj = safeParseData(raw);
+    if (dataObj == null) return;
 
     const targetLang = user?.languageSettings?.targetLanguage || '';
-    const firstData = replaceCharsForLanguage(targetLang, dataObj.First || '') || '';
-    const secondData = replaceCharsForLanguage(targetLang, dataObj.Second || '') || '';
+    const firstData = replaceCharsForLanguage(targetLang, dataObj?.First || '') || '';
+    const secondData = replaceCharsForLanguage(targetLang, dataObj?.Second || '') || '';
 
     if (usesInlineExerciseWithBlanks(curItem.exerciseTypeId)) {
       const sentenceElements = (firstData || '').split(PLACEHOLDERS.BLANKS).map((s) => s.trim());
@@ -79,7 +72,6 @@ export function LessonPage() {
 
       setCurrentExercise({
         ...curItem,
-        data: dataObj,
         exerciseObject: dataObj,
         sentenceElements,
         answers,
@@ -89,7 +81,7 @@ export function LessonPage() {
     else { //all other types
       setCurrentExercise({
         ...curItem,
-        data: dataObj,
+        exerciseObject: dataObj,
         sentenceElements: [firstData],
         answers: [secondData],
         index
@@ -214,14 +206,12 @@ export function LessonPage() {
         const learningPathTemp = response.data;
         setLearningPathData(learningPathTemp);
         setPractiseMistakesInThisPath(learningPathTemp.practiseMistakesInThisPath);
-        const res = await axios.get(`/api/learning/path/${learningPathId}/exercises`);
+        const res = await axios.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
 
         if (res && res.data && res.data.length > 0) {
-          // Normalize exercise.data so downstream code can assume a string that may contain JSON
-          const exercisesTemp: LocalExercise[] = (res.data as ExerciseInfo[]).map((e) => ({
-            ...e,
-            data: typeof e.data === 'string' ? e.data : JSON.stringify(e.data)
-          }));
+
+          const exercisesTemp = { ...res.data };
+          
           setExercises(exercisesTemp);
           let exCurInd = 0;
           if (learningPathTemp.exerciseId != null) {
@@ -237,7 +227,6 @@ export function LessonPage() {
       }
     }
     getData();
-    // changeCurrentExercise is stable in this file and intentionally omitted from deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [learningPathId]);
 

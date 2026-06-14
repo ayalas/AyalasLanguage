@@ -3,10 +3,11 @@ import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import BucketListExercise from './BucketListExercise';
 import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExerciseInfo } from '../../../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
 import { EXERCISE_TYPES } from '../../../../../types/exercise/Exercise';
+import { AUTHOR_ACCESS } from '../../../../../constants/learning';
 
 // Mock axios
 vi.mock('axios');
@@ -21,12 +22,13 @@ describe('BucketListExercise', () => {
   const mockMoveNext = vi.fn();
   const mockPlayTargetText = vi.fn();
 
-  const exerciseInfoMock: ExerciseInfo = {
+  const exerciseInfoMock: ExtendedExerciseInfo = {
     exerciseId: 1,
     exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET,
     data: JSON.stringify({ First: 'Header', Second: 'Footer' }),
     answers: ['Apple', 'Banana'],
     extraItems: ['Cherry'],
+    access: AUTHOR_ACCESS.CAN_EDIT
   };
 
   beforeEach(() => {

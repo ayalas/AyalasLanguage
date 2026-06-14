@@ -30,6 +30,14 @@ export const canRevealAnswers = (type: ExerciseType | 0): boolean => {
     ] as (ExerciseType | 0)[]).includes(type);
 };
 
+export const showTranslationOnRevealedAnswer = (type: ExerciseType | 0): boolean => {
+    return ([
+        EXERCISE_TYPES.COMMON_RESPONSES,
+        EXERCISE_TYPES.FILL_IN_THE_BLANKS,
+        EXERCISE_TYPES.COMMON_RESPONSES_BUCKET
+    ] as (ExerciseType | 0)[]).includes(type);
+};
+
 export const isMatchingType = (type: ExerciseType | 0): boolean => {
     return ([
         EXERCISE_TYPES.MATCHING

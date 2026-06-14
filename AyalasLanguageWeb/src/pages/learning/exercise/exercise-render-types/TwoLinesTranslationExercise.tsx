@@ -1,40 +1,31 @@
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
-import type { ExerciseData, ExerciseInfo } from '../../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles';
 import type { User } from '../../../../types/shared/User';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { CirclePlay } from 'lucide-react';
-import { shouldPlayQuestion, shouldPlayRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';
+import { shouldPlayQuestion, shouldPlayRevealedAnswer, showTranslationOnRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';
 
 type Props = {
-  exerciseInfo: ExerciseInfo;
+  exerciseInfo: ExtendedExerciseInfo;
   setError: (s: string) => void;
   moveNext: () => void;
   displayAnswer?: boolean;
   parentCheckAnswer?: () => boolean;
   user?: User | null;
-  playTargetText: (s: string) => void;
+  playTargetText: (s: string) => Promise<void>;
   ref: React.Ref<ExerciseHandle>;
 };
 
-const safeParseData = (data: string | ExerciseData) => {
-  if (typeof data === 'string') {
-    try {
-      const parsed = JSON.parse(data) as ExerciseData;
-      return parsed;
-    } catch {
-      return null;
-    }
-  }
-  return (data as ExerciseData);
-};
-
-export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText , ref}:Props) {
+export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText, ref }: Props) {
   const inputRef = useRef<ExerciseInputHandle | null>(null);
   const [inputValue, setInputValue] = useState('');
+  const [first, setFirst] = useState('');
+  const [second, setSecond] = useState('');
+  const [translation, setTranslation] = useState('');
 
   function OnChange(value: string) {
     setInputValue(value);
@@ -56,14 +47,13 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
       const thisQuestionRef = inputRef.current;
       let canMoveNext = true;
       const userAnswer = thisQuestionRef?.getUserAnswer()?.trim().toLowerCase() ?? '';
-      const dataObj = safeParseData(exerciseInfo.data);
 
-      if (dataObj == null || dataObj.Second === undefined) return false;
-      if (!compareToAnswer(userAnswer, dataObj.Second)) {
+      if (exerciseInfo.exerciseObject == null || exerciseInfo.exerciseObject.Second === undefined) return false;
+      if (!compareToAnswer(userAnswer, exerciseInfo.exerciseObject.Second)) {
         let alternativeFound = false;
         //go through alternative answers
-        if (dataObj.Alternatives != null && dataObj.Alternatives.length > 0) {
-          for (const alternative of dataObj.Alternatives) {
+        if (exerciseInfo.exerciseObject.Alternatives != null && exerciseInfo.exerciseObject.Alternatives.length > 0) {
+          for (const alternative of exerciseInfo.exerciseObject.Alternatives) {
             if (compareToAnswer(userAnswer, alternative)) {
               alternativeFound = true;
               break;
@@ -87,21 +77,29 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
     }
   }));
 
-  const first = (typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).First ?? ''; } catch { return ''; } })() : (exerciseInfo.data as ExerciseData).First) ?? '';
-  const second = (typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).Second ?? ''; } catch { return ''; } })() : (exerciseInfo.data as ExerciseData).Second) ?? '';
-
   useEffect(() => {
-    if (shouldPlayQuestion(exerciseInfo.exerciseTypeId)) {
-      //play the sentence shown
-      playTargetText(first);
+    async function runAsync() {
+
+      if (exerciseInfo.exerciseObject == null) return;
+
+      setFirst(exerciseInfo.exerciseObject.First as string);
+      setSecond(exerciseInfo.exerciseObject.Second as string);
+      if (exerciseInfo.exerciseObject.Translation != null) {
+        setTranslation(exerciseInfo.exerciseObject.Translation as string);
+      }
+      if (shouldPlayQuestion(exerciseInfo.exerciseTypeId)) {
+        //play the sentence shown
+        await playTargetText(exerciseInfo.exerciseObject.First as string);
+      }
     }
-  }, [])
+    runAsync();
+  }, [exerciseInfo])
 
   return (
     <>
       <div className="form-row-play">
-        <div className="form-play-container">{first}{ shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
-          <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(first)}><CirclePlay /></button></div>
+        <div className="form-play-container">{first}{shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
+          <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
         )}</div>
       </div>
       <div className="form-row answer">
@@ -114,10 +112,15 @@ export const TwoLinesTranslationExercise = function({ exerciseInfo, setError, mo
         />
       </div>
       {displayAnswer && (
-        <div className="form-row-play"><div className="form-play-container">{second}
-        { shouldPlayRevealedAnswer(exerciseInfo.exerciseTypeId) && (
-          <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(second)}><CirclePlay /></button>
-        )}</div></div>
+        <div className="form-row-play">
+          <div className="form-play-container">{second}
+            {shouldPlayRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+              <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
+            )}</div>
+          {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+            <div className="form-content-row">{translation}</div>
+          )}
+        </div>
       )}
       {useVirtualKeyboard(exerciseInfo.exerciseTypeId) && (
         <VirtualKeyboard languageCode={(user?.languageSettings?.targetLanguageEnglishName ?? 'en').toLowerCase()} isRightToLeft={true} onChange={OnChange} value={inputValue} />

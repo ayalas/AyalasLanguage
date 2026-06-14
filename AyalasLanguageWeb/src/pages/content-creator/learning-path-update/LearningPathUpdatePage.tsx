@@ -7,8 +7,9 @@ import { AuthHeader } from '../../../components/auth/AuthHeader';
 import { LearningPathAuthoringForm } from '../../../components/content-creator/LearningPathAuthoringForm';
 import { ExerciseLine } from './ExerciseLine';
 import { AUTHOR_ACCESS } from '../../../constants/learning';
-import type { ExerciseModel } from '../../../types/exercise/Exercise';
+import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { errorHandler } from '../../../utils/utils';
+import { safeParseData } from '../../../logic/ExerciseDataLogic';
 
 export function LearningPathUpdatePage() {
   const [initialRecord, setInitialRecord] = useState<any | null>(null);
@@ -29,7 +30,7 @@ export function LearningPathUpdatePage() {
       }
 
       if (arrData !== null) { //empty array is ok, null means there was an error
-         navigate(`/path/${learningPathId}`);
+        navigate(`/path/${learningPathId}`);
       }
     } catch (err: unknown) {
       errorHandler(err, setError);
@@ -39,12 +40,12 @@ export function LearningPathUpdatePage() {
   async function loadExercises() {
     try {
       if (Number(learningPathId) > 0) {
-        const res = await axios.get<ExerciseModel[]>(`/api/learning/path/${learningPathId}/exercises`);
-        const exercisesTemp: ExerciseModel[] = [];
+        const res = await axios.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+        const exercisesTemp: ExtendedExerciseInfo[] = [];
         for (const ex of res.data) {
-          const newExercise: ExerciseModel = { ...ex };
+          const newExercise: ExtendedExerciseInfo = { ...ex };
           try {
-            newExercise.exerciseObject = JSON.parse(ex.data);
+            newExercise.exerciseObject = safeParseData(ex.data) as ExerciseData;
           } catch {
             newExercise.exerciseObject = {};
             newExercise.exerciseObject.First = ex.data;
@@ -66,8 +67,8 @@ export function LearningPathUpdatePage() {
           setInitialRecord(res.data);
           await loadExercises();
         }
-      } catch (err: any) {
-        setUpdateFormError(err?.message || String(err));
+      } catch (err: unknown) {
+        errorHandler(err, setUpdateFormError);
       }
     }
     loadAsync();
