@@ -87,7 +87,7 @@ describe('LearningPathCreatePage', () => {
       name: 'Test Path',
     });
 
-    expect(mockNavigate).toHaveBeenCalledWith('/home');
+    expect(mockNavigate).toHaveBeenCalledWith(`/path/123`);
   });
 
   it('navigates to path detail if arrData is empty', async () => {

@@ -6,7 +6,6 @@ import { AuthHeader } from "../../../components/auth/AuthHeader";
 import { ArrowBigLeft, LayersPlus } from "lucide-react";
 import type { ExerciseData, ExerciseModel } from "../../../types/exercise/Exercise";
 import { EXERCISE_GENERATIONS } from "../../../constants/learning";
-import {type ExerciseType} from '../../../types/exercise/Exercise';
 import { AlternativeLine } from "./AlternativeLine";
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
 import { hasExtraOptions } from "../../../logic/ExerciseTypeLogic";

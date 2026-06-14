@@ -4,7 +4,7 @@ import React, { createRef } from 'react';
 import { InlineExerciseWithBlanks } from './InlineExerciseWithBlanks';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
-import { EXERCISE_TYPES } from '../../../../types/exercise/Exercise';
+import { EXERCISE_TYPES, type ExerciseType } from '../../../../types/exercise/Exercise';
 
 // Mock axios as requested
 vi.mock('axios');
@@ -55,7 +55,7 @@ describe('InlineExerciseWithBlanks', () => {
   const mockProps = {
     exerciseInfo: {
       exerciseId: 101,
-      exerciseTypeId: 0,
+      exerciseTypeId: EXERCISE_TYPES.FILL_IN_THE_BLANKS as ExerciseType,
       sentenceElements: ['The ', ' is ', '.'],
       answers: ['cat', 'black'],
       data: JSON.stringify({ Second: 'Translated sentence' }),

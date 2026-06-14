@@ -28,11 +28,15 @@ vi.mock('@heyputer/puter.js', () => ({
         ai: {
             txt2speech: vi.fn(),
         },
+        auth: {
+          isSignedIn: vi.fn(() => false),
+          signIn: vi.fn()
+        }
     },
 }));
 
 vi.mock('../../../utils/utils', () => ({
-    initializePuter: vi.fn(),
+    initializePuter: vi.fn(() => false),
     isSecure: vi.fn(() => true),
     getRandomizedSequence: vi.fn((len) => Array.from({ length: len }, (_, i) => i)),
 }));

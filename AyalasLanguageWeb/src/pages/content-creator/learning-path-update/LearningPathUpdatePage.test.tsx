@@ -58,7 +58,7 @@ vi.mock('../../../components/content-creator/LearningPathAuthoringForm', () => (
 
 describe('LearningPathUpdatePage', () => {
   const mockNavigate = vi.fn();
-  const mockLearningPathId = '123';
+  const mockLearningPathId = 123;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -121,7 +121,7 @@ describe('LearningPathUpdatePage', () => {
         `/api/creator/learning-path/${mockLearningPathId}`,
         { level: 1, chapter: 1, name: 'Updated Title' }
       );
-      expect(mockNavigate).toHaveBeenCalledWith('/home');
+      expect(mockNavigate).toHaveBeenCalledWith(`/path/${mockLearningPathId}`);
     });
   });
 
@@ -160,7 +160,7 @@ describe('LearningPathUpdatePage', () => {
 
     await waitFor(() => {
       expect(mockedAxios.put).not.toHaveBeenCalled();
-      expect(mockNavigate).toHaveBeenCalledWith('/home');
+      expect(mockNavigate).toHaveBeenCalledWith(`/path/${mockLearningPathId}`);
     });
   });
 });

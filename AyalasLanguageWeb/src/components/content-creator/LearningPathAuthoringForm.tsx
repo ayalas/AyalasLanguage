@@ -295,13 +295,6 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   useEffect(() => {
     async function execAsync() {
       try {
-        const tempPuterSignin = (await initializePuter() == true);
-        setPuterSignedIn(tempPuterSignin);
-        if (!tempPuterSignin) {
-          //default to manual use of AI if could not sign in
-          setUsePuterAI(false);
-        }
-
         if (initialRecord != null) {
           setLevel(initialRecord.level);
           setChapter(initialRecord.chapter);
@@ -320,12 +313,19 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { Level: tempLevel, ChapterHint: hintChapter});
           setChapter(res.data.chapter);
         }
+
+        const tempPuterSignin = (await initializePuter() == true);
+        setPuterSignedIn(tempPuterSignin);
+        if (!tempPuterSignin) {
+          //default to manual use of AI if could not sign in
+          setUsePuterAI(false);
+        }
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
     }
     execAsync();
-  }, [initialRecord]);
+  }, [initialRecord, searchParams]);
 
   useEffect(() => {
     async function execAsync() {

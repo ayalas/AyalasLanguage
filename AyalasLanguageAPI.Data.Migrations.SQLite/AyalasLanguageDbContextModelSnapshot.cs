@@ -106,6 +106,16 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         {
                             ExerciseTypeId = 5,
                             Name = "from Known to target language - bucket list"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 6,
+                            Name = "Common responses - bucket list"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 7,
+                            Name = "Common responses"
                         });
                 });
 

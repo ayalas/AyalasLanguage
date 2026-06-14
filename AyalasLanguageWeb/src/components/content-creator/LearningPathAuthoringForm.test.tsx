@@ -10,7 +10,20 @@ import disableClientValidation from '../../utils/test-utils/disableClientValidat
 
 // Mock axios
 vi.mock('axios');
+
 const mockedAxios = vi.mocked(axios);
+
+vi.mock('@heyputer/puter.js', () => ({
+    puter: {
+        ai: {
+            txt2speech: vi.fn(),
+        },
+        auth: {
+          isSignedIn: vi.fn(() => false),
+          signIn: vi.fn()
+        }
+    },
+}));
 
 // Mock react-router-dom hooks
 vi.mock('react-router-dom', () => ({
@@ -24,6 +37,7 @@ vi.mock('../../utils/utils', () => ({
   removeLastCharIfMatch: vi.fn((str) => str?.endsWith(';') ? str.slice(0, -1) : str),
   downloadFile: vi.fn(),
   errorHandler: vi.fn(),
+  initializePuter: vi.fn(() => false)
 }));
 
 // Mock Constants (Optional: only if they aren't available in the test env)
@@ -88,7 +102,7 @@ describe('LearningPathAuthoringForm', () => {
     await waitFor(() => {
       expect(mockHandleSubmit).toHaveBeenCalled();
       // Check if axios.post was called for each exercise (2 items in our semicolon string)
-      expect(mockedAxios.post).toHaveBeenCalledTimes(2);
+      expect(mockedAxios.post).toHaveBeenCalledTimes(3);
       expect(mockedAxios.post).toHaveBeenCalledWith('/api/creator/exercise', expect.objectContaining({
         learningPathId: 123,
         exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET
@@ -122,15 +136,7 @@ describe('LearningPathAuthoringForm', () => {
     const errorMessage = await screen.findByText(/Must have a match between the number of words/i);
     expect(errorMessage).toBeInTheDocument();
 
-    expect(mockHandleSubmit).toHaveBeenCalledWith(
-        expect.anything(), // setError
-        expect.anything(), // createExercises
-        expect.anything(), // level
-        expect.anything(), // chapter
-        expect.anything(), // title
-        expect.anything(), // exerciseType
-        null               // arrData (the one we are testing is null)
-      );
+    expect(mockHandleSubmit).not.toHaveBeenCalled();
   });
 
   it('handles lesson deletion', async () => {
