@@ -11,12 +11,6 @@ export const PLACEHOLDERS = {
 
 const TOP_LEVEL = 100;
 
-export const EXERCISE_TYPE_INSTRUCTIONS: string[] = [];
-EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET] = `Translate to ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}`;
-EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN] = `Translate to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}`;
-EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FILL_IN_THE_BLANKS] = "Fill in the blanks";
-EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.MATCHING] = "Match words between the two columns";
-EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET] = `Translate to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} by selecting some of these words in the right order.`;
 
 export const BUCKET_LIST_EXTRA_OPTIONS = 
 {
@@ -43,6 +37,16 @@ export const ROLE_TYPE =
     CONTENT_CREATOR: 2,
     ADMIN: 3
 } as const;
+
+export const EXERCISE_TYPE_INSTRUCTIONS: string[] = [];
+EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET] = `Translate to ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}`;
+EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN] = `Translate to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}`;
+EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FILL_IN_THE_BLANKS] = "Fill in the blanks";
+EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.MATCHING] = "Match words between the two columns";
+EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET] = `Translate to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} by selecting some of these words in the right order.`;
+EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.COMMON_RESPONSES_BUCKET] = 'Choose the common response to this sentence';
+EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.COMMON_RESPONSES] = 'Answer the common response to this sentence';
+
 
 export const EXERCISE_GENERATIONS = 
 [
@@ -100,10 +104,10 @@ export const EXERCISE_GENERATIONS =
         second_data_instructions: "The correct common responses in the langauge you are learning to those sentences, separated by semi-colon(;)",
         extra_options_instructions: "Sets of wrong responses to each sentence. Each response separated by comma(,). Each set that corresponds to the sentence to respond to - separated by semi-colon(;)",
         ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 sentences in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, that have common responses to. I would have to choose from a few options the correct response in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Then preapre me a separate list with the full correct answers. In each list, separate each sentence with semi-colon. Do not include punctuations, just the sentences. For each response, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} wrong responses in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}, separated by a comma(,). separate each such set of wrong responses with a semi-colon, and present this as a third list of wrong extra options.`,
-        ai_instruction_auto: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER} (on a scale of 1 to ${TOP_LEVEL}). Prepare for me 10 exercises on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}. In each exercise I would have to choose a common response to the sentence presented. Both the sentence and the responses are in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Do not include punctuations, just the sentences and responses. For each correct response, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} wrong extra responses, separated by comma(,). Return the result as a raw JSON array of objects in this format: {First: string, Second: string, ExtraOptions: string - separated by commas} where First would be the sentence to respond to, Second would be the correct response and ExtraOptions would be the comma-separated list of wrong responses to the presented sentence in First.`
+        ai_instruction_auto: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER} (on a scale of 1 to ${TOP_LEVEL}). Prepare for me 25 exercises on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}. In each exercise I would have to choose a common response to the sentence presented. Both the sentence and the responses are in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Do not include punctuations, just the sentences and responses. For each correct response, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} wrong extra responses, separated by comma(,). Make sure these are not reasonable alternative responses, but rather incorrect ones. Return the result as a raw JSON array of objects in this format: {First: string, Second: string, ExtraOptions: string - separated by commas} where First would be the sentence to respond to, Second would be the correct response and ExtraOptions would be the comma-separated list of wrong responses to the presented sentence in First.`
     },
     {
-        type: EXERCISE_TYPES.COMMON_RESPONSES_BUCKET,
+        type: EXERCISE_TYPES.COMMON_RESPONSES,
         name: "Common responses",
         description:"Generate sentences in the langauge are learning that have common answers - write the right one.",
         first_data_instructions: "Sentences in the langauge you are learning that have common answers, separated by semi-colon(;)",

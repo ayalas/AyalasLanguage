@@ -9,7 +9,7 @@ type Props = {
   setError: (s: string) => void;
   moveNext: () => void;
   addMistake: (id: number) => Promise<void> | void;
-  playTargetText: (s: string) => void;
+  playTargetText: (s: string) => Promise<void>;
 };
 
 const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext, addMistake, playTargetText }) => {
@@ -69,9 +69,9 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
     onColumnSelected(matchObject, setToDone, setToError, column1Selected, column2Selected, setColumn1Selected, setColumn2Selected);
   }
 
-  function onColumn2Selected(matchObject: MatchSelection | null, setToDone: () => void, setToError: (b: boolean) => void) {
+  async function onColumn2Selected(matchObject: MatchSelection | null, setToDone: () => void, setToError: (b: boolean) => void) {
     if (matchObject != null && matchObject.itemValue != null) {
-      playTargetText(matchObject.itemValue);
+      await playTargetText(matchObject.itemValue);
     }
     onColumnSelected(matchObject, setToDone, setToError, column2Selected, column1Selected, setColumn2Selected, setColumn1Selected);
   }

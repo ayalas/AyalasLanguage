@@ -1,45 +1,61 @@
 import { useEffect, useState, useImperativeHandle } from 'react';
 import { BucketListItem } from './BucketListItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExerciseInfo } from '../../../../../types/exercise/Exercise';
+import type { ExerciseData, ExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
-import { hasSingleBucketAnswer } from '../../../../../logic/ExerciseTypeLogic';
+import { hasSingleBucketAnswer, shouldPlayQuestion } from '../../../../../logic/ExerciseTypeLogic';
 
 type Props = {
   exerciseInfo: ExerciseInfo;
   setError: (s: string) => void;
   moveNext: () => void;
   displayAnswer?: boolean;
-  playTargetText: (s: string) => void;
+  playTargetText: (s: string) => Promise<void>;
   ref: React.Ref<ExerciseHandle>;
 };
 
 const BucketListExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, playTargetText, ref }: Props) {
   const [bucketList, setBucketList] = useState<string[]>([]);
   const [answerList, setAnswerList] = useState<string[]>([]);
+  const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
 
-  function checkAnswerInternal() {
+  function checkAnswerInternal(altAnswers: (string)[] = []) {
     let canMoveNext = true;
-      if (answerList.length === (exerciseInfo.answers?.length || 0)) {
-        for (let i = 0; i < answerList.length; i++) {
-          if (answerList[i].toLowerCase() !== (exerciseInfo.answers?.[i]?.toLowerCase() || '')) {
-            canMoveNext = false;
-            break;
-          }
+    let singleAnswer = false;
+
+    if (altAnswers.length == 0) {
+      altAnswers = [...answerList];
+    }
+    else {
+      singleAnswer = (altAnswers.length == 1);
+    }
+
+    if (altAnswers.length === (exerciseInfo.answers?.length || 0)) {
+      for (let i = 0; i < altAnswers.length; i++) {
+        if (altAnswers[i].toLowerCase() !== (exerciseInfo.answers?.[i]?.toLowerCase() || '')) {
+          canMoveNext = false;
+          break;
         }
-      } else {
-        canMoveNext = false;
       }
+    } else {
+      canMoveNext = false;
+    }
 
-      if (canMoveNext) {
+    if (canMoveNext) {
+      if (singleAnswer) {
+        //if single answer wait before moving on
+        setTimeout(moveNext, 2000);
+      }
+      else {
         moveNext();
-      } else {
-        setError('You have got an error. Try again!');
       }
+    } else {
+      setError('You have got an error. Try again!');
+    }
 
-      return canMoveNext;
+    return canMoveNext;
   }
 
   useImperativeHandle(ref, () => ({
@@ -58,12 +74,16 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   useEffect(() => {
     async function execAsync() {
       if (exerciseInfo && exerciseInfo.answers && exerciseInfo.answers.length > 0 && exerciseInfo.extraItems && exerciseInfo.extraItems.length > 0) {
+
+        let tempExerciseData: ExerciseData;
         if (typeof exerciseInfo.data === 'string') {
-          setSecond(JSON.parse(exerciseInfo.data).Second);
+          tempExerciseData = JSON.parse(exerciseInfo.data);
         }
-        else if (typeof exerciseInfo.data.Second === 'string') {
-          setSecond(exerciseInfo.data.Second);
+        else {
+          tempExerciseData = { ...exerciseInfo.data }
         }
+        setFirst(tempExerciseData.First as string);
+        setSecond(tempExerciseData.Second as string);
         const optionsListTemp = [...exerciseInfo.extraItems, ...exerciseInfo.answers];
         const sequence = getRandomizedSequence(optionsListTemp.length);
         const optionsListRandomized: string[] = [];
@@ -71,6 +91,11 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
           optionsListRandomized.push(optionsListTemp[sequence[i]]);
         }
         setBucketList(optionsListRandomized);
+
+        if (shouldPlayQuestion(exerciseInfo.exerciseTypeId)) {
+          //play the sentence shown
+          await playTargetText(tempExerciseData.First as string);
+        }
       }
     }
 
@@ -82,13 +107,13 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
     setAnswerList(answerList.filter((_, ind) => ind !== position));
   }
 
-  function bucketListItemClicked(itemValue: string, position: number) {
-    playTargetText(itemValue);
-    
+  async function bucketListItemClicked(itemValue: string, position: number) {
+    await playTargetText(itemValue);
+
     if (hasSingleBucketAnswer(exerciseInfo.exerciseTypeId)) {
       setBucketList([...answerList, ...bucketList.filter((_, ind) => ind !== position)]);
       setAnswerList([itemValue]);
-      checkAnswerInternal();
+      checkAnswerInternal([itemValue]);
     }
     else {
       setBucketList(bucketList.filter((_, ind) => ind !== position));
@@ -98,8 +123,10 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
 
   return (
     <>
-      <div className="form-row">
-        <div className="form-label-row">{(typeof exerciseInfo.data === 'string' ? (() => { try { return JSON.parse(exerciseInfo.data).First; } catch { return ''; } })() : exerciseInfo.data.First) || ''}</div>
+      <div className="form-row-play">
+        <div className="form-play-container">{first}{ shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
+          <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={() => playTargetText(first)}><CirclePlay /></button></div>
+        )}</div>
       </div>
       {answerList && (
         <div className="form-row answer">

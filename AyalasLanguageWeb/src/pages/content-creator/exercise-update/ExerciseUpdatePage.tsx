@@ -138,7 +138,7 @@ export function ExerciseUpdatePage() {
                             <div className="form-label-row">Extra Options</div>
                             <div className="form-row">
                                 <div className="form-input-row">
-                                    <input data-testid="extra-options" type="text" required={true} value={extraOptions} onChange={(e) => { setExtraOptions(e.target.value) }} />
+                                    <textarea data-testid="extra-options" className="text-area-minimal" required={true} value={extraOptions} onChange={(e) => { setExtraOptions(e.target.value) }} />
                                 </div>
                             </div>
                         </>
