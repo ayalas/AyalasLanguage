@@ -97,7 +97,7 @@ public static class AuthEndpoints
         {
             var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token);
 
-            if (tokenRecord != null && tokenRecord.ExpiresOn > DateTime.UtcNow)
+            if (tokenRecord != null && tokenRecord.ExpiresOn.CompareTo(DateTime.UtcNow) >= 0)
             {
                 return await FinalizeLogin(tokenRecord.User, config, db, cache, context);
             }
@@ -126,9 +126,15 @@ public static class AuthEndpoints
     {
         if (cache.TryGetValue(tokenStart, out Verify2FARetryCacheObject? countRetries) && countRetries != null)
         {
-            countRetries.Retries = countRetries.Retries + 1;
-            //add 10 seconds so not to have a negative value of expirity
-            cache.Set(tokenStart, countRetries, countRetries.ExpiresOn.AddSeconds(10) - DateTime.UtcNow);
+            //the original cache/db store with the 6 digits code will expire anyway on ExpiresOn, so this defence is not 
+            //needed beyond ExpiresOn
+            DateTime dtNow = DateTime.UtcNow;
+            if (countRetries.ExpiresOn.CompareTo(dtNow) > 0)
+            {
+                countRetries.Retries = countRetries.Retries + 1;
+                //add 10 seconds so not to have a negative value of expirity
+                cache.Set(tokenStart, countRetries, countRetries.ExpiresOn - dtNow);
+            }
         }
         else
         {
