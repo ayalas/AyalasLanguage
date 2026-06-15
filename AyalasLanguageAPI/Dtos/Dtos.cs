@@ -9,7 +9,7 @@ namespace AyalasLanguageAPI.DTOs
     public record Verify2FAResponse(DateTime Expires, UserIdDto User);
     public record RegisterDto(string DisplayName, string UserName, string Password);
     public record RegisterResponseDto(int UserId, string DisplayName, string UserName, byte Role);
-    public record ChangeAccountDto(string? NewUserName, string OldPassword, string? NewPassword, bool Use2FALogin);
+    public record ChangeAccountDto(string? NewUserName, string OldPassword, string? NewPassword, bool Use2FALogin, string DisplayName);
     public record LoginDto(string UserName, string Password);
     public record ForgotPasswordDto(string UserName);
     //profile DTOs
@@ -18,7 +18,7 @@ namespace AyalasLanguageAPI.DTOs
     public record EditUserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes);
     public record SwitchLanguageDto(int? TargetLanguageId, int? KnownLanguageId);
     public record CurrentLanguageResponseDto(int? TargetLanguageId,string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool TargetLanguageIsRightToLeft, string? TargetLanguageEnglishName, string? TargetLanguageCode, int Score);
-    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, CurrentLanguageResponseDto languageSettings);
+    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, CurrentLanguageResponseDto languageSettings);
     public record UserLanguageDto(int LanguageId, bool IsLearning);
 
 

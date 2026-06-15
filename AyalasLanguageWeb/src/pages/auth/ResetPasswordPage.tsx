@@ -102,7 +102,7 @@ export function ResetPasswordPage() {
                                     <label className="form-label">New Password</label>
                                 </div>
                                 <div className="form-input-cell">
-                                    <input data-testid="password" type="password" required={true} className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                                    <input data-testid="password" maxLength={32} type="password" required={true} className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
                                 </div>
                             </div>
                             <div className="form-row">
@@ -110,7 +110,7 @@ export function ResetPasswordPage() {
                                     <label className="form-label">Confirm New Password</label>
                                 </div>
                                 <div className="form-input-cell">
-                                    <input data-testid="confirm-password" type="password" required={true} className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
+                                    <input data-testid="confirm-password" maxLength={32} type="password" required={true} className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
                                 </div>
                             </div>
                         </>)}

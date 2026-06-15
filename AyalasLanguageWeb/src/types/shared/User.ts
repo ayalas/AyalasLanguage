@@ -31,5 +31,6 @@ export interface User {
   userName: string;
   role: number;
   emailConfirmed: boolean;
+  use2FALogin: boolean;
   languageSettings?: LanguageSettings;
 }

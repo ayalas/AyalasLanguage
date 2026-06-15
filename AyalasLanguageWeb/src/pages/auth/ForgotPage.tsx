@@ -71,7 +71,7 @@ export function ForgotPage() {
                                         <label className="form-label">Email</label>
                                     </div>
                                     <div className="form-input-cell">
-                                        <input data-testid="email" type="text" value={email} required={true} className="form-input" onChange={e => setEmail(e.target.value)} />
+                                        <input data-testid="email" maxLength={128} type="text" value={email} required={true} className="form-input" onChange={e => setEmail(e.target.value)} />
                                     </div>
                                 </div>
                             </>

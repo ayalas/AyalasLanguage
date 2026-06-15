@@ -6,27 +6,54 @@ import { useAuth } from '../../components/auth/useAuth';
 import { errorHandler } from '../../utils/utils';
 import axios from 'axios';
 import { PublicHeader } from '../../components/PublicHeader';
+import type { LoginRequest, LoginResponse, Verify2FARequest } from '../../types/auth/auth';
+import type { User } from '../../types/shared/User';
+import { TWO_FACTOR_CODE_LENGTH } from '../../constants/learning';
 
 export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
   const [error, setError] = useState('');
   const searchUserName = searchParams.get('user') ?? '';
-  const [email, setEmail] = useState<string>(searchUserName);
-  const [password, setPassword] = useState<string>('');
+  const [email, setEmail] = useState(searchUserName);
+  const [password, setPassword] = useState('');
+  const [on2FA, setOn2FA] = useState(false);
+  const [verify2FAToken, setVerify2FAToken] = useState('');
+  const [code, setCode] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
+  function completeLogin(tmpUser: User) {
     try {
-      const response = await axios.post('/api/auth/login', { username: email, password });
-
-      login(response.data.user);
-      if (response.data.user.languageSettings?.knownLanguageId == null || response.data.user.languageSettings?.targetLanguageId == null) {
+      login(tmpUser);
+      if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
         navigate('/profile');
         return;
       }
       navigate('/home');
+    } catch (err) {
+      errorHandler(err, setError);
+    }
+  }
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    try {
+      if (on2FA) {
+        const response = await axios.post<LoginResponse>('/api/auth/verify2fa', { verify2FAToken, code } as Verify2FARequest);
+
+        completeLogin(response.data.user);
+      }
+      else {
+        const response = await axios.post<LoginResponse>('/api/auth/login', { userName: email, password } as LoginRequest);
+
+        if (response.data.requires2FA) {
+          setOn2FA(true);
+          setVerify2FAToken(response.data.verify2FAToken);
+        }
+        else {
+          completeLogin(response.data.user);
+        }
+      }
     } catch (err) {
       errorHandler(err, setError);
     }
@@ -50,22 +77,36 @@ export default function LoginPage(): React.ReactElement {
               <label className="form-error">{error}</label>
             </div>
           )}
-          <div className="form-input-row">
-            <div className="form-label-cell">
-              <label className="form-label">Email</label>
-            </div>
-            <div className="form-input-cell">
-              <input data-testid="email" type="email" required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
-            </div>
-          </div>
-          <div className="form-input-row">
-            <div className="form-label-cell">
-              <label className="form-label">Password</label>
-            </div>
-            <div className="form-input-cell">
-              <input data-testid="password" required={true} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
-            </div>
-          </div>
+          {on2FA && (
+            <div className="form-input-row">
+                <div className="form-label-cell">
+                  <label className="form-label">Two Factor Authentication Code</label>
+                </div>
+                <div className="form-input-cell">
+                  <input data-testid="code" type="text" maxLength={TWO_FACTOR_CODE_LENGTH} required={true} value={code} className="form-input" onChange={e => setCode(e.target.value)} />
+                </div>
+                <div className="form-cell-footer">Fill the 6-digit code that has been sent to you by email</div>
+              </div>
+          ) || (
+            <>
+              <div className="form-input-row">
+                <div className="form-label-cell">
+                  <label className="form-label">Email</label>
+                </div>
+                <div className="form-input-cell">
+                  <input data-testid="email" type="email" maxLength={128} required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+                </div>
+              </div>
+              <div className="form-input-row">
+                <div className="form-label-cell">
+                  <label className="form-label">Password</label>
+                </div>
+                <div className="form-input-cell">
+                  <input data-testid="password" required={true} maxLength={32} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                </div>
+              </div>
+            </>
+          )}
           <div className="form-row">
             <div className="login-register-line"><Link to={`/forgot?user=${encodeURIComponent(email)}`}>Forgot your password?</Link></div>
           </div>

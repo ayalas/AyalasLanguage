@@ -92,7 +92,7 @@ export function RegisterPage() {
                     <label className="form-label">Display Name</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="display-name" type="text" value={displayName} required={true} className="form-input" onChange={e => setDisplayName(e.target.value)} />
+                    <input data-testid="display-name" type="text" maxLength={128} value={displayName} required={true} className="form-input" onChange={e => setDisplayName(e.target.value)} />
                   </div>
                 </div>
                 <div className="form-row">
@@ -100,7 +100,7 @@ export function RegisterPage() {
                     <label className="form-label">Email</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="email" type="text" value={email} required={true} className="form-input" onChange={e => setEmail(e.target.value)} />
+                    <input data-testid="email" type="text" maxLength={128} value={email} required={true} className="form-input" onChange={e => setEmail(e.target.value)} />
                   </div>
                 </div>
                 <div className="form-row">
@@ -108,7 +108,7 @@ export function RegisterPage() {
                     <label className="form-label">Password</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="password" type="password" required={true} className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                    <input data-testid="password" type="password" maxLength={32} required={true} className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
                   </div>
                 </div>
                 <div className="form-row">

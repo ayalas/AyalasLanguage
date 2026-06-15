@@ -220,7 +220,7 @@ public static class AuthEndpoints
             user.TargetLanguage?.EnglishName,
             user.TargetLanguage?.Code, userScore);
 
-        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, languageSettings);
+        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin, languageSettings);
     }
 
     [Authorize]
@@ -303,6 +303,8 @@ public static class AuthEndpoints
             was2fATurnedOff = user.Use2FALogin;
             user.Use2FALogin = false;
         }
+
+        user.DisplayName = dto.DisplayName;
 
         if (dto.NewPassword != null && dto.NewPassword.Length > 0)
         {

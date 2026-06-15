@@ -10,7 +10,7 @@ export const PLACEHOLDERS = {
 } as const;
 
 const TOP_LEVEL = 100;
-
+export const TWO_FACTOR_CODE_LENGTH = 6;
 
 export const BUCKET_LIST_EXTRA_OPTIONS = 
 {
