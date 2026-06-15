@@ -4,7 +4,7 @@ import axios from 'axios';
 import React from 'react';
 import { MemoryRouter, useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { LessonPage } from './LessonPage';
-import { EXERCISE_TYPES, type ExerciseInfo } from '../../types/exercise/Exercise';
+import { EXERCISE_TYPES, type ExerciseData, type ExerciseInfo } from '../../types/exercise/Exercise';
 import disableClientValidation from '../../utils/test-utils/disableClientValidation';
 import { AUTHOR_ACCESS } from '../../constants/learning';
 
@@ -71,9 +71,11 @@ describe('LessonPage', () => {
     exerciseId: 101,
   };
 
+  const data1: ExerciseData = {First: 'can', Second: 'will'};
+  const data2: ExerciseData = {First: 'cat', Second: 'dog'};
   const mockExercises: ExerciseInfo[] = [
-    { exerciseId: 101, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{ First: 'can', Second: 'will' }", access: AUTHOR_ACCESS.CAN_EDIT },
-    { exerciseId: 102, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{ First: 'cat', Second: 'dog' }", access: AUTHOR_ACCESS.CAN_EDIT },
+    { exerciseId: 101, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: JSON.stringify(data1), access: AUTHOR_ACCESS.CAN_EDIT },
+    { exerciseId: 102, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: JSON.stringify(data2), access: AUTHOR_ACCESS.CAN_EDIT },
   ];
 
   beforeEach(() => {
@@ -113,7 +115,7 @@ describe('LessonPage', () => {
     // 4. Wait for sequential async score and progress calls
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith('/api/profile/score', expect.any(Object));
-      expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { learningPathId: 1 });
+      expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { learningPathId: '1' });
       expect(mockNavigate).toHaveBeenCalledWith('/home');
     });
   });
@@ -135,7 +137,7 @@ describe('LessonPage', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { 
-        learningPathId: 1, 
+        learningPathId: '1', 
         exerciseId: 102 
       });
       expect(mockNavigate).toHaveBeenCalledWith('/home');
