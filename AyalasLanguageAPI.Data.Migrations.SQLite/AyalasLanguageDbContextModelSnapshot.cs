@@ -17,6 +17,37 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.16");
 
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.ContactUs", b =>
+                {
+                    b.Property<int>("ContactUsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ContactUsId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ContactUs");
+                });
+
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Exercise", b =>
                 {
                     b.Property<int>("ExerciseId")
@@ -566,6 +597,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Property<int?>("TargetLanguageId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("Use2FALogin")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(128)
@@ -637,6 +671,15 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.HasIndex("LearningPathId");
 
                     b.ToTable("UserProgresses");
+                });
+
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.ContactUs", b =>
+                {
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Exercise", b =>

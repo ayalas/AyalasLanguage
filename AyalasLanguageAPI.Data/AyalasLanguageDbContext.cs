@@ -35,6 +35,9 @@ public class AyalasLanguageDbContext : DbContext
             .HasIndex(p => new { p.TargetLanguageId, p.KnownLanguageId, p.Level, p.Chapter })
             .IsUnique();
 
+        modelBuilder.Entity<ContactUs>()
+            .Property(b => b.CreatedOn)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         modelBuilder.Entity<ExerciseType>().HasData(
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "from Known to target language" },
