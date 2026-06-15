@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { replaceCharsForLanguage, getMissingParts } from './languageUtils'; // Adjust this path to your actual file
+import { replaceCharsForLanguage, getMissingParts, splitAndKeep } from './languageUtils'; // Adjust this path to your actual file
 
 describe('replaceCharsForLanguage', () => {
     
@@ -101,4 +101,70 @@ describe('getMissingParts function', () => {
         expect(getMissingParts("Studenten læser på universitetet", ['Studenten læser ', ' universitetet']))
         .toEqual(["på"]);
     });
+
+    it('handles a placeholder at the end', () => {
+        expect(getMissingParts("Hvordan gaar det", ['Hvordan gaar ']))
+        .toEqual(["det"]);
+    });
+
+    it('handles a placeholder at the begining', () => {
+        expect(getMissingParts("Hvordan gaar det", [' gaar det']))
+        .toEqual(["Hvordan"]);
+    });
 })
+
+describe('splitAndKeep', () => {
+  it('should split by a single character and keep it', () => {
+    const result = splitAndKeep('apple,banana,cherry', ',');
+    expect(result).toEqual(['apple', ',', 'banana', ',', 'cherry']);
+  });
+
+  it('should split by a multi-character string', () => {
+    const result = splitAndKeep('one<SEP>two<SEP>three', '<SEP>');
+    expect(result).toEqual(['one', '<SEP>', 'two', '<SEP>', 'three']);
+  });
+
+  it('should handle separators at the start and end of the string', () => {
+    const result = splitAndKeep(',startAndEnd,', ',');
+    expect(result).toEqual([',', 'startAndEnd', ',']);
+  });
+
+  it('should handle consecutive separators', () => {
+    const result = splitAndKeep('a,,b', ',');
+    expect(result).toEqual(['a', ',', ',', 'b']);
+  });
+
+  it('should escape special regex characters in the separator', () => {
+    // Testing "." which is a special char in regex (matches anything)
+    const result = splitAndKeep('1.2.3', '.');
+    expect(result).toEqual(['1', '.', '2', '.', '3']);
+
+    // Testing parentheses
+    const result2 = splitAndKeep('a(split)b', '(split)');
+    expect(result2).toEqual(['a', '(split)', 'b']);
+  });
+
+  it('should return the original string in an array if separator is not found', () => {
+    const result = splitAndKeep('hello world', 'xyz');
+    expect(result).toEqual(['hello world']);
+  });
+
+  it('should handle empty strings and empty separators', () => {
+    expect(splitAndKeep('', ',')).toEqual([]);
+    expect(splitAndKeep('hello', '')).toEqual(['hello']);
+  });
+
+  it('should work with whitespace separators', () => {
+    const result = splitAndKeep('word1  word2', ' ');
+    // Note: split by single space keeps both spaces individually if they are separate
+    expect(result).toEqual(['word1', ' ', ' ', 'word2']);
+  });
+
+  it('should handle multi-character separators at boundaries without leaving empty strings', () => {
+    const result = splitAndKeep('STARTtextEND', 'START');
+    expect(result).toEqual(['START', 'textEND']);
+
+    const result2 = splitAndKeep('STARTtextEND', 'END');
+    expect(result2).toEqual(['STARTtext', 'END']);
+  });
+});

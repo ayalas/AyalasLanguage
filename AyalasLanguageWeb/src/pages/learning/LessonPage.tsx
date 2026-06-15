@@ -5,7 +5,7 @@ import { ArrowBigLeft, FilePenLine } from 'lucide-react';
 
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { PLACEHOLDERS } from '../../constants/learning';
-import { getMissingParts, replaceCharsForLanguage, setLanguageSettings } from '../../utils/languageUtils';
+import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '../../utils/languageUtils';
 import { Exercise } from './exercise/Exercise';
 import type { User } from '../../types/shared/User';
 import type { ExerciseInfo, ExtendedExerciseInfo } from '../../types/exercise/Exercise';
@@ -39,8 +39,19 @@ export function LessonPage() {
     const secondData = replaceCharsForLanguage(targetLang, dataObj?.Second || '') || '';
 
     if (usesInlineExerciseWithBlanks(curItem.exerciseTypeId)) {
-      const sentenceElements = (firstData || '').split(PLACEHOLDERS.BLANKS).map((s) => s.trim());
-      const answers = getMissingParts(secondData || '', sentenceElements);
+      const sentenceElements = splitAndKeep((firstData || ''), PLACEHOLDERS.BLANKS).map((s) => s.trim()).filter(s => s !== '');
+      const tempElements = (firstData || '').split(PLACEHOLDERS.BLANKS).map((s) => s.trim()).filter(s => s !== '');
+      const answersTemp = getMissingParts(secondData || '', tempElements);
+      let iAnswers = 0;
+      const answers = sentenceElements.map((s) => {
+        if (s == PLACEHOLDERS.BLANKS) {
+          iAnswers++;
+          return answersTemp[iAnswers - 1];
+        }
+        else {
+          return PLACEHOLDERS.BLANKS;
+        }
+      });
       setCurrentExercise({
         ...curItem,
         exerciseObject: dataObj,
@@ -210,8 +221,8 @@ export function LessonPage() {
 
         if (res && res.data && res.data.length > 0) {
 
-          const exercisesTemp = [ ...res.data ];
-          
+          const exercisesTemp = [...res.data];
+
           setExercises(exercisesTemp);
           let exCurInd = 0;
           if (learningPathTemp.exerciseId != null) {

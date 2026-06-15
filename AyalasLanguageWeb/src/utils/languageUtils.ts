@@ -60,40 +60,89 @@ export async function switchLanguage(axios: any, user: User, login: (u: User) =>
     return reloadLanguageSettings(axios, user, login);
 }
 
+/**
+ * Splits a string by a separator and keeps the separator in the resulting array.
+ * 
+ * @param source - The original string to split
+ * @param separator - The string to split by
+ * @returns An array of strings including the segments and the separators
+ */
+export function splitAndKeep(source: string, separator: string): string[] {
+  if (!separator) return [source];
+
+  // Escape special regex characters in the separator (like ., *, +, etc.)
+  const escapedSeparator = separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  
+  // Create a regex with capturing groups: (separator)
+  const regex = new RegExp(`(${escapedSeparator})`, 'g');
+
+  // Split the string. The capturing group ensures separators are kept.
+  // We filter out empty strings that occur if the separator is at the start/end
+  return source.split(regex).filter(part => part.length > 0);
+}
+
 export function getMissingParts(fullString: string, segments: string[]) {
+    if (segments.length === 0) return [];
+
     const missingParts: string[] = [];
     let currentIndex = 0;
 
+    // 1. Handle text BEFORE the very first segment
+    const firstSegment = segments[0].trim();
+    const firstSegmentStart = fullString.indexOf(firstSegment);
+
+    if (firstSegmentStart !== -1) {
+        const leadingText = fullString.substring(0, firstSegmentStart).trim();
+        if (leadingText) {
+            missingParts.push(leadingText);
+        }
+        // Move the index to the end of the first segment to start looking for gaps
+        currentIndex = firstSegmentStart;
+    }
+
+    // 2. Find gaps BETWEEN segments
     for (let i = 0; i < segments.length - 1; i++) {
         const currentSegment = segments[i].trim();
         const nextSegment = segments[i + 1].trim();
 
         const segmentStart = fullString.indexOf(currentSegment, currentIndex);
-        if (segmentStart === -1) continue;
-
-        const missingStart = segmentStart + currentSegment.length;
-
-        const missingEnd = fullString.indexOf(nextSegment, missingStart);
-
-        if (missingEnd === -1) {
-            //before quitting, see if there is a near match - a match by all but the first letter
-            const nearMatch = fullString.indexOf(nextSegment.slice(1), missingStart);
-            if (nearMatch !== -1) {
-                const missingWord = fullString.substring(missingStart, nearMatch).trim();
-                missingParts.push(missingWord);
-
-                currentIndex = nearMatch;
-            }
-            else {
-                missingParts.push("");
-            }
+        if (segmentStart === -1) {
+            missingParts.push("");
             continue;
         }
 
-        const missingWord = fullString.substring(missingStart, missingEnd).trim();
-        missingParts.push(missingWord);
+        const missingStart = segmentStart + currentSegment.length;
+        let missingEnd = fullString.indexOf(nextSegment, missingStart);
 
-        currentIndex = missingEnd;
+        if (missingEnd === -1) {
+            // Near match logic: check if next segment matches minus its first character
+            const nearMatch = fullString.indexOf(nextSegment.slice(1), missingStart);
+            if (nearMatch !== -1) {
+                missingEnd = nearMatch;
+            }
+        }
+
+        if (missingEnd !== -1) {
+            const missingWord = fullString.substring(missingStart, missingEnd).trim();
+            missingParts.push(missingWord);
+            currentIndex = missingEnd;
+        } else {
+            missingParts.push("");
+            currentIndex = missingStart;
+        }
+    }
+
+    // 3. Handle the "tail" (text after the very last segment)
+    const lastSegment = segments[segments.length - 1].trim();
+    const lastSegmentStart = fullString.indexOf(lastSegment, currentIndex);
+
+    if (lastSegmentStart !== -1) {
+        const lastSegmentEnd = lastSegmentStart + lastSegment.length;
+        const trailingText = fullString.substring(lastSegmentEnd).trim();
+
+        if (trailingText) {
+            missingParts.push(trailingText);
+        }
     }
 
     return missingParts;

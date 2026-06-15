@@ -7,6 +7,7 @@ import type { User } from '../../../../types/shared/User';
 import type { ExerciseInputHandle, ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import { shouldPlayRevealedAnswer, showTranslationOnRevealedAnswer } from '../../../../logic/ExerciseTypeLogic';
 import { CirclePlay } from 'lucide-react';
+import { PLACEHOLDERS } from '../../../../constants/learning';
 
 interface Props {
     exerciseInfo: ExtendedExerciseInfo;
@@ -53,11 +54,21 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                 [...questionsRefMap.current.entries()].filter(([key]) => key.startsWith(`${exerciseInfo.exerciseId}-`))
             );
 
-            if (thisQuestionRefs.size < (exerciseInfo.answers?.length || 0)) {
+            const realAnswers = exerciseInfo.answers?.filter((s) => s != PLACEHOLDERS.BLANKS);
+            if (realAnswers == undefined) {
+                return false;
+            }
+            if (thisQuestionRefs.size < realAnswers.length) {
                 setError('please fill in all the input elements');
             }
+
             let canMoveNext = true;
             for (let j = 0; j < (exerciseInfo.answers?.length || 0); j++) {
+                
+                if (exerciseInfo.answers?.[j] == PLACEHOLDERS.BLANKS) {
+                    continue;
+                }
+
                 const inputRef = thisQuestionRefs.get(`${exerciseInfo.exerciseId}-${j}`);
                 const userTarget = user?.languageSettings?.targetLanguage;
                 if (!inputRef) {
@@ -114,7 +125,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
 
                         return (
                             <Fragment key={`ex${exerciseInfo.exerciseId}input-container${i}`}>
-                                {i === 0 && part === "" && (
+                                {part == PLACEHOLDERS.BLANKS && (
                                     <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                         ref={setRef}
                                         charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
@@ -122,16 +133,8 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                         customKey={`${exerciseInfo.exerciseId}-${i}`}
                                         onChange={onChangeFromInput}
                                     />
-                                )}
-                                <div className="content-line-part">{part}</div>
-                                {(i > 0 || part !== "") && (exerciseInfo.answers && exerciseInfo.answers.length > i) && (
-                                    <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
-                                        ref={setRef}
-                                        charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
-                                        checkAnswer={parentCheckAnswer}
-                                        customKey={`${exerciseInfo.exerciseId}-${i}`}
-                                        onChange={onChangeFromInput}
-                                    />
+                                ) || (
+                                    <div className="content-line-part">{part}</div>
                                 )}
                             </Fragment>
                         );
