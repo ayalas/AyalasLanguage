@@ -1,18 +1,34 @@
 using System.Security.Cryptography;
+using Resend;
 
 namespace AyalasLanguageAPI.Utils;
+
 public static class Utils
 {
     internal static async Task SendEmail(string to, string subject, string body, IConfiguration config, ILogger<Program> logger)
     {
         string? sender = config.GetValue<string>("EmailSettings:Sender");
-        
-        if (sender == null)
+
+        string? apiKey = config.GetValue<string>("EmailSettings:APIKey"); //use secrets manager
+
+        if (sender == null || apiKey == null)
         {
-            throw new Exception("Config error: missing EmailConfirmation configurations.");
+            throw new Exception("Config error: missing Email configurations.");
         }
-        //todo: implement
-        logger.LogTrace("Email fake send:\nTo:{To}\nFrom:{From}\nSubject:{Subject}\nContent:{Body}", to, sender, subject, body );
+        IResend resend = ResendClient.Create(apiKey);
+
+        var resp = await resend.EmailSendAsync(new EmailMessage()
+        {
+            From = sender,
+            To = to,
+            Subject = subject,
+            HtmlBody = body,
+        });
+
+        //todo: log response
+
+        //dummy send for debug
+        //logger.LogTrace("Email fake send:\nTo:{To}\nFrom:{From}\nSubject:{Subject}\nContent:{Body}", to, sender, subject, body );
     }
 
     public static (string RawToken, string HashedToken) GenerateToken()

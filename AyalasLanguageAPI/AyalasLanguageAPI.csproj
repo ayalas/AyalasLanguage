@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>fca694b3-f01a-43d3-9f80-fdd563775257</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +12,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.16" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <PackageReference Include="Resend" Version="0.5.1" />
   </ItemGroup>
 
   <ItemGroup>
