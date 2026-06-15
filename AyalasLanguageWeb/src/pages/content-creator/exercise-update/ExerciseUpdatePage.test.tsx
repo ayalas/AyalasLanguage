@@ -52,6 +52,7 @@ describe("ExerciseUpdatePage", () => {
     const objData:ExerciseData = {
             First: "Hello",
             Second: "World",
+            ExtraOptions: 'Earth',
             Alternatives: ["Alt 1", "Alt 2"]
         };
     const mockExerciseData:ExtendedExerciseInfo = {

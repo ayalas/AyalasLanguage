@@ -72,8 +72,8 @@ describe('LessonPage', () => {
   };
 
   const mockExercises: ExerciseInfo[] = [
-    { exerciseId: 101, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{ first: 'can', second: 'will' }", access: AUTHOR_ACCESS.CAN_EDIT },
-    { exerciseId: 102, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{ first: 'cat', second: 'dog' }", access: AUTHOR_ACCESS.CAN_EDIT },
+    { exerciseId: 101, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{ First: 'can', Second: 'will' }", access: AUTHOR_ACCESS.CAN_EDIT },
+    { exerciseId: 102, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: "{ First: 'cat', Second: 'dog' }", access: AUTHOR_ACCESS.CAN_EDIT },
   ];
 
   beforeEach(() => {
@@ -113,7 +113,7 @@ describe('LessonPage', () => {
     // 4. Wait for sequential async score and progress calls
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith('/api/profile/score', expect.any(Object));
-      expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { learningPathId: '1' });
+      expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { learningPathId: 1 });
       expect(mockNavigate).toHaveBeenCalledWith('/home');
     });
   });
@@ -135,7 +135,7 @@ describe('LessonPage', () => {
 
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { 
-        learningPathId: '1', 
+        learningPathId: 1, 
         exerciseId: 102 
       });
       expect(mockNavigate).toHaveBeenCalledWith('/home');

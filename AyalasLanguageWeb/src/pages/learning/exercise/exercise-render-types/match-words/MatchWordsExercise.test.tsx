@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MatchWordsExercise from './MatchWordsExercise';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
-import { EXERCISE_TYPES, type ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
+import { EXERCISE_TYPES, type ExerciseData, type ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
 import { AUTHOR_ACCESS } from '../../../../../constants/learning';
 
 // Mock axios as requested
@@ -43,7 +43,8 @@ describe('MatchWordsExercise', () => {
     exerciseInfo: {
       exerciseId: 501,
       exerciseTypeId: EXERCISE_TYPES.MATCHING,
-      data: '',
+      data: '{ first: \'dsfsd,sdfsd,sdf\', second:\'dsdfsd,sdffds,sdfsfd\' }',
+      exerciseObject: { First: 'dsfsd,sdfsd,sdf', Second:'dsdfsd,sdffds,sdfsfd'} as ExerciseData,
       sentenceElements: ['Hello', 'Apple'],
       answers: ['Bonjour', 'Pomme'],
       access: AUTHOR_ACCESS.CAN_EDIT,

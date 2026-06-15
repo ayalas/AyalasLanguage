@@ -4,7 +4,7 @@ import { Exercise } from './Exercise';
 import { MemoryRouter, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { createRef } from 'react';
-import { EXERCISE_TYPES } from '../../../types/exercise/Exercise';
+import { EXERCISE_TYPES, type ExerciseData, type ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
 import userEvent from '@testing-library/user-event'; // 1. Import userEvent
@@ -43,15 +43,20 @@ vi.mock('../../../utils/utils', () => ({
 }));
 
 describe('Exercise Component', () => {
-    const mockProps = {
-        exerciseInfo: {
+
+    const dataObj: ExerciseData = { First: 'Hello', Second: 'Bonjour', Alternatives: [] };
+    const info: ExtendedExerciseInfo = {
             exerciseId: 101,
             exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
-            data: JSON.stringify({ First: 'Hello', Second: 'Bonjour', Alternatives: [] }),
-            sentenceElements: ['Part 1'],
-            answers: ['Answer 1'],
-            access: AUTHOR_ACCESS.CAN_EDIT,
-        },
+            exerciseObject: dataObj,
+            data: JSON.stringify(dataObj),
+            sentenceElements: ['Hello'],
+            answers: ['Bonjour'],
+            access: AUTHOR_ACCESS.CAN_EDIT
+        };
+
+    const mockProps = {
+        exerciseInfo: info,
         moveNext: vi.fn(),
         childLoaded: vi.fn(),
         saveProgress: vi.fn(),

@@ -27,7 +27,7 @@ export function LessonPage() {
   const { user, login } = useOutletContext<{ user: User; login: (u: User) => void }>();
 
   const changeCurrentExercise = function (arrExercises: ExerciseInfo[], index: number) {
-    const curItem = arrExercises[index] as ExerciseInfo;
+    const curItem = arrExercises[index];
 
     // Defensive: ensure curItem and curItem.data are present
     const raw = curItem?.data;
@@ -210,7 +210,7 @@ export function LessonPage() {
 
         if (res && res.data && res.data.length > 0) {
 
-          const exercisesTemp = { ...res.data };
+          const exercisesTemp = [ ...res.data ];
           
           setExercises(exercisesTemp);
           let exCurInd = 0;
