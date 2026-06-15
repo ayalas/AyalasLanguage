@@ -107,8 +107,8 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
     function ExerciseTypeInstruction() {
         if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
             const desc = EXERCISE_TYPE_INSTRUCTIONS[exerciseInfo.exerciseTypeId];
-            return desc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
-                .replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguage || '')
+            return desc.replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
+                .replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguage || '')
         }
         return "";
     }

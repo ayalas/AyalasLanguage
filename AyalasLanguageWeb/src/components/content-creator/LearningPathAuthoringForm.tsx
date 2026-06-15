@@ -13,13 +13,14 @@ import type { NextChapterResponse } from '../../types/creator/creator';
 import { hasExtraOptions } from '../../logic/ExerciseTypeLogic';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
-  { handleSubmit: any; initialRecord?: any; reloadExercise?: () => void }) {
+  { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: any; reloadExercise?: () => void }) {
   const [error, setError] = useState('');
   const [level, setLevel] = useState(1);
   const [fileForImport, setFileForImport] = useState<File | null>(null);
   const [importStart, setImportStart] = useState(false);
   const [chapter, setChapter] = useState(1);
   const [title, setTitle] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [access, setAccess] = useState(AUTHOR_ACCESS.CAN_EDIT);
   const [exerciseType, setExerciseType] = useState<ExerciseType | 0>(0);
   const [exerciseTypeDesc, setExerciseTypeDesc] = useState('');
@@ -169,12 +170,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
   const onFormSubmit = async function (e: React.SubmitEvent) {
     e.preventDefault();
+    setIsLoading(true);
     const arrData = await parseForm();
 
     //error is displayed when arrData is null
     if (arrData != null) {
-      handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
+      await handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
     }
+    setIsLoading(false);
   };
 
   const createExercises = async function (pathId: number, exerciseType: ExerciseType, arrData: any[]) {
@@ -313,7 +316,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { Level: tempLevel, ChapterHint: hintChapter });
           setChapter(res.data.chapter);
         }
-
+        setIsLoading(false);
         const tempPuterSignin = (await initializePuter() == true);
         setPuterSignedIn(tempPuterSignin);
         if (!tempPuterSignin) {
@@ -344,29 +347,29 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         </div>
         <div className="form-row">
           <div className="form-button-cell">
-            <button data-testid="save" type="submit" className="form-button" title="Save and Generate Exercises"><LayersPlus /></button>
+            <button data-testid="save" type="submit" disabled={isLoading} className="form-button" title="Save and Generate Exercises"><LayersPlus /></button>
           </div>
           <div className="form-button-cell">
-            <button data-testid="switch-ai-use" type="button" onClick={() => { setUsePuterAI(!usePuterAI) }} className="form-button"
+            <button data-testid="switch-ai-use" type="button" disabled={isLoading} onClick={() => { setUsePuterAI(!usePuterAI) }} className="form-button"
               title={usePuterAI ? "Automated AI use (click to Switch to manual use)" : "Manual AI use (click to Switch to automated use)"}>{usePuterAI && (<Workflow />) || (<UserPen />)}
             </button>
           </div>
           {initialRecord && (
             <>
               <div className="form-button-cell">
-                <button data-testid="import-exercises" type="button" onClick={onImportExercises} className="form-button" title="Import Exercises"><FileDown /></button>
+                <button data-testid="import-exercises" type="button" disabled={isLoading} onClick={onImportExercises} className="form-button" title="Import Exercises"><FileDown /></button>
               </div>
               <div className="form-button-cell">
-                <button data-testid="export-exercises" type="button" onClick={onExportExercises} className="form-button" title="Export Exercises"><FileUp /></button>
+                <button data-testid="export-exercises" type="button" disabled={isLoading} onClick={onExportExercises} className="form-button" title="Export Exercises"><FileUp /></button>
               </div>
             </>
           )}
           {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && initialRecord.exerciseCount == 0 && (
             <div className="form-button-cell">
-              <button data-testid="delete-lesson" type="button" onClick={deleteLesson} className="form-button" title="Delete lesson"><Trash /></button>
+              <button data-testid="delete-lesson" type="button" disabled={isLoading} onClick={deleteLesson} className="form-button" title="Delete lesson"><Trash /></button>
             </div>
           )}
-          {initialRecord && (
+          {initialRecord && !isLoading && (
             <div className="form-button-cell">
               <Link className="link-button" title="Back to Lesson" to={`/path/${initialRecord.learningPathId}`}><BookOpenCheck /></Link>
             </div>
@@ -379,82 +382,93 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             <label className="form-error">{error}</label>
           </div>
         )}
-        {importStart && (
-          <>
-            <div className="form-label-row">Please select an exercises json file for import and click Import Exercises again</div>
-            <div className="form-row">
-              <div className="form-input-row">
-                <input data-testid="import-file" type="file" onChange={handleFileChange} accept=".json" />
-              </div>
-              <div className="form-input-row">
-                <button data-testid="cancel-import" type="button" onClick={cancelImport} className="form-button" title="Cancel"><Ban /> Cancel</button>
-              </div>
+        {isLoading && (
+          <div className="loadingOverlay">
+            <div className="loadingBox">
+              Generating exercises...
             </div>
-          </>
-        )}
-        <div className="form-label-row">Level</div>
-        <div className="form-row">
-          <div className="form-input-row">
-            <input type="number" data-testid="level" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} value={level} onChange={(e) => { setLevel(Number(e.target.value)) }} />
           </div>
-        </div>
-        <div className="form-label-row">Chapter</div>
-        <div className="form-row">
-          <div className="form-input-row">
-            <input type="number" data-testid="chapter" min="0.01" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
-          </div>
-        </div>
-        <div className="form-label-row">Subject</div>
-        <div className="form-row">
-          <div className="form-input-row">
-            <input type="text" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onChange={(e) => { setTitle(e.target.value) }} />
-          </div>
-          <div className="form-content-row">AI will generate exercises on this subject.</div>
-        </div>
-        <div className="form-label-row">Exercise Type</div>
-        <div className="form-row">
-          <div className="form-input-row">
-            <select required data-testid="exercise-type" className="form-select" value={exerciseType} onChange={onChangeExerciseType}>
-              <option value="0" disabled>-- Please choose an option --</option>
-              {EXERCISE_GENERATIONS.map((exType) => (
-                <option key={exType.type} value={exType.type}>{exType.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-content-row">{exerciseTypeDesc}</div>
-        </div>
-        {!usePuterAI && (
-          <>
-            <div className="form-label-row">AI instructions</div>
-            <div className="form-row">
-              <div className="form-content-row">{aiInstructions}</div>
-            </div>
-            <div className="form-label-row">First set of words/sentences</div>
-            <div className="form-row">
-              <div className="form-input-row">
-                <textarea data-testid="first-set" className="text-area-wide" value={firstSet} onChange={(e) => { setFirstSet(e.target.value) }} />
-              </div>
-              <div className="form-content-row">{firstSetDesc}</div>
-            </div>
-            <div className="form-label-row">Second set of words/sentences</div>
-            <div className="form-row">
-              <div className="form-input-row">
-                <textarea data-testid="second-set" className="text-area-wide" value={secondSet} onChange={(e) => { setSecondSet(e.target.value) }} />
-              </div>
-              <div className="form-content-row">{secondSetDesc}</div>
-            </div>
-            {hasExtraOptions(exerciseType) && (
-              <>
-                <div className="form-label-row">Wrong Extra Options</div>
-                <div className="form-row">
-                  <div className="form-input-row">
-                    <textarea data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
+        ) || (
+            <>
+              {importStart && (
+                <>
+                  <div className="form-label-row">Please select an exercises json file for import and click Import Exercises again</div>
+                  <div className="form-row">
+                    <div className="form-input-row">
+                      <input data-testid="import-file" type="file" onChange={handleFileChange} accept=".json" />
+                    </div>
+                    <div className="form-input-row">
+                      <button data-testid="cancel-import" type="button" onClick={cancelImport} className="form-button" title="Cancel"><Ban /> Cancel</button>
+                    </div>
                   </div>
-                  <div className="form-content-row">{wrongExtraOptionsDesc}</div>
+                </>
+              )}
+              <div className="form-label-row">Level</div>
+              <div className="form-row">
+                <div className="form-input-row">
+                  <input type="number" data-testid="level" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} value={level} onChange={(e) => { setLevel(Number(e.target.value)) }} />
                 </div>
-              </>
-            )}
-          </>)}
+              </div>
+              <div className="form-label-row">Chapter</div>
+              <div className="form-row">
+                <div className="form-input-row">
+                  <input type="number" data-testid="chapter" min="0.01" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
+                </div>
+              </div>
+              <div className="form-label-row">Subject</div>
+              <div className="form-row">
+                <div className="form-input-row">
+                  <input type="text" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onChange={(e) => { setTitle(e.target.value) }} />
+                </div>
+                <div className="form-content-row">AI will generate exercises on this subject.</div>
+              </div>
+              <div className="form-label-row">Exercise Type</div>
+              <div className="form-row">
+                <div className="form-input-row">
+                  <select required data-testid="exercise-type" className="form-select" value={exerciseType} onChange={onChangeExerciseType}>
+                    <option value="0" disabled>-- Please choose an option --</option>
+                    {EXERCISE_GENERATIONS.map((exType) => (
+                      <option key={exType.type} value={exType.type}>{exType.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-content-row">{exerciseTypeDesc}</div>
+              </div>
+              {!usePuterAI && (
+                <>
+                  <div className="form-label-row">AI instructions</div>
+                  <div className="form-row">
+                    <div className="form-content-row">{aiInstructions}</div>
+                  </div>
+                  <div className="form-label-row">First set of words/sentences</div>
+                  <div className="form-row">
+                    <div className="form-input-row">
+                      <textarea data-testid="first-set" className="text-area-wide" value={firstSet} onChange={(e) => { setFirstSet(e.target.value) }} />
+                    </div>
+                    <div className="form-content-row">{firstSetDesc}</div>
+                  </div>
+                  <div className="form-label-row">Second set of words/sentences</div>
+                  <div className="form-row">
+                    <div className="form-input-row">
+                      <textarea data-testid="second-set" className="text-area-wide" value={secondSet} onChange={(e) => { setSecondSet(e.target.value) }} />
+                    </div>
+                    <div className="form-content-row">{secondSetDesc}</div>
+                  </div>
+                  {hasExtraOptions(exerciseType) && (
+                    <>
+                      <div className="form-label-row">Wrong Extra Options</div>
+                      <div className="form-row">
+                        <div className="form-input-row">
+                          <textarea data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
+                        </div>
+                        <div className="form-content-row">{wrongExtraOptionsDesc}</div>
+                      </div>
+                    </>
+                  )}
+                </>)}
+            </>
+          )}
+
       </form>
     </div>
   );

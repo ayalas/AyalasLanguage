@@ -413,3 +413,34 @@ input:required:invalid {
   color: rgb(55, 194, 20);
   border-color: rgb(55, 194, 20);
 }
+
+/* The outer full-screen backdrop */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 50;
+  
+  /* Centering the content */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Colors and Blur */
+  background-color: rgba(0, 0, 0, 0.2); /* black at 20% opacity */
+  backdrop-filter: blur(4px); /* blur effect on background */
+  -webkit-backdrop-filter: blur(4px); /* Safari support */
+}
+
+/* The white box in the center */
+.loading-box {
+  background-color: #ffffff;
+  padding: 1rem; /* 16px */
+  border-radius: 0.5rem; /* 8px */
+  
+  /* shadow-xl translation */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
