@@ -36,12 +36,15 @@ public class CacheAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
         {
             // Optionally, you could also check the database for the token if it's not in cache
             var db = Request.HttpContext.RequestServices.GetRequiredService<AyalasLanguageDbContext>();
-            var tokenRecord = await db.Tokens.FirstOrDefaultAsync(t => t.Content == token);
+            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token);
 
             if (tokenRecord == null || tokenRecord.ExpiresOn < DateTime.UtcNow)
                 return AuthenticateResult.Fail("Invalid or Expired Token");
-            user = await db.Users.FindAsync(tokenRecord.UserId);
+            user = tokenRecord.User;
         }
+
+        if (user == null)
+            return AuthenticateResult.Fail("Unexpected error: user could not be retrieved by token");
 
         // 3. Create "Claims" (This represents the user in the context)
         var claims = new[] {

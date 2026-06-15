@@ -89,7 +89,14 @@ public static class Constants
     public const int BUCKET_EXTRA_MIN_COUNT = 1;
     public const int BUCKET_EXTRA_MAX_COUNT = 5;
 
-    public const string APP_COOKIE_NAME = "AyalasLanguageAppCookie";
+    public const int MIN_2FA_CODE = 100000;
+    public const int MAX_2FA_CODE = 999999;
+
+    public const int VERIFY2FA_TOKEN_EXPIRES_MIN = 10;
+    public const int VERIFY2FA_TOKEN_MAX_RETRY = 2; //in-memoty defence mechanism
+
+    public const string BRAND_NAME = "langapp.xyz";
+    public const string APP_COOKIE_NAME = "LangAppXyzCookie";
     public const string CONFIG_BYPASS_SECURE_COOKIES_KEY = "BypassSecureCookies";
 
     public const string CLIENT_RELATIVE_PATH_CONFIRM_EMAIL = "confirm/";

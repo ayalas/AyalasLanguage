@@ -21,6 +21,7 @@ public static class AuthEndpoints
 
         auth.MapPost("/register", RegisterUser);
         auth.MapPost("/login", LoginUser);
+        auth.MapPost("/verify2fa", Verify2FA);
         auth.MapPost("/logout", LogoutUser);
         auth.MapPost("/account", ChangeAccount);
         auth.MapPost("/forgot", ForgotPasswordStart);
@@ -41,13 +42,107 @@ public static class AuthEndpoints
         return Results.Ok(userIdDto);
     }
     // --- Private Handler Implementations ---
-    private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, ILogger<Program> logger)
     {
         // 1. Find user (In production, use a proper password hasher!)
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
         if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
             return Results.Conflict("Invalid credentials. Please try again with your correct email and password.");
 
+        if (user.EmailConfirmed && user.Use2FALogin)
+        {
+            //generate code
+            string code = Random.Shared.Next(Constants.MIN_2FA_CODE, Constants.MAX_2FA_CODE).ToString();
+            var tokenStart = TokenGenerator.GenerateToken(); // Implement a secure token generator
+            var expires = DateTime.UtcNow.AddMinutes(Constants.VERIFY2FA_TOKEN_EXPIRES_MIN);
+
+            string token = $"{tokenStart}{code}";
+
+            var tokenEntry = new Token
+            {
+                UserId = user.UserId,
+                Content = token,
+                ExpiresOn = expires
+            };
+            db.Tokens.Add(tokenEntry);
+            await db.SaveChangesAsync();
+
+            cache.Set(token, user, expires - DateTime.UtcNow);
+
+            string emailTitle = $"{Constants.BRAND_NAME}: your two factor authentication code";
+            string emailContent = $"<p>{code} is your two factor authentication code.</p>";
+
+            await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config, logger);
+
+            return Results.Ok(new LoginResponseDto(expires, null, true, tokenStart));
+        }
+        else
+        {
+            return await FinalizeLogin(user, config, db, cache, context);
+        }
+    }
+
+    private static async Task<IResult> Verify2FA(Verify2FARequest req, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    {
+        if (!Verify2FARetries(req.Verify2FAToken, cache))
+        {
+            return Results.Conflict("Too many entry attempts for two factor authentication code. Please restart the login process.");
+        }
+        string token = $"{req.Verify2FAToken}{req.Code}";
+        if (cache.TryGetValue(token, out User? user) && user != null)
+        {
+            return await FinalizeLogin(user, config, db, cache, context);
+        }
+        else
+        {
+            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token);
+
+            if (tokenRecord != null && tokenRecord.ExpiresOn > DateTime.UtcNow)
+            {
+                return await FinalizeLogin(tokenRecord.User, config, db, cache, context);
+            }
+        }
+
+        Add2FARetry(req.Verify2FAToken, cache);
+
+        return Results.Conflict("Expired or invalid two factor authentication code. Please try again or restart the login process.");
+
+    }
+
+    private static bool Verify2FARetries(string tokenStart, IMemoryCache cache)
+    {
+        if (cache.TryGetValue(tokenStart, out Verify2FARetryCacheObject? objRetries))
+        {
+            if (objRetries != null && objRetries.Retries > Constants.VERIFY2FA_TOKEN_MAX_RETRY)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static void Add2FARetry(string tokenStart, IMemoryCache cache)
+    {
+        if (cache.TryGetValue(tokenStart, out Verify2FARetryCacheObject? countRetries) && countRetries != null)
+        {
+            countRetries.Retries = countRetries.Retries + 1;
+            //add 10 seconds so not to have a negative value of expirity
+            cache.Set(tokenStart, countRetries, countRetries.ExpiresOn.AddSeconds(10) - DateTime.UtcNow);
+        }
+        else
+        {
+            var expires = DateTime.UtcNow.AddMinutes(Constants.VERIFY2FA_TOKEN_EXPIRES_MIN);
+            cache.Set(tokenStart, new Verify2FARetryCacheObject
+            {
+                Retries = 1,
+                ExpiresOn = expires
+            }, expires - DateTime.UtcNow);
+        }
+    }
+
+    private static async Task<IResult> FinalizeLogin(User user, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    {
         // 2. Generate a unique token: improve this in production (e.g. JWT or GUID + HMAC)
         var tokenContent = TokenGenerator.GenerateToken(); // Implement a secure token generator
         var expires = DateTime.UtcNow.AddHours(config.GetValue<int>("Session:TokenExpirationHours"));
@@ -81,7 +176,7 @@ public static class AuthEndpoints
             Expires = new DateTimeOffset(expires)
         });
 
-        return Results.Ok(new LoginResponseDto(expires, userIdDto));
+        return Results.Ok(new LoginResponseDto(expires, userIdDto, false, null));
     }
 
     public static async Task<UserIdDto?> GetUserById(int userId, AyalasLanguageDbContext db)
@@ -172,16 +267,35 @@ public static class AuthEndpoints
     }
 
     [Authorize]
-    private static async Task<IResult> ChangeAccount(ClaimsPrincipal claim, ChangeAccountDto dto, AyalasLanguageDbContext db)
+    private static async Task<IResult> ChangeAccount(ChangeAccountDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
     {
         var userId = claim.GetUserId();
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
 
         if (user == null) return Results.NotFound();
 
+        bool was2fATurnedOff = false;
+
         if (!BCrypt.Net.BCrypt.Verify(dto.OldPassword, user.PasswordHash))
         {
             return Results.BadRequest("Old password is incorrect.");
+        }
+
+        if (dto.Use2FALogin)
+        {
+            if (user.EmailConfirmed)
+            {
+                user.Use2FALogin = true;
+            }
+            else
+            {
+                return Results.BadRequest("Cannot use two factor authentication when your email address is not confirmed.");
+            }
+        }
+        else
+        {
+            was2fATurnedOff = user.Use2FALogin;
+            user.Use2FALogin = false;
         }
 
         if (dto.NewPassword != null && dto.NewPassword.Length > 0)
@@ -206,7 +320,16 @@ public static class AuthEndpoints
         }
         await db.SaveChangesAsync();
 
+        if (was2fATurnedOff)
+        {
+            string emailTitle = $"NOTICE: {Constants.BRAND_NAME} two factor authentication turned off";
+            string emailContent = $"<p>Your two factor authentication was turned off. If this wasn't you, please use {Constants.BRAND_NAME} Contact Us form to restore your account.</p>";
+
+            await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config, logger);
+        }
+
         UserIdDto? userIdDto = await GetUserById(user.UserId, db);
+
         return Results.Ok(userIdDto);
     }
 
@@ -240,8 +363,8 @@ public static class AuthEndpoints
     {
         var userId = claim.GetUserId();
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-  
-        
+
+
         if (user == null) return Results.NotFound();
 
         if (user.EmailConfirmed)
@@ -303,14 +426,14 @@ public static class AuthEndpoints
 
         string? resetPwdPage = $"{config.GetValue<string>("ClientBaseAddress")}{Constants.CLIENT_RELATIVE_PATH_RESET_PASSWORD}{rawToken}?user={user.UserName}";
 
-        string emailTitle = "Ayala's Language App: reset your password";
+        string emailTitle = $"{Constants.BRAND_NAME}: reset your password";
         string emailContent = $"<p>Choose a new password for your account in this <a href=\"{resetPwdPage}\">link</a>. Notice the link expires shortly.</p>";
 
         await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config, logger);
 
         return Results.Accepted();
     }
-    
+
     private static async Task<IResult> ForgotPasswordEnd(ResetPasswordDto dto, AyalasLanguageDbContext db, IConfiguration config)
     {
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
@@ -352,7 +475,7 @@ public static class AuthEndpoints
 
             string? confirmPageAddress = $"{config.GetValue<string>("ClientBaseAddress")}{Constants.CLIENT_RELATIVE_PATH_CONFIRM_EMAIL}{rawToken}";
 
-            string emailTitle = "Ayala's Language App: Confirm your email address";
+            string emailTitle = $"{Constants.BRAND_NAME}: Confirm your email address";
             string emailContent = $"<p>Please confirm your email address by opening this <a href=\"{confirmPageAddress}\">confirmation link</a> in your browser.</p>";
 
             await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config, logger);
@@ -363,5 +486,5 @@ public static class AuthEndpoints
         }
     }
 
-    
+
 }

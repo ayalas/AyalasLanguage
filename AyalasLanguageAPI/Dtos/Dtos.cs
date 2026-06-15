@@ -3,10 +3,13 @@ using System;
 namespace AyalasLanguageAPI.DTOs
 {
     // Auth DTOs
-    public record LoginResponseDto(DateTime Expires, UserIdDto User);
+    public record LoginResponseDto(DateTime Expires, UserIdDto? User, bool Requires2FA, string? Verify2FAToken);
+
+    public record Verify2FARequest(string Verify2FAToken, string Code);
+    public record Verify2FAResponse(DateTime Expires, UserIdDto User);
     public record RegisterDto(string DisplayName, string UserName, string Password);
     public record RegisterResponseDto(int UserId, string DisplayName, string UserName, byte Role);
-    public record ChangeAccountDto(string? NewUserName, string OldPassword, string? NewPassword);
+    public record ChangeAccountDto(string? NewUserName, string OldPassword, string? NewPassword, bool Use2FALogin);
     public record LoginDto(string UserName, string Password);
     public record ForgotPasswordDto(string UserName);
     //profile DTOs

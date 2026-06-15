@@ -27,6 +27,8 @@ namespace AyalasLanguageAPI.Data.Model
 
         public bool EmailConfirmed {get; set;} = false;
 
+        public bool Use2FALogin {get; set;} = false;
+
         public DateTime? ConfirmationEmailSent {get; set;}
 
         [StringLength(1024)]
