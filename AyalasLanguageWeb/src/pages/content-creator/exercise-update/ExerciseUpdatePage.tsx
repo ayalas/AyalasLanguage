@@ -8,7 +8,7 @@ import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from "../../../
 import { EXERCISE_GENERATIONS } from "../../../constants/learning";
 import { AlternativeLine } from "./AlternativeLine";
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
-import { hasExtraOptions } from "../../../logic/ExerciseTypeLogic";
+import { hasExtraOptions, showTranslationOnRevealedAnswer } from "../../../logic/ExerciseTypeLogic";
 
 export function ExerciseUpdatePage() {
     const { exerciseId } = useParams();
@@ -17,6 +17,7 @@ export function ExerciseUpdatePage() {
     const [initialRecord, setInitialRecord] = useState<ExtendedExerciseInfo | null>(null);
     const [firstLine, setFirstLine] = useState('');
     const [secondLine, setSecondLine] = useState('');
+    const [translation, setTranslation] = useState('');
     const [extraOptions, setExtraOptions] = useState('');
     const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
     const navigate = useNavigate();
@@ -41,6 +42,7 @@ export function ExerciseUpdatePage() {
                 First: firstLine,
                 Second: secondLine,
                 ExtraOptions: extraOptions,
+                Translation: translation,
                 Alternatives: arr
             };
 
@@ -84,6 +86,9 @@ export function ExerciseUpdatePage() {
                         }
                         if (exerciseTemp.exerciseObject.Second != null) {
                             setSecondLine(exerciseTemp.exerciseObject.Second);
+                        }
+                        if (showTranslationOnRevealedAnswer(exerciseTemp.exerciseTypeId)) {
+                            setTranslation(exerciseTemp.exerciseObject.Translation as string);
                         }
                         if (hasExtraOptions(exerciseTemp.exerciseTypeId)) {
                             setExtraOptions(exerciseTemp.exerciseObject.ExtraOptions as string);
@@ -133,6 +138,16 @@ export function ExerciseUpdatePage() {
                             <textarea data-testid="second-line" className="text-area-minimal" required={true} value={secondLine} onChange={(e) => { setSecondLine(e.target.value) }} />
                         </div>
                     </div>
+                    {initialRecord != null && showTranslationOnRevealedAnswer(initialRecord?.exerciseTypeId) && (
+                        <>
+                            <div className="form-label-row">Translation</div>
+                            <div className="form-row">
+                                <div className="form-input-row">
+                                    <textarea data-testid="translation" className="text-area-minimal" value={translation} onChange={(e) => { setTranslation(e.target.value) }} />
+                                </div>
+                            </div>
+                        </>
+                    )}
                     {initialRecord != null && hasExtraOptions(initialRecord.exerciseTypeId) && (
                         <>
                             <div className="form-label-row">Extra Options</div>

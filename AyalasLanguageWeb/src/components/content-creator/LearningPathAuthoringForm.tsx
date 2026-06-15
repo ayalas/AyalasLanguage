@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useOutletContext, useNavigate, useSearchParams } from 'react-router-dom';
-import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen } from 'lucide-react';
+import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck } from 'lucide-react';
 import axios from 'axios';
 
 import { removeLastCharIfMatch, downloadFile, errorHandler, initializePuter, parseLLMResponse } from '../../utils/utils';
 import { EXERCISE_GENERATIONS, PLACEHOLDERS, AUTHOR_ACCESS } from '../../constants/learning';
-import {type ExerciseType} from '../../types/exercise/Exercise';
+import { type ExerciseType } from '../../types/exercise/Exercise';
 import type { User } from '../../types/shared/User';
 import type { ExerciseData } from '../../types/exercise/Exercise';
 import puter from '@heyputer/puter.js';
@@ -310,7 +310,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           if (initChapter !== '' && Number(initChapter) > 0) {
             hintChapter = Number(initChapter);
           }
-          const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { Level: tempLevel, ChapterHint: hintChapter});
+          const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { Level: tempLevel, ChapterHint: hintChapter });
           setChapter(res.data.chapter);
         }
 
@@ -366,6 +366,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
               <button data-testid="delete-lesson" type="button" onClick={deleteLesson} className="form-button" title="Delete lesson"><Trash /></button>
             </div>
           )}
+          {initialRecord && (
+            <div className="form-button-cell">
+              <Link className="link-button" title="Back to Lesson" to={`/path/${initialRecord.learningPathId}`}><BookOpenCheck /></Link>
+            </div>
+          )
+
+          }
         </div>
         {error != '' && (
           <div className="form-row">
