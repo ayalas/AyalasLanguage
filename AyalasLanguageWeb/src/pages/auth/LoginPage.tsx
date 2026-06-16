@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link, useLocation } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
 import { useAuth } from '../../components/auth/useAuth';
@@ -21,15 +21,29 @@ export default function LoginPage(): React.ReactElement {
   const [code, setCode] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname;
 
   function completeLogin(tmpUser: User) {
     try {
       login(tmpUser);
+
       if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
-        navigate('/profile');
+        if (from != null) {
+          navigate('/profile', { state: { from: location }});
+        }
+        else {
+          navigate('/profile');
+        }
         return;
       }
-      navigate('/home');
+
+      if (from != null) {
+        navigate(from, { replace: true });
+      }
+      else {
+        navigate('/home');
+      }
     } catch (err) {
       errorHandler(err, setError);
     }
@@ -79,34 +93,34 @@ export default function LoginPage(): React.ReactElement {
           )}
           {on2FA && (
             <div className="form-input-row">
-                <div className="form-label-cell">
-                  <label className="form-label">Two Factor Authentication Code</label>
-                </div>
-                <div className="form-input-cell">
-                  <input data-testid="code" type="text" maxLength={TWO_FACTOR_CODE_LENGTH} required={true} value={code} className="form-input" onChange={e => setCode(e.target.value)} />
-                </div>
-                <div className="form-cell-footer">Fill the 6-digit code that has been sent to you by email</div>
+              <div className="form-label-cell">
+                <label className="form-label">Two Factor Authentication Code</label>
               </div>
+              <div className="form-input-cell">
+                <input data-testid="code" type="text" maxLength={TWO_FACTOR_CODE_LENGTH} required={true} value={code} className="form-input" onChange={e => setCode(e.target.value)} />
+              </div>
+              <div className="form-cell-footer">Fill the 6-digit code that has been sent to you by email</div>
+            </div>
           ) || (
-            <>
-              <div className="form-input-row">
-                <div className="form-label-cell">
-                  <label className="form-label">Email</label>
+              <>
+                <div className="form-input-row">
+                  <div className="form-label-cell">
+                    <label className="form-label">Email</label>
+                  </div>
+                  <div className="form-input-cell">
+                    <input data-testid="email" type="email" maxLength={128} required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+                  </div>
                 </div>
-                <div className="form-input-cell">
-                  <input data-testid="email" type="email" maxLength={128} required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+                <div className="form-input-row">
+                  <div className="form-label-cell">
+                    <label className="form-label">Password</label>
+                  </div>
+                  <div className="form-input-cell">
+                    <input data-testid="password" required={true} maxLength={32} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                  </div>
                 </div>
-              </div>
-              <div className="form-input-row">
-                <div className="form-label-cell">
-                  <label className="form-label">Password</label>
-                </div>
-                <div className="form-input-cell">
-                  <input data-testid="password" required={true} maxLength={32} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
-                </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
           <div className="form-row">
             <div className="login-register-line"><Link to={`/forgot?user=${encodeURIComponent(email)}`}>Forgot your password?</Link></div>
           </div>

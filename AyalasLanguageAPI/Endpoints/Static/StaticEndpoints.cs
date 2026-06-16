@@ -21,7 +21,6 @@ public static class StaticEndpoints
 
     public static void ServeStaticFiles(this WebApplication app, string rootPath)
     {
-
         var distPath = Path.Combine(rootPath, "dist");
 
         // Fallback check if running inside a containerized production environment
@@ -30,17 +29,28 @@ public static class StaticEndpoints
             distPath = Path.Combine(AppContext.BaseDirectory, "dist");
         }
 
+        var fileProvider = new PhysicalFileProvider(distPath);
+
+        // 1. Setup options to be shared
+        var staticFileOptions = new StaticFileOptions
+        {
+            FileProvider = fileProvider,
+            RequestPath = ""
+        };
+
+        // 2. Map default files (like index.html)
         app.UseDefaultFiles(new DefaultFilesOptions
         {
-            FileProvider = new PhysicalFileProvider(distPath),
+            FileProvider = fileProvider,
             RequestPath = ""
         });
 
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(distPath),
-            RequestPath = ""
-        });
+        // 3. Serve actual physical files (css, js, images)
+        app.UseStaticFiles(staticFileOptions);
+
+        // 4. THE FIX: Map all other requests to index.html
+        // This tells the server: "If you don't find the file, just give them index.html"
+        app.MapFallbackToFile("index.html", staticFileOptions);
     }
 
     [Authorize]

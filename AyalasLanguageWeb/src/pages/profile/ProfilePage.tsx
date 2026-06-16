@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { ChangeEvent, FormEvent } from 'react';
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import type { ChangeEvent } from 'react';
+import { useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Save } from 'lucide-react';
 
@@ -24,6 +24,8 @@ export function ProfilePage() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
+  const location = useLocation();
+  const from = location.state?.from?.pathname;
 
   useEffect(() => {
     async function loadData() {
@@ -67,15 +69,21 @@ export function ProfilePage() {
     validateForm(true);
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     try {
       if (!validateForm(false)) {
         return;
       }
-  if (!user) throw new Error('User must be logged in to change language');
-  await switchLanguage(axios, user, login, Number(targetLanguage), Number(knownLanguage));
-      navigate('/home');
+      if (!user) throw new Error('User must be logged in to change language');
+      await switchLanguage(axios, user, login, Number(targetLanguage), Number(knownLanguage));
+
+      if (from != null) {
+        navigate(from, { replace: true });
+      }
+      else {
+        navigate('/home');
+      }
     } catch (err: unknown) {
       errorHandler(err, setError);
     }
