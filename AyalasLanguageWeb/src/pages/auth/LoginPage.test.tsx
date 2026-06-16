@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../components/auth/useAuth';
 import { errorHandler } from '../../utils/utils';
@@ -47,6 +47,13 @@ describe('LoginPage Component', () => {
     // Set up default implementations for hooks
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
     vi.mocked(useAuth).mockReturnValue({ login: mockLogin } as unknown as AuthContextType);
+    vi.mocked(useLocation).mockReturnValue({
+      pathname: '/login',
+      search: '',
+      hash: '',
+      state: null, // React Router defaults to null when no state is provided
+      key: 'default',
+    });
     vi.mocked(useSearchParams).mockReturnValue([
       { get: mockGetSearchParams } as unknown as URLSearchParams,
       vi.fn(),

@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { ProfilePage } from './ProfilePage';
 import { switchLanguage } from '../../utils/languageUtils';
 import disableClientValidation from '../../utils/test-utils/disableClientValidation';
@@ -67,6 +67,13 @@ describe('ProfilePage', () => {
     vi.clearAllMocks();
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
     vi.mocked(useOutletContext).mockReturnValue({ user: mockUser, login: mockLogin });
+    vi.mocked(useLocation).mockReturnValue({
+      pathname: '/profile',
+      search: '',
+      hash: '',
+      state: null, // React Router defaults to null when no state is provided
+      key: 'default',
+    });
     mockedAxios.get.mockResolvedValue({ data: mockLanguages });
   });
 
@@ -89,7 +96,7 @@ describe('ProfilePage', () => {
     render(<ProfilePage />);
 
     const targetSelect = await screen.findByTestId('target-language');
-    
+
     fireEvent.change(targetSelect, { target: { value: '1' } });
     expect((targetSelect as HTMLSelectElement).value).toBe('1');
   });
@@ -125,9 +132,9 @@ describe('ProfilePage', () => {
 
   it('shows error message if validation fails', async () => {
     // Override user context to have no language settings
-    vi.mocked(useOutletContext).mockReturnValue({ 
-        user: { ...mockUser, languageSettings: null }, 
-        login: mockLogin 
+    vi.mocked(useOutletContext).mockReturnValue({
+      user: { ...mockUser, languageSettings: null },
+      login: mockLogin
     });
 
     render(<ProfilePage />);
