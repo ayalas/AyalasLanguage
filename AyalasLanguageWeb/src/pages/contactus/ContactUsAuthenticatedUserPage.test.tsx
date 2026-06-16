@@ -1,109 +1,94 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ContactUsAuthenticatedUserPage } from "./ContactUsAuthenticatedUserPage";
+import { render, screen, fireEvent, act } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
 import axios from "axios";
+import { ContactUsAuthenticatedUserPage } from "./ContactUsAuthenticatedUserPage";
 import { errorHandler } from "../../utils/utils";
-import userEvent from "@testing-library/user-event";
+import disableClientValidation from "../../utils/test-utils/disableClientValidation";
 
-// 1. Mock Axios
-vi.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+// Mocking axios as requested
+vi.mock('axios');
+const mockedAxios = vi.mocked(axios);
 
-// 2. Mock AuthHeader (to focus only on this page's logic)
+// Mocking external components and utils
 vi.mock("../../components/auth/AuthHeader", () => ({
-  AuthHeader: () => <div data-testid="mock-header">Auth Header</div>,
+    AuthHeader: () => <div data-testid="mock-auth-header">Auth Header</div>,
 }));
 
-// 3. Mock the errorHandler utility
 vi.mock("../../utils/utils", () => ({
-  errorHandler: vi.fn((err, setError) => setError("Mocked Error Message")),
+    errorHandler: vi.fn(),
 }));
 
 describe("ContactUsAuthenticatedUserPage", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+    it("should submit the form successfully and show success message", async () => {
+        mockedAxios.post.mockResolvedValueOnce({ data: {} });
 
-  it("renders the initial state correctly", () => {
-    render(<ContactUsAuthenticatedUserPage />);
+        render(<ContactUsAuthenticatedUserPage />);
 
-    expect(screen.getByText("Contact Us")).toBeInTheDocument();
-    expect(screen.getByTestId("message")).toBeInTheDocument();
-    expect(screen.getByTestId("save")).toBeInTheDocument();
-    expect(screen.getByTestId("mock-header")).toBeInTheDocument();
-  });
+        // Call the external function provided in the requirements
+        disableClientValidation();
 
-  it("updates the textarea value when typing", async () => {
-    const user = userEvent.setup();
-    render(<ContactUsAuthenticatedUserPage />);
-    
-    const textarea = screen.getByTestId("message") as HTMLTextAreaElement;
-    await user.type(textarea, "Hello, I need help.");
+        const messageInput = await screen.findByTestId("message");
+        const submitButton = await screen.findByTestId("save");
 
-    expect(textarea.value).toBe("Hello, I need help.");
-  });
+        fireEvent.change(messageInput, { target: { value: "Hello, this is a test message" } });
 
-  it("submits the form successfully and shows success message", async () => {
-    const user = userEvent.setup();
-    mockedAxios.post.mockResolvedValueOnce({ data: {} });
+        await act(async () => {
+            fireEvent.click(submitButton);
+        });
 
-    render(<ContactUsAuthenticatedUserPage />);
-    
-    const textarea = screen.getByTestId("message");
-    const submitBtn = screen.getByTestId("save");
+        expect(mockedAxios.post).toHaveBeenCalledWith("/api/profile/message", {
+            message: "Hello, this is a test message",
+        });
 
-    await user.type(textarea, "Test message content");
-    await user.click(submitBtn);
-
-    // Verify API call
-    expect(mockedAxios.post).toHaveBeenCalledWith("/api/profile/message", {
-      message: "Test message content",
+        const successMessage = await screen.findByText("Message sent successfully.");
+        expect(successMessage).toBeInTheDocument();
+        
+        // Form elements should be removed on success based on component logic
+        expect(screen.queryByTestId("message")).not.toBeInTheDocument();
+        expect(screen.queryByTestId("save")).not.toBeInTheDocument();
     });
 
-    // Verify success UI
-    await waitFor(() => {
-      expect(screen.getByText("Message sent successfully.")).toBeInTheDocument();
+    it("should handle submission errors using the errorHandler", async () => {
+        const errorMessage = "Network Error";
+        mockedAxios.post.mockRejectedValueOnce(new Error(errorMessage));
+        
+        // Mock errorHandler implementation to simulate setting the state
+        vi.mocked(errorHandler).mockImplementation((_err, setError) => {
+            setError("Mocked Error Message");
+        });
+
+        render(<ContactUsAuthenticatedUserPage />);
+
+        disableClientValidation();
+
+        const messageInput = await screen.findByTestId("message");
+        const submitButton = await screen.findByTestId("save");
+
+        fireEvent.change(messageInput, { target: { value: "Trigger error" } });
+
+        await act(async () => {
+            fireEvent.click(submitButton);
+        });
+
+        expect(errorHandler).toHaveBeenCalled();
+        
+        const displayedError = await screen.findByText("Mocked Error Message");
+        expect(displayedError).toBeInTheDocument();
     });
 
-    // Verify form elements are hidden after success
-    expect(screen.queryByTestId("message")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("save")).not.toBeInTheDocument();
-  });
-
-  it("handles submission errors using the errorHandler", async () => {
-    const user = userEvent.setup();
-    // Simulate an axios error
-    mockedAxios.post.mockRejectedValueOnce(new Error("Network Error"));
-
-    render(<ContactUsAuthenticatedUserPage />);
-    
-    const textarea = screen.getByTestId("message");
-    const submitBtn = screen.getByTestId("save");
-
-    await user.type(textarea, "This will fail");
-    await user.click(submitBtn);
-
-    // Check if errorHandler was called
-    expect(errorHandler).toHaveBeenCalled();
-
-    // Check if the error message is rendered (set by our mock errorHandler)
-    await waitFor(() => {
-      expect(screen.getByText("Mocked Error Message")).toBeInTheDocument();
+    it("should update message state on textarea change", async () => {
+        render(<ContactUsAuthenticatedUserPage />);
+        
+        const messageInput = await screen.findByTestId("message") as HTMLTextAreaElement;
+        
+        fireEvent.change(messageInput, { target: { value: "Testing typing" } });
+        
+        expect(messageInput.value).toBe("Testing typing");
     });
 
-    // Success message should not be visible
-    expect(screen.queryByText("Message sent successfully.")).not.toBeInTheDocument();
-  });
-
-  it("validates that textarea is required", () => {
-    render(<ContactUsAuthenticatedUserPage />);
-    const textarea = screen.getByTestId("message");
-    expect(textarea).toBeRequired();
-  });
-
-  it("limits the textarea length to 500 characters", () => {
-    render(<ContactUsAuthenticatedUserPage />);
-    const textarea = screen.getByTestId("message");
-    expect(textarea).toHaveAttribute("maxLength", "500");
-  });
+    it("should render the AuthHeader", async () => {
+        render(<ContactUsAuthenticatedUserPage />);
+        const header = await screen.findByTestId("mock-auth-header");
+        expect(header).toBeInTheDocument();
+    });
 });

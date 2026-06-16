@@ -26,6 +26,11 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+vi.mock('../../components/PublicHeader', () => ({
+  // We return an object where the key matches the name of the exported function
+  PublicHeader: () => <div data-testid="mock-public-header">Mock Public Header</div>,
+}));
+
 vi.mock('../../components/auth/useAuth', () => ({
   useAuth: vi.fn(),
 }));

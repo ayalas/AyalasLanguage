@@ -13,6 +13,11 @@ import * as utils from '../../utils/utils';
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios, true);
 
+vi.mock('../../components/PublicHeader', () => ({
+  // We return an object where the key matches the name of the exported function
+  PublicHeader: () => <div data-testid="mock-public-header">Mock Public Header</div>,
+}));
+
 vi.mock('lucide-react', () => ({
     Save: () => null,
 }));

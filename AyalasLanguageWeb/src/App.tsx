@@ -20,8 +20,8 @@ import { ConfirmEmailPage } from './pages/auth/ConfirmEmailPage';
 import axios from 'axios';
 
 import './App.css'
-import { ContactUsPublicPage } from './pages/contactus/contactus-public';
-import { ContactUsAuthenticatedUserPage } from './pages/contactus/contactus-auth';
+import { ContactUsPublicPage } from './pages/contactus/ContactUsPublicPage';
+import { ContactUsAuthenticatedUserPage } from './pages/contactus/ContactUsAuthenticatedUserPage';
 
 function App() {
   useEffect(() => {

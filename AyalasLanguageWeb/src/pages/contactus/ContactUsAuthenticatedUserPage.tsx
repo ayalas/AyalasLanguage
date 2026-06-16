@@ -1,24 +1,18 @@
 import axios from "axios";
-import { PublicHeader } from "../../components/PublicHeader";
-import { errorHandler, isValidEmail } from "../../utils/utils";
+import { AuthHeader } from "../../components/auth/AuthHeader";
+import { errorHandler } from "../../utils/utils";
 import { useState } from "react";
-import { Save } from "lucide-react";
+import { Send } from "lucide-react";
 
-export function ContactUsPublicPage() {
+export function ContactUsAuthenticatedUserPage() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
-    const [email, setEmail] = useState('');
     const [success, setSuccess] = useState(false);
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
         try {
-            if (!isValidEmail(email)) {
-                setError("Please enter a valid email address");
-                return;
-            }
-
-            await axios.post('/api/public/message', { email, message });
+            await axios.post('/api/profile/message', {  message });
 
             setError("");
             setSuccess(true);
@@ -30,7 +24,7 @@ export function ContactUsPublicPage() {
 
     return (
         <>
-            <PublicHeader />
+            <AuthHeader />
             <div className="form-container">
                 <form onSubmit={handleSubmit}>
                     <div className="form-header">
@@ -39,7 +33,7 @@ export function ContactUsPublicPage() {
                     {!success && (
                         <div className="form-row">
                             <div className="form-button-cell">
-                                <button data-testid="save" type="submit" className="form-button login-button"><Save /> Save</button>
+                                <button data-testid="save" type="submit" className="form-button login-button"><Send /> Send</button>
                             </div>
                         </div>
                     )}
@@ -54,12 +48,6 @@ export function ContactUsPublicPage() {
                         </div>
                     ) || (
                             <>
-                                <div className="form-label-row">Email address</div>
-                                <div className="form-row">
-                                    <div className="form-input-row">
-                                        <input type="email" data-testid="email" maxLength={128} required={true} className="form-input" value={email} onChange={(e) => { setEmail(e.target.value) }} />
-                                    </div>
-                                </div>
                                 <div className="form-label-row">Message</div>
                                 <div className="form-row">
                                     <div className="form-input-row">

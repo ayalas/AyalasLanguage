@@ -21,6 +21,11 @@ vi.mock('lucide-react', () => ({
     Send: () => <span data-testid="send-icon" />,
 }));
 
+vi.mock('../../components/PublicHeader', () => ({
+  // We return an object where the key matches the name of the exported function
+  PublicHeader: () => <div data-testid="mock-public-header">Mock Public Header</div>,
+}));
+
 // Mock react-router-dom hooks
 const mockSetSearchParams = vi.fn();
 let mockSearchParams = new URLSearchParams();

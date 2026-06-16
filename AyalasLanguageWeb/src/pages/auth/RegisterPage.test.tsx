@@ -11,6 +11,11 @@ vi.mock('lucide-react', () => ({
   User: () => <div data-testid="user-icon" />,
 }));
 
+vi.mock('../../components/PublicHeader', () => ({
+  // We return an object where the key matches the name of the exported function
+  PublicHeader: () => <div data-testid="mock-public-header">Mock Public Header</div>,
+}));
+
 // Mock axios
 vi.mock('axios', () => ({
   default: {
