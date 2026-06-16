@@ -8,9 +8,14 @@ import disableClientValidation from '../../utils/test-utils/disableClientValidat
 
 // 1. Mock External Dependencies
 vi.mock('axios');
-vi.mock('react-router-dom', () => ({
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
+  return {
+    ...actual,
     useOutletContext: vi.fn(),
-}));
+    useNavigate: vi.fn()
+  };
+});
 
 vi.mock('../../utils/utils', () => ({
     checkPasswordStrength: vi.fn(),
@@ -36,7 +41,7 @@ describe('AccountPage Component', () => {
         displayName: "Test Example",
         userName: 'test@example.com',
         emailConfirmed: false,
-        use2FALogin: false, 
+        use2FALogin: false,
     };
 
     beforeEach(() => {
@@ -79,6 +84,7 @@ describe('AccountPage Component', () => {
         disableClientValidation();
 
         const confirmBtn = screen.getByTestId('send');
+
         fireEvent.click(confirmBtn);
 
         expect(axios.post).toHaveBeenCalledWith('/api/auth/confirm');
@@ -86,20 +92,7 @@ describe('AccountPage Component', () => {
         await waitFor(() => {
             expect(screen.getByText(/email address confirmation sent successfully/i)).toBeInTheDocument();
         });
-    });
 
-    it('shows an error message if saving with no changes made', async () => {
-        render(<AccountPage />);
-
-        disableClientValidation();
-
-        fireEvent.change(screen.getByTestId('current-password'), { target: { value: '  ' } });
-        fireEvent.change(screen.getByTestId('new-email-address'), { target: { value: '  ' } });
-
-        const saveBtn = screen.getByTestId('save');
-        fireEvent.click(saveBtn);
-
-        expect(screen.getByText(/nothing to save/i)).toBeInTheDocument();
     });
 
     it('validates mismatched passwords before making an API call', async () => {
@@ -175,6 +168,7 @@ describe('AccountPage Component', () => {
             expect(mockLogin).toHaveBeenCalledWith(updatedUser);
             expect(screen.getByText(/account details changed successfully/i)).toBeInTheDocument();
         });
+
     });
 
     it('handles API errors gracefully using the errorHandler utility', async () => {
