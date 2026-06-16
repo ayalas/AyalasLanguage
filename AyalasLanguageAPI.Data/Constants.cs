@@ -89,11 +89,33 @@ public static class Constants
     public const int BUCKET_EXTRA_MIN_COUNT = 1;
     public const int BUCKET_EXTRA_MAX_COUNT = 5;
 
+    public const int MAX_MESSAGE_PUBLIC_CONTACT_US = 500;
+
+    //cache protections
+    public const string CONTACT_US_COUNT_CACHE_KEY = "ContactUsCountPerPeriod";
+    public const int MAX_CONTACT_US_PER_PERIOD = 500;
+    public const int CONTACT_US_CACHE_PROTECTION_MINUTES = 1440;
+
+    public const string REGISTER_COUNT_CACHE_KEY = "RegisterCountPerPeriod";
+    public const int MAX_REGISTER_PER_PERIOD = 1000;
+    public const int REGISTER_CACHE_PROTECTION_MINUTES = 1440;
+
+    public const string LOGIN_COUNT_CACHE_KEY = "LoginCountPerPeriod";
+    public const int MAX_LOGIN_PER_PERIOD = 10000;
+    public const int LOGIN_CACHE_PROTECTION_MINUTES = 1440;
+
+    public const string FORGOT_COUNT_CACHE_KEY = "ForgotCountPerPeriod";
+    public const int MAX_FORGOT_PER_PERIOD = 75;
+    public const int FORGOT_CACHE_PROTECTION_MINUTES = 1440;
+
+    public const int VERIFY2FA_TOKEN_EXPIRES_MINUTES = 10;
+    public const int VERIFY2FA_TOKEN_MAX_RETRY = 2; //in-memoty defence mechanism
+    
+
     public const int MIN_2FA_CODE = 100000;
     public const int MAX_2FA_CODE = 999999;
 
-    public const int VERIFY2FA_TOKEN_EXPIRES_MIN = 10;
-    public const int VERIFY2FA_TOKEN_MAX_RETRY = 2; //in-memoty defence mechanism
+    
 
     public const string BRAND_NAME = "langapp.xyz";
     public const string APP_COOKIE_NAME = "LangAppXyzCookie";

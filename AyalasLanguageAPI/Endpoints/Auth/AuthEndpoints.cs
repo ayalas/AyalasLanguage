@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Humanizer;
 using System.Security.Cryptography;
+using AyalasLanguageAPI.Utils;
 
 namespace AyalasLanguageAPI.Endpoints;
 
@@ -44,17 +45,24 @@ public static class AuthEndpoints
     // --- Private Handler Implementations ---
     private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, ILogger<Program> logger)
     {
+        if (!CacheUtils.ProtectByCacheCount(Constants.LOGIN_COUNT_CACHE_KEY, cache, Constants.MAX_LOGIN_PER_PERIOD))
+        {
+            return Results.Conflict("The system cannot accept new logins at this time. Please try again later.");
+        }
+
         // 1. Find user (In production, use a proper password hasher!)
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
         if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
             return Results.Conflict("Invalid credentials. Please try again with your correct email and password.");
+
+        CacheUtils.AddToCountProtection(Constants.LOGIN_COUNT_CACHE_KEY, cache, Constants.LOGIN_CACHE_PROTECTION_MINUTES);
 
         if (user.EmailConfirmed && user.Use2FALogin)
         {
             //generate code
             string code = Random.Shared.Next(Constants.MIN_2FA_CODE, Constants.MAX_2FA_CODE).ToString();
             var tokenStart = TokenGenerator.GenerateToken(); // Implement a secure token generator
-            var expires = DateTime.UtcNow.AddMinutes(Constants.VERIFY2FA_TOKEN_EXPIRES_MIN);
+            var expires = DateTime.UtcNow.AddMinutes(Constants.VERIFY2FA_TOKEN_EXPIRES_MINUTES);
 
             string token = $"{tokenStart}{code}";
 
@@ -84,10 +92,11 @@ public static class AuthEndpoints
 
     private static async Task<IResult> Verify2FA(Verify2FARequest req, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
     {
-        if (!Verify2FARetries(req.Verify2FAToken, cache))
+        if (!CacheUtils.ProtectByCacheCount(req.Verify2FAToken, cache, Constants.VERIFY2FA_TOKEN_MAX_RETRY))
         {
             return Results.Conflict("Too many entry attempts for two factor authentication code. Please restart the login process.");
         }
+
         string token = $"{req.Verify2FAToken}{req.Code}";
         if (cache.TryGetValue(token, out User? user) && user != null)
         {
@@ -103,48 +112,10 @@ public static class AuthEndpoints
             }
         }
 
-        Add2FARetry(req.Verify2FAToken, cache);
+        CacheUtils.AddToCountProtection(req.Verify2FAToken, cache, Constants.VERIFY2FA_TOKEN_EXPIRES_MINUTES);
 
         return Results.Conflict("Expired or invalid two factor authentication code. Please try again or restart the login process.");
 
-    }
-
-    private static bool Verify2FARetries(string tokenStart, IMemoryCache cache)
-    {
-        if (cache.TryGetValue(tokenStart, out Verify2FARetryCacheObject? objRetries))
-        {
-            if (objRetries != null && objRetries.Retries > Constants.VERIFY2FA_TOKEN_MAX_RETRY)
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static void Add2FARetry(string tokenStart, IMemoryCache cache)
-    {
-        if (cache.TryGetValue(tokenStart, out Verify2FARetryCacheObject? countRetries) && countRetries != null)
-        {
-            //the original cache/db store with the 6 digits code will expire anyway on ExpiresOn, so this protection is not 
-            //needed beyond ExpiresOn
-            DateTime dtNow = DateTime.UtcNow;
-            if (countRetries.ExpiresOn.CompareTo(dtNow) > 0)
-            {
-                countRetries.Retries = countRetries.Retries + 1;
-                //add 10 seconds so not to have a negative value of expirity
-                cache.Set(tokenStart, countRetries, countRetries.ExpiresOn - dtNow);
-            }
-        }
-        else
-        {
-            var expires = DateTime.UtcNow.AddMinutes(Constants.VERIFY2FA_TOKEN_EXPIRES_MIN);
-            cache.Set(tokenStart, new Verify2FARetryCacheObject
-            {
-                Retries = 1,
-                ExpiresOn = expires
-            }, expires - DateTime.UtcNow);
-        }
     }
 
     private static async Task<IResult> FinalizeLogin(User user, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
@@ -247,8 +218,12 @@ public static class AuthEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> RegisterUser(RegisterDto dto, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
+    private static async Task<IResult> RegisterUser(RegisterDto dto, IMemoryCache cache, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
     {
+        if (!CacheUtils.ProtectByCacheCount(Constants.REGISTER_COUNT_CACHE_KEY, cache, Constants.MAX_REGISTER_PER_PERIOD))
+        {
+            return Results.Conflict("The system cannot accept new registrations at this time. Please try again later.");
+        }
 
         if (await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName) != null)
         {
@@ -267,6 +242,8 @@ public static class AuthEndpoints
         await db.SaveChangesAsync();
 
         await SendConfirmationEmail(user, db, logger, config);
+
+        CacheUtils.AddToCountProtection(Constants.REGISTER_COUNT_CACHE_KEY, cache, Constants.REGISTER_CACHE_PROTECTION_MINUTES);
 
         return Results.Created($"/api/users/{user.UserId}",
             new RegisterResponseDto(user.UserId, user.DisplayName, user.UserName, user.Role));
@@ -406,8 +383,13 @@ public static class AuthEndpoints
         return Results.Ok(userIdDto);
     }
 
-    private static async Task<IResult> ForgotPasswordStart(ForgotPasswordDto dto, AyalasLanguageDbContext db, IConfiguration config, ILogger<Program> logger)
+    private static async Task<IResult> ForgotPasswordStart(ForgotPasswordDto dto, IMemoryCache cache, AyalasLanguageDbContext db, IConfiguration config, ILogger<Program> logger)
     {
+        if (!CacheUtils.ProtectByCacheCount(Constants.FORGOT_COUNT_CACHE_KEY, cache, Constants.MAX_FORGOT_PER_PERIOD))
+        {
+            return Results.Conflict("The system cannot accept your request at this time. Please try again later.");
+        }
+
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == dto.UserName);
         if (user == null)
             return Results.Conflict("Email not found.");
@@ -438,6 +420,8 @@ public static class AuthEndpoints
         string emailContent = $"<p>Choose a new password for your account in this <a href=\"{resetPwdPage}\">link</a>. Notice the link expires shortly.</p>";
 
         await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config, logger);
+
+        CacheUtils.AddToCountProtection(Constants.FORGOT_COUNT_CACHE_KEY, cache, Constants.FORGOT_CACHE_PROTECTION_MINUTES);
 
         return Results.Accepted();
     }
