@@ -65,4 +65,6 @@ namespace AyalasLanguageAPI.DTOs
     public record AddScoreDto(int ScoreToAdd);
 
     public record ContactUsPublicDto(string Email, string Message);
+
+    public record UserContactUsDto(string Message);
 }

@@ -20,6 +20,7 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             profileGroup.MapGet("/current", GetCurrentLanguage);
             profileGroup.MapDelete("/{languageId:int}", DeleteOtherLanguage);
             profileGroup.MapPost("/score", AddScoreToUser);
+            profileGroup.MapPost("/message", CreateUserContactUs);
         }
 
         [Authorize]
@@ -207,6 +208,25 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             await db.SaveChangesAsync();
             UserIdDto? userIdDto = await AuthEndpoints.GetUserById(user.UserId, db);
             return Results.Ok(userIdDto?.languageSettings);
+        }
+
+        [Authorize]
+        public static async Task<IResult> CreateUserContactUs(UserContactUsDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+        {
+            var userId = claim.GetUserId();
+            var user = await db.Users.FindAsync(userId);
+            if (user == null) return Results.NotFound();
+
+            ContactUs rec = new()
+            {
+                UserId = userId,
+                Email = user.UserName,
+                Message = dto.Message
+            };
+            db.ContactUs.Add(rec);
+            await db.SaveChangesAsync();
+
+            return Results.Ok();
         }
 
         #region Helper Functions
