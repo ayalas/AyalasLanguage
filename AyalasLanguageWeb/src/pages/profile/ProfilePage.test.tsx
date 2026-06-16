@@ -15,6 +15,7 @@ const mockedAxios = vi.mocked(axios);
 // Mock react-router-dom hooks
 vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
+  useLocation: vi.fn(),
   useNavigate: vi.fn(),
   useOutletContext: vi.fn(),
 }));
