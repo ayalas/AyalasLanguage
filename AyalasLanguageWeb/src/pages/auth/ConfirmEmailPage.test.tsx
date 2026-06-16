@@ -31,6 +31,7 @@ describe('ConfirmEmailPage', () => {
     userId: 1,
     userName: 'test@example.com',
     emailConfirmed: false,
+    use2FALogin: false,
     role: ROLE_TYPE.CONTENT_CREATOR
   };
 

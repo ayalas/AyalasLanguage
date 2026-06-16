@@ -33,8 +33,10 @@ vi.mock('../../components/auth/AuthHeader', () => ({
 describe('AccountPage Component', () => {
     const mockLogin = vi.fn();
     const mockUser = {
+        displayName: "Test Example",
         userName: 'test@example.com',
         emailConfirmed: false,
+        use2FALogin: false, 
     };
 
     beforeEach(() => {
@@ -165,6 +167,8 @@ describe('AccountPage Component', () => {
             newUserName: 'newemail@example.com',
             oldPassword: 'oldpassword123',
             newPassword: '',
+            use2FALogin: false,
+            displayName: "Test Example"
         });
 
         await waitFor(() => {

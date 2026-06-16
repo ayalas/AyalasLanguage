@@ -5,7 +5,7 @@ import { InlineExerciseWithBlanks } from './InlineExerciseWithBlanks';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
 import { EXERCISE_TYPES, type ExerciseData, type ExerciseType, type ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
-import { AUTHOR_ACCESS } from '../../../../constants/learning';
+import { AUTHOR_ACCESS, PLACEHOLDERS } from '../../../../constants/learning';
 
 // Mock axios as requested
 vi.mock('axios');
@@ -58,8 +58,8 @@ describe('InlineExerciseWithBlanks', () => {
     exerciseInfo: {
       exerciseId: 101,
       exerciseTypeId: EXERCISE_TYPES.FILL_IN_THE_BLANKS as ExerciseType,
-      sentenceElements: ['The ', ' is ', '.'],
-      answers: ['cat', 'black'],
+      sentenceElements: ['The ', PLACEHOLDERS.BLANKS, ' is ', PLACEHOLDERS.BLANKS, '.'],
+      answers: [PLACEHOLDERS.BLANKS, 'cat', PLACEHOLDERS.BLANKS, 'black.'],
       exerciseObject : dataObject,
       data: JSON.stringify(dataObject),
       access: AUTHOR_ACCESS.CAN_EDIT,
@@ -86,8 +86,8 @@ describe('InlineExerciseWithBlanks', () => {
 
     expect(await screen.findByText('The')).toBeInTheDocument();
     expect(await screen.findByText('is')).toBeInTheDocument();
-    expect(await screen.findByTestId('mock-input-101-0')).toBeInTheDocument();
     expect(await screen.findByTestId('mock-input-101-1')).toBeInTheDocument();
+    expect(await screen.findByTestId('mock-input-101-3')).toBeInTheDocument();
   });
 
   it('validates correct answers via checkAnswer handle', async () => {
@@ -97,11 +97,11 @@ describe('InlineExerciseWithBlanks', () => {
 
     disableClientValidation();
 
-    const input1 = await screen.findByTestId('mock-input-101-0');
-    const input2 = await screen.findByTestId('mock-input-101-1');
+    const input1 = await screen.findByTestId('mock-input-101-1');
+    const input2 = await screen.findByTestId('mock-input-101-3');
 
     fireEvent.change(input1, { target: { value: 'cat' } });
-    fireEvent.change(input2, { target: { value: 'black' } });
+    fireEvent.change(input2, { target: { value: 'black.' } });
 
     let result = false;
     act(() => {
@@ -119,7 +119,7 @@ describe('InlineExerciseWithBlanks', () => {
 
     disableClientValidation();
 
-    const input1 = await screen.findByTestId('mock-input-101-0');
+    const input1 = await screen.findByTestId('mock-input-101-1');
     fireEvent.change(input1, { target: { value: 'dog' } }); // Wrong answer
 
     let result = true;

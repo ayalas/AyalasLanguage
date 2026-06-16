@@ -126,7 +126,7 @@ public static class AuthEndpoints
     {
         if (cache.TryGetValue(tokenStart, out Verify2FARetryCacheObject? countRetries) && countRetries != null)
         {
-            //the original cache/db store with the 6 digits code will expire anyway on ExpiresOn, so this defence is not 
+            //the original cache/db store with the 6 digits code will expire anyway on ExpiresOn, so this protection is not 
             //needed beyond ExpiresOn
             DateTime dtNow = DateTime.UtcNow;
             if (countRetries.ExpiresOn.CompareTo(dtNow) > 0)

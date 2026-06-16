@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Save, Send } from 'lucide-react';
 import { AuthHeader } from '../../components/auth/AuthHeader';
@@ -17,6 +17,7 @@ export function AccountPage() {
   const [error, setError] = useState("");
   const [newUserName, setNewUserName] = useState("");
   const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
+  const navigate = useNavigate();
 
   const confirmEmail = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -25,6 +26,9 @@ export function AccountPage() {
       await axios.post('/api/auth/confirm');
 
       setEmailConfirmationSent(true);
+      setTimeout(() => {
+        navigate('/home');
+      }, 3000);
     }
     catch (err: unknown) {
       errorHandler(err, setError);
@@ -64,19 +68,15 @@ export function AccountPage() {
         }
       }
 
-
-
-      if (newPasswordTrimmed == "" && newUserNameTrimmed == "") {
-        setError("Nothing to save. This page allows you to change password and email address (unless confirmed).");
-        return;
-      }
-
       const res = await axios.post('/api/auth/account', { newUserName: newUserNameTrimmed, oldPassword, newPassword: newPasswordTrimmed, use2FALogin, displayName });
 
       login(res.data);
 
       setError("");
       setAccountChanged(true);
+      setTimeout(() => {
+        navigate('/home');
+      }, 3000);
     } catch (err: unknown) {
       errorHandler(err, setError);
     }
@@ -86,6 +86,9 @@ export function AccountPage() {
     async function runAsync() {
       if (user != null) {
         setUse2FALogin(user?.use2FALogin);
+        if (user?.displayName != null) {
+          setDisplayName(user?.displayName);
+        }
       }
     }
     runAsync();
@@ -154,7 +157,7 @@ export function AccountPage() {
               <>
                 <div className="form-row">
                   <div className="form-label-cell">
-                    <label className="form-label"><input data-testid="use-2fa" type="checkbox" checked={use2FALogin} onChange={(e) => { setUse2FALogin(e.target.checked)}} />Use Two Factor Authentication</label>
+                    <label className="form-label"><input data-testid="use-2fa" type="checkbox" checked={use2FALogin} onChange={(e) => { setUse2FALogin(e.target.checked) }} />Use Two Factor Authentication</label>
                   </div>
                   <div className="form-cell-footer">Protect your account: every time you login, you will be required to provide an extra code sent to you by email</div>
                 </div>

@@ -83,7 +83,7 @@ describe('LoginPage Component', () => {
     mockedAxios.post.mockResolvedValueOnce({
       data: {
         user: {
-          username: 'test@example.com',
+          userName: 'test@example.com',
           languageSettings: {
             knownLanguageId: 1,
             targetLanguageId: 2,
@@ -105,11 +105,11 @@ describe('LoginPage Component', () => {
     await user.click(submitButton);
 
     expect(mockedAxios.post).toHaveBeenCalledWith('/api/auth/login', {
-      username: 'test@example.com',
+      userName: 'test@example.com',
       password: 'password123',
     });
     expect(mockLogin).toHaveBeenCalledWith({
-      username: 'test@example.com',
+      userName: 'test@example.com',
       languageSettings: {
         knownLanguageId: 1,
         targetLanguageId: 2,
@@ -125,7 +125,7 @@ describe('LoginPage Component', () => {
     mockedAxios.post.mockResolvedValueOnce({
       data: {
         user: {
-          username: 'newuser@example.com',
+          userName: 'newuser@example.com',
           languageSettings: {
             knownLanguageId: null,
             targetLanguageId: null,
