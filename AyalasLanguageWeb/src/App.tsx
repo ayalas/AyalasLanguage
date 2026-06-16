@@ -20,6 +20,8 @@ import { ConfirmEmailPage } from './pages/auth/ConfirmEmailPage';
 import axios from 'axios';
 
 import './App.css'
+import { ContactUsPublicPage } from './pages/contactus/contactus-public';
+import { ContactUsAuthenticatedUserPage } from './pages/contactus/contactus-auth';
 
 function App() {
   useEffect(() => {
@@ -37,6 +39,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot" element={<ForgotPage />} />
           <Route path="/reset/:token" element={ <ResetPasswordPage/>} />
+          <Route path="/contactus" element={ <ContactUsPublicPage/>}/>
 
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
@@ -48,6 +51,7 @@ function App() {
             <Route path="/author/exercise/:exerciseId" element={<ExerciseUpdatePage />} />
             <Route path="/path/:learningPathId" element={<LessonPage />} />
             <Route path="/confirm/:token" element={ <ConfirmEmailPage/>} />
+            <Route path="/usernote" element={ <ContactUsAuthenticatedUserPage/>}/>
           </Route>
 
           {/* Fallback 404 Route */}

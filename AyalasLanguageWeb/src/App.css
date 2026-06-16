@@ -209,6 +209,19 @@ input:required:invalid {
   min-height: 32px;
 }
 
+.header-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-link-item {
+  display: inline-flex;
+  align-items: center;      /* Centers items vertically */
+  justify-content: center;  /* Centers items horizontally */
+  gap: 8px;
+}
+
 .header-select {
   border: 0;
   display: inline-flex;
