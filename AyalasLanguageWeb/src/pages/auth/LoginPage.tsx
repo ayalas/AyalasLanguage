@@ -29,7 +29,12 @@ export default function LoginPage(): React.ReactElement {
       login(tmpUser);
 
       if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
-        navigate('/profile', { state: { from: {pathname: from} }, replace: true });
+        if (from != null) {
+          navigate('/profile', { state: { from: { pathname: from } }, replace: true });
+        }
+        else {
+          navigate('/profile');
+        }
         return;
       }
 
