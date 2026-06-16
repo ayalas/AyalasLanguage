@@ -27,10 +27,15 @@ namespace AyalasLanguageAPI.Endpoints
             // Protected endpoints (requires authentication)
             app.MapProfileEndpoints(); //edit profile, get profile, switch language
             app.MapLearningEndpoints(); // get learning path, update progress, get exercises
-            app.MapStaticEndpoints(); // get all languages
             app.MapContentCreatorEndpoints(); // add exercises and learning paths
+            app.MapStaticEndpoints(); // get all languages
+            //falback all apis
+            app.Map("/api/{**slug}", (string? slug) =>
+            {
+                return Results.NotFound();
+            });
         }
-       
+
     }
-    
+
 }
