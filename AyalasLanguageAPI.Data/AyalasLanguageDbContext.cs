@@ -17,6 +17,7 @@ public class AyalasLanguageDbContext : DbContext
     public DbSet<Exercise> Exercises { get; set; }
     public DbSet<UserProgress> UserProgresses { get; set; }
     public DbSet<UserExerciseType> UserExerciseTypes { get; set; }
+    public DbSet<ContactUs> ContactUs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
