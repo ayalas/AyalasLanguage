@@ -17,6 +17,6 @@ namespace AyalasLanguageAPI.Data.Model
         [Required, StringLength(4000)]
         public string? Message { get; set; }
 
-        public DateTime CreatedOn {get; set;}
+        public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
     }
 }

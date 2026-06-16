@@ -11,7 +11,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
+           migrationBuilder.AddColumn<bool>(
                 name: "Use2FALogin",
                 table: "Users",
                 type: "INTEGER",
@@ -27,7 +27,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     UserId = table.Column<int>(type: "INTEGER", nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 128, nullable: false),
                     Message = table.Column<string>(type: "TEXT", maxLength: 4000, nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    CreatedOn = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {

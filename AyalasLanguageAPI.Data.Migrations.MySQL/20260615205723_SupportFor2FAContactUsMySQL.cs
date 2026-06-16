@@ -30,7 +30,7 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Message = table.Column<string>(type: "varchar(4000)", maxLength: 4000, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
+                    CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
                 {

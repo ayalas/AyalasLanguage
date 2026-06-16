@@ -266,7 +266,7 @@ public static class AuthEndpoints
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        SendConfirmationEmail(user, db, logger, config);
+        await SendConfirmationEmail(user, db, logger, config);
 
         return Results.Created($"/api/users/{user.UserId}",
             new RegisterResponseDto(user.UserId, user.DisplayName, user.UserName, user.Role));
@@ -361,7 +361,7 @@ public static class AuthEndpoints
             }
         }
 
-        SendConfirmationEmail(user, db, logger, config);
+        await SendConfirmationEmail(user, db, logger, config);
 
         return Results.Accepted();
     }
@@ -471,7 +471,7 @@ public static class AuthEndpoints
 
         return Results.Ok();
     }
-    private static async void SendConfirmationEmail(User user, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
+    private static async Task SendConfirmationEmail(User user, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
     {
         try
         {
@@ -493,6 +493,4 @@ public static class AuthEndpoints
             logger.LogError(ex, "Email confirmation send failed");
         }
     }
-
-
 }
