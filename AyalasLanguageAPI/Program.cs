@@ -38,7 +38,7 @@ app.MapAyalasLanguageEndpoints();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.ServeStaticFiles(builder.Environment.ContentRootPath);
+    app.ServeStaticFiles(builder.Environment.ContentRootPath, builder.Configuration);
 }
 
 app.Run();

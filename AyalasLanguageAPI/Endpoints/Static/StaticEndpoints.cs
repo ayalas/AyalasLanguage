@@ -19,38 +19,71 @@ public static class StaticEndpoints
         staticData.MapGet("/languages", GetLanguages);
     }
 
-    public static void ServeStaticFiles(this WebApplication app, string rootPath)
+    public static void ServeStaticFiles(this WebApplication app, string rootPath, IConfiguration config)
     {
-        var distPath = Path.Combine(rootPath, "dist");
+        var publicFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:public", app.Logger);
+        var adminFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:admin", app.Logger);
 
-        // Fallback check if running inside a containerized production environment
-        if (!Directory.Exists(distPath))
+        StaticFileOptions? publicStaticFileOptions = null;
+        StaticFileOptions? adminStaticFileOptions = null;
+
+        if (adminFileProvider != null)
         {
-            distPath = Path.Combine(AppContext.BaseDirectory, "dist");
+            app.UseDefaultFiles(new DefaultFilesOptions
+            {
+                FileProvider = adminFileProvider,
+                RequestPath = "/admin"
+            });
+
+            adminStaticFileOptions = new StaticFileOptions
+            {
+                FileProvider = adminFileProvider,
+                RequestPath = "/admin"
+            };
+
+            app.UseStaticFiles(adminStaticFileOptions);
+
+            app.MapFallbackToFile("/admin/{*path:nonfile}", "index.html", adminStaticFileOptions);
         }
 
-        var fileProvider = new PhysicalFileProvider(distPath);
-
-        // 1. Setup options to be shared
-        var staticFileOptions = new StaticFileOptions
+        if (publicFileProvider != null)
         {
-            FileProvider = fileProvider,
-            RequestPath = ""
-        };
+            app.UseDefaultFiles(new DefaultFilesOptions
+            {
+                FileProvider = publicFileProvider,
+                RequestPath = ""
+            });
 
-        // 2. Map default files (like index.html)
-        app.UseDefaultFiles(new DefaultFilesOptions
+            publicStaticFileOptions = new StaticFileOptions
+            {
+                FileProvider = publicFileProvider,
+                RequestPath = ""
+            };
+
+            app.UseStaticFiles(publicStaticFileOptions);
+
+            app.MapFallbackToFile("index.html", publicStaticFileOptions);
+        }
+    }
+
+    private static PhysicalFileProvider? GetFileProvider(IConfiguration config, string rootPath, string configKey, ILogger logger)
+    {
+        var relAppPath = config.GetValue<string>(configKey);
+        if (relAppPath == null)
         {
-            FileProvider = fileProvider,
-            RequestPath = ""
-        });
+            logger.LogWarning($"GetFileProvider for {configKey}: missing configuration value");
+            return null;
+        }
+        var appPath = Path.Combine(rootPath, relAppPath);
 
-        // 3. Serve actual physical files (css, js, images)
-        app.UseStaticFiles(staticFileOptions);
+        // Fallback check if running inside a containerized production environment
+        if (!Directory.Exists(appPath))
+        {
+            logger.LogWarning($"GetFileProvider for {configKey}: {appPath} path does not exist. Attempting to create {relAppPath} in {AppContext.BaseDirectory}");
+            appPath = Path.Combine(AppContext.BaseDirectory, relAppPath);
+        }
 
-        // 4. THE FIX: Map all other requests to index.html
-        // This tells the server: "If you don't find the file, just give them index.html"
-        app.MapFallbackToFile("index.html", staticFileOptions);
+        return new PhysicalFileProvider(appPath);
     }
 
     [Authorize]

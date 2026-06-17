@@ -28,8 +28,9 @@ namespace AyalasLanguageAPI.Endpoints
             app.MapProfileEndpoints(); //edit profile, get profile, switch language
             app.MapLearningEndpoints(); // get learning path, update progress, get exercises
             app.MapContentCreatorEndpoints(); // add exercises and learning paths
-            app.MapStaticEndpoints(); // get all languages
             app.MapPublicEndpoints();
+            app.MapStaticEndpoints();
+
             //falback all apis
             app.Map("/api/{**slug}", (string? slug) =>
             {
