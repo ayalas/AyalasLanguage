@@ -13,7 +13,11 @@ namespace AyalasLanguageAPI.Endpoints.Profile
     {
         public static void MapProfileEndpoints(this IEndpointRouteBuilder app)
         {
-            var profileGroup = app.MapGroup("/api/profile").WithTags("Profile");
+            var profileGroup = app.MapGroup("/api/profile").WithTags("Profile")
+                .RequireAuthorization(new AuthorizeAttribute
+                {
+                    AuthenticationSchemes = "PublicAuth"
+                });
             profileGroup.MapGet("/", GetUserProfile);
             profileGroup.MapPost("/", EditUserProfile);
             profileGroup.MapPost("/current", SwitchUserLanguages);
@@ -23,7 +27,6 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             profileGroup.MapPost("/message", CreateUserContactUs);
         }
 
-        [Authorize]
         private static async Task<CurrentLanguageResponseDto?> GetCurrentLanguage(ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
@@ -31,7 +34,6 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             return userDto != null ? userDto.languageSettings : null;
         }
 
-        [Authorize]
         private static async Task<IResult> GetUserProfile(ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
@@ -51,7 +53,7 @@ namespace AyalasLanguageAPI.Endpoints.Profile
 
             return Results.Ok(profile);
         }
-        [Authorize]
+
         private static async Task<IResult> EditUserProfile(ClaimsPrincipal claim, EditUserProfileDto dto, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
@@ -138,7 +140,6 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             return Results.Ok();
         }
 
-        [Authorize]
         private static async Task<IResult> SwitchUserLanguages(ClaimsPrincipal claim, SwitchLanguageDto dto, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
@@ -160,7 +161,6 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             return Results.Ok();
         }
 
-        [Authorize]
         private static async Task<IResult> DeleteOtherLanguage(int languageId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             if (languageId <= 0)
@@ -190,7 +190,6 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             return Results.Ok();
         }
 
-        [Authorize]
         public static async Task<IResult> AddScoreToUser(ClaimsPrincipal claim, AddScoreDto dto, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
@@ -210,7 +209,6 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             return Results.Ok(userIdDto?.languageSettings);
         }
 
-        [Authorize]
         public static async Task<IResult> CreateUserContactUs(UserContactUsDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();

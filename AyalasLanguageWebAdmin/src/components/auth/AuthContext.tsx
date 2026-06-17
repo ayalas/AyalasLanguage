@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import axios from 'axios';
 import type { AuthContextType } from './types';
 import type { User } from '../../types/shared/User';
+import { ROLE_TYPE } from '../../constants/admin';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -15,9 +16,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       try {
         axios.defaults.withCredentials = true;
 
-        if (user) return;
+        if (user && user.role == ROLE_TYPE.ADMIN) return;
 
-        const response = await axios.get('/api/auth/me');
+        const response = await axios.get('/admin/api/auth/me');
         const data = response.data;
         setUser(data);
       } catch (err) {

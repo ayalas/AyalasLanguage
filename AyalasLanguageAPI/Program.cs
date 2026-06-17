@@ -13,8 +13,7 @@ builder.AddAyalasLanguageDb();
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddAuthentication("CacheAuth")
-    .AddScheme<AuthenticationSchemeOptions, CacheAuthHandler>("CacheAuth", null);
+builder.AddAuthenticationSchemes();
 
 builder.Services.AddAuthorization();
 

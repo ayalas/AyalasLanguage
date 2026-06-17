@@ -23,7 +23,7 @@ public static class AdminEndpoints
         auth.MapGet("/me", CheckAuthStatus);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = "AdminAuth", Roles = "Admin")]
     private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -34,7 +34,7 @@ public static class AdminEndpoints
         return Results.Ok(userIdDto);
     }
 
-    [Authorize(Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = "AdminAuth", Roles = "Admin")]
     private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, IConfiguration config)
     {
         var userId = claim.GetUserId();

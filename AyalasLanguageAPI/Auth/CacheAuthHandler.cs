@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageAPI.Auth;
 
-public class CacheAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
 {
     private readonly IMemoryCache _cache;
 
     public CacheAuthHandler(
-        IOptionsMonitor<AuthenticationSchemeOptions> options,
+        IOptionsMonitor<CacheAuthOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
         IMemoryCache cache) : base(options, logger, encoder)
@@ -25,11 +25,12 @@ public class CacheAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var token = Request.Cookies[Constants.APP_COOKIE_NAME];
+        var token = Request.Cookies[Options.CookieName];
+        bool isAdmin = Options.CookieName == Constants.ADMIN_APP_COOKIE_NAME;
 
         if (string.IsNullOrEmpty(token))
             return AuthenticateResult.Fail("Empty token");
-        
+
         User user = null;
         // 2. Look up user in cache
         if (!_cache.TryGetValue(token, out user))
@@ -40,11 +41,15 @@ public class CacheAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
 
             if (tokenRecord == null || tokenRecord.ExpiresOn < DateTime.UtcNow)
                 return AuthenticateResult.Fail("Invalid or Expired Token");
+
             user = tokenRecord.User;
         }
 
         if (user == null)
             return AuthenticateResult.Fail("Unexpected error: user could not be retrieved by token");
+
+        if (isAdmin && user.Role != (int)UserRoleEnum.Admin)
+            return AuthenticateResult.Fail("Non-admin user attempt to access admin resources");
 
         // 3. Create "Claims" (This represents the user in the context)
         var claims = new[] {

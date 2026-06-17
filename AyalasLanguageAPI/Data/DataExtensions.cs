@@ -1,4 +1,5 @@
 using System;
+using AyalasLanguageAPI.Data.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageAPI.Data;
@@ -78,14 +79,36 @@ public static class DataExtensions
 
             //use predefined my sql connection
             builder.Services.AddDbContext<AyalasLanguageDbContext>(options =>
+            {
                 options.UseMySql(connectionString, serverVersion,
-                b => b.MigrationsHistoryTable("__EFMigrationsHistory")
-                .MigrationsAssembly("AyalasLanguageAPI.Data.Migrations.MySQL")));
+                    b => b.MigrationsHistoryTable("__EFMigrationsHistory")
+                    .MigrationsAssembly("AyalasLanguageAPI.Data.Migrations.MySQL"));
+
+                options.UseAsyncSeeding(async (context, _, cancellationToken) =>
+                {
+                    await context.MakeFirstUserAdmin(cancellationToken);
+                });
+            });
         }
         else
         {
             builder.Services.AddSqlite<AyalasLanguageDbContext>(connectionString,
-            options => options.MigrationsAssembly("AyalasLanguageAPI.Data.Migrations.SQLite"));
+            options =>
+            {
+                options.MigrationsAssembly("AyalasLanguageAPI.Data.Migrations.SQLite");
+            });
+        }
+    }
+
+    private static async Task MakeFirstUserAdmin(this DbContext context, CancellationToken cancellationToken)
+    {
+        var adminUser = await context.Set<User>()
+           .FirstOrDefaultAsync(u => u.UserId == 1, cancellationToken);
+
+        if (adminUser != null && adminUser.Role != (int)UserRoleEnum.Admin)
+        {
+            adminUser.Role = (int)UserRoleEnum.Admin;
+            await context.SaveChangesAsync(cancellationToken);
         }
     }
 }

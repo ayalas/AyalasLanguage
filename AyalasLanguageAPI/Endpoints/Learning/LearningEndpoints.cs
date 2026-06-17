@@ -14,7 +14,12 @@ public static class LearningEndpoints
 {
     public static void MapLearningEndpoints(this IEndpointRouteBuilder app)
     {
-        var learning = app.MapGroup("/api/learning").WithTags("Learning");
+        var learning = app.MapGroup("/api/learning").WithTags("Learning")
+            .RequireAuthorization(new AuthorizeAttribute
+            {
+                AuthenticationSchemes = "PublicAuth"
+            });
+        
         learning.MapGet("/path", GetLearningPath);
         learning.MapGet("/path/{pathId:int}", GetSingleLearningPath);
         learning.MapGet("/path/{pathId:int}/exercises", GetExercises);
@@ -23,7 +28,6 @@ public static class LearningEndpoints
         learning.MapDelete("/progress/{pathId:int}", DeleteUserProgress);
     }
 
-    [Authorize]
     private static async Task<IResult> GetSingleLearningPath(int pathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -64,7 +68,6 @@ public static class LearningEndpoints
             .FirstOrDefaultAsync());
     }
 
-    [Authorize]
     private static async Task<IResult> GetLearningPath(ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -136,7 +139,6 @@ public static class LearningEndpoints
         }
     }
 
-    [Authorize]
     private static async Task<IResult> UpdateUserProgress(UpdateProgressDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -226,7 +228,6 @@ public static class LearningEndpoints
         return Results.Ok();
     }
 
-    [Authorize]
     private static async Task<IResult> DeleteUserProgress(int pathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -240,7 +241,6 @@ public static class LearningEndpoints
         return Results.NoContent();
     }
 
-    [Authorize]
     private static async Task<IResult> GetExercises(int pathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -269,7 +269,6 @@ public static class LearningEndpoints
         return Results.Ok(exercises);
     }
 
-    [Authorize]
     private static async Task<IResult> AddMistake(AddMistakeDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();

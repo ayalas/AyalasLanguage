@@ -26,7 +26,7 @@ export default defineConfig({
       cert: fs.readFileSync(path.resolve(__dirname, '../cert/langapp.xyz+2.pem')),
     },
     proxy: {
-      '/api/': {
+      '/admin/api/': {
         target: 'https://langapp.xyz:7010',
         changeOrigin: true,
         secure: false

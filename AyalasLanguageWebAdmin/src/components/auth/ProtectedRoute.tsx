@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from './useAuth';
+import { ROLE_TYPE } from '../../constants/admin';
 
 const ProtectedRoute: React.FC = () => {
   const { user, loading, logout, login } = useAuth();
@@ -11,11 +12,11 @@ const ProtectedRoute: React.FC = () => {
     return <div>loading ...</div>;
   }
 
-  if (user) {
+  if (user && user.role == ROLE_TYPE.ADMIN) {
     return <Outlet context={{ user, logout, login }} />;
   }
 
-  return <Navigate to="/login" state={{ from: location }} replace />;
+  return <Navigate to="/admin/login" state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;

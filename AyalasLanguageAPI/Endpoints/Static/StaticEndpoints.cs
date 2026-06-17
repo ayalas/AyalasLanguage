@@ -14,7 +14,11 @@ public static class StaticEndpoints
 {
     public static void MapStaticEndpoints(this IEndpointRouteBuilder app)
     {
-        var staticData = app.MapGroup("/api/static").WithTags("Static");
+        var staticData = app.MapGroup("/api/static").WithTags("Static")
+            .RequireAuthorization(new AuthorizeAttribute
+                {
+                    AuthenticationSchemes = "PublicAuth"
+                });
 
         staticData.MapGet("/languages", GetLanguages);
     }
@@ -86,7 +90,6 @@ public static class StaticEndpoints
         return new PhysicalFileProvider(appPath);
     }
 
-    [Authorize]
     private static async Task<IResult> GetLanguages(AyalasLanguageDbContext db)
     {
         var languages = await db.Languages

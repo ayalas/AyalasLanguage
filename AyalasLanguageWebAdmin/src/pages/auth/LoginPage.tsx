@@ -43,12 +43,12 @@ export default function LoginPage(): React.ReactElement {
     e.preventDefault();
     try {
       if (on2FA) {
-        const response = await axios.post<LoginResponse>('/api/auth/verify2fa', { verify2FAToken, code } as Verify2FARequest);
+        const response = await axios.post<LoginResponse>('/admin/api/auth/verify2fa', { verify2FAToken, code } as Verify2FARequest);
 
         completeLogin(response.data.user);
       }
       else {
-        const response = await axios.post<LoginResponse>('/api/auth/login', { userName: email, password } as LoginRequest);
+        const response = await axios.post<LoginResponse>('/admin/api/auth/login', { userName: email, password } as LoginRequest);
 
         if (response.data.requires2FA) {
           setOn2FA(true);

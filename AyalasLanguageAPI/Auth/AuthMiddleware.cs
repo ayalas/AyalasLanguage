@@ -12,8 +12,10 @@ public static class AuthMiddleware
     {
         app.Use(async (context, next) =>
         {
-
-            string token = context.Request.Cookies[Constants.APP_COOKIE_NAME];
+            string cookieName = context.Request.Path.StartsWithSegments("/admin")
+                ? Constants.ADMIN_APP_COOKIE_NAME
+                : Constants.APP_COOKIE_NAME;
+            string? token = context.Request.Cookies[cookieName];
 
             if (!string.IsNullOrEmpty(token))
             {

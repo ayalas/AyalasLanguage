@@ -23,16 +23,16 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin/" element={<LandingPage />} />
+          <Route path="/admin/login" element={<LoginPage />} />
     
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/home" element={<Homepage />} />
+            <Route path="/admin/home" element={<Homepage />} />
           </Route>
 
           {/* Fallback 404 Route */}
-          <Route path="*" element={<div>Page Not Found</div>} />
+          <Route path="*" element={<div>Admin Page Not Found</div>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -16,7 +16,12 @@ public static class ContentCreatorEndpoints
 {
     public static void MapContentCreatorEndpoints(this IEndpointRouteBuilder app)
     {
-        var creator = app.MapGroup("/api/creator").WithTags("Content Creator");
+        var creator = app.MapGroup("/api/creator")
+            .WithTags("Content Creator").RequireAuthorization(new AuthorizeAttribute
+        {
+            AuthenticationSchemes = "PublicAuth",
+            Roles = "Admin,ContentCreator"
+        });
 
         // Learning Path Creation
         creator.MapPost("/learning-path", CreateLearningPath);
@@ -32,7 +37,6 @@ public static class ContentCreatorEndpoints
 
     }
 
-    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> NextChapter(NextChapterDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -75,7 +79,6 @@ public static class ContentCreatorEndpoints
         return Results.Ok(new NextChapterResponseDto(hint));
     }
 
-    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> CreateLearningPath(CreateLearningPathDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
@@ -194,7 +197,7 @@ public static class ContentCreatorEndpoints
 
         return Results.Created($"/api/learning/path/{path.LearningPathId}", new CreateLearningPathResponseDto(path.LearningPathId));
     }
-    [Authorize(Roles = "Admin,ContentCreator")]
+
     private static async Task<IResult> ImportExercises(int id, IFormFile file, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
@@ -240,7 +243,6 @@ public static class ContentCreatorEndpoints
         return Results.Ok();
     }
 
-    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> EditLearningPath(int id, EditLearningPathDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var path = await db.LearningPaths.FindAsync(id);
@@ -267,7 +269,6 @@ public static class ContentCreatorEndpoints
         return Results.Ok();
     }
 
-    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> DeleteLearningPath(int id, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var path = await db.LearningPaths.FindAsync(id);
@@ -302,7 +303,6 @@ public static class ContentCreatorEndpoints
         return Results.NoContent();
     }
 
-    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> CreateExercise(CreateExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
@@ -328,7 +328,6 @@ public static class ContentCreatorEndpoints
         return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", new CreateExerciseResponseDto(exercise.ExerciseId));
     }
 
-    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> GetExercise(int id, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var exercise = await db.Exercises
@@ -341,7 +340,6 @@ public static class ContentCreatorEndpoints
         return Results.Ok(new ExerciseDto(exercise.ExerciseId, exercise.ExerciseTypeId, exercise.Data, (byte)UserAccessEnum.CanEdit, exercise.LearningPathId));
     }
 
-    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> EditExercise(int id, EditExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var exercise = await db.Exercises
@@ -437,7 +435,6 @@ public static class ContentCreatorEndpoints
         return Results.Ok();
     }
 
-    [Authorize(Roles = "Admin,ContentCreator")]
     private static async Task<IResult> DeleteExercise(int id, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var exercise = await db.Exercises.FindAsync(id);
@@ -451,5 +448,5 @@ public static class ContentCreatorEndpoints
         return Results.NoContent();
     }
 
-    
+
 }
