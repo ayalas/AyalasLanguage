@@ -178,7 +178,7 @@ public static class AdminEndpoints
             .FirstOrDefaultAsync(u => u.UserId == userId && u.Role == (int)UserRoleEnum.Admin);
         if (user == null) return null;
 
-        return new AdminUserIdDto(user.UserId, user.DisplayName, user.UserName, user.EmailConfirmed, user.Use2FALogin);
+        return new AdminUserIdDto(user.UserId, user.DisplayName, user.UserName,user.Role, user.EmailConfirmed, user.Use2FALogin);
     }
 
 }

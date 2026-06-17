@@ -8,10 +8,10 @@ export default function LandingPage() {
     <section id="center">
       <div>
         <div className="form-row">
-          <Link className="home-link" to="/home">Login</Link> to the language app
+          <Link className="home-link" to="/home">Login</Link> to the language app admin console
         </div>
         <div className="form-row">
-          <Link className="home-link" to="/register">Register</Link> a new account
+          Or <Link className="home-link" to="../home">go back</Link> to the language app
         </div>
       </div>
     </section>
