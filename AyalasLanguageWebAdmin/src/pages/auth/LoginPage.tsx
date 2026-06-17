@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams, Link, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
 import { useAuth } from '../../components/auth/useAuth';
@@ -8,7 +8,7 @@ import axios from 'axios';
 import { PublicHeader } from '../../components/PublicHeader';
 import type { LoginRequest, LoginResponse, Verify2FARequest } from '../../types/auth/auth';
 import type { User } from '../../types/shared/User';
-import { TWO_FACTOR_CODE_LENGTH } from '../../constants/learning';
+import { TWO_FACTOR_CODE_LENGTH } from '../../constants/admin';
 
 export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
@@ -27,16 +27,6 @@ export default function LoginPage(): React.ReactElement {
   function completeLogin(tmpUser: User) {
     try {
       login(tmpUser);
-
-      if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
-        if (from != null) {
-          navigate('/profile', { state: { from: { pathname: from } }, replace: true });
-        }
-        else {
-          navigate('/profile');
-        }
-        return;
-      }
 
       if (from != null) {
         navigate(from, { replace: true });
@@ -121,12 +111,6 @@ export default function LoginPage(): React.ReactElement {
                 </div>
               </>
             )}
-          <div className="form-row">
-            <div className="login-register-line"><Link to={`/forgot?user=${encodeURIComponent(email)}`}>Forgot your password?</Link></div>
-          </div>
-          <div className="form-row">
-            <div className="login-register-line">Or <Link to="/register">Register</Link> a new account</div>
-          </div>
         </form>
       </div>
     </>
