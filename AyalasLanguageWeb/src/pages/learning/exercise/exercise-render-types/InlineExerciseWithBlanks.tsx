@@ -44,7 +44,8 @@ export const InlineExerciseWithBlanks = function (props: Props) {
 
     useImperativeHandle(ref, () => ({
         setFocus() {
-            const firstInput = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-0`);
+            const firstInputIndex = exerciseInfo.answers?.findIndex(a => a != PLACEHOLDERS.BLANKS);
+            const firstInput = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-${firstInputIndex}`);
             if (firstInput) {
                 firstInput.setFocus();
             }
