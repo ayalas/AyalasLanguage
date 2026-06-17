@@ -31,6 +31,9 @@ namespace AyalasLanguageAPI.Endpoints
             app.MapPublicEndpoints();
             app.MapStaticEndpoints();
 
+            //admin endpoints
+            app.MapAdminEndpoints();
+
             //falback all apis
             app.Map("/api/{**slug}", (string? slug) =>
             {

@@ -101,8 +101,12 @@ public static class Constants
     public const int REGISTER_CACHE_PROTECTION_MINUTES = 1440;
 
     public const string LOGIN_COUNT_CACHE_KEY = "LoginCountPerPeriod";
+    
     public const int MAX_LOGIN_PER_PERIOD = 10000;
     public const int LOGIN_CACHE_PROTECTION_MINUTES = 1440;
+
+    public const string ADMIN_LOGIN_COUNT_CACHE_KEY = "AdminLoginCountPerPeriod";
+    public const int MAX_ADMIN_LOGIN_PER_PERIOD = 50;
 
     public const string FORGOT_COUNT_CACHE_KEY = "ForgotCountPerPeriod";
     public const int MAX_FORGOT_PER_PERIOD = 75;
@@ -119,6 +123,7 @@ public static class Constants
 
     public const string BRAND_NAME = "langapp.xyz";
     public const string APP_COOKIE_NAME = "LangAppXyzCookie";
+    public const string ADMIN_APP_COOKIE_NAME = "AdminLangAppXyzCookie";
     public const string CONFIG_BYPASS_SECURE_COOKIES_KEY = "BypassSecureCookies";
 
     public const string CLIENT_RELATIVE_PATH_CONFIRM_EMAIL = "confirm/";

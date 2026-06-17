@@ -51,7 +51,9 @@ public static class AuthEndpoints
         }
 
         // 1. Find user (In production, use a proper password hasher!)
-        var user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
+        User? user = null;
+        user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
+        
         if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
             return Results.Conflict("Invalid credentials. Please try again with your correct email and password.");
 
