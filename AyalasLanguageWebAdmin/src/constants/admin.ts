@@ -25,3 +25,5 @@ export const ROLE_TYPE =
     CONTENT_CREATOR: 2,
     ADMIN: 3
 } as const;
+
+export const PAGE_SIZE = 100;

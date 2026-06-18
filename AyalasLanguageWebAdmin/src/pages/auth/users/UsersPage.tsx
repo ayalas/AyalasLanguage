@@ -9,9 +9,13 @@ import type { User } from '../../../types/shared/User';
 import { errorHandler } from '../../../utils/utils';
 import { type RoleType, ROLE_MAPPING, type IRowUser } from '../../../types/auth/auth';
 import axios from 'axios';
+import { PAGE_SIZE } from '../../../constants/admin';
+import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
 
 export default function UsersPage() {
     const [error, setError] = useState('');
+    const [page, setPage] = useState(0);
+    const [hasMoreData, setHasMoreData] = useState(false);
     const [success, setSuccess] = useState('');
     const { user } = useOutletContext<{ user: User | null }>();
     const modules = [AllCommunityModule];
@@ -21,7 +25,7 @@ export default function UsersPage() {
         { field: "displayName", headerName: 'Display Name', flex: 2, filter: true },
         { field: "userName", headerName: 'Email', flex: 2, filter: true },
         {
-            field: "role", flex: 2, filter: true, editable: true,
+            field: "role", flex: 1, filter: true, editable: true,
 
             headerName: 'Role',
             cellEditor: 'agSelectCellEditor',
@@ -64,17 +68,20 @@ export default function UsersPage() {
         }
     }, []);
 
-    useEffect(() => {
-        const loadData = async function () {
-            try {
-                const res = await axios.get<IRowUser[]>("/admin/api/auth/users");
-                setRowData(res.data);
-            } catch (err: unknown) {
-                errorHandler(err, setError);
-            }
-        };
+    const loadData = async function (newPage: number) {
+        try {
+            setPage(newPage);
+            const res = await axios.get<IRowUser[]>(`/admin/api/auth/users/${newPage}`);
+            setRowData(res.data.slice(0, PAGE_SIZE));
+            setHasMoreData(res.data.length > PAGE_SIZE);
+        } catch (err: unknown) {
+            errorHandler(err, setError);
+        }
+    };
 
-        loadData();
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        loadData(0);
     }, [user]);
     return (
         <>
@@ -93,6 +100,7 @@ export default function UsersPage() {
                         <label className="form-error">{error}</label>
                     </div>
                 )}
+                
                 <AgGridProvider modules={modules}>
                     <div style={{ height: 500 }}>
                         <AgGridReact
@@ -102,6 +110,16 @@ export default function UsersPage() {
                         />
                     </div>
                 </AgGridProvider>
+                <div className="form-row">
+                    <div className="header-links">
+                        <div className="form-button-cell">
+                            <button data-testid="prev" type="button" disabled={page == 0} onClick={() => loadData(page - 1)} className="form-button" title="Previous page"><CircleArrowLeft /> Prev</button>
+                        </div>
+                        <div className="form-button-cell">
+                            <button data-testid="next" type="button" disabled={!hasMoreData} onClick={() => loadData(page + 1)} className="form-button" title="Previous page">Next <CircleArrowRight /></button>
+                        </div>
+                    </div>
+                </div>
             </div >
         </>
     );

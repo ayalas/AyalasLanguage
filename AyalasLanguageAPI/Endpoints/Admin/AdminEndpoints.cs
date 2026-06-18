@@ -32,8 +32,17 @@ public static class AdminEndpoints
 
         secureAuth.MapPost("/logout", LogoutUser);
         secureAuth.MapGet("/me", CheckAuthStatus);
-        secureAuth.MapGet("/users", GetUsers);
+        secureAuth.MapGet("/users/{page:int}", GetUsers);
         secureAuth.MapPost("/setuserrole", SetUserRole);
+
+        var adminAPIsecured = app.MapGroup("/admin/api").WithTags("AdminAPI")
+            .RequireAuthorization(new AuthorizeAttribute
+            {
+                AuthenticationSchemes = "AdminAuth",
+                Roles = "Admin"
+            });
+
+        adminAPIsecured.MapGet("/contactus/{page:int}", GetContactUsRecords);
     }
 
     private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
@@ -192,7 +201,7 @@ public static class AdminEndpoints
         return new AdminUserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin);
     }
 
-    private static async Task<AdminUserRowDto[]> GetUsers(AyalasLanguageDbContext db)
+    private static async Task<AdminUserRowDto[]> GetUsers(int page,AyalasLanguageDbContext db)
     {
         return await db.Users
             .Include(u => u.KnownLanguage)
@@ -206,7 +215,22 @@ public static class AdminEndpoints
             u.Use2FALogin,
             u.KnownLanguage == null ? null : u.KnownLanguage.EnglishName,
             u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName
-        )).ToArrayAsync();
+        )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+    }
+
+    private static async Task<AdminContactUsRowDto[]> GetContactUsRecords(int page, AyalasLanguageDbContext db)
+    {
+        return await db.ContactUs
+            .Include(c => c.User)
+            .OrderByDescending(c => c.ContactUsId)
+            .Select(c => new AdminContactUsRowDto(
+            c.ContactUsId,
+            c.UserId,
+            c.User != null ? c.User.DisplayName : null,
+            c.Email,
+            c.Message,
+            c.CreatedOn
+        )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
     }
 
     private static async Task<IResult> SetUserRole(AdminSetUserRoleRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)

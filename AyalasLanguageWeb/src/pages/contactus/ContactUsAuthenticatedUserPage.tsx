@@ -51,7 +51,7 @@ export function ContactUsAuthenticatedUserPage() {
                                 <div className="form-label-row">Message</div>
                                 <div className="form-row">
                                     <div className="form-input-row">
-                                        <textarea data-testid="message" maxLength={500} required={true} className="text-area-wide" value={message} onChange={(e) => { setMessage(e.target.value) }} />
+                                        <textarea data-testid="message" maxLength={4000} required={true} className="text-area-wide" value={message} onChange={(e) => { setMessage(e.target.value) }} />
                                     </div>
                                 </div>
                             </>

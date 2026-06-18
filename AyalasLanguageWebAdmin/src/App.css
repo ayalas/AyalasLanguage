@@ -50,6 +50,7 @@ body {
   padding-left: 10px;
   padding-right: 10px;
 }
+
 .form-label-row {
   text-align: start;
   color: #2D3748;
@@ -82,6 +83,7 @@ label.label-deleted {
 }
 
 .form-row {
+  padding-top: 5px;
   padding-bottom: 5px;
   line-height: min(40px);
 }
@@ -142,6 +144,14 @@ input:required:invalid {
 .input-text-placeholder {
   font-size: 18px;
 }
+.contactus-message-cell {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: scroll;
+  line-height: 24px;      /* Adjust based on your font */
+  height: 50vh;      /* line-height * line-clamp */
+  white-space: normal;    /* Required for wrapping */
+}
 
 .content-line-part {
   display: inline-flex;
@@ -168,7 +178,7 @@ input:required:invalid {
   margin-top: 10px;
   padding-left: 5px;
   padding-right: 5px;
-  max-width: 90vw;
+  max-width: 98vw;
 }
 
 .exercise-body-container {

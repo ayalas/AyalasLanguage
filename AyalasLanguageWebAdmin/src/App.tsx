@@ -12,6 +12,7 @@ import axios from 'axios';
 
 import './App.css'
 import UsersPage from './pages/auth/users/UsersPage';
+import ContactUsGridPage from './pages/contactus/ContactUsGridPage';
 
 function App() {
   useEffect(() => {
@@ -31,6 +32,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/admin/home" element={<Homepage />} />
             <Route path="/admin/users" element={<UsersPage />} />
+            <Route path="/admin/contactus" element={<ContactUsGridPage />} />
           </Route>
 
           {/* Fallback 404 Route */}
