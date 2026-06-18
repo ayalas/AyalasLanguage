@@ -237,7 +237,7 @@ public static class AuthEndpoints
             DisplayName = dto.DisplayName,
             UserName = dto.UserName,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Role = (byte)UserRoleEnum.ContentCreator
+            Role = (byte)UserRoleEnum.Learner
         };
 
         db.Users.Add(user);
@@ -378,6 +378,9 @@ public static class AuthEndpoints
 
         user.EmailConfirmationReceived = DateTime.UtcNow;
         user.EmailConfirmed = true;
+        //promote to content creator once email is confirmed
+        if (user.Role == (byte)UserRoleEnum.Learner)
+            user.Role = (byte)UserRoleEnum.ContentCreator;
         user.EmailConfirmationToken = null;
         await db.SaveChangesAsync();
 

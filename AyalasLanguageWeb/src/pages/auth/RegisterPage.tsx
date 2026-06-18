@@ -81,7 +81,7 @@ export function RegisterPage() {
                 <h3>Account created successfully.</h3>
               </div>
               <div className="form-row">
-                <div className="form-content-row">An email address confirmation request has been sent to '{email}'. Please confirm your email, so you'll be able to recover your account, in case you forget your password. </div>
+                <div className="form-content-row">An email address confirmation request has been sent to '{email}'. Please confirm your email, so you'll be able to generate exercise content and recover your account, in case you forget your password. </div>
                 <div className="form-content-row">You can do this now, or later on, after you&nbsp;<Link to={`/login?user=${email}`}>log in</Link>&nbsp;and experience with the app.</div>
               </div>
             </>
