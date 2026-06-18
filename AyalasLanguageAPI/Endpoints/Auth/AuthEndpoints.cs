@@ -18,21 +18,30 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
-        var auth = app.MapGroup("/api/auth").WithTags("Auth");
+        var authBase = app.MapGroup("/api/auth");
 
-        auth.MapPost("/register", RegisterUser);
-        auth.MapPost("/login", LoginUser);
-        auth.MapPost("/verify2fa", Verify2FA);
-        auth.MapPost("/logout", LogoutUser);
-        auth.MapPost("/account", ChangeAccount);
-        auth.MapPost("/forgot", ForgotPasswordStart);
-        auth.MapPost("/reset", ForgotPasswordEnd);
-        auth.MapPost("/confirm", ConfirmEmailStart);
-        auth.MapGet("/confirm/{token}", ConfirmEmailEnd);
-        auth.MapGet("/me", CheckAuthStatus);
-        //not implementing email confirmation, forgot password, or other features for this demo - but they would go here
+        var publicAuth = authBase.MapGroup("").WithTags("PublicAuth");
+
+        var secureAuth = authBase.MapGroup("")
+            .WithTags("SecureAuth")
+            .RequireAuthorization(new AuthorizeAttribute
+            {
+                AuthenticationSchemes = "PublicAuth"
+            });
+
+        publicAuth.MapPost("/register", RegisterUser);
+        publicAuth.MapPost("/login", LoginUser);
+        publicAuth.MapPost("/verify2fa", Verify2FA);
+        publicAuth.MapPost("/forgot", ForgotPasswordStart);
+        publicAuth.MapPost("/reset", ForgotPasswordEnd);
+
+        secureAuth.MapPost("/logout", LogoutUser);
+        secureAuth.MapPost("/account", ChangeAccount);
+        secureAuth.MapGet("/me", CheckAuthStatus);
+        secureAuth.MapPost("/confirm", ConfirmEmailStart);
+        secureAuth.MapGet("/confirm/{token}", ConfirmEmailEnd);
     }
-    [Authorize]
+
     private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -196,7 +205,6 @@ public static class AuthEndpoints
         return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin, languageSettings);
     }
 
-    [Authorize]
     private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, IConfiguration config)
     {
         var userId = claim.GetUserId();
@@ -251,7 +259,6 @@ public static class AuthEndpoints
             new RegisterResponseDto(user.UserId, user.DisplayName, user.UserName, user.Role));
     }
 
-    [Authorize]
     private static async Task<IResult> ChangeAccount(ChangeAccountDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
     {
         var userId = claim.GetUserId();
@@ -320,7 +327,6 @@ public static class AuthEndpoints
         return Results.Ok(userIdDto);
     }
 
-    [Authorize]
     private static async Task<IResult> ConfirmEmailStart(ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
     {
         var userId = claim.GetUserId();
@@ -345,7 +351,6 @@ public static class AuthEndpoints
         return Results.Accepted();
     }
 
-    [Authorize]
     private static async Task<IResult> ConfirmEmailEnd(string token, ClaimsPrincipal claim, AyalasLanguageDbContext db, IConfiguration config)
     {
         var userId = claim.GetUserId();

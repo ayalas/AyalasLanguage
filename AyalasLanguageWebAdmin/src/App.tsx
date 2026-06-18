@@ -11,6 +11,7 @@ import Homepage from './pages/Homepage';
 import axios from 'axios';
 
 import './App.css'
+import UsersPage from './pages/auth/users/UsersPage';
 
 function App() {
   useEffect(() => {
@@ -29,6 +30,7 @@ function App() {
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/admin/home" element={<Homepage />} />
+            <Route path="/admin/users" element={<UsersPage />} />
           </Route>
 
           {/* Fallback 404 Route */}

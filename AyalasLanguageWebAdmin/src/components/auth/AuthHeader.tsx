@@ -36,6 +36,7 @@ export function AuthHeader() {
           <Link className="header-app-link" to="/admin/home"><img className="logo" src={imgLogo} /></Link>
         </div>
         <div className="header-links">
+          <div className="header-link"><Link to="/admin/users" data-testid="users" className="link-button" >Users</Link></div>
           <div className="header-link"><button data-testid="logout" className="form-button" type="button" onClick={logoutAction}><LogOut /> Log out</button></div>
         </div>
       </div>

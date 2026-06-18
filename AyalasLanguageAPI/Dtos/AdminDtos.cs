@@ -5,4 +5,8 @@ namespace AyalasLanguageAPI.AdminDTOs
 
     public record AdminVerify2FARequest(string Verify2FAToken, string Code);
     public record AdminLoginDto(string UserName, string Password);
+
+    //grid dtos
+    public record AdminUserRowDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, string? KnownLanguage, string? TargetLanguage);
+    public record AdminSetUserRoleRequest(int UserId, byte Role);
 }

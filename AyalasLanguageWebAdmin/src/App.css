@@ -213,6 +213,7 @@ input:required:invalid {
   display: flex;
   align-items: center;
   gap: 4px;
+  padding-left: 10px;
 }
 
 .header-link-item {
@@ -237,6 +238,11 @@ input:required:invalid {
   display: flex;
   justify-content: flex-end;
   gap: 5px;
+}
+
+.header-links {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .header-profile-name {

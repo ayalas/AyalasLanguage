@@ -15,15 +15,27 @@ public static class AdminEndpoints
 {
     public static void MapAdminEndpoints(this IEndpointRouteBuilder app)
     {
-        var auth = app.MapGroup("/admin/api/auth/").WithTags("AdminAuth");
+        var authBase = app.MapGroup("/admin/api/auth");
 
-        auth.MapPost("/login", LoginUser);
-        auth.MapPost("/verify2fa", Verify2FA);
-        auth.MapPost("/logout", LogoutUser);
-        auth.MapGet("/me", CheckAuthStatus);
+        var publicAuth = authBase.MapGroup("").WithTags("AdminPublicAuth");
+
+        var secureAuth = authBase.MapGroup("")
+            .WithTags("AdminAuth")
+            .RequireAuthorization(new AuthorizeAttribute
+            {
+                AuthenticationSchemes = "AdminAuth",
+                Roles = "Admin"
+            });
+
+        publicAuth.MapPost("/login", LoginUser);
+        publicAuth.MapPost("/verify2fa", Verify2FA);
+
+        secureAuth.MapPost("/logout", LogoutUser);
+        secureAuth.MapGet("/me", CheckAuthStatus);
+        secureAuth.MapGet("/users", GetUsers);
+        secureAuth.MapPost("/setuserrole", SetUserRole);
     }
 
-    [Authorize(AuthenticationSchemes = "AdminAuth", Roles = "Admin")]
     private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -34,7 +46,6 @@ public static class AdminEndpoints
         return Results.Ok(userIdDto);
     }
 
-    [Authorize(AuthenticationSchemes = "AdminAuth", Roles = "Admin")]
     private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, IConfiguration config)
     {
         var userId = claim.GetUserId();
@@ -178,7 +189,38 @@ public static class AdminEndpoints
             .FirstOrDefaultAsync(u => u.UserId == userId && u.Role == (int)UserRoleEnum.Admin);
         if (user == null) return null;
 
-        return new AdminUserIdDto(user.UserId, user.DisplayName, user.UserName,user.Role, user.EmailConfirmed, user.Use2FALogin);
+        return new AdminUserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin);
     }
 
+    private static async Task<AdminUserRowDto[]> GetUsers(AyalasLanguageDbContext db)
+    {
+        return await db.Users
+            .Include(u => u.KnownLanguage)
+            .Include(u => u.TargetLanguage)
+            .Select(u => new AdminUserRowDto(
+            u.UserId,
+            u.DisplayName,
+            u.UserName,
+            u.Role,
+            u.EmailConfirmed,
+            u.Use2FALogin,
+            u.KnownLanguage == null ? null : u.KnownLanguage.EnglishName,
+            u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName
+        )).ToArrayAsync();
+    }
+
+    private static async Task<IResult> SetUserRole(AdminSetUserRoleRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+        if (userId == req.UserId)
+        {
+            return Results.Conflict("Cannot change own role.");
+        }
+        var user = await db.Users.FindAsync(req.UserId);
+        if (user == null) return Results.BadRequest("User not found.");
+
+        user.Role = req.Role;
+        await db.SaveChangesAsync();
+        return Results.Ok();
+    }
 }
