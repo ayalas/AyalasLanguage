@@ -84,7 +84,7 @@ public enum LanguageEnum
 public static class Constants
 {
     public const string BLANKS = "___";
-    public const int PAGE_SIZE = 100;
+    public const int PAGE_SIZE = 2;
     public const int MATCH_MIN_COUNT = 5;
     public const int MATCH_MAX_COUNT = 8;
     public const int BUCKET_EXTRA_MIN_COUNT = 1;

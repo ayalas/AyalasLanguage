@@ -201,9 +201,9 @@ public static class AdminEndpoints
         return new AdminUserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin);
     }
 
-    private static async Task<AdminUserRowDto[]> GetUsers(int page,AyalasLanguageDbContext db)
+    private static async Task<AdminGridResponse<AdminUserRowDto>> GetUsers(int page,AyalasLanguageDbContext db)
     {
-        return await db.Users
+        var arr =  await db.Users
             .Include(u => u.KnownLanguage)
             .Include(u => u.TargetLanguage)
             .Select(u => new AdminUserRowDto(
@@ -216,11 +216,16 @@ public static class AdminEndpoints
             u.KnownLanguage == null ? null : u.KnownLanguage.EnglishName,
             u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName
         )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+
+        int numOfRecords = 0;
+        if (page == 0)
+            numOfRecords = await db.Users.CountAsync();
+        return new AdminGridResponse<AdminUserRowDto>(numOfRecords, arr);
     }
 
-    private static async Task<AdminContactUsRowDto[]> GetContactUsRecords(int page, AyalasLanguageDbContext db)
+    private static async Task<AdminGridResponse<AdminContactUsRowDto>> GetContactUsRecords(int page, AyalasLanguageDbContext db)
     {
-        return await db.ContactUs
+        var arr = await db.ContactUs
             .Include(c => c.User)
             .OrderByDescending(c => c.ContactUsId)
             .Select(c => new AdminContactUsRowDto(
@@ -231,6 +236,11 @@ public static class AdminEndpoints
             c.Message,
             c.CreatedOn
         )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+
+        int numOfRecords = 0;
+        if (page == 0)
+            numOfRecords = await db.ContactUs.CountAsync();
+        return new AdminGridResponse<AdminContactUsRowDto>(numOfRecords, arr);
     }
 
     private static async Task<IResult> SetUserRole(AdminSetUserRoleRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)

@@ -7,3 +7,8 @@ export interface IRowContactUs
     message: string,
     createdOn: string
 }
+
+export interface AdminGridResponse<T> {
+  numOfRecords: number;
+  data: T[];
+}

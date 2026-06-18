@@ -11,4 +11,6 @@ namespace AyalasLanguageAPI.AdminDTOs
 
     public record AdminContactUsRowDto(int ContactUsId, int? UserId, string? DisplayName, string Email, string? Message, DateTime CreatedOn);
     public record AdminSetUserRoleRequest(int UserId, byte Role);
+
+    public record AdminGridResponse<T>(int NumOfRecords, T[] Data);
 }

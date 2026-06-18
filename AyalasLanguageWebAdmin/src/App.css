@@ -100,7 +100,7 @@ label.label-deleted {
 
 .form-button-cell {
  display: inline-flex; 
- padding-right: 10px;
+ padding-right: 4px;
 }
 
 .form-input-cell {
@@ -356,6 +356,18 @@ input:required:invalid {
   width: 18px;
   height: 18px;
   margin-left: 5px;
+}
+
+input.page-number::-webkit-outer-spin-button,
+input.page-number::-webkit-inner-spin-button {
+  margin: 0;
+  /* Force display */
+  opacity: 1;
+  display: block;
+  -moz-appearance: textfield;
+}
+.page-number {
+  width: 4ch;
 }
 
 /*.playButtonContainer {
