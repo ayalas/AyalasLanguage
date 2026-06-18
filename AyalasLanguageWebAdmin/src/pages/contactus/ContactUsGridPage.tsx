@@ -1,89 +1,36 @@
-import { useEffect, useState } from 'react';
-import { AllCommunityModule, type ColDef } from 'ag-grid-community';
-import { AgGridProvider } from 'ag-grid-react';
-import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
+import { useState } from 'react';
+import { type ColDef } from 'ag-grid-community';
 import dayjs from 'dayjs';
-
-import { AuthHeader } from '../../components/auth/AuthHeader';
-import { errorHandler } from '../../utils/utils';
-import axios from 'axios';
-import { PAGE_SIZE } from '../../constants/admin';
-import type { AdminGridResponse, IRowContactUs } from '../../types/grids/grids';
-import { GridPager } from '../../components/GridPager';
-
+import type { IRowContactUs } from '../../types/grids/grids';
+import GenericGridPage from '../../components/GenericGridPage';
 
 export default function ContactUsGridPage() {
-    const [error, setError] = useState('');
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [hasMoreData, setHasMoreData] = useState(false);
-    const modules = [AllCommunityModule];
-    const [rowData, setRowData] = useState<IRowContactUs[]>([]);
     const [colDefs] = useState<ColDef<IRowContactUs>[]>([
         { field: "userId", flex: 1, headerName: 'User Id' },
         { field: "displayName", headerName: 'Display Name', flex: 2, filter: true },
         { field: "email", headerName: 'Email', flex: 2, filter: true },
-        { field: "message", headerName: 'Message', flex: 6, filter: true,editable: true,wrapText:true,
-            cellClass: 'contactus-message-cell', 
+        {
+            field: "message", headerName: 'Message', flex: 6, filter: true, editable: true, wrapText: true,
+            cellClass: 'contactus-message-cell',
             cellEditor: 'agLargeTextCellEditor',
             cellEditorParams: {
-                cols: 100, 
+                cols: 100,
                 rows: 18
             },
             valueSetter: () => false,
-         },
-        { field: "createdOn", headerName: 'Created On', 
-            valueFormatter: params => dayjs(params.value).format('YYYY-MM-DD HH:mm'), 
-            flex: 2, filter: true }
+        },
+        {
+            field: "createdOn", headerName: 'Created On',
+            valueFormatter: params => dayjs(params.value).format('YYYY-MM-DD HH:mm'),
+            flex: 2, filter: true
+        }
     ]);
 
-    const loadData = async function (newPage: number) {
-        try {
-            setPage(newPage);
-            const res = await axios.get<AdminGridResponse<IRowContactUs>>(`/admin/api/contactus/${newPage - 1}`);
-            const resObj = res.data;
-
-            if (resObj.numOfRecords > 0) {
-                let numOfPages = resObj.numOfRecords / PAGE_SIZE;
-                if (resObj.numOfRecords % PAGE_SIZE > 0)
-                    numOfPages++;
-                setTotalPages(numOfPages);
-            }
-            setRowData(resObj.data.slice(0, PAGE_SIZE));
-            setHasMoreData(resObj.data.length > PAGE_SIZE);
-        } catch (err: unknown) {
-            errorHandler(err, setError);
-        }
-    };
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        loadData(1);
-    }, []);
     return (
-        <>
-            <AuthHeader />
-            <div className="form-container">
-                <div className="form-header">
-                    <h1>Contact Us Messages</h1>
-                </div>
-                {error !== '' && (
-                    <div className="form-row">
-                        <label className="form-error">{error}</label>
-                    </div>
-                )}
-                
-                <AgGridProvider modules={modules}>
-                    <div style={{ height: 500 }}>
-                        <AgGridReact
-                            rowData={rowData}
-                            columnDefs={colDefs}
-                            rowHeight={200}
-                        />
-                    </div>
-                </AgGridProvider>
-                <GridPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={loadData} />
-            </div >
-        </>
+        <GenericGridPage<IRowContactUs>
+            cols={colDefs}
+            endpoint="/admin/api/contactus/"
+            title="Contact Us Messages"
+            rowHeight={200} />
     );
 }

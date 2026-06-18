@@ -1,25 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { AllCommunityModule, type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
-import { AgGridProvider } from 'ag-grid-react';
-import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
-
-import { AuthHeader } from '../../../components/auth/AuthHeader';
-import type { User } from '../../../types/shared/User';
+import { useCallback, useState } from 'react';
+import { type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
 import { errorHandler } from '../../../utils/utils';
 import { type RoleType, ROLE_MAPPING, type IRowUser } from '../../../types/auth/auth';
 import axios from 'axios';
-import { PAGE_SIZE } from '../../../constants/admin';
-import { CircleArrowLeft, CircleArrowRight } from 'lucide-react';
+import GenericGridPage from '../../../components/GenericGridPage';
 
 export default function UsersPage() {
-    const [error, setError] = useState('');
-    const [page, setPage] = useState(0);
-    const [hasMoreData, setHasMoreData] = useState(false);
     const [success, setSuccess] = useState('');
-    const { user } = useOutletContext<{ user: User | null }>();
-    const modules = [AllCommunityModule];
-    const [rowData, setRowData] = useState<IRowUser[]>([]);
+    const [error, setError] = useState('');
     const [colDefs] = useState<ColDef<IRowUser>[]>([
         { field: "userId", flex: 1, headerName: 'User Id' },
         { field: "displayName", headerName: 'Display Name', flex: 2, filter: true },
@@ -68,59 +56,13 @@ export default function UsersPage() {
         }
     }, []);
 
-    const loadData = async function (newPage: number) {
-        try {
-            setPage(newPage);
-            const res = await axios.get<IRowUser[]>(`/admin/api/auth/users/${newPage}`);
-            setRowData(res.data.slice(0, PAGE_SIZE));
-            setHasMoreData(res.data.length > PAGE_SIZE);
-        } catch (err: unknown) {
-            errorHandler(err, setError);
-        }
-    };
-
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        loadData(0);
-    }, [user]);
     return (
-        <>
-            <AuthHeader />
-            <div className="form-container">
-                <div className="form-header">
-                    <h1>Users</h1>
-                </div>
-                {success !== '' && (
-                    <div className="form-row">
-                        <h3>{success}</h3>
-                    </div>
-                )}
-                {error !== '' && (
-                    <div className="form-row">
-                        <label className="form-error">{error}</label>
-                    </div>
-                )}
-                
-                <AgGridProvider modules={modules}>
-                    <div style={{ height: 500 }}>
-                        <AgGridReact
-                            rowData={rowData}
-                            columnDefs={colDefs}
-                            onCellValueChanged={onCellValueChanged}
-                        />
-                    </div>
-                </AgGridProvider>
-                <div className="form-row">
-                    <div className="header-links">
-                        <div className="form-button-cell">
-                            <button data-testid="prev" type="button" disabled={page == 0} onClick={() => loadData(page - 1)} className="form-button" title="Previous page"><CircleArrowLeft /> Prev</button>
-                        </div>
-                        <div className="form-button-cell">
-                            <button data-testid="next" type="button" disabled={!hasMoreData} onClick={() => loadData(page + 1)} className="form-button" title="Previous page">Next <CircleArrowRight /></button>
-                        </div>
-                    </div>
-                </div>
-            </div >
-        </>
+        <GenericGridPage<IRowUser>
+            cols={colDefs}
+            endpoint="/admin/api/auth/users/"
+            title="Users"
+            onCellValueChanged={onCellValueChanged}
+            successMessage={success}
+            errorMessage={error} />
     );
 }

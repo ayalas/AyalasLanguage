@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AllCommunityModule, type ColDef } from 'ag-grid-community';
+import { AllCommunityModule, type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
 import { AgGridProvider } from 'ag-grid-react';
 import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import { AuthHeader } from './auth/AuthHeader';
@@ -13,13 +13,17 @@ interface GenericGridPageProps<T> {
   cols: ColDef<T>[];
   endpoint: string;
   title: string;
-  rowHeight: number;
+  rowHeight?: number;
+  onCellValueChanged?: (event: CellValueChangedEvent<T>) => Promise<void>;
+  successMessage?: string;
+  errorMessage?: string;
 }
 
 export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
-    const {cols, endpoint, title, rowHeight} = props;
+    const {cols, endpoint, title, rowHeight, onCellValueChanged, successMessage, errorMessage} = props;
     const [error, setError] = useState('');
     const [page, setPage] = useState(1);
+    const [rowHeightInternal, setRowHeightInternal] = useState(42);
     const [totalPages, setTotalPages] = useState(1);
     const [hasMoreData, setHasMoreData] = useState(false);
     const modules = [AllCommunityModule];
@@ -33,7 +37,7 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
             const resObj = res.data;
 
             if (resObj.numOfRecords > 0) {
-                let numOfPages = resObj.numOfRecords / PAGE_SIZE;
+                let numOfPages = Math.trunc(resObj.numOfRecords / PAGE_SIZE);
                 if (resObj.numOfRecords % PAGE_SIZE > 0)
                     numOfPages++;
                 setTotalPages(numOfPages);
@@ -44,6 +48,12 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
             errorHandler(err, setError);
         }
     };
+
+     useEffect(() => {
+        if (rowHeight != undefined)
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setRowHeightInternal(rowHeight);
+    }, [rowHeight]);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -56,6 +66,16 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
                 <div className="form-header">
                     <h1>{title}</h1>
                 </div>
+                {successMessage !== '' && (
+                    <div className="form-row">
+                        <h3>{successMessage}</h3>
+                    </div>
+                )}
+                {errorMessage !== '' && (
+                    <div className="form-row">
+                        <label className="form-error">{errorMessage}</label>
+                    </div>
+                )}
                 {error !== '' && (
                     <div className="form-row">
                         <label className="form-error">{error}</label>
@@ -67,7 +87,8 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
                         <AgGridReact
                             rowData={rowData}
                             columnDefs={colDefs}
-                            rowHeight={rowHeight}
+                            rowHeight={rowHeightInternal}
+                            onCellValueChanged={onCellValueChanged}
                         />
                     </div>
                 </AgGridProvider>
