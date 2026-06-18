@@ -6,7 +6,8 @@ This project is designed to demonstrate both backend and frontend capabilies.
 
 AyalasLanguageAPI - Backend is implemented with ASP.Net Core Minimal APIs, Entity Framework and SQLite\MySQL.
 
-AyalasLanguageWEB - Frontend implemented with React and JavaScript
+AyalasLanguageWEB - Frontend implemented with React, Vite and TypeScript
+AyalasLanguageWebAdmin - Admin Frontend implemented with React, Vite and TypeScript
 
 ## AWS Demo Site (Production)
 Served by AWS Beanstalk with an external MySQL instance in this address:
@@ -16,6 +17,12 @@ In the profile page after registering and logging in choose to learn Danish or A
 
 ## Dev environment
 To stage this app in the development environment:
+
+Create and authorize locally these files for https://localhost (https is required for Puter ai) with https://mkcert.org/. Generate a pfx file from them by https://www.openssl.org/ (see instructions below under Https support). Place the three files at:
+cert\localhost+2-key.pem
+cert\localhost+2.pem
+cert\langapp_local.pfx
+
 For the backend, inside AyalasLanguageAPI, run:
 dotnet build
 
@@ -29,6 +36,81 @@ and then:
 npm run dev
 
 Browse to the url provided by vite http://localhost:5097
+
+## Https support
+As a prerequisite for staging a development environment, there is a need to support HTTPS, since this project uses Puter ai which requires https.
+
+Here are the instructions how to generate and authorize the necessary certificate files,
+which are not provided with the code:
+These instructions walk you through creating a locally-trusted development certificate using **mkcert**, converting it to the Windows/Dotnet-compatible **PFX** format using **OpenSSL**, and finally importing it into the **.NET dev-certs** store.
+
+### Prerequisites
+*   **mkcert** installed ([Instructions](https://github.com/FiloSottile/mkcert#installation))
+*   **OpenSSL** installed (Commonly included in Git Bash or available via Chocolatey/Winget)
+*   **.NET SDK** installed
+
+---
+
+### Step 1: Generate and Authorize PEM Files with mkcert
+First, you must install the mkcert Local Certificate Authority (CA) into your system trust store and then generate the PEM files.
+
+1.  **Install the Local CA:**
+    Open your terminal (PowerShell or Command Prompt) and run:
+    ```powershell
+    mkcert -install
+    ```
+    *This "authorizes" mkcert by adding a root certificate to your machine so your browser and OS trust any certificates mkcert creates.*
+
+2.  **Generate the PEM files:**
+    Create the `cert` directory if it doesn't exist, then generate the certificates for `localhost`:
+    ```powershell
+    mkdir cert
+    mkcert -key-file cert\localhost+2-key.pem -cert-file cert\localhost+2.pem localhost 127.0.0.1 ::1
+    ```
+    *Note: The `+2` in the filenames refers to the two additional names (IPs) added to the certificate.*
+
+---
+
+### Step 2: Convert to PFX with OpenSSL
+.NET applications typically prefer the `.pfx` (PKCS#12) format which bundles the certificate and private key into one file.
+
+1.  **Run the export command:**
+    ```powershell
+    openssl pkcs12 -export -out langapp_local.pfx -inkey cert\localhost+2-key.pem -in cert\localhost+2.pem
+    ```
+2.  **Set a Password:**
+    OpenSSL will prompt you for an "Export Password." 
+    *   **Crucial:** You must provide a password (e.g., `crypticpassword`). Do not leave it blank, as the `.NET` import tool often fails with empty passwords.
+
+---
+
+### Step 3: Authorize the PFX File with dotnet
+To make the .NET runtime (Kestrel) recognize this specific certificate as its "Developer Certificate," you use the `dotnet dev-certs` tool.
+
+1.  **Clean existing dev certs (Optional but Recommended):**
+    If you have old developer certificates causing conflicts, clear them first:
+    ```powershell
+    dotnet dev-certs https --clean
+    ```
+
+2.  **Import the PFX file:**
+    Use the password you created in Step 2:
+    ```powershell
+    dotnet dev-certs https --import langapp_local.pfx -p <YOUR_PASSWORD>
+    ```
+
+3.  **Apply Trust:**
+    Finally, ensure the .NET tool acknowledges the trust status:
+    ```powershell
+    dotnet dev-certs https --trust
+    ```
+
+### Verification
+You can verify the certificate is correctly installed in the store by running:
+```powershell
+dotnet dev-certs https --check
+```
+If successful, you will see: `A valid HTTPS certificate is already present.` Your .NET applications (ASP.NET Core) will now automatically use `langapp_local.pfx` for HTTPS on `localhost`.
 
 ## Docker commands (Staging)
 To build and stage this app using Docker, from the root folder of the solution, run the docker file to build the image (note about env: a non-Development environment means the static files are served from the backend. Also, the path to sqlite changes and maps to the volume setup here):
@@ -64,5 +146,5 @@ Dummy Connection String for MySQL
 }
 
 ## License
-Licensed under GNU v3 license. See LICENSE file for details.
+Licensed under GNU v3 license to Ayala Swisa. See LICENSE file for details.
 

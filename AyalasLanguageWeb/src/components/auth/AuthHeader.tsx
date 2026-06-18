@@ -16,6 +16,7 @@ import {
 import type { User } from '../../types/shared/User';
 import { errorHandler } from '../../utils/utils';
 import imgLogo from '../../assets/logo.jpg';
+import { BRAND_NAME } from '../../constants/public';
 
 type OutletAuthContext = {
   user?: User | null;
@@ -128,6 +129,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
               <li className="menu-line"><Link to='/profile' className="menu-item">Profile settings</Link></li>
               <li className="menu-line"><Link to='/account' className="menu-item">Manage account</Link></li>
               <li className="menu-line"><Link to='/usernote' className="menu-item">Contact Us</Link></li>
+              <li className="menu-line"><Link to='/about' className="menu-item">About {BRAND_NAME}</Link></li>
               <hr className="menu-delimiter" />
               <li className="menu-line"><button onClick={logoutAction} className="menu-item">Logout</button></li>
             </ul>

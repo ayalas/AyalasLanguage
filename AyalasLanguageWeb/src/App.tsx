@@ -22,6 +22,7 @@ import axios from 'axios';
 import './App.css'
 import { ContactUsPublicPage } from './pages/contactus/ContactUsPublicPage';
 import { ContactUsAuthenticatedUserPage } from './pages/contactus/ContactUsAuthenticatedUserPage';
+import { AboutPage } from './pages/AboutPage';
 
 function App() {
   useEffect(() => {
@@ -40,6 +41,7 @@ function App() {
           <Route path="/forgot" element={<ForgotPage />} />
           <Route path="/reset/:token" element={ <ResetPasswordPage/>} />
           <Route path="/contactus" element={ <ContactUsPublicPage/>}/>
+          <Route path="/about" element={ <AboutPage/>} />
 
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>

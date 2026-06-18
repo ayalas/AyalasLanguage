@@ -5,14 +5,14 @@
       "Microsoft.AspNetCore": "Warning"
     }
   },
-  "ClientBaseAddress": "https://localhost:5173/",
+  "ClientBaseAddress": "https://langapp.xyz:5173/",
   "ConnectionStrings": {
     "DefaultConnection": "DataSource=AyalasLanguage.db;"
   },
   "Kestrel": {
     "Endpoints": {
       "Https": {
-        "Url": "https://localhost:7010",
+        "Url": "https://langapp.xyz:7010",
         "Certificate": {
           "Path": "../cert/langapp_local.pfx",
           "Password": "dsfkd#4ksf*#"
@@ -20,5 +20,5 @@
       }
     }
   },
-  "AllowedHosts": "localhost"
+  "AllowedHosts": "langapp.xyz;www.langapp.xyz;localhost"
 }

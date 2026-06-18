@@ -6,10 +6,11 @@ import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/admin/',
   plugins: [
-    react(),
-    babel({ presets: [reactCompilerPreset()] })
+    react(), // Standard React fast refresh
+    babel({
+      presets: [reactCompilerPreset()] // Handles the React Compiler automatically
+    })
   ],
   test: {
     // This line tells Vitest to simulate a browser environment for all tests
@@ -19,15 +20,15 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    host: '0.0.0.0',
+    host: 'langapp.xyz',
     https: {
       // Read the certificate and key files from your directory
-      key: fs.readFileSync(path.resolve(__dirname, '../cert/localhost+2-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, '../cert/localhost+2.pem')),
+      key: fs.readFileSync(path.resolve(__dirname, '../cert/langapp.xyz+2-key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, '../cert/langapp.xyz+2.pem')),
     },
     proxy: {
-      '/admin/api/': {
-        target: 'https://localhost:7010',
+      '/api/': {
+        target: 'https://langapp.xyz:7010',
         changeOrigin: true,
         secure: false
       }
@@ -35,6 +36,6 @@ export default defineConfig({
   },
   build: {
     sourcemap: true,
-    outDir: './admin'
+    outDir: './dist'
   }
 })
