@@ -102,17 +102,16 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
           <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
         )}</div>
       </div>
-      <div className="form-row">
+      <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
+            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+          )? "form-row rtlanswer": "form-row answer"} >
         <ExerciseInput
           ref={inputRef}
           charWidth={2 + (second?.length ?? 0)}
           checkAnswer={parentCheckAnswer}
           onChange={OnChange}
           value={inputValue}
-          isRightToLeft={isRightToLeftInput(exerciseInfo.exerciseTypeId,
-            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-          )}
         />
       </div>
       {displayAnswer && (

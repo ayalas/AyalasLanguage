@@ -112,7 +112,10 @@ export const InlineExerciseWithBlanks = function (props: Props) {
 
     return (
         <>
-            <div className="form-label-row answer">
+            <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
+                    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+                    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+                )? "form-label-row rtlanswer": "form-label-row answer"}>
                 {
                     exerciseInfo.sentenceElements?.map((part, i) => {
                         const setRef = (el: ExerciseInputHandle | null) => {
@@ -129,10 +132,6 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                         checkAnswer={parentCheckAnswer}
                                         customKey={`${exerciseInfo.exerciseId}-${i}`}
                                         onChange={onChangeFromInput}
-                                        isRightToLeft={isRightToLeftInput(exerciseInfo.exerciseTypeId,
-                                                    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-                                                    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-                                                  )}
                                     />
                                 ) || (
                                         <div className="content-line-part">{part}</div>
