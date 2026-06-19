@@ -1,6 +1,6 @@
 import axios from "axios";
 import { puter } from "@heyputer/puter.js";
-import { type CreateLogRequest } from "@ayalaslanguage/types/log"
+import { type CreateLogRequest, type LogType } from "@ayalaslanguage/types/log"
 
 export const isSecure = () => (window.location.protocol === 'https:')
 
@@ -19,8 +19,13 @@ export async function initializePuter() {
   return false;
 }
 
-export async function writeToLog(req: CreateLogRequest) {
+export async function writeToLog<T>(logType: LogType, obj: T) {
   try {
+
+    const req:CreateLogRequest = {
+      LogType: logType,
+      Description: JSON.stringify(obj)
+    };
     await axios.post('/api/creator/log', req);
   }
   catch (err) {

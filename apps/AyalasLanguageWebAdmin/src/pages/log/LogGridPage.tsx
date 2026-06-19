@@ -1,16 +1,22 @@
 import { useState } from 'react';
 import { type ColDef } from 'ag-grid-community';
 import dayjs from 'dayjs';
-import type { IRowContactUs } from '../../types/grids/grids';
+import { LOG_TYPE_MAPPING, type IRowLog } from '../../types/grids/grids';
 import GenericGridPage from '../../components/GenericGridPage';
+import type { LogType } from '@ayalaslanguage/types/log';
 
-export default function ContactUsGridPage() {
-    const [colDefs] = useState<ColDef<IRowContactUs>[]>([
+export default function LogGridPage() {
+    const [colDefs] = useState<ColDef<IRowLog>[]>([
+        { field: "logId", flex: 1, headerName: 'Log Id' },
         { field: "userId", flex: 1, headerName: 'User Id' },
-        { field: "displayName", headerName: 'Display Name', flex: 2, filter: true },
         { field: "email", headerName: 'Email', flex: 2, filter: true },
         {
-            field: "message", headerName: 'Message', flex: 6, filter: true, editable: true, wrapText: true,
+            field: "logType", headerName: 'Log Type',
+            valueFormatter: params => LOG_TYPE_MAPPING[params.value as LogType],
+            flex: 2, filter: true
+        },
+        {
+            field: "description", headerName: 'Description', flex: 6, filter: true, editable: true, wrapText: true,
             cellClass: 'long-message-cell',
             cellEditor: 'agLargeTextCellEditor',
             cellEditorParams: {
@@ -27,10 +33,10 @@ export default function ContactUsGridPage() {
     ]);
 
     return (
-        <GenericGridPage<IRowContactUs>
+        <GenericGridPage<IRowLog>
             cols={colDefs}
-            endpoint="/admin/api/contactus/"
-            title="Contact Us Messages"
+            endpoint="/admin/api/logs/"
+            title="Log Messages"
             rowHeight={200} />
     );
 }

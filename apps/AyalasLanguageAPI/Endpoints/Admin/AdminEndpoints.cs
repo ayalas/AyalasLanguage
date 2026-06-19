@@ -43,6 +43,7 @@ public static class AdminEndpoints
             });
 
         adminAPIsecured.MapGet("/contactus/{page:int}", GetContactUsRecords);
+        adminAPIsecured.MapGet("/logs/{page:int}", GetLogsRecords);
     }
 
     private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
@@ -241,6 +242,26 @@ public static class AdminEndpoints
         if (page == 0)
             numOfRecords = await db.ContactUs.CountAsync();
         return new AdminGridResponse<AdminContactUsRowDto>(numOfRecords, arr);
+    }
+
+    private static async Task<AdminGridResponse<AdminLogRowDto>> GetLogsRecords(int page, AyalasLanguageDbContext db)
+    {
+        var arr = await db.Logs
+            .Include(l => l.User)
+            .OrderByDescending(l => l.LogId)
+            .Select(l => new AdminLogRowDto(
+            l.LogId,
+            l.UserId,
+            l.User != null ? l.User.UserName : null,
+            (LogTypeEnum)l.LogType,
+            l.Description,
+            l.CreatedOn
+        )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+
+        int numOfRecords = 0;
+        if (page == 0)
+            numOfRecords = await db.Logs.CountAsync();
+        return new AdminGridResponse<AdminLogRowDto>(numOfRecords, arr);
     }
 
     private static async Task<IResult> SetUserRole(AdminSetUserRoleRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)

@@ -28,7 +28,7 @@ importers:
         version: 2.5.3
       axios:
         specifier: ^1.16.1
-        version: 1.18.0
+        version: 1.18.0(supports-color@10.2.2)
       lucide-react:
         specifier: ^1.16.0
         version: 1.20.0(react@19.2.7)
@@ -120,12 +120,15 @@ importers:
       '@ayalaslanguage/types':
         specifier: workspace:*
         version: link:../../packages/types
+      ag-grid-community:
+        specifier: ^35.3.1
+        version: 35.3.1
       ag-grid-react:
         specifier: ^35.3.1
         version: 35.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       axios:
         specifier: ^1.16.1
-        version: 1.18.0
+        version: 1.18.0(supports-color@10.2.2)
       dayjs:
         specifier: ^1.11.21
         version: 1.11.21
@@ -201,7 +204,7 @@ importers:
     devDependencies:
       axios:
         specifier: ^1.18.0
-        version: 1.18.0
+        version: 1.18.0(supports-color@10.2.2)
 
 packages:
 
@@ -2449,7 +2452,7 @@ snapshots:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
 
-  agent-base@6.0.2:
+  agent-base@6.0.2(supports-color@10.2.2):
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
@@ -2476,11 +2479,11 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  axios@1.18.0:
+  axios@1.18.0(supports-color@10.2.2):
     dependencies:
       follow-redirects: 1.16.0
       form-data: 4.0.6
-      https-proxy-agent: 5.0.1
+      https-proxy-agent: 5.0.1(supports-color@10.2.2)
       proxy-from-env: 2.1.0
     transitivePeerDependencies:
       - debug
@@ -2841,9 +2844,9 @@ snapshots:
     transitivePeerDependencies:
       - '@noble/hashes'
 
-  https-proxy-agent@5.0.1:
+  https-proxy-agent@5.0.1(supports-color@10.2.2):
     dependencies:
-      agent-base: 6.0.2
+      agent-base: 6.0.2(supports-color@10.2.2)
       debug: 4.4.3(supports-color@10.2.2)
     transitivePeerDependencies:
       - supports-color

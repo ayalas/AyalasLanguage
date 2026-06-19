@@ -3,7 +3,7 @@ import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-rout
 import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse } from '../../utils/utils';
+import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog } from '../../utils/utils';
 import { EXERCISE_GENERATIONS, PLACEHOLDERS } from '../../constants/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
@@ -13,6 +13,7 @@ import puter from '@heyputer/puter.js';
 import type { NextChapterResponse } from '../../types/creator/creator';
 import { hasExtraOptions } from '../../logic/ExerciseTypeLogic';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
+import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: any; reloadExercise?: () => void }) {
@@ -117,18 +118,31 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         }
         catch {
           setError('Automated generation did not return in the expected result format. Switch to manual use of AI or try again.');
-          console.log('Error parsing puter.ai.chat response', rawText);
+          writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+            Title: "parsing LLM response failed",
+            Instruction: aiInstructionsAuto,
+            Result: rawText
+          } as LogAutoAIFailure);
           return null;
         }
         if (!Array.isArray(jsonOutput)) {
           setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
-          console.log(jsonOutput);
+          writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+            Title: "Result is not an array",
+            Instruction: aiInstructionsAuto,
+            Result: rawText
+          } as LogAutoAIFailure);
           return null;
         }
         else {
           //verify that has at least one element that can be assigned to ExerciseData
           if (jsonOutput.length == 0) {
             setError('Automated generation returned an empty result. Switch to manual use of AI or try again.');
+            writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+              Title: "Result is an empty array",
+              Instruction: aiInstructionsAuto,
+              Result: rawText
+            } as LogAutoAIFailure);
             return null;
           }
           else {
@@ -154,6 +168,11 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
             if (!isValid) {
               setError('Automated generation returned the expected result structure. Switch to manual use of AI or try again.');
+              writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+                Title: "Result is invalid",
+                Instruction: aiInstructionsAuto,
+                Result: rawText
+              } as LogAutoAIFailure);
               return null;
             }
 

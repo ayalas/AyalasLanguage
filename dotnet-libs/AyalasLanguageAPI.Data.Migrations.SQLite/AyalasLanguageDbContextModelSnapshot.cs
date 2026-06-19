@@ -24,7 +24,6 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedOn")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -524,6 +523,35 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.ToTable("LearningPaths");
                 });
 
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Log", b =>
+                {
+                    b.Property<int>("LogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(8000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LogType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("LogId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex(new[] { "LogType" }, "IX_Log_Log_Type");
+
+                    b.ToTable("Logs");
+                });
+
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Token", b =>
                 {
                     b.Property<int>("TokenId")
@@ -764,6 +792,15 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("PrevLearningPath");
 
                     b.Navigation("TargetLanguage");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Log", b =>
+                {
+                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });

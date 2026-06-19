@@ -17,35 +17,24 @@ dotnet publish -c Release /p:UseAppHost=false
 Set-Location ..
 Set-Location ..
 
-function Build-Frontend {
+pnpm install
+if ($LASTEXITCODE -ne 0) { throw "pnpm install failed" }
+
+turbo test
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Tests failed! Stopping build."
+    exit 1  # or 'throw' to stop the script
+}
+
+pnpm turbo build
+if ($LASTEXITCODE -ne 0) { throw "Frontends build failed" }
+
+function Copy-Frontend {
     param (
         [string]$DisplayName,
         [string]$FrontendWebRoot,
         [string]$TargetPath
     )
-
-    # Build Frontend (Web)
-    Write-Host "Building $DisplayName..." -ForegroundColor Cyan
-    Set-Location $FrontendWebRoot
-
-    # Optional: Ensure the script stops if npm install fails
-    npm install
-    if ($LASTEXITCODE -ne 0) { throw "$DisplayName npm install failed" }
-
-    # Run tests before building
-    Write-Host "Running Tests for $DisplayName..." -ForegroundColor Yellow
-    npx vitest run
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "$DisplayName Tests failed! Stopping build."
-        exit 1  # or 'throw' to stop the script
-    }
-
-    npm run build
-    if ($LASTEXITCODE -ne 0) { throw "$DisplayName Build failed" }
-
-    Set-Location ..
-    Set-Location ..
-
     # Copy API Dist to Web Publish Directory
     Write-Host "Copying API dist to $DisplayName static files serving folder..." -ForegroundColor Cyan
     if (Test-Path $TargetPath) {
@@ -57,10 +46,10 @@ function Build-Frontend {
 }
 
 # 3. Build Frontend (Web)
-Build-Frontend -DisplayName "Public Frontend" -FrontendWebRoot $webRoot -TargetPath $distSource
+Copy-Frontend -DisplayName "Public Frontend" -FrontendWebRoot $webRoot -TargetPath $distSource
 
 # 4. Build Admin Frontend (WebAdmin)
-Build-Frontend -DisplayName "Admin Frontend" -FrontendWebRoot $adminRoot -TargetPath $distAdminSource
+Copy-Frontend -DisplayName "Admin Frontend" -FrontendWebRoot $adminRoot -TargetPath $distAdminSource
 
 # 5. Compress Published Files for a linux based machine
 Write-Host "Creating deployment zip archive..." -ForegroundColor Cyan

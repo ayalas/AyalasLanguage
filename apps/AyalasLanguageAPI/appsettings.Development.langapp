@@ -14,7 +14,7 @@
       "Https": {
         "Url": "https://langapp.xyz:7010",
         "Certificate": {
-          "Path": "../cert/langapp_local.pfx",
+          "Path": "../../cert/langapp_local.pfx",
           "Password": "dsfkd#4ksf*#"
         }
       }

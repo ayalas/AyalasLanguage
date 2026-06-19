@@ -144,7 +144,7 @@ input:required:invalid {
 .input-text-placeholder {
   font-size: 18px;
 }
-.contactus-message-cell {
+.long-message-cell {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: scroll;
