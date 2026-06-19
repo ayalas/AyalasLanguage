@@ -111,6 +111,11 @@ describe('getMissingParts function', () => {
         expect(getMissingParts("Hvordan gaar det", [' gaar det']))
         .toEqual(["Hvordan"]);
     });
+
+    it('handles four placholders', () => {
+        expect(getMissingParts('Han går ud af huset og ind i haven', ['Han går', 'huset og', 'haven']))
+        .toEqual(['ud af','ind i']);
+    });
 })
 
 describe('splitAndKeep', () => {

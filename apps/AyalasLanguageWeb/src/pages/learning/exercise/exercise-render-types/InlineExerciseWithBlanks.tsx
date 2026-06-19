@@ -65,7 +65,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
 
             let canMoveNext = true;
             for (let j = 0; j < (exerciseInfo.answers?.length || 0); j++) {
-                
+
                 if (exerciseInfo.answers?.[j] == PLACEHOLDERS.BLANKS) {
                     continue;
                 }
@@ -119,11 +119,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                             if (el) {
                                 questionsRefMap.current.set(`${exerciseInfo.exerciseId}-${i}`, el);
                             }
-                            else {
-                                questionsRefMap.current.delete(`${exerciseInfo.exerciseId}-${i}`);
-                            }
                         };
-
                         return (
                             <Fragment key={`ex${exerciseInfo.exerciseId}input-container${i}`}>
                                 {part == PLACEHOLDERS.BLANKS && (
@@ -135,8 +131,8 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                         onChange={onChangeFromInput}
                                     />
                                 ) || (
-                                    <div className="content-line-part">{part}</div>
-                                )}
+                                        <div className="content-line-part">{part}</div>
+                                    )}
                             </Fragment>
                         );
                     })

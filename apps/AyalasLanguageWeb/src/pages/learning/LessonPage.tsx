@@ -41,7 +41,10 @@ export function LessonPage() {
     if (usesInlineExerciseWithBlanks(curItem.exerciseTypeId)) {
       const sentenceElements = splitAndKeep((firstData || ''), PLACEHOLDERS.BLANKS).map((s) => s.trim()).filter(s => s !== '');
       const tempElements = (firstData || '').split(PLACEHOLDERS.BLANKS).map((s) => s.trim()).filter(s => s !== '');
-      const answersTemp = getMissingParts(secondData || '', tempElements);
+      let answersTemp = getMissingParts(secondData || '', tempElements);
+      //flat the result of getMissingParts - it return answers of more than one word as one element
+      //but the inline exercise needs each word to have its own input
+      answersTemp = answersTemp.flatMap(item => item.split(' ').map((s) => s.trim()).filter(s => s !== ''));
       let iAnswers = 0;
       const answers = sentenceElements.map((s) => {
         if (s == PLACEHOLDERS.BLANKS) {

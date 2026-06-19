@@ -3,14 +3,15 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "admin/**"]
+      "outputs": ["dist/**", "admin/**", "bin/**", "obj/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "dotnet#build": {
-      "outputs": ["bin/**", "obj/**"]
+    "test": {
+      "cache": true,
+      "inputs": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js"]
     }
   }
 }

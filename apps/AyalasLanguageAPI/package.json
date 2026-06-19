@@ -1,0 +1,9 @@
+{
+  "name": "ayalaslanguageapi",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "dotnet build",
+    "dev": "dotnet watch run",
+    "test": "dotnet test"
+  }
+}
