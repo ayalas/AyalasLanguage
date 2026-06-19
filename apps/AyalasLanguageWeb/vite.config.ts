@@ -19,7 +19,7 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
   },
   server: {
-    port: 5173,
+    port: 5174,
     host: '0.0.0.0',
     https: {
       // Read the certificate and key files from your directory

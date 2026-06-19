@@ -4,7 +4,8 @@ import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
-import { hasSingleBucketAnswer, shouldPlayQuestion, showTranslationOnRevealedAnswer } from '../../../../../logic/ExerciseTypeLogic';
+import { hasSingleBucketAnswer, isRightToLeftInput, shouldPlayQuestion, showTranslationOnRevealedAnswer } from '../../../../../logic/ExerciseTypeLogic';
+import type { User } from '../../../../../types/shared/User';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -12,10 +13,11 @@ type Props = {
   moveNext: () => void;
   displayAnswer?: boolean;
   playTargetText: (s: string) => Promise<void>;
+  user?: User | null;
   ref: React.Ref<ExerciseHandle>;
 };
 
-const BucketListExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, playTargetText, ref }: Props) {
+const BucketListExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, playTargetText, user, ref }: Props) {
   const [bucketList, setBucketList] = useState<string[]>([]);
   const [answerList, setAnswerList] = useState<string[]>([]);
   const [first, setFirst] = useState('');
@@ -126,7 +128,10 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         )}</div>
       </div>
       {answerList && (
-        <div className="form-row answer">
+        <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
+                    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+                    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+                  )? "form-row rtlanswer" : "form-row answer"}>
           {answerList.map((item, i) => (
             <BucketListItem key={`answer-${i}`} itemValue={item} position={i} itemClicked={answerListItemClicked} />
           ))}

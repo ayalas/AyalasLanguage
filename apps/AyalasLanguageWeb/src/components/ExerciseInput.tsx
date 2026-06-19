@@ -11,10 +11,11 @@ interface Props {
   onChange?: (value: string, customKey?: string) => void;
   customKey?: string;
   ref?: React.Ref<ExerciseInputHandle | null>;
+  isRightToLeft: boolean;
 }
 
 export const ExerciseInput = function(props: Props) {
-  const { charWidth = 20, checkAnswer, value, onChange = () => {}, customKey, ref } = props;
+  const { charWidth = 20, checkAnswer, value, onChange = () => {}, customKey, ref, isRightToLeft } = props;
   const [internalData, setInternalData] = useState<string>('');
   const [errorState, setErrorState] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -37,7 +38,7 @@ export const ExerciseInput = function(props: Props) {
     }
   }));
 
-  useEffect(() => {
+ useEffect(() => {
     if (value != null) {
       setInternalData(value);
       setErrorState(false);
@@ -74,7 +75,7 @@ export const ExerciseInput = function(props: Props) {
       onChange={onInputChange}
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
-      className="input-text-placeholder"
+      className={isRightToLeft? "input-text-placeholder rtlanswer": "input-text-placeholder answer"}
       style={inputStyle}
     />
   );

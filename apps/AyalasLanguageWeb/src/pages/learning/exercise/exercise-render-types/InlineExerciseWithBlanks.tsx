@@ -5,7 +5,7 @@ import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import type { ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
 import type { User } from '../../../../types/shared/User';
 import type { ExerciseInputHandle, ExerciseHandle } from '../../../../types/ui/ComponentHandles';
-import { shouldPlayRevealedAnswer, showTranslationOnRevealedAnswer } from '../../../../logic/ExerciseTypeLogic';
+import { isRightToLeftInput, shouldPlayRevealedAnswer, showTranslationOnRevealedAnswer } from '../../../../logic/ExerciseTypeLogic';
 import { CirclePlay } from 'lucide-react';
 import { PLACEHOLDERS } from '../../../../constants/learning';
 
@@ -129,6 +129,10 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                         checkAnswer={parentCheckAnswer}
                                         customKey={`${exerciseInfo.exerciseId}-${i}`}
                                         onChange={onChangeFromInput}
+                                        isRightToLeft={isRightToLeftInput(exerciseInfo.exerciseTypeId,
+                                                    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+                                                    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+                                                  )}
                                     />
                                 ) || (
                                         <div className="content-line-part">{part}</div>

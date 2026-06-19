@@ -15,6 +15,7 @@ export interface Language {
 export interface LanguageSettings {
   targetLanguage?: string;
   knownLanguage?: string;
+  knownLanguageIsRightToLeft?: boolean;
   targetLanguageEnglishName?: string;
   targetLanguageIsRightToLeft?: boolean;
   targetLanguageCode: AppLanguageCode;

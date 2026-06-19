@@ -229,7 +229,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                 ) || (hasExtraOptions(exerciseInfo.exerciseTypeId) && (
                     <BucketListExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer} playTargetText={playTargetText} />
+                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} />
                 )) || (
                     <TwoLinesTranslationExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}

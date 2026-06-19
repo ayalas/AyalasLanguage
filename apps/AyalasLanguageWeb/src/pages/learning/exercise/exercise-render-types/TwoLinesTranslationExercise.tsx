@@ -7,7 +7,7 @@ import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles'
 import type { User } from '../../../../types/shared/User';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { CirclePlay } from 'lucide-react';
-import { shouldPlayQuestion, shouldPlayRevealedAnswer, showTranslationOnRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';
+import { isRightToLeftInput, shouldPlayQuestion, shouldPlayRevealedAnswer, showTranslationOnRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -102,13 +102,17 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
           <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
         )}</div>
       </div>
-      <div className="form-row answer">
+      <div className="form-row">
         <ExerciseInput
           ref={inputRef}
           charWidth={2 + (second?.length ?? 0)}
           checkAnswer={parentCheckAnswer}
           onChange={OnChange}
           value={inputValue}
+          isRightToLeft={isRightToLeftInput(exerciseInfo.exerciseTypeId,
+            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+          )}
         />
       </div>
       {displayAnswer && (
@@ -123,7 +127,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
         </div>
       )}
       {useVirtualKeyboard(exerciseInfo.exerciseTypeId) && (
-        <VirtualKeyboard languageCode={(user?.languageSettings?.targetLanguageEnglishName ?? 'en').toLowerCase()} isRightToLeft={true} onChange={OnChange} value={inputValue} />
+        <VirtualKeyboard languageCode={(user?.languageSettings?.targetLanguageEnglishName ?? 'en').toLowerCase()} isRightToLeft={user?.languageSettings?.targetLanguageIsRightToLeft} onChange={OnChange} value={inputValue} />
       )}
     </>
   );
