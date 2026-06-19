@@ -1,8 +1,8 @@
 
 # 1. Define Paths and Variables
-$apiRoot      = "./AyalasLanguageAPI"
-$webRoot      = "./AyalasLanguageWeb"
-$adminRoot      = "./AyalasLanguageWebAdmin"
+$apiRoot      = "./apps/AyalasLanguageAPI"
+$webRoot      = "./apps/AyalasLanguageWeb"
+$adminRoot      = "./apps/AyalasLanguageWebAdmin"
 $publishDir   = "$apiRoot/bin/Release/net9.0/publish"
 $distSource   = "$webRoot/dist"
 $distAdminSource   = "$webRoot/admin"
@@ -14,6 +14,7 @@ Write-Host "Building Backend API..." -ForegroundColor Cyan
 Set-Location $apiRoot
 dotnet restore
 dotnet publish -c Release /p:UseAppHost=false
+Set-Location ..
 Set-Location ..
 
 function Build-Frontend {
@@ -42,6 +43,7 @@ function Build-Frontend {
     npm run build
     if ($LASTEXITCODE -ne 0) { throw "$DisplayName Build failed" }
 
+    Set-Location ..
     Set-Location ..
 
     # Copy API Dist to Web Publish Directory

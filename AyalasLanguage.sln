@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AyalasLanguageAPI", "AyalasLanguageAPI\AyalasLanguageAPI.csproj", "{A1655189-2E2B-9978-97DA-E7F62D902A79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AyalasLanguageAPI", "apps\AyalasLanguageAPI\AyalasLanguageAPI.csproj", "{92F22518-F3D1-104D-05D4-2DD9063FB3DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AyalasLanguageAPI.Data.Migrations.MySQL", "AyalasLanguageAPI.Data.Migrations.MySQL\AyalasLanguageAPI.Data.Migrations.MySQL.csproj", "{B5B805F6-D4CE-4665-8790-C6D7CD97DDD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AyalasLanguageAPI.Data.Migrations.MySQL", "dotnet-libs\AyalasLanguageAPI.Data.Migrations.MySQL\AyalasLanguageAPI.Data.Migrations.MySQL.csproj", "{B5B805F6-D4CE-4665-8790-C6D7CD97DDD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AyalasLanguageAPI.Data.Migrations.SQLite", "AyalasLanguageAPI.Data.Migrations.SQLite\AyalasLanguageAPI.Data.Migrations.SQLite.csproj", "{69ECCF61-C7B6-4F76-8BD4-071AAAA45127}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AyalasLanguageAPI.Data.Migrations.SQLite", "dotnet-libs\AyalasLanguageAPI.Data.Migrations.SQLite\AyalasLanguageAPI.Data.Migrations.SQLite.csproj", "{69ECCF61-C7B6-4F76-8BD4-071AAAA45127}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AyalasLanguageAPI.Data", "AyalasLanguageAPI.Data\AyalasLanguageAPI.Data.csproj", "{64E1D2C8-E258-4A5C-9A7F-0496CF901EAC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AyalasLanguageAPI.Data", "dotnet-libs\AyalasLanguageAPI.Data\AyalasLanguageAPI.Data.csproj", "{64E1D2C8-E258-4A5C-9A7F-0496CF901EAC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,18 +21,18 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Debug|x64.Build.0 = Debug|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Debug|x86.Build.0 = Debug|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Release|x64.ActiveCfg = Release|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Release|x64.Build.0 = Release|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Release|x86.ActiveCfg = Release|Any CPU
-		{A1655189-2E2B-9978-97DA-E7F62D902A79}.Release|x86.Build.0 = Release|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Debug|x64.Build.0 = Debug|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Debug|x86.Build.0 = Debug|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Release|x64.ActiveCfg = Release|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Release|x64.Build.0 = Release|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Release|x86.ActiveCfg = Release|Any CPU
+		{92F22518-F3D1-104D-05D4-2DD9063FB3DB}.Release|x86.Build.0 = Release|Any CPU
 		{B5B805F6-D4CE-4665-8790-C6D7CD97DDD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B5B805F6-D4CE-4665-8790-C6D7CD97DDD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5B805F6-D4CE-4665-8790-C6D7CD97DDD9}.Debug|x64.ActiveCfg = Debug|Any CPU

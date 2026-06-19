@@ -1,0 +1,17 @@
+{
+  "name": "@ayalaslanguage/types",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./log": "./src/log.ts",
+    "./exercise": "./src/exercise.ts",
+    "./auth": "./src/auth.ts",
+    "./error": "./src/error.ts"
+  },
+  "devDependencies": {
+    "axios": "^1.18.0"
+  },
+  "peerDependencies": {
+    "axios": "^1.18.0"
+  }
+}

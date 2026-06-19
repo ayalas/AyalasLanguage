@@ -7,5 +7,6 @@
         },
         "editor.suggestOnTriggerCharacters": false,
         "editor.wordBasedSuggestions": "off"
-    }
+    },
+    "git.ignoreLimitWarning": true
 }

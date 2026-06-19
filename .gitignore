@@ -8,5 +8,8 @@
 bin/
 obj/
 *.dll
-dist/
 cert/
+.turbo/
+apps/ayalaslanguagewebadmin/admin/
+apps/ayalaslanguageweb/dist/
+node_modules/
