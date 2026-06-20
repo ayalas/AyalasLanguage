@@ -8,7 +8,7 @@ type Props = {
 
 export function ContentStatusFilter(props: Props) {
     const {onChange} = props;
-    const [contentStatus, setContentStatus] = useState(0);
+    const [contentStatus, setContentStatus] = useState(-1);
 
     async function OnSelectChange(e: React.ChangeEvent<HTMLSelectElement>)
     {

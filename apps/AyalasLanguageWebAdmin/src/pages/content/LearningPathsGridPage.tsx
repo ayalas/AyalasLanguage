@@ -79,7 +79,7 @@ export default function LearningPathsGridPage() {
         <>
             <AuthHeader />
             <div className="form-row">
-                <div className="form-content-row">Content Status:</div>
+                <div className="form-content-row">Filter by Status:</div>
                 <div><ContentStatusFilter onChange={onContentStatusFilterChange} /></div>
             </div>
             <GenericGrid<IRowLearningPath>
