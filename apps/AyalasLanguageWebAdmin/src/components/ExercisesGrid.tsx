@@ -2,36 +2,49 @@ import { useCallback, useState } from 'react';
 import { type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
-import { CONTENT_STATUS_MAPPING, type IRowLearningPath } from '../../types/grids/grids';
+import { CONTENT_STATUS_MAPPING, type IRowExercise } from '../types/grids/grids';
 import type { ContentStatus } from '@ayalaslanguage/types/exercise';
 import dayjs from 'dayjs';
-import GenericGrid from '../../components/GenericGrid';
-import { AuthHeader } from '../../components/auth/AuthHeader';
-import { ContentStatusFilter } from '../../components/gridfilters/ContentStatusFilter';
-import { GridLinkCell } from '../../components/gridcells/GridLinkCell';
+import GenericGrid from './GenericGrid';
+import { ContentStatusFilter } from './gridfilters/ContentStatusFilter';
+import { GridLinkCell } from './gridcells/GridLinkCell';
 
-export default function LearningPathsGridPage() {
+type Props = {
+    learningPathId?: number;
+};
+
+export default function ExercisesGrid(props: Props) {
+    const {learningPathId} = props;
     const [success, setSuccess] = useState('');
-    const [filterQS, setFilterQS] = useState('');
     const [error, setError] = useState('');
-    const [colDefs] = useState<ColDef<IRowLearningPath>[]>([
+    const [filterQS, setFilterQS] = useState('');
+    const [colDefs] = useState<ColDef<IRowExercise>[]>([
         { field: "email", headerName: 'Email', flex: 2, filter: true },
         { field: "knownLanguage", headerName: 'Known Language', flex: 1, filter: true },
         { field: "targetLanguage", headerName: 'Target Language', flex: 1, filter: true },
-        { field: "level", headerName: 'Level', flex: 1, filter: true },
-        { field: "chapter", headerName: 'Chapter', flex: 1, filter: true },
-        {
-            field: "name", headerName: 'Name', flex: 2, filter: true,
-            cellRenderer: GridLinkCell<IRowLearningPath>,
+        { field: "name", headerName: 'Name', 
+            flex: 2, filter: true,
+            cellRenderer: GridLinkCell<IRowExercise>,
             cellRendererParams: {
-                getLinkCallback: (data: IRowLearningPath) => {
-                    return `/admin/path/${data.learningPathId}`;
+                getLinkCallback: (data: IRowExercise) => {
+                    return learningPathId == data.learningPathId? "#": `/admin/path/${data.learningPathId}`;
                 },
-                getTitleCallback: (data: IRowLearningPath) => {
+                getTitleCallback: (data: IRowExercise) => {
                     return data.name;
                 }
             }
         },
+        {
+            field: "data", headerName: 'Data', flex: 6, filter: true, editable: true, wrapText: true,
+            cellClass: 'medium-message-cell',
+            cellEditor: 'agLargeTextCellEditor',
+            cellEditorParams: {
+                cols: 100,
+                rows: 8
+            },
+            valueSetter: () => false,
+        },
+        { field: "exerciseType", headerName: 'Type', flex: 2, filter: true },
         {
             field: "createdOn", headerName: 'Created On',
             valueFormatter: params => dayjs(params.value).format('YYYY-MM-DD HH:mm'),
@@ -50,8 +63,7 @@ export default function LearningPathsGridPage() {
             refData: CONTENT_STATUS_MAPPING,
             // Vital: ensures the grid saves the selection as a Number, not a string
             valueParser: (params) => Number(params.newValue) as ContentStatus,
-        },
-        { field: "countExercises", headerName: 'Exercises', flex: 1, filter: true }
+        }
     ]);
 
     const onContentStatusFilterChange = async (contentStatus: number) => {
@@ -63,11 +75,11 @@ export default function LearningPathsGridPage() {
         }
     };
 
-    const handleStatusChange = async (event: CellValueChangedEvent<IRowLearningPath>) => {
+    const handleStatusChange = async (event: CellValueChangedEvent<IRowExercise>) => {
         try {
-            axios.post('/admin/api/setpathstatus', { learningPathId: event.data.learningPathId, status: Number(event.newRawValue) })
+            axios.post('/admin/api/setexercisestatus', { exerciseId: event.data.exerciseId, status: Number(event.newRawValue) })
             setError("");
-            setSuccess(`Successfully updated lesson ${event.data.name} to status ${CONTENT_STATUS_MAPPING[event.newValue as ContentStatus]}`);
+            setSuccess(`Successfully updated exercise ${event.data.exerciseId} to status ${CONTENT_STATUS_MAPPING[event.newValue as ContentStatus]}`);
             setTimeout(() => {
                 setSuccess("");
             }, 3000);
@@ -77,7 +89,7 @@ export default function LearningPathsGridPage() {
         }
     };
 
-    const onCellValueChanged = useCallback(async (event: CellValueChangedEvent<IRowLearningPath>) => {
+    const onCellValueChanged = useCallback(async (event: CellValueChangedEvent<IRowExercise>) => {
         if (event.source !== 'edit') { //prevent inifinte loops when reverting values by api
             return;
         }
@@ -89,17 +101,18 @@ export default function LearningPathsGridPage() {
 
     return (
         <>
-            <AuthHeader />
             <div className="form-row">
                 <div className="form-content-row">Filter by Status:</div>
                 <div><ContentStatusFilter onChange={onContentStatusFilterChange} /></div>
             </div>
-            <GenericGrid<IRowLearningPath>
+            <GenericGrid<IRowExercise>
                 cols={colDefs}
-                endpoint="/admin/api/learning-paths/"
+                endpoint={ learningPathId != null? `/admin/api/learning-path/${learningPathId}/exercises/` : "/admin/api/exercises/"}
+                title="Exercises"
                 onCellValueChanged={onCellValueChanged}
                 successMessage={success}
                 errorMessage={error}
+                rowHeight={110}
                 filterQS={filterQS} />
         </>
     );
