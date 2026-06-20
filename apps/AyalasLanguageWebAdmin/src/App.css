@@ -82,6 +82,13 @@ label.label-deleted {
   text-decoration: line-through;
 }
 
+.filter-select {
+  display: inline-flex;
+  min-height: 30px;
+  border-radius: 4px;
+  min-width: 180px;
+}
+
 .form-row {
   padding-top: 5px;
   padding-bottom: 5px;

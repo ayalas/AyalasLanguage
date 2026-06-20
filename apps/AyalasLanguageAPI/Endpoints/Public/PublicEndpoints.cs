@@ -12,7 +12,8 @@ public static class PublicEndpoints
 {
     public static void MapPublicEndpoints(this IEndpointRouteBuilder app)
     {
-        var publicEndpoints = app.MapGroup("/api/public").WithTags("Public");
+        var publicEndpoints = app.MapGroup("/api/public")
+            .AddEndpointFilter<ErrorLoggingFilter>().WithTags("Public");
 
         publicEndpoints.MapPost("/message", CreatePublicContactUs);
     }

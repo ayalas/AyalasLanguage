@@ -13,7 +13,8 @@ namespace AyalasLanguageAPI.Endpoints.Profile
     {
         public static void MapProfileEndpoints(this IEndpointRouteBuilder app)
         {
-            var profileGroup = app.MapGroup("/api/profile").WithTags("Profile")
+            var profileGroup = app.MapGroup("/api/profile")
+                .AddEndpointFilter<ErrorLoggingFilter>().WithTags("Profile")
                 .RequireAuthorization(new AuthorizeAttribute
                 {
                     AuthenticationSchemes = "PublicAuth"

@@ -9,9 +9,18 @@ export function errorHandler(err: unknown, func: (arg: string) => void) {
     if (err.response) {
       // Safely handle different response data shapes (string vs object)
       const data = err.response.data;
-      const message = typeof data === 'string'
+      let message = typeof data === 'string'
         ? data
-        : (data as any)?.message || JSON.stringify(data);
+        : (data as any)?.message;
+
+      if (message == null || message == "") {
+        if (data != null && data.detail && data.title) {
+          message = `${data.title} ${data.detail}`;
+        }
+        else {
+          message = JSON.stringify(data);
+        }
+      }
 
       func(message);
     }

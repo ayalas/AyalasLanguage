@@ -19,6 +19,7 @@ public static class ContentCreatorEndpoints
     public static void MapContentCreatorEndpoints(this IEndpointRouteBuilder app)
     {
         var creator = app.MapGroup("/api/creator")
+            .AddEndpointFilter<ErrorLoggingFilter>()
             .WithTags("Content Creator").RequireAuthorization(new AuthorizeAttribute
         {
             AuthenticationSchemes = "PublicAuth",
@@ -269,6 +270,7 @@ public static class ContentCreatorEndpoints
         path.Level = dto.Level;
         path.Chapter = dto.Chapter;
         path.Name = dto.Name;
+        path.Status = (byte)ContentStatusEnum.Draft;
 
         await db.SaveChangesAsync();
         return Results.Ok();
@@ -434,6 +436,7 @@ public static class ContentCreatorEndpoints
         }
 
         exercise.Data = dto.Data;
+        exercise.Status = (byte)ContentStatusEnum.Draft;
 
         await db.SaveChangesAsync();
 

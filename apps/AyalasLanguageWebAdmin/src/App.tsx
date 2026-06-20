@@ -15,6 +15,7 @@ import UsersPage from './pages/auth/users/UsersPage';
 import ContactUsGridPage from './pages/contactus/ContactUsGridPage';
 import LogGridPage from './pages/log/LogGridPage';
 import LearningPathsGridPage from './pages/content/LearningPathsGridPage';
+import ExercisesGridPage from './pages/content/ExercisesGridPage';
 
 function App() {
   useEffect(() => {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/admin/contactus" element={<ContactUsGridPage />} />
             <Route path="/admin/log" element={<LogGridPage />} />
             <Route path="/admin/paths" element={<LearningPathsGridPage />} />
+            <Route path="/admin/exercises" element={<ExercisesGridPage />} />
           </Route>
 
           {/* Fallback 404 Route */}

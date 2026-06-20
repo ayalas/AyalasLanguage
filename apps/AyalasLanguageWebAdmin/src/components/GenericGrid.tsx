@@ -12,15 +12,16 @@ import { GridPager } from './GridPager';
 interface GenericGridPageProps<T> {
   cols: ColDef<T>[];
   endpoint: string;
-  title: string;
+  title?: string;
   rowHeight?: number;
   onCellValueChanged?: (event: CellValueChangedEvent<T>) => Promise<void>;
   successMessage?: string;
   errorMessage?: string;
+  filterQS?: string;
 }
 
 export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
-    const {cols, endpoint, title, rowHeight, onCellValueChanged, successMessage, errorMessage} = props;
+    const {cols, endpoint, title, rowHeight, onCellValueChanged, successMessage, errorMessage, filterQS} = props;
     const [error, setError] = useState('');
     const [page, setPage] = useState(1);
     const [rowHeightInternal, setRowHeightInternal] = useState(42);
@@ -33,7 +34,13 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
     const loadData = async function (newPage: number) {
         try {
             setPage(newPage);
-            const res = await axios.get<AdminGridResponse<T>>(`${endpoint}${newPage - 1}`);
+
+            let endpointUrl = `${endpoint}${newPage - 1}`;
+            if (filterQS != null && filterQS != "") {
+                endpointUrl = `${endpointUrl}?${filterQS}`;
+            }
+
+            const res = await axios.get<AdminGridResponse<T>>(endpointUrl);
             const resObj = res.data;
 
             if (resObj.numOfRecords > 0) {
@@ -44,6 +51,7 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
             }
             setRowData(resObj.data.slice(0, PAGE_SIZE));
             setHasMoreData(resObj.data.length > PAGE_SIZE);
+            setError("");
         } catch (err: unknown) {
             errorHandler(err, setError);
         }
@@ -58,14 +66,16 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         loadData(1);
-    }, []);
+    }, [filterQS]);
+
     return (
         <>
-            <AuthHeader />
             <div className="form-container">
-                <div className="form-header">
-                    <h1>{title}</h1>
-                </div>
+                {title !== '' && (
+                    <div className="form-header">
+                        <h1>{title}</h1>
+                    </div>
+                )}
                 {successMessage !== '' && (
                     <div className="form-row">
                         <h3>{successMessage}</h3>

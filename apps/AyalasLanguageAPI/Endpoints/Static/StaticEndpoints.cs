@@ -14,7 +14,8 @@ public static class StaticEndpoints
 {
     public static void MapStaticEndpoints(this IEndpointRouteBuilder app)
     {
-        var staticData = app.MapGroup("/api/static").WithTags("Static")
+        var staticData = app.MapGroup("/api/static")
+            .AddEndpointFilter<ErrorLoggingFilter>().WithTags("Static")
             .RequireAuthorization(new AuthorizeAttribute
                 {
                     AuthenticationSchemes = "PublicAuth"

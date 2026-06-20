@@ -3,8 +3,9 @@ import { type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { ROLE_MAPPING, type IRowUser } from '../../../types/auth/auth';
 import axios from 'axios';
-import GenericGridPage from '../../../components/GenericGridPage';
 import type { RoleType } from '@ayalaslanguage/types/auth';
+import { AuthHeader } from '../../../components/auth/AuthHeader';
+import GenericGrid from '../../../components/GenericGrid';
 
 export default function UsersPage() {
     const [success, setSuccess] = useState('');
@@ -58,12 +59,15 @@ export default function UsersPage() {
     }, []);
 
     return (
-        <GenericGridPage<IRowUser>
-            cols={colDefs}
-            endpoint="/admin/api/auth/users/"
-            title="Users"
-            onCellValueChanged={onCellValueChanged}
-            successMessage={success}
-            errorMessage={error} />
+        <>
+            <AuthHeader />
+            <GenericGrid<IRowUser>
+                cols={colDefs}
+                endpoint="/admin/api/auth/users/"
+                title="Users"
+                onCellValueChanged={onCellValueChanged}
+                successMessage={success}
+                errorMessage={error} />
+        </>
     );
 }

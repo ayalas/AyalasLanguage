@@ -18,7 +18,7 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this IEndpointRouteBuilder app)
     {
-        var authBase = app.MapGroup("/api/auth");
+        var authBase = app.MapGroup("/api/auth").AddEndpointFilter<ErrorLoggingFilter>();
 
         var publicAuth = authBase.MapGroup("").WithTags("PublicAuth");
 

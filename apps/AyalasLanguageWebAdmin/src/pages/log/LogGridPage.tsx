@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { type ColDef } from 'ag-grid-community';
 import dayjs from 'dayjs';
 import { LOG_TYPE_MAPPING, type IRowLog } from '../../types/grids/grids';
-import GenericGridPage from '../../components/GenericGridPage';
 import type { LogType } from '@ayalaslanguage/types/log';
+import GenericGrid from '../../components/GenericGrid';
+import { AuthHeader } from '../../components/auth/AuthHeader';
 
 export default function LogGridPage() {
     const [colDefs] = useState<ColDef<IRowLog>[]>([
@@ -33,10 +34,13 @@ export default function LogGridPage() {
     ]);
 
     return (
-        <GenericGridPage<IRowLog>
-            cols={colDefs}
-            endpoint="/admin/api/logs/"
-            title="Log Messages"
-            rowHeight={200} />
+        <>
+            <AuthHeader />
+            <GenericGrid<IRowLog>
+                cols={colDefs}
+                endpoint="/admin/api/logs/"
+                title="Log Messages"
+                rowHeight={200} />
+        </>
     );
 }

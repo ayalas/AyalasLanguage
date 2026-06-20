@@ -15,10 +15,10 @@ namespace AyalasLanguageAPI.AdminDTOs
     public record AdminContactUsRowDto(int ContactUsId, int? UserId, string? DisplayName, string Email, string? Message, DateTime CreatedOn);
     public record AdminLogRowDto(int LogId, int? UserId, string? Email, LogTypeEnum LogType, string? Description, DateTime CreatedOn);
 
-    public record AdminExerciseRowDto(int? UserId, string? Email, string? KnownLanguage, string? TargetLanguage, string Data, int ExerciseTypeId, string ExerciseType, DateTime CreatedOn, int? LearningPathId, int ExerciseId, byte Status);
+    public record AdminExerciseRowDto(int? UserId, string? Email, string? KnownLanguage, string? TargetLanguage, string? Name, string Data, int ExerciseTypeId, string ExerciseType, DateTime CreatedOn, int? LearningPathId, int ExerciseId, byte Status);
     public record AdminLearningPathRowDto(int? UserId, string? Email, string? KnownLanguage, string? TargetLanguage, string? Name, uint Level, decimal Chapter, DateTime CreatedOn, int LearningPathId, int CountExercises, byte Status);
     public record AdminSetUserRoleRequest(int UserId, byte Role);
     public record AdminSetLearningPathStatusRequest(int LearningPathId, ContentStatusEnum Status);
-
+    public record AdminSetExerciseStatusRequest(int ExerciseId, ContentStatusEnum Status);
     public record AdminGridResponse<T>(int NumOfRecords, T[] Data);
 }

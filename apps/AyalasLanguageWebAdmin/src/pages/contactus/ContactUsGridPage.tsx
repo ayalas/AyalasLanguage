@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { type ColDef } from 'ag-grid-community';
 import dayjs from 'dayjs';
 import type { IRowContactUs } from '../../types/grids/grids';
-import GenericGridPage from '../../components/GenericGridPage';
+import GenericGrid from '../../components/GenericGrid';
+import { AuthHeader } from '../../components/auth/AuthHeader';
 
 export default function ContactUsGridPage() {
     const [colDefs] = useState<ColDef<IRowContactUs>[]>([
@@ -27,10 +28,13 @@ export default function ContactUsGridPage() {
     ]);
 
     return (
-        <GenericGridPage<IRowContactUs>
-            cols={colDefs}
-            endpoint="/admin/api/contactus/"
-            title="Contact Us Messages"
-            rowHeight={200} />
+        <>
+            <AuthHeader />
+            <GenericGrid<IRowContactUs>
+                cols={colDefs}
+                endpoint="/admin/api/contactus/"
+                title="Contact Us Messages"
+                rowHeight={200} />
+        </>
     );
 }

@@ -53,6 +53,7 @@ export interface IRowExercise
     email: string,
     knownLanguage: string,
     targetLanguage: string,
+    name?: string,
     data?: string,
     exerciseTypeId: number,
     exerciseType: string,

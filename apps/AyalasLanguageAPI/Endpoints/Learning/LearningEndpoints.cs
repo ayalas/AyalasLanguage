@@ -15,6 +15,7 @@ public static class LearningEndpoints
     public static void MapLearningEndpoints(this IEndpointRouteBuilder app)
     {
         var learning = app.MapGroup("/api/learning").WithTags("Learning")
+            .AddEndpointFilter<ErrorLoggingFilter>()
             .RequireAuthorization(new AuthorizeAttribute
             {
                 AuthenticationSchemes = "PublicAuth"
