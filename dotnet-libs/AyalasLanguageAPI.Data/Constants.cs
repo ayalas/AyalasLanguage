@@ -102,6 +102,7 @@ public static class Constants
     public const string CONTACT_US_COUNT_CACHE_KEY = "ContactUsCountPerPeriod";
     public const int MAX_CONTACT_US_PER_PERIOD = 500;
 
+    public const string UNCONFIRMED_ACCOUNT_CHANGE_COUNT_CACHE_KEY = "UnconfirmAccountChangeCountPerPeriod";
     public const string REGISTER_COUNT_CACHE_KEY = "RegisterCountPerPeriod";
     public const int MAX_REGISTER_PER_PERIOD = 1000;
 

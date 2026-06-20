@@ -62,7 +62,7 @@ public static class AuthEndpoints
         // 1. Find user (In production, use a proper password hasher!)
         User? user = null;
         user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
-        
+
         if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
             return Results.Conflict("Invalid credentials. Please try again with your correct email and password.");
 
@@ -260,7 +260,7 @@ public static class AuthEndpoints
             new RegisterResponseDto(user.UserId, user.DisplayName, user.UserName, user.Role));
     }
 
-    private static async Task<IResult> ChangeAccount(ChangeAccountDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
+    private static async Task<IResult> ChangeAccount(ChangeAccountDto dto, IMemoryCache cache, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)
     {
         var userId = claim.GetUserId();
         var user = await db.Users.FirstOrDefaultAsync(u => u.UserId == userId);
@@ -272,6 +272,14 @@ public static class AuthEndpoints
         if (!BCrypt.Net.BCrypt.Verify(dto.OldPassword, user.PasswordHash))
         {
             return Results.BadRequest("Old password is incorrect.");
+        }
+
+        if (!user.EmailConfirmed)
+        {
+            if (!CacheUtils.ProtectByCacheCount(Constants.UNCONFIRMED_ACCOUNT_CHANGE_COUNT_CACHE_KEY, cache, Constants.MAX_REGISTER_PER_PERIOD))
+            {
+                return Results.Conflict("The system cannot accept unconfirmed accounts changes at this time. Please try again later.");
+            }
         }
 
         if (dto.Use2FALogin)
@@ -314,6 +322,11 @@ public static class AuthEndpoints
             user.UserName = dto.NewUserName;
         }
         await db.SaveChangesAsync();
+
+        if (!user.EmailConfirmed)
+        {
+            CacheUtils.AddToCountProtection(Constants.UNCONFIRMED_ACCOUNT_CHANGE_COUNT_CACHE_KEY, cache, Constants.CACHE_PROTECTION_MINUTES);
+        }
 
         if (was2fATurnedOff)
         {

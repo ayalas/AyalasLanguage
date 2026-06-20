@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import KeyboardModule from 'simple-keyboard';
 import KeyboardLayoutsModule from 'simple-keyboard-layouts';
 import 'simple-keyboard/build/css/index.css';
+import { isTouchDevice } from '../utils/utils';
 
 // Minimal runtime typings for the keyboard packages used here.
 type KeyboardInstance = {
@@ -57,7 +58,7 @@ const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft =
     const [showKeyboard, setShowKeyboard] = useState(true);
     const [layoutName, setLayoutName] = useState('default');
 
-    const isSupported = isLanguageSupported(languageCode);
+    const isSupported = isLanguageSupported(languageCode) && !isTouchDevice();
 
     const handleKeyPress = (button: string) => {
         if (button === '{shift}' || button === '{lock}') {

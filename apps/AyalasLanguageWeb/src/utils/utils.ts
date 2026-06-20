@@ -4,6 +4,11 @@ import { type CreateLogRequest, type LogType } from "@ayalaslanguage/types/log"
 
 export const isSecure = () => (window.location.protocol === 'https:')
 
+export const isTouchDevice = () => {
+  return typeof window !== 'undefined' && 
+    (navigator.maxTouchPoints > 0 || 'ontouchstart' in window);
+};
+
 export async function initializePuter() {
   if (isSecure()) {
     if (!puter.auth.isSignedIn()) {
