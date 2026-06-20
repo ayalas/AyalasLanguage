@@ -40,5 +40,6 @@ namespace AyalasLanguageAPI.Data.Model
         public virtual User User { get; set; } = null!;
 
         public virtual ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
+        public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
     }
 }

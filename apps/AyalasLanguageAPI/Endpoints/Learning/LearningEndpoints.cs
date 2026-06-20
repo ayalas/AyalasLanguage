@@ -33,7 +33,7 @@ public static class LearningEndpoints
         var userId = claim.GetUserId();
 
         return Results.Ok(await db.LearningPaths
-            .Where(lp => lp.LearningPathId == pathId)
+            .Where(lp => lp.LearningPathId == pathId && lp.Status != (byte)ContentStatusEnum.Removed)
             // 1. GroupJoin correlates the LearningPath with the filtered UserProgress
             .GroupJoin(
                 db.UserProgresses.Where(up => up.UserId == userId),
@@ -58,7 +58,7 @@ public static class LearningEndpoints
                             : (byte)UserProgressEnum.InProgress,
                     up == null ? null : up.ExerciseId,
                     // EF9 optimizes correlated subquery counts beautifully
-                    db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId),
+                    db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
                     x.lp.PrevLearningPathId,
                     x.lp.NextLearningPathId,
                     x.lp.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner,
@@ -83,7 +83,8 @@ public static class LearningEndpoints
         int languageId = user.TargetLanguageId.Value;
 
         var learningPathsWithStatus = await db.LearningPaths
-    .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value)
+    .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value
+    && lp.Status != (byte)ContentStatusEnum.Removed)
     // 1. Correlate LearningPaths with the user's specific progress records
     .GroupJoin(
         db.UserProgresses.Where(up => up.UserId == userId),
@@ -107,7 +108,7 @@ public static class LearningEndpoints
                     ? (byte)UserProgressEnum.Done
                     : (byte)UserProgressEnum.InProgress,
             // EF9 optimizes this into a sub-select COUNT query
-            db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId),
+            db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
             x.lp.PrevLearningPathId,
             x.lp.NextLearningPathId,
             up != null && up.practiseMistakesInThisPath
@@ -159,7 +160,7 @@ public static class LearningEndpoints
         if (dto.exerciseId != null && dto.exerciseId > 0)
         {
             var exercise = await db.Exercises
-                .FirstOrDefaultAsync(exr => exr.ExerciseId == dto.exerciseId && exr.LearningPathId == dto.LearningPathId);
+                .FirstOrDefaultAsync(exr => exr.ExerciseId == dto.exerciseId && exr.LearningPathId == dto.LearningPathId && exr.Status != (byte)ContentStatusEnum.Removed);
             if (exercise == null)
             {
                 return Results.BadRequest("Exercise not found");
@@ -195,7 +196,7 @@ public static class LearningEndpoints
         {
             //get the languages for this learning path 
             var learningPath = await db.LearningPaths
-                .FirstOrDefaultAsync(lp => lp.LearningPathId == dto.LearningPathId);
+                .FirstOrDefaultAsync(lp => lp.LearningPathId == dto.LearningPathId && lp.Status != (byte)ContentStatusEnum.Removed);
 
             if (learningPath != null)
             {
@@ -257,6 +258,7 @@ public static class LearningEndpoints
         //Filter exercises by path and user exercise types
         var exercises = await db.Exercises
             .Where(e => e.LearningPathId == pathId && userExerciseTypes.Contains(e.ExerciseTypeId)
+            && e.Status != (byte)ContentStatusEnum.Removed
             //add if we want to handle approved exercises
             //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
             )
@@ -276,7 +278,9 @@ public static class LearningEndpoints
         //get the exercise learnging path
         var exercise = await db.Exercises
             .Include(e => e.LearningPath)
-            .FirstOrDefaultAsync(e => e.ExerciseId == dto.ExerciseId);
+            .FirstOrDefaultAsync(e => e.ExerciseId == dto.ExerciseId
+            && e.Status != (byte)ContentStatusEnum.Removed
+            && e.LearningPath != null && e.LearningPath.Status != (byte)ContentStatusEnum.Removed);
 
         if (exercise == null)
         {

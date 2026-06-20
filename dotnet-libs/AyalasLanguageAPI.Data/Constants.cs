@@ -18,7 +18,8 @@ public enum UserAccessEnum
 public enum ContentStatusEnum
 {
     Draft = 0,
-    Approved = 1
+    Approved = 1,
+    Removed = 2
 }
 
 public enum UserProgressEnum
@@ -96,6 +97,8 @@ public static class Constants
     public const int BUCKET_EXTRA_MAX_COUNT = 5;
 
     //cache protections
+    public const string LANGUAGE_SET_CACHE_KEY = "LanguageSet";
+    public const int APP_DATA_CACHE_MINUTES = 240;
     public const int CACHE_PROTECTION_MINUTES = 1440;
     public const int MAX_MESSAGE_PUBLIC_CONTACT_US = 500;
     

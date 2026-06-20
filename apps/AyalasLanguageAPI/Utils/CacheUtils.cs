@@ -1,3 +1,4 @@
+using AyalasLanguageAPI.Data;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace AyalasLanguageAPI.Utils
@@ -10,6 +11,28 @@ namespace AyalasLanguageAPI.Utils
 
     internal static class CacheUtils
     {
+        public static async Task<T?> GetAppDataFromCache<T>(this AyalasLanguageDbContext db, string cacheKey, IMemoryCache cache, Func<AyalasLanguageDbContext, Task<T>> getDataCallback)
+        {
+            if (cache.TryGetValue(cacheKey, out T? dataFromCache))
+            {
+                if (dataFromCache != null) {
+                    return dataFromCache;
+                }
+            }
+            
+            if (getDataCallback != null)
+            {
+                T? dataFromCallback = await getDataCallback(db);
+
+                DateTime dtNow = DateTime.UtcNow;
+                var expires = dtNow.AddMinutes(Constants.APP_DATA_CACHE_MINUTES);
+                cache.Set(cacheKey, dataFromCallback, expires - dtNow);
+
+                return dataFromCallback;
+            }
+            
+            return default;
+        }
         public static bool ProtectByCacheCount(string cacheKey, IMemoryCache cache, int maxCount)
         {
             if (cache.TryGetValue(cacheKey, out ProtectByCountCache? objCountProtection))

@@ -251,8 +251,10 @@ public static class ContentCreatorEndpoints
         var path = await db.LearningPaths.FindAsync(id);
         if (path == null) return Results.NotFound();
 
-        if (path.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
+        if ((path.UserId != claim.GetUserId() || path.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
+
+        
 
         if (dto.Chapter <= 0)
         {
@@ -277,7 +279,7 @@ public static class ContentCreatorEndpoints
         var path = await db.LearningPaths.FindAsync(id);
         if (path == null) return Results.NotFound();
 
-        if (path.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
+        if ((path.UserId != claim.GetUserId() || path.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
         if (db.UserProgresses.Any(up => up.LearningPathId == id))
@@ -337,7 +339,7 @@ public static class ContentCreatorEndpoints
         .FirstOrDefaultAsync(e => e.ExerciseId == id);
         if (exercise == null) return Results.NotFound();
 
-        if (exercise.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
+        if ((exercise.UserId != claim.GetUserId() || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
         return Results.Ok(new ExerciseDto(exercise.ExerciseId, exercise.ExerciseTypeId, exercise.Data, (byte)UserAccessEnum.CanEdit, exercise.LearningPathId));
@@ -351,7 +353,7 @@ public static class ContentCreatorEndpoints
         .FirstOrDefaultAsync(e => e.ExerciseId == id);
         if (exercise == null) return Results.NotFound();
 
-        if (exercise.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
+        if ((exercise.UserId != claim.GetUserId() || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
         if (!ContentCreatorLogic.ValidateExerciseData(exercise.ExerciseTypeId, dto.Data, logger))
@@ -443,7 +445,7 @@ public static class ContentCreatorEndpoints
         var exercise = await db.Exercises.FindAsync(id);
         if (exercise == null) return Results.NotFound();
 
-        if (exercise.UserId != claim.GetUserId() && !claim.IsInRole("Admin"))
+        if ((exercise.UserId != claim.GetUserId() || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
         db.Exercises.Remove(exercise);

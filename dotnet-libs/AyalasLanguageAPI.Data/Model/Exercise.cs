@@ -34,5 +34,6 @@ namespace AyalasLanguageAPI.Data.Model
         [DeleteBehavior(DeleteBehavior.SetNull)]
         public virtual Exercise? SourceExercise { get; set; }
         public virtual ICollection<Exercise> ChildExercises { get; set; } = new List<Exercise>();
+        public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
     }
 }

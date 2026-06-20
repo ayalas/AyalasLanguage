@@ -61,6 +61,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ExerciseId"));
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Data")
                         .IsRequired()
                         .HasMaxLength(8192)
@@ -496,6 +499,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
 
                     b.Property<decimal>("Chapter")
                         .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("KnownLanguageId")
                         .HasColumnType("int");
