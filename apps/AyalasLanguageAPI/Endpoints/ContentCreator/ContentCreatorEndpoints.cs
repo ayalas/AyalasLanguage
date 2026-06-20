@@ -182,7 +182,7 @@ public static class ContentCreatorEndpoints
             Name = dto.Name,
             PrevLearningPathId = dto.PrevLearningPathId,
             NextLearningPathId = nextToUpdate,
-            Status = 1, // Default to active/published
+            Status = (int)ContentStatusEnum.Draft, // Default to draft
             UserId = userId
         };
 

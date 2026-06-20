@@ -10,3 +10,12 @@ export const EXERCISE_TYPES =
   } as const;
 
 export type ExerciseType = typeof EXERCISE_TYPES[keyof typeof EXERCISE_TYPES];
+
+export const CONTENT_STATUS =
+  {
+    DRAFT: 0,
+    APPROVED: 1,
+    REMOVED: 2
+  } as const;
+
+export type ContentStatus = typeof CONTENT_STATUS[keyof typeof CONTENT_STATUS];

@@ -68,7 +68,7 @@ public static class LearningEndpoints
             .FirstOrDefaultAsync());
     }
 
-    private static async Task<IResult> GetLearningPath(ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> GetLearningPath(ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
 
@@ -83,8 +83,7 @@ public static class LearningEndpoints
         int languageId = user.TargetLanguageId.Value;
 
         var learningPathsWithStatus = await db.LearningPaths
-    .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value
-    && lp.Status != (byte)ContentStatusEnum.Removed)
+    .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value)
     // 1. Correlate LearningPaths with the user's specific progress records
     .GroupJoin(
         db.UserProgresses.Where(up => up.UserId == userId),
@@ -101,6 +100,7 @@ public static class LearningEndpoints
             x.lp.Level,
             x.lp.Chapter,
             x.lp.Name,
+            (ContentStatusEnum)x.lp.Status,
             // EF9 translates this conditional tree perfectly into a SQL CASE WHEN statement
             up == null
                 ? (byte)UserProgressEnum.NotStarted
@@ -127,14 +127,15 @@ public static class LearningEndpoints
 
             while (pathMap.TryGetValue(currentPrevId, out var nextPath))
             {
-                sortedPaths.Add(nextPath);
+                if (nextPath.ContentStatus != ContentStatusEnum.Removed)
+                    sortedPaths.Add(nextPath);
                 currentPrevId = nextPath.LearningPathId; // Move to the next link in the chain
             }
-
             return Results.Ok(sortedPaths);
         }
-        catch
+        catch(Exception ex)
         {
+            logger.LogError(ex, "Error retrieving learning path for user {userId} for language {languageId}", userId, user.TargetLanguageId);
             // If there's a cycle or missing link, just return the unsorted list
             return Results.Ok(learningPathsWithStatus);
         }

@@ -49,6 +49,7 @@ public static class AdminEndpoints
         adminAPIsecured.MapGet("/learning-paths/{page:int}", GetLearningPaths);
         adminAPIsecured.MapGet("/learning-path/{learningPathId:int}", GetSingleLearningPath);
         adminAPIsecured.MapGet("/learning-path/{learningPathId:int}/exercises/{page:int}", GetLearningPathExercises);
+        adminAPIsecured.MapPost("/setpathstatus", SetLearningPathStatus);
     }
 
     private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
@@ -276,7 +277,8 @@ public static class AdminEndpoints
 
         var arr = await db.Exercises
             .Include(e => e.User)
-            .Include(lp => lp.LearningPath)
+            .Include(e => e.LearningPath)
+            .Include(e => e.ExerciseType)
             .Where( e => e.LearningPathId == learningPathId)
             .OrderByDescending(e => e.ExerciseId)
             .Select(e => new AdminExerciseRowDto(
@@ -287,6 +289,8 @@ public static class AdminEndpoints
             e.LearningPath != null && languages != null? 
                 languages.First(l=> l.LanguageId == e.LearningPath.TargetLanguageId).EnglishName : null,
             e.Data,
+            e.ExerciseTypeId,
+            e.ExerciseType.Name,
             e.CreatedOn,
             e.LearningPathId,
             e.ExerciseId,
@@ -306,6 +310,7 @@ public static class AdminEndpoints
         var arr = await db.Exercises
             .Include(e => e.User)
             .Include(lp => lp.LearningPath)
+            .Include(e => e.ExerciseType)
             .OrderByDescending(e => e.ExerciseId)
             .Select(e => new AdminExerciseRowDto(
             e.UserId,
@@ -315,6 +320,8 @@ public static class AdminEndpoints
             e.LearningPath != null && languages != null? 
                 languages.First(l=> l.LanguageId == e.LearningPath.TargetLanguageId).EnglishName : null,
             e.Data,
+            e.ExerciseTypeId,
+            e.ExerciseType.Name,
             e.CreatedOn,
             e.LearningPathId,
             e.ExerciseId,
@@ -376,6 +383,20 @@ public static class AdminEndpoints
         )).FirstOrDefaultAsync( lp => lp.LearningPathId == learningPathId);
     }
 
+
+ private static async Task<IResult> SetLearningPathStatus(AdminSetLearningPathStatusRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+
+        var path = await db.LearningPaths.FirstOrDefaultAsync(lp=> lp.LearningPathId == req.LearningPathId);
+        if (path == null)
+        {
+            return Results.BadRequest("Lesson not found.");
+        }
+        path.Status = (byte)req.Status;
+        await db.SaveChangesAsync();
+        return Results.Ok();
+    }
     private static async Task<IResult> SetUserRole(AdminSetUserRoleRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
