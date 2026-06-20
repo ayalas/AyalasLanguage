@@ -159,6 +159,14 @@ input:required:invalid {
   height: 50vh;      /* line-height * line-clamp */
   white-space: normal;    /* Required for wrapping */
 }
+.medium-message-cell {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: scroll;
+  line-height: 24px;      /* Adjust based on your font */
+  height: 25vh;      /* line-height * line-clamp */
+  white-space: normal;    /* Required for wrapping */
+}
 
 .content-line-part {
   display: inline-flex;

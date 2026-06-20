@@ -18,11 +18,11 @@ export default function ExercisesGridPage() {
         { field: "name", headerName: 'Name', flex: 2, filter: true },
         {
             field: "data", headerName: 'Data', flex: 6, filter: true, editable: true, wrapText: true,
-            cellClass: 'long-message-cell',
+            cellClass: 'medium-message-cell',
             cellEditor: 'agLargeTextCellEditor',
             cellEditorParams: {
                 cols: 100,
-                rows: 18
+                rows: 8
             },
             valueSetter: () => false,
         },
@@ -82,7 +82,7 @@ export default function ExercisesGridPage() {
                 onCellValueChanged={onCellValueChanged}
                 successMessage={success}
                 errorMessage={error}
-                rowHeight={200} />
+                rowHeight={110} />
         </>
     );
 }
