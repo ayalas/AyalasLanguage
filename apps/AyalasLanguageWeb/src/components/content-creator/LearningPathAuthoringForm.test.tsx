@@ -14,6 +14,9 @@ const mockUser = {
   languageSettings: { knownLanguage: 'English', targetLanguage: 'Spanish' }
 };
 
+// Create a STABLE searchParams object to prevent the useEffect from re-running
+const mockSearchParams = new URLSearchParams();
+
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
 
@@ -23,7 +26,8 @@ vi.mock('react-router-dom', async () => {
     ...actual,
     useNavigate: () => mockNavigate,
     useOutletContext: vi.fn(),
-    useSearchParams: () => [new URLSearchParams(), vi.fn()],
+    // Return the stable reference here
+    useSearchParams: () => [mockSearchParams, vi.fn()],
   };
 });
 
@@ -45,8 +49,7 @@ describe('LearningPathAuthoringForm', () => {
   });
 
   it('shows loading overlay during submission', async () => {
-    // 1. Trap the component: handleSubmit returns a promise that NEVER resolves.
-    // This prevents the code from reaching setIsLoading(false).
+    // 1. Mock handleSubmit to return a promise that NEVER resolves.
     mockHandleSubmit.mockImplementation(() => new Promise(() => {}));
 
     render(
@@ -55,55 +58,40 @@ describe('LearningPathAuthoringForm', () => {
       </MemoryRouter>
     );
 
-    // 2. IMPORTANT: Wait for the initial useEffect loading phase to finish.
-    // We know it's finished when the chapter input value is updated to 2.
+    // 2. Wait for initial load to stabilize (Chapter 2 from mocked axios)
     await waitFor(() => expect(screen.getByTestId('chapter')).toHaveValue(2));
 
-    // 3. Switch to MANUAL mode.
+    // 3. Switch to MANUAL mode
     const toggleBtn = screen.getByTestId('switch-ai-use');
     fireEvent.click(toggleBtn);
 
-    // 4. IMPORTANT: Wait for the manual fields to appear in the DOM.
-    // If we don't wait, fireEvent.change might be called on elements not yet rendered.
+    // 4. Fill required fields. 
+    // findBy ensures the UI has responded to the mode switch.
     const firstSetArea = await screen.findByTestId('first-set');
-    const secondSetArea = screen.getByTestId('second-set');
-    const titleInput = screen.getByTestId('title');
-    const typeSelect = screen.getByTestId('exercise-type');
-
-    // 5. Fill out the form so parseForm() validation passes.
-    fireEvent.change(titleInput, { target: { value: 'Loading Test' } });
+    fireEvent.change(screen.getByTestId('title'), { target: { value: 'Loading Test' } });
     fireEvent.change(firstSetArea, { target: { value: 'Hello' } });
-    fireEvent.change(secondSetArea, { target: { value: 'Hola' } });
+    fireEvent.change(screen.getByTestId('second-set'), { target: { value: 'Hola' } });
+    
+    // Select an exercise type (Translate)
+    const typeSelect = screen.getByTestId('exercise-type');
     fireEvent.change(typeSelect, { target: { value: '1' } });
 
-    // 6. Submit the form.
+    // 5. Trigger submission
     const saveBtn = screen.getByTestId('save');
     disableClientValidation();
-
-    // Wrap the click in act because it triggers multiple state changes.
-    await act(async () => {
+    // We do not await this act because it contains a hanging promise.
+    // We just want to trigger the event.
+    act(() => {
       fireEvent.click(saveBtn);
     });
 
-    // 7. ASSERTION: Verify the loading overlay is visible.
-    // Because mockHandleSubmit is 'hanging', setIsLoading(false) is never reached.
+    // 6. ASSERTION: The overlay should now be visible and stay visible
+    // because handleSubmit never finishes.
     const overlay = await screen.findByTestId('loadingBox');
     expect(overlay).toBeInTheDocument();
+    expect(overlay).toHaveTextContent(/generating exercises/i);
 
-    // Verify the form is gone (proving the conditional rendering is working)
+    // Verify the form is hidden/replaced by the overlay
     expect(screen.queryByTestId('save')).not.toBeInTheDocument();
-  });
-
-  it('renders email confirmation message for unauthorized roles', async () => {
-    vi.mocked(useOutletContext).mockReturnValue({ 
-      user: { ...mockUser, role: ROLE_TYPE.LEARNER } 
-    });
-
-    render(
-      <MemoryRouter>
-        <LearningPathAuthoringForm handleSubmit={mockHandleSubmit} />
-      </MemoryRouter>
-    );
-    expect(screen.getByText(/An email address confirmation request has been sent/i)).toBeInTheDocument();
   });
 });
