@@ -61,24 +61,26 @@ namespace AyalasLanguageAPI.Routing
                 return null;
             }
 
-            // Check three possible locations
-            var pathsToTry = new[] {
+            // List of potential full paths to check
+            var pathsToTry = new[]
+            {
                 Path.Combine(rootPath, relAppPath),
                 Path.Combine(AppContext.BaseDirectory, relAppPath),
-                Path.GetFullPath(relAppPath) // Absolute path check
+                Path.GetFullPath(relAppPath)
             };
 
             foreach (var path in pathsToTry)
             {
-                logger.LogInformation("Checking for {ConfigKey} at: {Path}", configKey, path);
+                logger.LogInformation("Looking for {key} at: {path}", configKey, path);
                 if (Directory.Exists(path))
                 {
-                    logger.LogInformation("FOUND {ConfigKey} at: {Path}", configKey, path);
+                    logger.LogInformation("SUCCESS: Found {key} at {path}", configKey, path);
                     return new PhysicalFileProvider(path);
                 }
             }
 
-            logger.LogError("COULD NOT FIND directory for {ConfigKey}. Checked: {Paths}", configKey, string.Join(", ", pathsToTry));
+            logger.LogError("FAILURE: Could not find directory for {key}. Checked: {paths}",
+                configKey, string.Join(", ", pathsToTry));
             return null;
         }
 
