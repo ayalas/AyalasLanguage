@@ -9,14 +9,6 @@ $distAdminSource   = "$webRoot/admin"
 $timestamp    = Get-Date -Format "yyyyMMdd-HHmmss"
 $zipFileName  = "AyalasLanguageV$timestamp.zip"
 
-# 2. Build Backend (API)
-Write-Host "Building Backend API..." -ForegroundColor Cyan
-Set-Location $apiRoot
-dotnet restore
-dotnet publish -c Release /p:UseAppHost=false
-Set-Location ..
-Set-Location ..
-
 pnpm install
 if ($LASTEXITCODE -ne 0) { throw "pnpm install failed" }
 
@@ -27,31 +19,39 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 pnpm turbo build
-if ($LASTEXITCODE -ne 0) { throw "Frontends build failed" }
+if ($LASTEXITCODE -ne 0) { throw "Build failed" }
+
+# 2. Publish Backend (API)
+Write-Host "Publishing Backend API..." -ForegroundColor Cyan
+Set-Location $apiRoot
+dotnet restore
+dotnet publish -c Release /p:UseAppHost=false
+Set-Location ..
+Set-Location ..
 
 function Copy-Frontend {
     param (
         [string]$DisplayName,
         [string]$FrontendWebRoot,
-        [string]$TargetPath
+        [string]$SourcePath
     )
     # Copy API Dist to Web Publish Directory
     Write-Host "Copying API dist to $DisplayName static files serving folder..." -ForegroundColor Cyan
-    if (Test-Path $TargetPath) {
-        Copy-Item -Path $TargetPath -Destination $publishDir -Recurse -Force
+    if (Test-Path $SourcePath) {
+        Copy-Item -Path $SourcePath -Destination $publishDir -Recurse -Force
     } else {
-        Write-Error "Source directory $TargetPath does not exist!"
+        Write-Error "Source directory $SourcePath does not exist!"
         exit 1
     }
 }
 
-# 3. Build Frontend (Web)
-Copy-Frontend -DisplayName "Public Frontend" -FrontendWebRoot $webRoot -TargetPath $distSource
+# 3. Copy Frontend (Web) to dotnet publish folder
+Copy-Frontend -DisplayName "Public Frontend" -FrontendWebRoot $webRoot -SourcePath $distSource
 
-# 4. Build Admin Frontend (WebAdmin)
-Copy-Frontend -DisplayName "Admin Frontend" -FrontendWebRoot $adminRoot -TargetPath $distAdminSource
+# 4. Copy Admin Frontend (WebAdmin) to dotnet publish folder
+Copy-Frontend -DisplayName "Admin Frontend" -FrontendWebRoot $adminRoot -SourcePath $distAdminSource
 
-# 5. Compress Published Files for a linux based machine
+# 5. Compress Published Files for a linux based machine (using backlashes for paths)
 Write-Host "Creating deployment zip archive..." -ForegroundColor Cyan
 if (Test-Path $publishDir) {
     # 1. CRITICAL: Convert relative path to an absolute path so the substring math works

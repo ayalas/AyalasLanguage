@@ -23,19 +23,13 @@ cert\localhost+2-key.pem
 cert\localhost+2.pem
 cert\langapp_local.pfx
 
-For the backend, inside AyalasLanguageAPI, run:
-dotnet build
+In the root folder, run:
+pnpm install
 
 and then:
-dotnet run
+torbu run
 
-Inside the frontend's folder, AyalasLanguageWeb run in the command line:
-npm install
-
-and then:
-npm run dev
-
-Browse to the url provided by vite http://localhost:5097
+Browse to the url provided by vite https://localhost:5174
 
 ## Https support
 As a prerequisite for staging a development environment, there is a need to support HTTPS, since this project uses Puter ai which requires https.
@@ -122,6 +116,8 @@ then, to start the container with an external volume for the db, run:
 docker run -d -p [::1]:8080:8080 -e ASPNETCORE_HTTP_PORTS=8080 --name ayalas-language-app -v ayalas-language-db:/app/data ayalas-language-app:latest
 
 Then, browse to http://localhost:8080
+
+UPDATE: the docker script is out of sync at the moment.
 
 ## Publish to an AWS Beanstalk environment, MySQL database enabled, with a powershell script
 

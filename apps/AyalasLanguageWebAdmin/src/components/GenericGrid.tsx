@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { AllCommunityModule, type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
 import { AgGridProvider } from 'ag-grid-react';
 import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
-import { AuthHeader } from './auth/AuthHeader';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
 import { PAGE_SIZE } from '../constants/admin';
