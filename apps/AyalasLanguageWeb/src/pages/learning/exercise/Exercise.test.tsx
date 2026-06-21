@@ -100,7 +100,10 @@ describe('Exercise Component', () => {
         await user.type(input, 'salut'); // 3. Use await user.type
 
         const checkBtn = await screen.findByTestId('check-my-answers');
-        await user.click(checkBtn);
+        await act(async () => {
+            await user.click(checkBtn);
+        });
+        
 
         const revealBtn = await screen.findByTestId('reveal-answer');
         await user.click(revealBtn);

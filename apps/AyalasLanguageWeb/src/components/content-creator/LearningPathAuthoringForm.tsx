@@ -412,7 +412,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             )}
             {isLoading && (
               <div className="loadingOverlay">
-                <div className="loadingBox">
+                <div data-testid="loadingBox" className="loadingBox">
                   Generating exercises...
                 </div>
               </div>
