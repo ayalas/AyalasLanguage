@@ -49,7 +49,6 @@ describe('LearningPathAuthoringForm', () => {
   });
 
   it('shows loading overlay during submission', async () => {
-    // 1. Mock handleSubmit to return a promise that NEVER resolves.
     mockHandleSubmit.mockImplementation(() => new Promise(() => {}));
 
     render(
@@ -58,40 +57,49 @@ describe('LearningPathAuthoringForm', () => {
       </MemoryRouter>
     );
 
-    // 2. Wait for initial load to stabilize (Chapter 2 from mocked axios)
+    // 1. Wait for initial stability
     await waitFor(() => expect(screen.getByTestId('chapter')).toHaveValue(2));
 
-    // 3. Switch to MANUAL mode
-    const toggleBtn = screen.getByTestId('switch-ai-use');
-    fireEvent.click(toggleBtn);
+    // 2. Switch to MANUAL mode
+    fireEvent.click(screen.getByTestId('switch-ai-use'));
 
-    // 4. Fill required fields. 
-    // findBy ensures the UI has responded to the mode switch.
+    // 3. Fill the form
+    // We fill all fields to ensure parseForm passes regardless of ExerciseType logic
     const firstSetArea = await screen.findByTestId('first-set');
     fireEvent.change(screen.getByTestId('title'), { target: { value: 'Loading Test' } });
     fireEvent.change(firstSetArea, { target: { value: 'Hello' } });
     fireEvent.change(screen.getByTestId('second-set'), { target: { value: 'Hola' } });
     
-    // Select an exercise type (Translate)
     const typeSelect = screen.getByTestId('exercise-type');
     fireEvent.change(typeSelect, { target: { value: '1' } });
 
-    // 5. Trigger submission
+    // If "Translate" (type 1) requires extra options, provide them
+    const extraOptions = screen.queryByTestId('extra-options');
+    if (extraOptions) {
+      fireEvent.change(extraOptions, { target: { value: 'Wrong Option' } });
+    }
+
+    // 4. Submit
     const saveBtn = screen.getByTestId('save');
     disableClientValidation();
-    // We do not await this act because it contains a hanging promise.
-    // We just want to trigger the event.
     act(() => {
       fireEvent.click(saveBtn);
     });
 
-    // 6. ASSERTION: The overlay should now be visible and stay visible
-    // because handleSubmit never finishes.
+    // 5. ASSERTIONS
+    
+    // A) The loading box should appear
     const overlay = await screen.findByTestId('loadingBox');
     expect(overlay).toBeInTheDocument();
     expect(overlay).toHaveTextContent(/generating exercises/i);
 
-    // Verify the form is hidden/replaced by the overlay
-    expect(screen.queryByTestId('save')).not.toBeInTheDocument();
+    // B) The Save button remains in DOM but is DISABLED (based on your JSX)
+    expect(screen.getByTestId('save')).toBeDisabled();
+
+    // C) The inputs section should be GONE (this proves the conditional render worked)
+    // We use queryBy because we expect them to be null
+    expect(screen.queryByTestId('level')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('first-set')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('title')).not.toBeInTheDocument();
   });
 });
