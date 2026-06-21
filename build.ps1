@@ -5,7 +5,7 @@ $webRoot      = "./apps/AyalasLanguageWeb"
 $adminRoot      = "./apps/AyalasLanguageWebAdmin"
 $publishDir   = "$apiRoot/bin/Release/net9.0/publish"
 $distSource   = "$webRoot/dist"
-$distAdminSource   = "$webRoot/admin"
+$distAdminSource   = "$adminRoot/admin"
 $timestamp    = Get-Date -Format "yyyyMMdd-HHmmss"
 $zipFileName  = "AyalasLanguageV$timestamp.zip"
 
