@@ -4,7 +4,7 @@ import { AccountPage } from './AccountPage';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
 import { checkPasswordStrength, generatePasswordFeedback } from '../../utils/utils';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // 1. Mock External Dependencies
 vi.mock('axios');
@@ -25,10 +25,14 @@ vi.mock('../../utils/utils', () => ({
         message: 'Password too weak!',
         missing: ['uppercase', 'number']
     })),
-    errorHandler: vi.fn((err: any, setError: (msg: string) => void) =>
+}));
+
+vi.mock('@ayalaslanguage/types/error', () => ({
+  errorHandler: vi.fn((err: any, setError: (msg: string) => void) =>
         setError(err.message || 'An error occurred')
     ),
 }));
+
 
 // Mock child components to keep the test focused
 vi.mock('../../components/auth/AuthHeader', () => ({

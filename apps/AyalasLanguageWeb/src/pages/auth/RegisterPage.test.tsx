@@ -5,7 +5,7 @@ import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { RegisterPage } from './RegisterPage'; // Adjust path if necessary
 import { isValidEmail, checkPasswordStrength, generatePasswordFeedback } from '../../utils/utils';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock lucide-react to avoid any icon rendering issues
 vi.mock('lucide-react', () => ({
@@ -29,6 +29,9 @@ vi.mock('../../utils/utils', () => ({
   isValidEmail: vi.fn(),
   checkPasswordStrength: vi.fn(),
   generatePasswordFeedback: vi.fn(),
+}));
+
+vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn(),
 }));
 

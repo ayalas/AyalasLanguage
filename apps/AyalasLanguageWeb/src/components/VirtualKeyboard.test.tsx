@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
 import VirtualKeyboard from './VirtualKeyboard';
-import disableClientValidation from '../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // 1. Mock Axios
 vi.mock('axios');

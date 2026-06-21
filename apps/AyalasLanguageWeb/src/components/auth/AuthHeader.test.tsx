@@ -4,7 +4,7 @@ import { AuthHeader } from './AuthHeader'; // Adjust path as needed
 import { MemoryRouter, useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { switchLanguage } from '../../utils/languageUtils';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
 
 
@@ -26,7 +26,7 @@ vi.mock('../../utils/languageUtils', () => ({
   switchLanguage: vi.fn(),
 }));
 
-vi.mock('../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn((_err, cb) => cb('Mock Error')),
 }));
 

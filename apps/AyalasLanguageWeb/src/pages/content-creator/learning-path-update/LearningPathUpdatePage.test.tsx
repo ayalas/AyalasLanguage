@@ -4,7 +4,7 @@ import axios from 'axios';
 import { MemoryRouter, useNavigate, useParams } from 'react-router-dom';
 import { LearningPathUpdatePage } from './LearningPathUpdatePage';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
-import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios
 vi.mock('axios');

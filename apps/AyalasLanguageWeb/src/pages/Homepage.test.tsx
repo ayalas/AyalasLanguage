@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
 import Homepage from './Homepage'; // Adjust path as needed
 import { LEANRING_STATUS } from '../constants/learning';
-import disableClientValidation from '../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios
 vi.mock('axios');

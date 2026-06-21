@@ -12,7 +12,10 @@ const mockedAxios = vi.mocked(axios);
 // 2. Mock the Utils module
 vi.mock("../../utils/utils", () => ({
     isValidEmail: vi.fn(),
-    errorHandler: vi.fn(),
+}));
+
+vi.mock('@ayalaslanguage/types/error', () => ({
+  errorHandler: vi.fn(),
 }));
 
 // 3. Mock Child Components (to keep the test focused)

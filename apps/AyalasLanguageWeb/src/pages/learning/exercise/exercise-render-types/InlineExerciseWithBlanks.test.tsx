@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React, { createRef } from 'react';
 import { InlineExerciseWithBlanks } from './InlineExerciseWithBlanks';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
-import disableClientValidation from '../../../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { type ExerciseData, type ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
 import { PLACEHOLDERS } from '../../../../constants/learning';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';

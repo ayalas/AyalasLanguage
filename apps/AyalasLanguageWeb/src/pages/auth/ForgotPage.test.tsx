@@ -4,7 +4,7 @@ import { ForgotPage } from './ForgotPage';
 import axios from 'axios';
 import { MemoryRouter } from 'react-router-dom';
 import * as utils from '../../utils/utils';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
 // Mock axios
@@ -13,8 +13,11 @@ const mockedAxios = vi.mocked(axios);
 
 // Mock the utils
 vi.mock('../../utils/utils', () => ({
-    errorHandler: vi.fn(),
     isValidEmail: vi.fn(),
+}));
+
+vi.mock('@ayalaslanguage/types/error', () => ({
+  errorHandler: vi.fn(),
 }));
 
 // Mock Lucide icons to avoid rendering complexities

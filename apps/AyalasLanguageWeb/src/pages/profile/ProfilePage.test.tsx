@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { ProfilePage } from './ProfilePage';
 import { switchLanguage } from '../../utils/languageUtils';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios
 vi.mock('axios');
@@ -26,8 +26,8 @@ vi.mock('../../utils/languageUtils', () => ({
   reloadLanguageSettings: vi.fn(),
 }));
 
-vi.mock('../../utils/utils', () => ({
-  errorHandler: vi.fn((cb) => cb('Mocked Error Message')),
+vi.mock('@ayalaslanguage/types/error', () => ({
+  errorHandler: vi.fn((_err, setError) => setError('Mocked Error Message')),
 }));
 
 // Mock Lucide icons to avoid cluttering snapshots/logs

@@ -6,7 +6,7 @@ import axios from 'axios';
 import { createRef } from 'react';
 import { type ExerciseData, type ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
-import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import userEvent from '@testing-library/user-event'; // 1. Import userEvent
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
@@ -40,6 +40,7 @@ vi.mock('@heyputer/puter.js', () => ({
 vi.mock('../../../utils/utils', () => ({
     initializePuter: vi.fn(() => false),
     isSecure: vi.fn(() => true),
+    isTouchDevice: vi.fn(() => false),
     getRandomizedSequence: vi.fn((len) => Array.from({ length: len }, (_, i) => i)),
 }));
 

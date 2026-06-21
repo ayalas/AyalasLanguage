@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from "vitest";
 import axios from "axios";
 import { ContactUsAuthenticatedUserPage } from "./ContactUsAuthenticatedUserPage";
 import { errorHandler } from '@ayalaslanguage/types/error';
-import disableClientValidation from "../../utils/test-utils/disableClientValidation";
+import disableClientValidation from "@ayalaslanguage/types/test-utils";
 
 // Mocking axios as requested
 vi.mock('axios');
@@ -14,8 +14,8 @@ vi.mock("../../components/auth/AuthHeader", () => ({
     AuthHeader: () => <div data-testid="mock-auth-header">Auth Header</div>,
 }));
 
-vi.mock("../../utils/utils", () => ({
-    errorHandler: vi.fn(),
+vi.mock('@ayalaslanguage/types/error', () => ({
+  errorHandler: vi.fn(),
 }));
 
 describe("ContactUsAuthenticatedUserPage", () => {

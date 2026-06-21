@@ -6,7 +6,8 @@
     "./log": "./src/log.ts",
     "./exercise": "./src/exercise.ts",
     "./auth": "./src/auth.ts",
-    "./error": "./src/error.ts"
+    "./error": "./src/error.ts",
+    "./test-utils": "./src/test-utils/disableClientValidation.ts"
   },
   "devDependencies": {
     "axios": "^1.18.0"

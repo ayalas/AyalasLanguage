@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { ExerciseLine } from './ExerciseLine';
 import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
@@ -24,7 +24,8 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock errorHandler utility
-vi.mock('../../../utils/utils', () => ({
+
+vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn((_err, setError) => setError('Mocked Error Message')),
 }));
 

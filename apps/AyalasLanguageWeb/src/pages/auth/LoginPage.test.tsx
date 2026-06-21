@@ -7,7 +7,7 @@ import axios from 'axios';
 import { useAuth } from '../../components/auth/useAuth';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import LoginPage from './LoginPage'; // Adjust this path to match your actual file structure
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import type { AuthContextType } from '@ayalaslanguage/types/auth';
 import type { User } from '../../types/shared/User';
 
@@ -36,7 +36,7 @@ vi.mock('../../components/auth/useAuth', () => ({
   useAuth: vi.fn(),
 }));
 
-vi.mock('../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn(),
 }));
 

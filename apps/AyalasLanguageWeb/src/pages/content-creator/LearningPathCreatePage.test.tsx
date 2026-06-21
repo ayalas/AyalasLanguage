@@ -4,7 +4,7 @@ import axios from 'axios';
 import { MemoryRouter, useNavigate, useSearchParams } from 'react-router-dom';
 import { LearningPathCreatePage } from './LearningPathCreatePage'; // Adjust path as necessary
 import { LearningPathAuthoringForm } from '../../components/content-creator/LearningPathAuthoringForm';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mocking axios as requested
 vi.mock('axios');
@@ -25,7 +25,7 @@ vi.mock('../../components/auth/AuthHeader', () => ({
   AuthHeader: () => <div data-testid="auth-header">Auth Header</div>,
 }));
 
-vi.mock('../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn(),
 }));
 

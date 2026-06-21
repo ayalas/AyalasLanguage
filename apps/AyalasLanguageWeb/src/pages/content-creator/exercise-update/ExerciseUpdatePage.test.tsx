@@ -4,7 +4,7 @@ import { ExerciseUpdatePage } from "./ExerciseUpdatePage"; // Adjust path
 import axios from "axios";
 import { MemoryRouter, useNavigate, useParams } from "react-router-dom";
 import { type ExerciseData, type ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
-import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 

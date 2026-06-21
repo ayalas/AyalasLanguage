@@ -5,7 +5,7 @@ import React from 'react';
 import { MemoryRouter, useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { LessonPage } from './LessonPage';
 import { type ExerciseData, type ExerciseInfo } from '../../types/exercise/Exercise';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 

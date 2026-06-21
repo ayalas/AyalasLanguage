@@ -2,7 +2,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { ResetPasswordPage } from './ResetPasswordPage';
 import * as utils from '../../utils/utils';
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -26,7 +26,10 @@ vi.mock('lucide-react', () => ({
 vi.mock('../../utils/utils', () => ({
     checkPasswordStrength: vi.fn(),
     generatePasswordFeedback: vi.fn(),
-    errorHandler: vi.fn(),
+}));
+
+vi.mock('@ayalaslanguage/types/error', () => ({
+  errorHandler: vi.fn(),
 }));
 
 const mockedCheckPasswordStrength = vi.mocked(utils.checkPasswordStrength);

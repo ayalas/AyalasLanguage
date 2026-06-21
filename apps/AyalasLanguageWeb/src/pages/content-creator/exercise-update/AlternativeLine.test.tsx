@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { createRef } from "react";
 import { AlternativeLine } from "./AlternativeLine"; // Adjust path as needed
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
-import disableClientValidation from '../../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios
 vi.mock("axios");

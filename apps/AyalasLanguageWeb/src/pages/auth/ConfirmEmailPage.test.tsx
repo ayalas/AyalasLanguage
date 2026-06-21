@@ -8,7 +8,7 @@ import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
 
 // 1. Mock external dependencies
 vi.mock('axios');
-vi.mock('../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn((_err, setError) => setError('Mocked error message')),
 }));
 

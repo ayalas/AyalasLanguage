@@ -27,7 +27,7 @@ In the root folder, run:
 pnpm install
 
 and then:
-torbu run
+turbo run
 
 Browse to the url provided by vite https://localhost:5174
 

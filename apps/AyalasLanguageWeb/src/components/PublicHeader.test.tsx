@@ -2,11 +2,12 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { vi, describe, it, expect } from 'vitest';
 import { PublicHeader } from './PublicHeader'; // Adjust the import path as necessary
-import disableClientValidation from '../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock lucide-react icons
 vi.mock('lucide-react', () => ({
     Mail: () => <div data-testid="mail-icon" />,
+    SquareMenu: () => <div data-testid="square-icon" />,
 }));
 
 // Mock the image asset

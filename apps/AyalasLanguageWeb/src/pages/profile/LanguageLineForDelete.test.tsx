@@ -4,14 +4,14 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import type { User } from '../../types/shared/User';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios as requested
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
 
 // Mock the errorHandler utility to ensure it returns a string and doesn't cause [object Object]
-vi.mock('../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn()
 }));
 

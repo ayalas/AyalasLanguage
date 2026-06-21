@@ -4,7 +4,7 @@ import { LearningPathAuthoringForm } from './LearningPathAuthoringForm'; // Adju
 import axios from 'axios';
 import * as router from 'react-router-dom';
 import { downloadFile } from '../../utils/utils';
-import disableClientValidation from '../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
@@ -47,9 +47,13 @@ vi.mock('react-router-dom', async () => {
 vi.mock('../../utils/utils', () => ({
   removeLastCharIfMatch: vi.fn((str) => str?.endsWith(';') ? str.slice(0, -1) : str),
   downloadFile: vi.fn(),
-  errorHandler: vi.fn(),
   initializePuter: vi.fn(() => false)
 }));
+
+vi.mock('@ayalaslanguage/types/error', () => ({
+  errorHandler: vi.fn((_err, cb) => cb('Mock Error')),
+}));
+
 
 // Mock Constants (Optional: only if they aren't available in the test env)
 // Note: We use the real constants here since they are typically objects/arrays

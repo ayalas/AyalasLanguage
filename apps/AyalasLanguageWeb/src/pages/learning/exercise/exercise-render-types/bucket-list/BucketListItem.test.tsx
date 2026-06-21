@@ -1,7 +1,7 @@
 import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import BucketListItem from './BucketListItem';
-import disableClientValidation from '../../../../../utils/test-utils/disableClientValidation';
+import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios as requested
 vi.mock('axios');
