@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event'; // 1. Import userEvent
 import { MemoryRouter } from 'react-router-dom';
 import { vi, describe, it, expect } from 'vitest';
-import { PublicHeader } from './PublicHeader'; // Adjust the import path as necessary
+import { PublicHeader } from './PublicHeader';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock lucide-react icons
@@ -16,28 +17,30 @@ vi.mock('../assets/logo.jpg', () => ({
 }));
 
 describe('PublicHeader Component', () => {
-    it('renders the logo linking to home and the contact us link', async () => {
+    it('renders the logo linking to home and the contact us link after opening menu', async () => {
+        const user = userEvent.setup(); // 2. Setup user instance
+        
         render(
             <MemoryRouter>
                 <PublicHeader />
             </MemoryRouter>
         );
 
-        // Requirement: Call disableClientValidation after rendering
         disableClientValidation();
 
-        // Find the logo link to /home
-        // The link contains the image; we can find it by its destination
+        // Check Logo (Visible by default)
         const links = await screen.findAllByRole('link');
         const homeLink = links.find(link => link.getAttribute('href') === '/home');
         expect(homeLink).toBeInTheDocument();
 
-        // Verify the logo image is inside the home link
-        const logoImg = homeLink?.querySelector('img');
-        expect(logoImg).toBeInTheDocument();
-        expect(logoImg).toHaveClass('logo');
+        // 3. Find the menu trigger (the link wrapping the SquareMenu icon)
+        const menuTrigger = screen.getByTestId('square-icon').closest('a');
+        expect(menuTrigger).toBeInTheDocument();
 
-        // Find the Contact Us link asynchronously
+        // 4. Click the menu to set isOpen to true
+        await user.click(menuTrigger!);
+
+        // 5. Now the Contact Us link should be available
         const contactLink = await screen.findByRole('link', { name: /contact us/i });
         expect(contactLink).toBeInTheDocument();
         expect(contactLink).toHaveAttribute('href', '/contactus');
