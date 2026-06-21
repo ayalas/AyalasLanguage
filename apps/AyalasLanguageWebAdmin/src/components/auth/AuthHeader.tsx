@@ -22,7 +22,7 @@ export function AuthHeader() {
     try {
       await axios.post('/admin/api/auth/logout');
       logout?.();
-      navigate('/admin/');
+      navigate('/');
     }
     catch (err) {
       errorHandler(err, setError);
@@ -33,14 +33,14 @@ export function AuthHeader() {
     <>
       <div className="header-row">
         <div className="header-title">
-          <Link className="header-app-link" to="/admin/home"><img className="logo" src={imgLogo} /></Link>
+          <Link className="header-app-link" to="/home"><img className="logo" src={imgLogo} /></Link>
         </div>
         <div className="header-links">
-          <div className="header-link"><Link to="/admin/exercises" data-testid="exercises" className="link-button" >Exercises</Link></div>
-          <div className="header-link"><Link to="/admin/paths" data-testid="paths" className="link-button" >Lessons</Link></div>
-          <div className="header-link"><Link to="/admin/log" data-testid="log" className="link-button" >Log</Link></div>
-          <div className="header-link"><Link to="/admin/contactus" data-testid="contactus" className="link-button" >Contact Us</Link></div>
-          <div className="header-link"><Link to="/admin/users" data-testid="users" className="link-button" >Users</Link></div>
+          <div className="header-link"><Link to="/exercises" data-testid="exercises" className="link-button" >Exercises</Link></div>
+          <div className="header-link"><Link to="/paths" data-testid="paths" className="link-button" >Lessons</Link></div>
+          <div className="header-link"><Link to="/log" data-testid="log" className="link-button" >Log</Link></div>
+          <div className="header-link"><Link to="/contactus" data-testid="contactus" className="link-button" >Contact Us</Link></div>
+          <div className="header-link"><Link to="/users" data-testid="users" className="link-button" >Users</Link></div>
           <div className="header-link"><button data-testid="logout" className="form-button" type="button" onClick={logoutAction}><LogOut /> Log out</button></div>
         </div>
       </div>

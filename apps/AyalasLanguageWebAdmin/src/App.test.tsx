@@ -238,9 +238,9 @@ describe('Admin Console Tests', () => {
 
       render(
         <AuthProvider>
-          <MemoryRouter initialEntries={['/admin/path/5']}>
+          <MemoryRouter initialEntries={['/path/5']}>
             <Routes>
-              <Route path="/admin/path/:learningPathId" element={<LearningPathPage />} />
+              <Route path="/path/:learningPathId" element={<LearningPathPage />} />
             </Routes>
           </MemoryRouter>
         </AuthProvider>

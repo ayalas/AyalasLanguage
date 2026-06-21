@@ -26,21 +26,21 @@ function App() {
   
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/admin">
         <Routes>
           {/* Public Routes */}
-          <Route path="/admin/" element={<LandingPage />} />
-          <Route path="/admin/login" element={<LoginPage />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
     
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/admin/home" element={<Homepage />} />
-            <Route path="/admin/users" element={<UsersPage />} />
-            <Route path="/admin/contactus" element={<ContactUsGridPage />} />
-            <Route path="/admin/log" element={<LogGridPage />} />
-            <Route path="/admin/paths" element={<LearningPathsGridPage />} />
-            <Route path="/admin/exercises" element={<ExercisesGridPage />} />
-            <Route path="/admin/path/:learningPathId" element={<LearningPathPage />} />
+            <Route path="/home" element={<Homepage />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/contactus" element={<ContactUsGridPage />} />
+            <Route path="/log" element={<LogGridPage />} />
+            <Route path="/paths" element={<LearningPathsGridPage />} />
+            <Route path="/exercises" element={<ExercisesGridPage />} />
+            <Route path="/path/:learningPathId" element={<LearningPathPage />} />
           </Route>
 
           {/* Fallback 404 Route */}

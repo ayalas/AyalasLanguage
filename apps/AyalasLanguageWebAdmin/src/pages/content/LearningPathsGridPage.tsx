@@ -28,7 +28,7 @@ export default function LearningPathsGridPage() {
             cellRenderer: GridLinkCell<IRowLearningPath>,
             cellRendererParams: {
                 getLinkCallback: (data: IRowLearningPath) => {
-                    return `/admin/path/${data.learningPathId}`;
+                    return `/path/${data.learningPathId}`;
                 },
                 getTitleCallback: (data: IRowLearningPath) => {
                     return data.name;

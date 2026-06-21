@@ -31,7 +31,7 @@ export default function ExercisesGrid(props: Props) {
             cellRenderer: GridLinkCell<IRowExercise>,
             cellRendererParams: {
                 getLinkCallback: (data: IRowExercise) => {
-                    return learningPathId == data.learningPathId ? "#" : `/admin/path/${data.learningPathId}`;
+                    return learningPathId == data.learningPathId ? "#" : `/path/${data.learningPathId}`;
                 },
                 getTitleCallback: (data: IRowExercise) => {
                     return data.name;

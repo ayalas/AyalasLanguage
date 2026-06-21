@@ -6,7 +6,7 @@ import { AgGridProvider } from 'ag-grid-react';
 import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
-import { PAGE_SIZE } from '../constants/admin';
+import { PAGE_SIZE } from '../constants';
 import type { AdminGridResponse } from '../types/grids/grids';
 import { GridPager } from './GridPager';
 

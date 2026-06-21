@@ -16,7 +16,7 @@ const ProtectedRoute: React.FC = () => {
     return <Outlet context={{ user, logout, login }} />;
   }
 
-  return <Navigate to="/admin/login" state={{ from: location }} replace />;
+  return <Navigate to="/login" state={{ from: location }} replace />;
 };
 
 export default ProtectedRoute;
