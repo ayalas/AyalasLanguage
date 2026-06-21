@@ -17,78 +17,11 @@ public static class StaticEndpoints
         var staticData = app.MapGroup("/api/static")
             .AddEndpointFilter<ErrorLoggingFilter>().WithTags("Static")
             .RequireAuthorization(new AuthorizeAttribute
-                {
-                    AuthenticationSchemes = "PublicAuth"
-                });
+            {
+                AuthenticationSchemes = "PublicAuth"
+            });
 
         staticData.MapGet("/languages", GetLanguages);
-    }
-
-    public static void ServeStaticFiles(this WebApplication app, string rootPath, IConfiguration config)
-    {
-        var publicFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:public", app.Logger);
-        var adminFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:admin", app.Logger);
-
-        StaticFileOptions? publicStaticFileOptions = null;
-        StaticFileOptions? adminStaticFileOptions = null;
-
-        if (adminFileProvider != null)
-        {
-            app.UseDefaultFiles(new DefaultFilesOptions
-            {
-                FileProvider = adminFileProvider,
-                RequestPath = "/admin"
-            });
-
-            adminStaticFileOptions = new StaticFileOptions
-            {
-                FileProvider = adminFileProvider,
-                RequestPath = "/admin"
-            };
-
-            app.UseStaticFiles(adminStaticFileOptions);
-
-            app.MapFallbackToFile("/admin/{*path:nonfile}", "index.html", adminStaticFileOptions);
-        }
-
-        if (publicFileProvider != null)
-        {
-            app.UseDefaultFiles(new DefaultFilesOptions
-            {
-                FileProvider = publicFileProvider,
-                RequestPath = ""
-            });
-
-            publicStaticFileOptions = new StaticFileOptions
-            {
-                FileProvider = publicFileProvider,
-                RequestPath = ""
-            };
-
-            app.UseStaticFiles(publicStaticFileOptions);
-
-            app.MapFallbackToFile("index.html", publicStaticFileOptions);
-        }
-    }
-
-    private static PhysicalFileProvider? GetFileProvider(IConfiguration config, string rootPath, string configKey, ILogger logger)
-    {
-        var relAppPath = config.GetValue<string>(configKey);
-        if (relAppPath == null)
-        {
-            logger.LogWarning($"GetFileProvider for {configKey}: missing configuration value");
-            return null;
-        }
-        var appPath = Path.Combine(rootPath, relAppPath);
-
-        // Fallback check if running inside a containerized production environment
-        if (!Directory.Exists(appPath))
-        {
-            logger.LogWarning($"GetFileProvider for {configKey}: {appPath} path does not exist. Attempting to create {relAppPath} in {AppContext.BaseDirectory}");
-            appPath = Path.Combine(AppContext.BaseDirectory, relAppPath);
-        }
-
-        return new PhysicalFileProvider(appPath);
     }
 
     private static async Task<IResult> GetLanguages(AyalasLanguageDbContext db)

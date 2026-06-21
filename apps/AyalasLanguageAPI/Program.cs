@@ -6,6 +6,7 @@ using AyalasLanguageAPI.Data.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using AyalasLanguageAPI.Routing;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ builder.Services.AddMemoryCache();
 builder.AddAuthenticationSchemes();
 
 builder.Services.AddAuthorization();
+
+builder.AddRouteConstraints();
 
 var app = builder.Build();
 
