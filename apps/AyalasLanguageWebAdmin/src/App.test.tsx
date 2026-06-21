@@ -111,7 +111,7 @@ describe('Admin Console Tests', () => {
     (mockedAxios as any).defaults = { withCredentials: true };
     
     // Global GET interceptor
-    mockedAxios.get.mockImplementation((url: string) => {
+    mockedAxios.get.mockImplementation((_url: string) => {
       return Promise.resolve({ data: { data: [], numOfRecords: 0 } });
     });
   });

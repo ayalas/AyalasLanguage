@@ -19,7 +19,7 @@ vi.mock('simple-keyboard', () => {
     destroy = vi.fn();
     
     // The constructor needs to accept the arguments passed by your component
-    constructor(selector: string, options: any) {
+    constructor(_selector: string, _options: any) {
       // You can capture options here if you need to test them later
     }
   }
