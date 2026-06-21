@@ -36,6 +36,8 @@ app.UseWebSockets();
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();
 
+app.RedirectToAdminRoot(); //redirects /admin to /admin/ when serving static files
+
 app.MapAyalasLanguageEndpoints();
 
 if (!app.Environment.IsDevelopment())

@@ -10,7 +10,7 @@ namespace AyalasLanguageAPI.Routing
             var publicFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:public", app.Logger);
             var adminFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:admin", app.Logger);
 
-            // 1. ADMIN SITE
+            // --- 1. ADMIN SITE CONFIG ---
             if (adminFileProvider != null)
             {
                 var adminOptions = new StaticFileOptions
@@ -24,19 +24,21 @@ namespace AyalasLanguageAPI.Routing
                     FileProvider = adminFileProvider,
                     RequestPath = "/admin"
                 });
+
                 app.UseStaticFiles(adminOptions);
 
-                // Map fallback only for paths under /admin that are NOT files
-                app.MapFallbackToFile("/admin/{*path:nonfile}", "index.html", adminOptions);
+                // This catches /admin, /admin/, and /admin/any/sub/path
+                // We add AllowAnonymous to prevent the "AdminAuth was challenged" error
+                app.MapFallbackToFile("/admin/{**slug}", "index.html", adminOptions).AllowAnonymous();
             }
 
-            // 2. PUBLIC SITE (Root)
+            // --- 2. PUBLIC SITE CONFIG ---
             if (publicFileProvider != null)
             {
                 var publicOptions = new StaticFileOptions
                 {
                     FileProvider = publicFileProvider,
-                    RequestPath = "" // Root
+                    RequestPath = ""
                 };
 
                 app.UseDefaultFiles(new DefaultFilesOptions
@@ -44,11 +46,11 @@ namespace AyalasLanguageAPI.Routing
                     FileProvider = publicFileProvider,
                     RequestPath = ""
                 });
+
                 app.UseStaticFiles(publicOptions);
 
-                // IMPORTANT: Use a constraint to stop this fallback from hijacking /admin
-                // And use :nonfile to stop the MIME type error
-                app.MapFallbackToFile("{*path:nonfile}", "index.html", publicOptions);
+                // Fallback for the public app, excluding anything starting with /admin
+                app.MapFallbackToFile("{**slug:notStartWithAdmin}", "index.html", publicOptions).AllowAnonymous();
             }
         }
 
