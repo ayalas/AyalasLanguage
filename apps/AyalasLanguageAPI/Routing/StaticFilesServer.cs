@@ -10,47 +10,45 @@ namespace AyalasLanguageAPI.Routing
             var publicFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:public", app.Logger);
             var adminFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:admin", app.Logger);
 
-            // --- 1. ADMIN SITE CONFIG ---
+            // 1. Static Files Middleware (Handles physical files like .js, .css, .png)
             if (adminFileProvider != null)
             {
-                var adminOptions = new StaticFileOptions
-                {
-                    FileProvider = adminFileProvider,
-                    RequestPath = "/admin"
-                };
-
-                app.UseDefaultFiles(new DefaultFilesOptions
+                app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = adminFileProvider,
                     RequestPath = "/admin"
                 });
-
-                app.UseStaticFiles(adminOptions);
-
-                // This catches /admin, /admin/, and /admin/any/sub/path
-                // We add AllowAnonymous to prevent the "AdminAuth was challenged" error
-                app.MapFallbackToFile("/admin/{**slug}", "index.html", adminOptions).AllowAnonymous();
             }
 
-            // --- 2. PUBLIC SITE CONFIG ---
             if (publicFileProvider != null)
             {
-                var publicOptions = new StaticFileOptions
+                app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = publicFileProvider,
-                    RequestPath = ""
-                };
-
-                app.UseDefaultFiles(new DefaultFilesOptions
-                {
-                    FileProvider = publicFileProvider,
-                    RequestPath = ""
+                    RequestPath = "" // Root
                 });
+            }
 
-                app.UseStaticFiles(publicOptions);
+            // 2. Fallback Endpoints (Handles SPA routing/refreshing)
 
-                // Fallback for the public app, excluding anything starting with /admin
-                app.MapFallbackToFile("{**slug:notStartWithAdmin}", "index.html", publicOptions).AllowAnonymous();
+            // ADMIN Fallback
+            if (adminFileProvider != null)
+            {
+                app.MapFallbackToFile("/admin/{*path:nonfile}", "index.html", new StaticFileOptions
+                {
+                    FileProvider = adminFileProvider,
+                    RequestPath = "" // Leave empty so it finds index.html in the admin folder root
+                }).AllowAnonymous();
+            }
+
+            // PUBLIC Fallback
+            if (publicFileProvider != null)
+            {
+                app.MapFallbackToFile("{*path:nonfile}", "index.html", new StaticFileOptions
+                {
+                    FileProvider = publicFileProvider,
+                    RequestPath = ""
+                }).AllowAnonymous();
             }
         }
 
