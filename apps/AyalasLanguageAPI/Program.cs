@@ -24,6 +24,8 @@ var app = builder.Build();
 
 app.MigrateDb();
 
+await app.MakeFirstUserAdmin();
+
 //support forward headers for reverse proxy scenarios (e.g., when deployed behind Nginx or Apache)
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {

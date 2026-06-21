@@ -86,7 +86,7 @@ public static class DataExtensions
 
                 options.UseAsyncSeeding(async (context, _, cancellationToken) =>
                 {
-                    await context.MakeFirstUserAdmin(cancellationToken);
+                    await context.MakeFirstUserAdminBySeeding(cancellationToken);
                 });
             });
         }
@@ -100,7 +100,7 @@ public static class DataExtensions
         }
     }
 
-    private static async Task MakeFirstUserAdmin(this DbContext context, CancellationToken cancellationToken)
+    private static async Task MakeFirstUserAdminBySeeding(this DbContext context, CancellationToken cancellationToken)
     {
         var adminUser = await context.Set<User>()
            .FirstOrDefaultAsync(u => u.UserId == 1, cancellationToken);
@@ -109,6 +109,20 @@ public static class DataExtensions
         {
             adminUser.Role = (int)UserRoleEnum.Admin;
             await context.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public static async Task MakeFirstUserAdmin(this WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AyalasLanguageDbContext>();
+
+        var adminUser = await context.Users.FirstOrDefaultAsync(u => u.UserId == 1);
+
+        if (adminUser != null && adminUser.Role != (int)UserRoleEnum.Admin)
+        {
+            adminUser.Role = (int)UserRoleEnum.Admin;
+            await context.SaveChangesAsync();
         }
     }
 }
