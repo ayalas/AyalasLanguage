@@ -52,6 +52,8 @@ public static class AdminEndpoints
         adminAPIsecured.MapGet("/learning-path/{learningPathId:int}/exercises/{page:int}", GetLearningPathExercises);
         adminAPIsecured.MapPost("/setpathstatus", SetLearningPathStatus);
         adminAPIsecured.MapPost("/setexercisestatus", SetExerciseStatus);
+        adminAPIsecured.MapPost("/multisetpathstatus", MultiSetLearningPathStatus);
+        adminAPIsecured.MapPost("/multisetexercisestatus", MultiSetExerciseStatus);
     }
 
     private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
@@ -274,31 +276,39 @@ public static class AdminEndpoints
 
     private static async Task<AdminGridResponse<AdminExerciseRowDto>> GetLearningPathExercises(int page, int learningPathId, byte? status, IMemoryCache cache, AyalasLanguageDbContext db)
     {
-        var query = db.Exercises
-            .Include(e => e.User)
+        var baseQuery = db.Exercises.Where(lp => lp.LearningPathId == learningPathId).AsQueryable();
+
+        if (status != null)
+        {
+            baseQuery = baseQuery.Where(lp => lp.Status == status);
+        }
+
+        var query = baseQuery.Include(e => e.User)
             .Include(e => e.LearningPath)
-            .Include(e => e.ExerciseType)
-            .Where(lp => lp.LearningPathId == learningPathId).AsQueryable();
+            .Include(e => e.ExerciseType);
 
         var arrMapped = await QueryExercises(query, page, status, cache, db);
 
-        int numOfRecords = 0;
-        if (page == 0)
-            numOfRecords = await db.Exercises.Where(e => e.LearningPathId == learningPathId).CountAsync();
+        int numOfRecords = await baseQuery.CountAsync();
         return new AdminGridResponse<AdminExerciseRowDto>(numOfRecords, arrMapped);
     }
     private static async Task<AdminGridResponse<AdminExerciseRowDto>> GetExercises(int page, byte? status, IMemoryCache cache, AyalasLanguageDbContext db)
     {
-        var query = db.Exercises
+        var baseQuery = db.Exercises.AsQueryable();
+
+        if (status != null)
+        {
+            baseQuery = baseQuery.Where(lp => lp.Status == status);
+        }
+
+        var query = baseQuery
             .Include(e => e.User)
             .Include(lp => lp.LearningPath)
-            .Include(e => e.ExerciseType).AsQueryable();
+            .Include(e => e.ExerciseType);
 
         var arrMapped = await QueryExercises(query, page, status, cache, db);
 
-        int numOfRecords = 0;
-        if (page == 0)
-            numOfRecords = await db.Exercises.CountAsync();
+        int numOfRecords = await baseQuery.CountAsync();
         return new AdminGridResponse<AdminExerciseRowDto>(numOfRecords, arrMapped);
     }
 
@@ -355,26 +365,25 @@ public static class AdminEndpoints
             );
         }).ToArray();
 
-        
+
     }
 
     private static async Task<AdminGridResponse<AdminLearningPathRowDto>> GetLearningPaths(int page, byte? status, AyalasLanguageDbContext db)
     {
-        var query = db.LearningPaths
-            .Include(lp => lp.User)
-            .Include(lp => lp.KnownLanguage)
-            .Include(lp => lp.TargetLanguage).AsQueryable();
+        var baseQuery = db.LearningPaths.AsQueryable();
 
         if (status != null)
         {
-            query = query.Where(lp => lp.Status == status);
+            baseQuery = baseQuery.Where(lp => lp.Status == status);
         }
+
+        var query = baseQuery.Include(lp => lp.User)
+            .Include(lp => lp.KnownLanguage)
+            .Include(lp => lp.TargetLanguage);
 
         var arr = await QueryLearningPaths(query, page, db);
 
-        int numOfRecords = 0;
-        if (page == 0)
-            numOfRecords = await db.LearningPaths.CountAsync();
+        int numOfRecords = await baseQuery.CountAsync();
         return new AdminGridResponse<AdminLearningPathRowDto>(numOfRecords, arr);
     }
 
@@ -384,7 +393,7 @@ public static class AdminEndpoints
              .Include(lp => lp.User)
              .Include(lp => lp.KnownLanguage)
              .Include(lp => lp.TargetLanguage)
-             .Where(lp=> lp.LearningPathId == learningPathId)
+             .Where(lp => lp.LearningPathId == learningPathId)
              .AsQueryable();
 
 
@@ -395,20 +404,21 @@ public static class AdminEndpoints
 
     private static async Task<AdminLearningPathRowDto[]> QueryLearningPaths(IQueryable<LearningPath> query, int page, AyalasLanguageDbContext db)
     {
-        var arr = await query.OrderByDescending(e => e.LearningPathId).Select(lp => new {
-           lp.UserId,
-           UserName = lp.User != null ? lp.User.UserName : null,
-           KnownLanguage = lp.KnownLanguage != null ? lp.KnownLanguage.EnglishName : null,
-           TargetLanguage = lp.TargetLanguage != null ? lp.TargetLanguage.EnglishName : null,
-           lp.Name,
-           lp.Level,
-           lp.Chapter,
-           lp.CreatedOn,
-           lp.LearningPathId,     
-           lp.Status
-       }).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+        var arr = await query.OrderByDescending(e => e.LearningPathId).Select(lp => new
+        {
+            lp.UserId,
+            UserName = lp.User != null ? lp.User.UserName : null,
+            KnownLanguage = lp.KnownLanguage != null ? lp.KnownLanguage.EnglishName : null,
+            TargetLanguage = lp.TargetLanguage != null ? lp.TargetLanguage.EnglishName : null,
+            lp.Name,
+            lp.Level,
+            lp.Chapter,
+            lp.CreatedOn,
+            lp.LearningPathId,
+            lp.Status
+        }).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
 
-        return arr.Select( lp => new AdminLearningPathRowDto (
+        return arr.Select(lp => new AdminLearningPathRowDto(
             lp.UserId,
             lp.UserName,
             lp.KnownLanguage,
@@ -418,7 +428,7 @@ public static class AdminEndpoints
             lp.Chapter,
             lp.CreatedOn,
             lp.LearningPathId,
-            db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),   
+            db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
             lp.Status
         )).ToArray();
     }
@@ -438,6 +448,22 @@ public static class AdminEndpoints
         return Results.Ok();
     }
 
+    private static async Task<IResult> MultiSetLearningPathStatus(AdminMultiSetLearningPathStatusRequest req, AyalasLanguageDbContext db)
+    {
+        foreach (int learningPathId in req.LearningPathIds)
+        {
+            var path = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.LearningPathId == learningPathId);
+            if (path == null)
+            {
+                return Results.BadRequest($"Lesson {learningPathId} not found.");
+            }
+            path.Status = (byte)req.Status;
+        }
+        //only saves if all found
+        await db.SaveChangesAsync();
+        return Results.Ok();
+    }
+
     private static async Task<IResult> SetExerciseStatus(AdminSetExerciseStatusRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -448,6 +474,23 @@ public static class AdminEndpoints
             return Results.BadRequest("Exercise not found.");
         }
         exercise.Status = (byte)req.Status;
+        await db.SaveChangesAsync();
+        return Results.Ok();
+    }
+
+    private static async Task<IResult> MultiSetExerciseStatus(AdminMultiSetExerciseStatusRequest req, AyalasLanguageDbContext db)
+    {
+        foreach (int ExerciseId in req.ExerciseIds)
+        {
+            var exercise = await db.Exercises.FirstOrDefaultAsync(e => e.ExerciseId == ExerciseId);
+            if (exercise == null)
+            {
+                return Results.BadRequest("Exercise not found.");
+            }
+            exercise.Status = (byte)req.Status;
+        }
+
+        //only saves if all found
         await db.SaveChangesAsync();
         return Results.Ok();
     }

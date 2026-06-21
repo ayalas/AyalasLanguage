@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
-import { AllCommunityModule, type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
+import { useEffect, useMemo, useState, type RefObject } from 'react';
+import {
+    AllCommunityModule, type CellValueChangedEvent, type ColDef, type RowSelectionOptions
+} from 'ag-grid-community';
 import { AgGridProvider } from 'ag-grid-react';
 import { AgGridReact } from 'ag-grid-react'; // React Data Grid Component
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -9,18 +11,20 @@ import type { AdminGridResponse } from '../types/grids/grids';
 import { GridPager } from './GridPager';
 
 interface GenericGridPageProps<T> {
-  cols: ColDef<T>[];
-  endpoint: string;
-  title?: string;
-  rowHeight?: number;
-  onCellValueChanged?: (event: CellValueChangedEvent<T>) => Promise<void>;
-  successMessage?: string;
-  errorMessage?: string;
-  filterQS?: string;
+    cols: ColDef<T>[];
+    endpoint: string;
+    title?: string;
+    rowHeight?: number;
+    onCellValueChanged?: (event: CellValueChangedEvent<T>) => Promise<void>;
+    successMessage?: string;
+    errorMessage?: string;
+    filterQS?: string;
+    gridRef?: RefObject<AgGridReact<T> | null>;
+    gridRefresh?: number | null;
 }
 
 export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
-    const {cols, endpoint, title, rowHeight, onCellValueChanged, successMessage, errorMessage, filterQS} = props;
+    const { cols, endpoint, title, rowHeight, onCellValueChanged, successMessage, errorMessage, filterQS, gridRef, gridRefresh } = props;
     const [error, setError] = useState('');
     const [page, setPage] = useState(1);
     const [rowHeightInternal, setRowHeightInternal] = useState(42);
@@ -29,6 +33,22 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
     const modules = [AllCommunityModule];
     const [rowData, setRowData] = useState<T[]>([]);
     const [colDefs] = useState<ColDef<T>[]>(cols);
+    const rowSelection = useMemo<RowSelectionOptions>(() => {
+        return {
+            mode: 'multiRow',        // Enables multiple row selection
+            headerCheckbox: true,    // Adds 'Select All' checkbox to header
+            checkboxes: true,        // Adds checkboxes to every row
+            enableClickSelection: true // (Optional) allows clicking the row to select
+        };
+    }, []);
+    const rowSelectionDefault = useMemo<RowSelectionOptions>(() => {
+        return {
+            mode: 'singleRow',        
+            headerCheckbox: false, 
+            checkboxes: false, 
+            enableClickSelection: false
+        };
+    }, []);
 
     const loadData = async function (newPage: number) {
         try {
@@ -56,7 +76,7 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
         }
     };
 
-     useEffect(() => {
+    useEffect(() => {
         if (rowHeight != undefined)
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setRowHeightInternal(rowHeight);
@@ -66,6 +86,13 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         loadData(1);
     }, [filterQS]);
+
+    //reloads current page
+    useEffect(() => {
+        if (gridRefresh != null) {
+            loadData(page);
+        }
+    }, [gridRefresh])
 
     return (
         <>
@@ -90,7 +117,7 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
                         <label className="form-error">{error}</label>
                     </div>
                 )}
-                
+
                 <AgGridProvider modules={modules}>
                     <div style={{ height: 500 }}>
                         <AgGridReact
@@ -98,6 +125,8 @@ export default function GenericGridPage<T>(props: GenericGridPageProps<T>) {
                             columnDefs={colDefs}
                             rowHeight={rowHeightInternal}
                             onCellValueChanged={onCellValueChanged}
+                            ref={gridRef}
+                            rowSelection={gridRef != null? rowSelection : rowSelectionDefault}
                         />
                     </div>
                 </AgGridProvider>

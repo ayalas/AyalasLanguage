@@ -19,6 +19,8 @@ namespace AyalasLanguageAPI.AdminDTOs
     public record AdminLearningPathRowDto(int? UserId, string? Email, string? KnownLanguage, string? TargetLanguage, string? Name, uint Level, decimal Chapter, DateTime CreatedOn, int LearningPathId, int CountExercises, byte Status);
     public record AdminSetUserRoleRequest(int UserId, byte Role);
     public record AdminSetLearningPathStatusRequest(int LearningPathId, ContentStatusEnum Status);
+    public record AdminMultiSetLearningPathStatusRequest(int[] LearningPathIds, ContentStatusEnum Status);
     public record AdminSetExerciseStatusRequest(int ExerciseId, ContentStatusEnum Status);
+    public record AdminMultiSetExerciseStatusRequest(int[] ExerciseIds, ContentStatusEnum Status);
     public record AdminGridResponse<T>(int NumOfRecords, T[] Data);
 }
