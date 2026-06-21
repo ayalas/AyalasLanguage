@@ -10,7 +10,7 @@ namespace AyalasLanguageAPI.Routing
             var publicFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:public", app.Logger);
             var adminFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:admin", app.Logger);
 
-            // 1. Setup Admin Site
+            // 1. ADMIN SITE
             if (adminFileProvider != null)
             {
                 var adminOptions = new StaticFileOptions
@@ -24,15 +24,13 @@ namespace AyalasLanguageAPI.Routing
                     FileProvider = adminFileProvider,
                     RequestPath = "/admin"
                 });
-
                 app.UseStaticFiles(adminOptions);
 
-                // This ensures any request starting with /admin that isn't a file or API 
-                // lands on the admin index.html
-                app.MapFallbackToFile("/admin/{**slug}", "index.html", adminOptions);
+                // Map fallback only for paths under /admin that are NOT files
+                app.MapFallbackToFile("/admin/{*path:nonfile}", "index.html", adminOptions);
             }
 
-            // 2. Setup Public Site
+            // 2. PUBLIC SITE (Root)
             if (publicFileProvider != null)
             {
                 var publicOptions = new StaticFileOptions
@@ -46,33 +44,42 @@ namespace AyalasLanguageAPI.Routing
                     FileProvider = publicFileProvider,
                     RequestPath = ""
                 });
-
                 app.UseStaticFiles(publicOptions);
 
-                // Fallback for the main app (root)
-                // We use a constraint to ensure it doesn't accidentally hijack /admin
-                app.MapFallbackToFile("{**slug:notStartWithAdmin}", "index.html", publicOptions);
+                // IMPORTANT: Use a constraint to stop this fallback from hijacking /admin
+                // And use :nonfile to stop the MIME type error
+                app.MapFallbackToFile("{*path:nonfile}", "index.html", publicOptions);
             }
         }
 
         private static PhysicalFileProvider? GetFileProvider(IConfiguration config, string rootPath, string configKey, ILogger logger)
         {
             var relAppPath = config.GetValue<string>(configKey);
-            if (relAppPath == null)
+            if (string.IsNullOrEmpty(relAppPath))
             {
                 logger.LogWarning($"GetFileProvider for {configKey}: missing configuration value");
                 return null;
             }
-            var appPath = Path.Combine(rootPath, relAppPath);
 
-            // Fallback check if running inside a containerized production environment
-            if (!Directory.Exists(appPath))
+            // Check three possible locations
+            var pathsToTry = new[] {
+                Path.Combine(rootPath, relAppPath),
+                Path.Combine(AppContext.BaseDirectory, relAppPath),
+                Path.GetFullPath(relAppPath) // Absolute path check
+            };
+
+            foreach (var path in pathsToTry)
             {
-                logger.LogWarning($"GetFileProvider for {configKey}: {appPath} path does not exist. Attempting to create {relAppPath} in {AppContext.BaseDirectory}");
-                appPath = Path.Combine(AppContext.BaseDirectory, relAppPath);
+                logger.LogInformation("Checking for {ConfigKey} at: {Path}", configKey, path);
+                if (Directory.Exists(path))
+                {
+                    logger.LogInformation("FOUND {ConfigKey} at: {Path}", configKey, path);
+                    return new PhysicalFileProvider(path);
+                }
             }
 
-            return new PhysicalFileProvider(appPath);
+            logger.LogError("COULD NOT FIND directory for {ConfigKey}. Checked: {Paths}", configKey, string.Join(", ", pathsToTry));
+            return null;
         }
 
         public static void AddRouteConstraints(this WebApplicationBuilder builder)
