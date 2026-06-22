@@ -8,6 +8,13 @@ import { LEANRING_STATUS } from '../constants/learning';
 import type { User } from '../types/shared/User';
 import imgLogo from '../assets/logo.jpg';
 import { errorHandler } from '@ayalaslanguage/types/error';
+import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
+import type { ExerciseType } from '@ayalaslanguage/types/exercise';
+
+type ExerciseTypeGroupObject = {
+  exerciseTypeId: 0 | ExerciseType,
+  paths: any[];
+};
 
 export default function Homepage() {
   const [learningPath, setLearningPath] = useState<any[]>([]);
@@ -27,16 +34,28 @@ export default function Homepage() {
         if (response.data != null) {
           const learningPaths = response.data;
 
-          //group by level
+          //group by level and then by exerciseTypeId (which can be null for empty lessons)
           const transformedArray = Object.values(
             learningPaths.reduce((acc: any, current: any) => {
+              //if we don't have the level - create it
               if (!acc[current.level]) {
                 acc[current.level] = {
                   level: current.level,
-                  paths: []
+                  exerciseTypes: []
                 };
               }
-              acc[current.level].paths.push(current);
+
+              const exerciseTypeId: number = current.exerciseTypeId ?? 0;
+              //if we don't have the exercise type id inside the level - create it
+              if (!acc[current.level].exerciseTypes[exerciseTypeId]) {
+                acc[current.level].exerciseTypes[exerciseTypeId] =
+                  {
+                    exerciseTypeId: exerciseTypeId,
+                    paths: []
+                  } as ExerciseTypeGroupObject;
+              }
+              //add the lesson inside the exercise type paths array
+              acc[current.level].exerciseTypes[exerciseTypeId].paths.push(current);
               return acc;
             }, {})
           );
@@ -66,35 +85,48 @@ export default function Homepage() {
               return (
                 <div className="learning-level-container" key={`level-${level.level}`}>
                   <h4>Level {level.level}</h4>
-                  {level.paths.map((path: any, index: number) => {
-                    const isDone = path.status == LEANRING_STATUS.DONE;
-                    const isInProgress = path.status == LEANRING_STATUS.IN_PROGRESS;
+                  {level.exerciseTypes.map((exerciseTypeObject: ExerciseTypeGroupObject) => {
+                    let lastPathObj = { level: level.level, chapter: 1 }
+                    if (exerciseTypeObject.paths.length > 0) {
+                      lastPathObj.chapter = exerciseTypeObject.paths[exerciseTypeObject.paths.length - 1].chapter;
+                    }
                     return (
-                      <Fragment key={path.learningPathId}>
-                        {index == 0 && levelIndex == 0 && (
-                          <div className="learning-level-creator">
-                            <Link to={`/author/path?next=${level.paths[0].learningPathId}`} title="Generate more exercises here"><LayersPlus /></Link>
+                      <Fragment key={`level-${level.level}-type-${exerciseTypeObject.exerciseTypeId}`}>
+                        <div className="learning-exercise-type-outer-container">
+
+                          <div className="learning-exercise-type-inner-container">
+                            <ExerciseTypeGroupTitle exerciseTypeId={exerciseTypeObject.exerciseTypeId} />
+                            <div className="learning-exercise-type-inner-body">
+                              {exerciseTypeObject.paths.map((path: any) => {
+                                const isDone = path.status == LEANRING_STATUS.DONE;
+                                const isInProgress = path.status == LEANRING_STATUS.IN_PROGRESS;
+                                return (
+                                  <div className="learning-lesson" key={path.learningPathId}>
+                                    <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
+                                    {isDone && (
+                                      <span title="Done"><Check className="learning-progress-img" /></span>
+                                    )}
+                                    {isInProgress && (
+                                      <span title="In progress"><CircleDotDashed className="learning-progress-img" /></span>
+                                    )}
+                                    {path.practiseMistakesInThisPath && (
+                                      <span title="Mistakes will be readded to this lesson"><History className="learning-progress-img" /></span>
+                                    )}
+                                    <div className="content-line-part" title={`${path.exerciseCount} exercises`}>[{path.exerciseCount}]</div>
+                                  </div>
+                                );
+                              })}
+                              <div className="learning-level-creator">
+                                <Link to={`/author/path?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`} title="Generate more exercises here"><LayersPlus /></Link>
+                              </div>
+                            </div>
                           </div>
-                        )}
-                        <div className="learning-lesson">
-                          {path.chapter} <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
-                          {isDone && (
-                            <span title="Done"><Check className="learning-progress-img" /></span>
-                          )}
-                          {isInProgress && (
-                            <span title="In progress"><CircleDotDashed className="learning-progress-img" /></span>
-                          )}
-                          {path.practiseMistakesInThisPath && (
-                            <span title="Mistakes will be readded to this lesson"><History className="learning-progress-img" /></span>
-                          )}
-                          <div className="content-line-part" title={`${path.exerciseCount} exercises`}>[{path.exerciseCount}]</div>
-                        </div>
-                        <div className="learning-level-creator">
-                          <Link to={`/author/path?level=${path.level}&chapter=${path.chapter}&prev=${path.learningPathId}${level.paths.length - 1 == index ? '' : `&next=${level.paths[index + 1].learningPathId}`}`} title="Generate more exercises here"><LayersPlus /></Link>
                         </div>
                       </Fragment>
                     );
                   })}
+
+
                 </div>
               );
             })}

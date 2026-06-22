@@ -106,76 +106,6 @@ public static class ContentCreatorEndpoints
             return Results.BadRequest("Another lesson already exists with with these level and chapter values.");
         }
 
-        LearningPath? prevPath = null;
-        LearningPath? nextPath = null;
-        int? prevPathNextId = 0;
-        int? nextPathPrevId = 0;
-        int prevPathId = 0;
-        int nextPathId = 0;
-        if (dto.PrevLearningPathId != null)
-        {
-            prevPath = await db.LearningPaths.FindAsync(dto.PrevLearningPathId);
-            if (prevPath == null) return Results.BadRequest("Previous learning path not found.");
-            prevPathId = prevPath.LearningPathId;
-
-            prevPathNextId = prevPath.NextLearningPathId; //save the id
-            prevPath.NextLearningPathId = null; // Unlink from any existing next path
-        }
-        else if (dto.NextLearningPathId == null)
-        {
-            // If no previous path and no next path is specified, find the last path in the sequence for this language learning
-            prevPath = (await db.LearningPaths
-                .Where(lp => lp.TargetLanguageId == user.TargetLanguageId
-                    && lp.KnownLanguageId == user.KnownLanguageId && lp.NextLearningPathId == null)
-                .OrderByDescending(lp => lp.Level)
-                .ToListAsync()).OrderByDescending(lp => lp.Chapter).FirstOrDefault();
-            if (prevPath != null)
-            {
-                prevPathId = prevPath.LearningPathId;
-                prevPathNextId = prevPath.NextLearningPathId; //save the id
-            }
-        }
-
-        if (dto.NextLearningPathId != null)
-        {
-            nextPath = await db.LearningPaths.FindAsync(dto.NextLearningPathId);
-            if (nextPath == null) return Results.BadRequest("Next learning path not found.");
-            nextPathId = nextPath.LearningPathId;
-            //do not allow having more than one next path
-            nextPathPrevId = nextPath.PrevLearningPathId;
-            nextPath.PrevLearningPathId = null; // Unlink from any existing previous path
-
-
-            //is there another item linked to the same next or previous path?
-            //we can only allow this if our prev is linked to our next and vice verse - that we can fix
-            if (prevPathId != 0)
-            {
-                if (await db.LearningPaths.AnyAsync(lp => lp.NextLearningPathId == dto.NextLearningPathId
-                    && lp.LearningPathId != prevPathId))
-                {
-                    logger.LogWarning("Next learning path {NextPathId} already has a previous path linked that is not the current previous path {PrevPathId}.", dto.NextLearningPathId, prevPathId);
-                    return Results.BadRequest("Next learning path already has a previous path.");
-                }
-            }
-        }
-
-        int? nextToUpdate = dto.NextLearningPathId;
-
-        if (nextPathId == 0 && prevPathNextId != null && prevPathNextId > 0)
-        {
-            nextToUpdate = prevPathNextId;
-            nextPath = await db.LearningPaths.FindAsync(nextToUpdate);
-            if (nextPath == null) return Results.BadRequest($"Next learning path not found [prev path next path: {prevPathNextId}].");
-            nextPath.PrevLearningPathId = null; // Unlink from any existing previous path
-        }
-
-        if (dto.PrevLearningPathId != null && await db.LearningPaths.AnyAsync(lp => lp.PrevLearningPathId == dto.PrevLearningPathId
-            && lp.LearningPathId != nextToUpdate))
-        {
-            logger.LogWarning("Previous learning path {PrevPathId} already has a next path linked that is not the current next path {NextPathId}.", dto.PrevLearningPathId, nextToUpdate);
-            return Results.BadRequest("Previous learning path already has a next path.");
-        }
-
         var path = new LearningPath
         {
             TargetLanguageId = user.TargetLanguageId.Value,
@@ -183,22 +113,11 @@ public static class ContentCreatorEndpoints
             Level = dto.Level,
             Chapter = dto.Chapter,
             Name = dto.Name,
-            PrevLearningPathId = dto.PrevLearningPathId,
-            NextLearningPathId = nextToUpdate,
             Status = (int)ContentStatusEnum.Draft, // Default to draft
             UserId = userId
         };
 
         db.LearningPaths.Add(path);
-        await db.SaveChangesAsync();
-        if (prevPath != null)
-        {
-            prevPath.NextLearningPathId = path.LearningPathId;
-        }
-        if (nextPath != null)
-        {
-            nextPath.PrevLearningPathId = path.LearningPathId;
-        }
         await db.SaveChangesAsync();
 
         return Results.Created($"/api/learning/path/{path.LearningPathId}", new CreateLearningPathResponseDto(path.LearningPathId));
@@ -292,23 +211,9 @@ public static class ContentCreatorEndpoints
         if (db.Exercises.Any(up => up.LearningPathId == id))
             return Results.BadRequest("Learning path has exercises.");
 
-        //deal with linking
-        var prevPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.NextLearningPathId == id);
-        var nextPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.PrevLearningPathId == id);
-
-
         db.LearningPaths.Remove(path);
         await db.SaveChangesAsync();
-        if (prevPath != null)
-        {
-            prevPath.NextLearningPathId = path.NextLearningPathId;
-        }
-        if (nextPath != null)
-        {
-            nextPath.PrevLearningPathId = path.PrevLearningPathId;
-        }
 
-        await db.SaveChangesAsync();
         return Results.NoContent();
     }
 

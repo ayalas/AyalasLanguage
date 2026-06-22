@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import { AuthHeader } from '../../components/auth/AuthHeader';
@@ -8,21 +8,12 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 
 export function LearningPathCreatePage() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const prevId = searchParams.get('prev');
-  const nextId = searchParams.get('next');
 
   const handleSubmit = async (setError: (s: string) => void, createExercises: any, level: number, chapter: number, title: string, exerciseType: number, arrData: any[]) => {
     let learningPathId = 0;
     try {
       const req: any = { level, chapter, name: title };
 
-      if (prevId && Number(prevId) > 0) {
-        req.prevLearningPathId = prevId;
-      }
-      if (nextId && Number(nextId) > 0) {
-        req.nextLearningPathId = nextId;
-      }
       const response = await axios.post('/api/creator/learning-path', req);
       learningPathId = response.data.learningPathId;
 

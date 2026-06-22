@@ -34,8 +34,7 @@ public class AyalasLanguageDbContext : DbContext
             .HasKey(up => new { up.UserId, up.LearningPathId });
 
         modelBuilder.Entity<LearningPath>()
-            .HasIndex(p => new { p.TargetLanguageId, p.KnownLanguageId, p.Level, p.Chapter })
-            .IsUnique();
+            .HasIndex(p => new { p.KnownLanguageId, p.TargetLanguageId, p.Level, p.Chapter });
 
         modelBuilder.Entity<ExerciseType>().HasData(
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "from Known to target language" },

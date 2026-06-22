@@ -119,31 +119,6 @@ describe('LearningPathCreatePage', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/author/path/456');
   });
 
-  it('includes prevId and nextId in the request when present in URL', async () => {
-    const searchParams = new URLSearchParams('prev=10&next=20');
-    (useSearchParams as any).mockReturnValue([searchParams]);
-    
-    mockedAxios.post.mockResolvedValueOnce({ data: { learningPathId: 789 } });
-
-    render(
-      <MemoryRouter>
-        <LearningPathCreatePage />
-      </MemoryRouter>
-    );
-
-    disableClientValidation();
-
-    const submitBtn = await screen.findByTestId('submit-btn');
-    await act(async () => {
-      submitBtn.click();
-    });
-
-    expect(mockedAxios.post).toHaveBeenCalledWith('/api/creator/learning-path', expect.objectContaining({
-      prevLearningPathId: '10',
-      nextLearningPathId: '20'
-    }));
-  });
-
   it('deletes the learning path if createExercises fails', async () => {
     const learningPathId = 999;
     mockedAxios.post.mockResolvedValueOnce({ data: { learningPathId } });

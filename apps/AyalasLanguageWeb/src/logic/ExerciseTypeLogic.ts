@@ -105,6 +105,12 @@ export const hasSingleBucketAnswer = (type: ExerciseType | 0): boolean => {
     ] as (ExerciseType | 0)[]).includes(type);
 };
 
+export const hasMultiBucketAnswers = (type: ExerciseType | 0): boolean => {
+    return ([
+        EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET
+    ] as (ExerciseType | 0)[]).includes(type);
+};
+
 export const usesInlineExerciseWithBlanks = (type: ExerciseType | 0): boolean => {
     return ([
         EXERCISE_TYPES.FILL_IN_THE_BLANKS
@@ -118,4 +124,12 @@ export const getExtraOptionsSeparator = (type: ExerciseType | 0): string => {
         default:
             throw new Error(`Exercise type ${type} does not support separators.`);
     }
+};
+
+export const writingExercise = (type: ExerciseType | 0): boolean => {
+    return ([
+        EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
+        EXERCISE_TYPES.FROM_TARGET_TO_KNOWN,
+        EXERCISE_TYPES.COMMON_RESPONSES
+    ] as (ExerciseType | 0)[]).includes(type);
 };

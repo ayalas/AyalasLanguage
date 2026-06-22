@@ -20,7 +20,7 @@ public static class LearningEndpoints
             {
                 AuthenticationSchemes = "PublicAuth"
             });
-        
+
         learning.MapGet("/path", GetLearningPath);
         learning.MapGet("/path/{pathId:int}", GetSingleLearningPath);
         learning.MapGet("/path/{pathId:int}/exercises", GetExercises);
@@ -60,8 +60,6 @@ public static class LearningEndpoints
                     up == null ? null : up.ExerciseId,
                     // EF9 optimizes correlated subquery counts beautifully
                     db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
-                    x.lp.PrevLearningPathId,
-                    x.lp.NextLearningPathId,
                     x.lp.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner,
                     up != null && up.practiseMistakesInThisPath
                 )
@@ -83,63 +81,47 @@ public static class LearningEndpoints
 
         int languageId = user.TargetLanguageId.Value;
 
-        var learningPathsWithStatus = await db.LearningPaths
-    .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value)
-    // 1. Correlate LearningPaths with the user's specific progress records
-    .GroupJoin(
-        db.UserProgresses.Where(up => up.UserId == userId),
-        lp => lp.LearningPathId,
-        up => up.LearningPathId,
-        (lp, userProgressGroup) => new { lp, userProgressGroup }
-    )
-    // 2. Flatten the group into a true left outer join
-    .SelectMany(
-        x => x.userProgressGroup.DefaultIfEmpty(),
-        (x, up) => new LearningPathDto
-        (
-            x.lp.LearningPathId,
-            x.lp.Level,
-            x.lp.Chapter,
-            x.lp.Name,
-            (ContentStatusEnum)x.lp.Status,
-            // EF9 translates this conditional tree perfectly into a SQL CASE WHEN statement
-            up == null
-                ? (byte)UserProgressEnum.NotStarted
-                : up.ExerciseId == null
-                    ? (byte)UserProgressEnum.Done
-                    : (byte)UserProgressEnum.InProgress,
-            // EF9 optimizes this into a sub-select COUNT query
-            db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
-            x.lp.PrevLearningPathId,
-            x.lp.NextLearningPathId,
-            up != null && up.practiseMistakesInThisPath
+        var learningPathsWithStatus = (await db.LearningPaths
+        .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value
+        && lp.Status != (byte)ContentStatusEnum.Removed)
+        .GroupJoin(
+            db.UserProgresses.Include(up => up.Exercise).Where(up => up.UserId == userId),
+            lp => lp.LearningPathId,
+            up => up.LearningPathId,
+            (lp, userProgressGroup) => new { lp, userProgressGroup }
         )
-    )
-    .ToListAsync();
+        .SelectMany(
+            x => x.userProgressGroup.DefaultIfEmpty(),
+            (x, up) => new LearningPathDto
+            (
+                x.lp.LearningPathId,
+                x.lp.Level,
+                x.lp.Chapter,
+                x.lp.Name,
+                (ContentStatusEnum)x.lp.Status,
+                up == null
+                    ? (byte)UserProgressEnum.NotStarted
+                    : up.ExerciseId == null
+                        ? (byte)UserProgressEnum.Done
+                        : (byte)UserProgressEnum.InProgress,
+                db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
+                up != null && up.practiseMistakesInThisPath,
 
-        // 2. Reorder the list based on PrevLearningPathId
-        try
-        {
-            var sortedPaths = new List<LearningPathDto>();
-            Dictionary<long, LearningPathDto> pathMap = learningPathsWithStatus.ToDictionary(lp => lp.PrevLearningPathId ?? (long)0); // Key is the ID it follows
+                // --- Get ExerciseTypeId START ---
+                up == null || up.ExerciseId == null
+                    ? db.Exercises
+                        .Where(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed)
+                        .OrderBy(e => e.ExerciseId) // Or your specific sequence logic
+                        .Select(e => (int?)e.ExerciseTypeId)
+                        .FirstOrDefault()
+                    : up.Exercise.ExerciseTypeId
+            // --- Get ExerciseTypeId END ---
+            )
+        )
+        .ToListAsync()).OrderBy(it => it.Level)
+        .ThenBy(it => it.Chapter);
 
-            // Find the start (where PrevLearningPathId is null or 0)
-            long currentPrevId = 0;
-
-            while (pathMap.TryGetValue(currentPrevId, out var nextPath))
-            {
-                if (nextPath.ContentStatus != ContentStatusEnum.Removed)
-                    sortedPaths.Add(nextPath);
-                currentPrevId = nextPath.LearningPathId; // Move to the next link in the chain
-            }
-            return Results.Ok(sortedPaths);
-        }
-        catch(Exception ex)
-        {
-            logger.LogError(ex, "Error retrieving learning path for user {userId} for language {languageId}", userId, user.TargetLanguageId);
-            // If there's a cycle or missing link, just return the unsorted list
-            return Results.Ok(learningPathsWithStatus);
-        }
+        return Results.Ok(learningPathsWithStatus);
     }
 
     private static async Task<IResult> UpdateUserProgress(UpdateProgressDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)

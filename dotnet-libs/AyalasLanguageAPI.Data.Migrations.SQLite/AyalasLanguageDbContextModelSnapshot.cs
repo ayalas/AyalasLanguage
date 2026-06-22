@@ -515,16 +515,15 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasKey("LearningPathId");
 
-                    b.HasIndex("KnownLanguageId");
-
                     b.HasIndex("NextLearningPathId");
 
                     b.HasIndex("PrevLearningPathId");
 
+                    b.HasIndex("TargetLanguageId");
+
                     b.HasIndex("UserId");
 
-                    b.HasIndex("TargetLanguageId", "KnownLanguageId", "Level", "Chapter")
-                        .IsUnique();
+                    b.HasIndex("KnownLanguageId", "TargetLanguageId", "Level", "Chapter");
 
                     b.ToTable("LearningPaths");
                 });

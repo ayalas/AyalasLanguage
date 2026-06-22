@@ -106,10 +106,11 @@ internal static class ContentCreatorLogic
 
     public static async Task<bool> IsOtherLearningPathFoundWith(int targetLanguageId, int knownLanguageId, uint level, decimal chapter, int? currentLearningPathId, AyalasLanguageDbContext db)
     {
-        var learningPath = await db.LearningPaths.Where(lp => lp.KnownLanguageId == knownLanguageId
+        //sql provider may have a bad comparer so we get all the chapters for the level and 
+        //compare in dot net
+        var learningPath = (await db.LearningPaths.Where(lp => lp.KnownLanguageId == knownLanguageId
             && lp.TargetLanguageId == targetLanguageId
-            && lp.Level == level
-            && lp.Chapter == chapter).FirstOrDefaultAsync();
+            && lp.Level == level).ToArrayAsync()).FirstOrDefault(item => item.Chapter.CompareTo(chapter) == 0);
 
         if (learningPath == null)
         {

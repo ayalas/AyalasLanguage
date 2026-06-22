@@ -33,12 +33,21 @@ EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET] = `Transl
 EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.COMMON_RESPONSES_BUCKET] = 'Choose the common response to this sentence';
 EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.COMMON_RESPONSES] = 'Answer the common response to this sentence';
 
+export const EXERCISE_TYPE_NAME_MAPPING: string[] = [];
+EXERCISE_TYPE_NAME_MAPPING[0]= "Empty";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET]= "Translate to target language";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN]= "Translate to known language";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FILL_IN_THE_BLANKS]= "Fill in words";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.MATCHING]= "Match words";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET]= "Translate with bucket list";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES_BUCKET]= "Common responses with bucket list";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES]= "Common responses";
 
 export const EXERCISE_GENERATIONS = 
 [
     {
         type: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, 
-        name: "Translate to target language", 
+        name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET], 
         description:"Generate sentences in the langauge you know to translate to the langauge you are learning.",
         first_data_instructions: "Sentences in the langauge you know, separated by semi-colon(;)",
         second_data_instructions: "Sentences in the langauge you are learning, separated by semi-colon(;)",
@@ -47,7 +56,7 @@ export const EXERCISE_GENERATIONS =
     },
     {
         type: EXERCISE_TYPES.FROM_TARGET_TO_KNOWN, 
-        name: "Translate to known language", 
+        name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN], 
         description:"Generate sentences in the langauge you are learning to translate to the langauge you know.",
         first_data_instructions: "Sentences in the langauge you are learning, separated by semi-colon(;)",
         second_data_instructions: "Sentences in the langauge you know, separated by semi-colon(;)",
@@ -56,7 +65,7 @@ export const EXERCISE_GENERATIONS =
     },
     {
         type: EXERCISE_TYPES.FILL_IN_THE_BLANKS, 
-        name: "Fill in words", 
+        name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FILL_IN_THE_BLANKS], 
         description:"Generate sentences to fill in words in, such as the right prepositions. Use ____ for blanks.",
         first_data_instructions: "Sentences in the langauge you are learning, separated by semi-colon(;), with blanks for words to fill",
         second_data_instructions: "The same sentences with the blanks filled, separated by semi-colon(;)",
@@ -65,7 +74,7 @@ export const EXERCISE_GENERATIONS =
     },
     {
         type: EXERCISE_TYPES.MATCHING, 
-        name: "Match words", 
+        name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.MATCHING], 
         description:"Match words between two buckets lists: one bucket list will includes words in the langauge you know and the other bucket list will include words in the langauge you are learning.",
         first_data_instructions: "Words in the langauge you know, separated by semi-colon(;)",
         second_data_instructions: "Words in the langauge you are learning, separated by semi-colon(;)",
@@ -74,7 +83,7 @@ export const EXERCISE_GENERATIONS =
     },
     {
         type: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET, 
-        name: "Translate with bucket list", 
+        name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET], 
         description:"Generate sentences in the langauge you know to translate to the langauge you are learning from a bucket list.",
         first_data_instructions: "Sentences in the langauge you know, separated by semi-colon(;)",
         second_data_instructions: "Sentences in the langauge you are learning, separated by semi-colon(;)",
@@ -84,7 +93,7 @@ export const EXERCISE_GENERATIONS =
     },
     {
         type: EXERCISE_TYPES.COMMON_RESPONSES_BUCKET,
-        name: "Common responses with bucket list",
+        name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES_BUCKET],
         description:"Generate sentences in the langauge are learning that have common answers - choose the right one from a bucket list.",
         first_data_instructions: "Sentences in the langauge you are learning that have common answers, separated by semi-colon(;)",
         second_data_instructions: "The correct common responses in the langauge you are learning to those sentences, separated by semi-colon(;)",
@@ -94,7 +103,7 @@ export const EXERCISE_GENERATIONS =
     },
     {
         type: EXERCISE_TYPES.COMMON_RESPONSES,
-        name: "Common responses",
+        name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES],
         description:"Generate sentences in the langauge are learning that have common answers - write the right one.",
         first_data_instructions: "Sentences in the langauge you are learning that have common answers, separated by semi-colon(;)",
         second_data_instructions: "The correct common responses in the langauge you are learning to those sentences, separated by semi-colon(;)",
