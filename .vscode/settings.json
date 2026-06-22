@@ -8,5 +8,6 @@
         "editor.suggestOnTriggerCharacters": false,
         "editor.wordBasedSuggestions": "off"
     },
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "sarif-viewer.connectToGithubCodeScanning": "off"
 }

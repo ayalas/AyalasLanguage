@@ -121,12 +121,11 @@ public static class ContentCreatorEndpoints
         else if (dto.NextLearningPathId == null)
         {
             // If no previous path and no next path is specified, find the last path in the sequence for this language learning
-            prevPath = await db.LearningPaths
+            prevPath = (await db.LearningPaths
                 .Where(lp => lp.TargetLanguageId == user.TargetLanguageId
                     && lp.KnownLanguageId == user.KnownLanguageId && lp.NextLearningPathId == null)
                 .OrderByDescending(lp => lp.Level)
-                .ThenByDescending(lp => lp.Chapter)
-                .FirstOrDefaultAsync();
+                .ToListAsync()).OrderByDescending(lp => lp.Chapter).FirstOrDefault();
             if (prevPath != null)
             {
                 prevPathId = prevPath.LearningPathId;
