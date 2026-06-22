@@ -25,7 +25,9 @@ if ($LASTEXITCODE -ne 0) { throw "Build failed" }
 Write-Host "Publishing Backend API..." -ForegroundColor Cyan
 Set-Location $apiRoot
 dotnet restore
+if ($LASTEXITCODE -ne 0) { throw "dotnet restore failed" }
 dotnet publish -c Release /p:UseAppHost=false
+if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
 Set-Location ..
 Set-Location ..
 

@@ -41,7 +41,7 @@ public static class ContentCreatorEndpoints
 
     }
 
-    private static async Task<IResult> NextChapter(NextChapterDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> NextChapter(NextChapterDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
 
@@ -71,8 +71,11 @@ public static class ContentCreatorEndpoints
                 {
                     hint = sortedArray[0].Chapter;
                 }
+                decimal nextPath = ContentCreatorLogic.FindPath(sortedArray, hint, dto.ChapterHint != 0, logger);
+                logger.LogInformation("NextChapter (1.1.1.1): parameters: ChapterHint:{ChapterHint}, Level:{Level}. Process: hint:{hint}, sortedArrayLength:{sortedArrayLength}. Result:{nextChapter} ", 
+                    dto.ChapterHint, dto.Level, hint,sortedArray.Length,nextPath );
                 //if the desired chapter exists we need to find the closest to it
-                return Results.Ok(new NextChapterResponseDto(ContentCreatorLogic.FindPath(sortedArray, hint, dto.ChapterHint != 0)));
+                return Results.Ok(new NextChapterResponseDto(nextPath));
             }
         }
 

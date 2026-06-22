@@ -122,8 +122,9 @@ internal static class ContentCreatorLogic
         return true;
     }
 
-    public static decimal FindPath(NextChapterResponseDto[] paths, decimal chapterHint, bool goUp)
+    public static decimal FindPath(NextChapterResponseDto[] paths, decimal chapterHint, bool goUp, ILogger<Program> logger)
     {
+        
         //get the number and the one closest to it on the same direction
         int index = Array.FindIndex(paths, p => p.Chapter == chapterHint);
         int? nextIndex = null;
@@ -135,32 +136,32 @@ internal static class ContentCreatorLogic
         decimal nextNumber;
         if (nextIndex == null)
         {
-            nextNumber = GetNextInSeries(chapterHint, goUp);
+            nextNumber = GetNextInSeries(chapterHint, goUp, logger);
             if (nextNumber == 0)
             {
-                return GetNextFraction(chapterHint, goUp);
+                return GetNextFraction(chapterHint, goUp, logger);
             }
             return nextNumber;
         }
 
         nextNumber = paths[nextIndex.Value].Chapter;
 
-        return GetClosestMatch(chapterHint, nextNumber, goUp);
+        return GetClosestMatch(chapterHint, nextNumber, goUp, logger);
     }
 
-    public static decimal GetClosestMatch(decimal chapterHint, decimal nextNumber, bool goUp)
+    public static decimal GetClosestMatch(decimal chapterHint, decimal nextNumber, bool goUp, ILogger<Program> logger)
     {
-        decimal next = GetNextInSeries(chapterHint, goUp);
+        decimal next = GetNextInSeries(chapterHint, goUp, logger);
 
         //we must not exceed or be equal to nextNumber
         if ((goUp && next >= nextNumber) || (!goUp && next <= nextNumber))
         {
-            next = GetNextFraction(chapterHint, goUp);
+            next = GetNextFraction(chapterHint, goUp, logger);
             if ((goUp && next >= nextNumber) || (!goUp && next <= nextNumber))
             {
                 decimal step = 0;
 
-                step = GetNextFraction(nextNumber, goUp) - nextNumber;
+                step = GetNextFraction(nextNumber, goUp, logger) - nextNumber;
                 return step + chapterHint;
             }
         }
@@ -168,8 +169,12 @@ internal static class ContentCreatorLogic
         return next;
     }
 
-    public static decimal GetNextFraction(decimal input, bool up)
+    public static decimal GetNextFraction(decimal input, bool up, ILogger<Program> logger)
     {
+        // This trick removes trailing zeros
+        logger.LogInformation("GetNextFraction recieves input:{input}, up:{up}", input, up);
+        input = decimal.Parse(input.ToString("G29"));
+        logger.LogInformation("GetNextFraction after normalization of input:{input}", input);
         // 1. Extract the scale (number of decimal places) from the decimal
         // decimal.GetBits returns 4 ints. The 4th int contains the scale.
         int[] bits = decimal.GetBits(input);
@@ -183,15 +188,19 @@ internal static class ContentCreatorLogic
         // 3. Create a decimal that represents 10^-(scale + 1)
         // The constructor parameters are: (low, mid, high, isNegative, scale)
         decimal increment = new decimal(1, 0, 0, false, (byte)(scale + 1));
-
+        logger.LogInformation("GetNextFraction increment:{increment}", increment);
         if (up)
             return input + increment;
         else
             return input - increment;
     }
 
-    public static decimal GetNextInSeries(decimal input, bool up)
+    public static decimal GetNextInSeries(decimal input, bool up, ILogger<Program> logger)
     {
+        logger.LogInformation("GetNextInSeries recieves input:{input}, up:{up}", input, up);
+        input = decimal.Parse(input.ToString("G29"));
+        logger.LogInformation("GetNextInSeries after normalization of input:{input}", input);
+
         // 1. Extract the current scale (number of decimal places)
         int[] bits = decimal.GetBits(input);
         int scale = (bits[3] >> 16) & 0x7F;
