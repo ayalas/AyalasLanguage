@@ -106,26 +106,28 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
   }, [exerciseInfo]);
 
   return (
-    <div className="match-words-container">
-      {matches && matches.length > 0 && (
-        matches.map((match, i) => (
-          <div className="match-words-row" key={`qa-${i}`}>
-            <MatchWordItem
-              key={`qi-${i}`}
-              itemValue={match.Column1.First}
-              matchingValue={match.Column1.Second}
-              setSelected={onColumn1Selected}
-            />
+    <div className="exercise-outer-element">
+      <div className="exercise-inner-element">
+        {matches && matches.length > 0 && (
+          matches.map((match, i) => (
+            <div className="match-words-row" key={`qa-${i}`}>
+              <MatchWordItem
+                key={`qi-${i}`}
+                itemValue={match.Column1.First}
+                matchingValue={match.Column1.Second}
+                setSelected={onColumn1Selected}
+              />
 
-            <MatchWordItem
-              key={`ai-${i}`}
-              itemValue={match.Column2.Second}
-              matchingValue={match.Column2.First}
-              setSelected={onColumn2Selected}
-            />
-          </div>
-        ))
-      )}
+              <MatchWordItem
+                key={`ai-${i}`}
+                itemValue={match.Column2.Second}
+                matchingValue={match.Column2.First}
+                setSelected={onColumn2Selected}
+              />
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

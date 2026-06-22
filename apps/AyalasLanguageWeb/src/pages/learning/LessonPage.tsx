@@ -247,53 +247,54 @@ export function LessonPage() {
   return (
     <>
       <AuthHeader />
-      <div className="form-container">
-        {error !== '' && (
-          <div className="form-row">
-            <label className="form-error">{error}</label>
-          </div>
-        )}
-        <form>
-          {learningPathData && (
-            <>
-              <div className="form-header">
-                <h1>{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</h1>
-              </div>
-              {!currentExercise && (
-                <div className="form-row">
-                  <div className="form-button-cell">
-                    <Link to={`/author/path/${learningPathId}`} className="link-button" title="Edit lesson"><FilePenLine /></Link>
+      <div className="lesson-outer-container">
+        <div className="lesson-inner-container">
+          {error !== '' && (
+            <div className="form-row">
+              <label className="form-error">{error}</label>
+            </div>
+          )}
+          <form>
+            {learningPathData && (
+              <>
+                <div className="form-header">
+                  <h1>{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</h1>
+                </div>
+                {!currentExercise && (
+                  <div className="form-row">
+                    <div className="form-button-cell">
+                      <Link to={`/author/path/${learningPathId}`} className="link-button" title="Edit lesson"><FilePenLine /></Link>
+                    </div>
                   </div>
-                </div>
-              )}
-            </>
-          )}
-          {currentExercise && (
-            <>
-              <div className="form-row">
-                <label className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</label>
-              </div>
-
-              <Exercise key={currentExercise.exerciseId}
-                ref={setRef}
-                exerciseInfo={currentExercise}
-                moveNext={moveNext}
-                childLoaded={childLoaded}
-                saveProgress={saveProgress}
-                restartLesson={restartLesson}
-                learningPathId={Number(learningPathId)}
-                changeMistakesSetting={changeMistakesSetting}
-                practiseMistakesInThisPath={practiseMistakesInThisPath}
-                addMistake={addMistake} />
-              {currentExercise && (currentExercise.index ?? 0) > 0 && (
+                )}
+              </>
+            )}
+            {currentExercise && (
+              <>
                 <div className="form-row">
-                  <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
+                  <label className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</label>
                 </div>
-              )}
 
-            </>
-          )}
-        </form>
+                <Exercise key={currentExercise.exerciseId}
+                  ref={setRef}
+                  exerciseInfo={currentExercise}
+                  moveNext={moveNext}
+                  childLoaded={childLoaded}
+                  saveProgress={saveProgress}
+                  restartLesson={restartLesson}
+                  learningPathId={Number(learningPathId)}
+                  changeMistakesSetting={changeMistakesSetting}
+                  practiseMistakesInThisPath={practiseMistakesInThisPath}
+                  addMistake={addMistake} />
+                {currentExercise && (currentExercise.index ?? 0) > 0 && (
+                  <div className="form-row">
+                    <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
+                  </div>
+                )}
+              </>
+            )}
+          </form>
+        </div>
       </div>
     </>
   );

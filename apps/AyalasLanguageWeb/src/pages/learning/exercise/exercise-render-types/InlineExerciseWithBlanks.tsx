@@ -112,34 +112,36 @@ export const InlineExerciseWithBlanks = function (props: Props) {
 
     return (
         <>
-            <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
+            <div className="exercise-outer-element">
+                <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
                     user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
                     user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-                )? "form-label-row rtlanswer": "form-label-row answer"}>
-                {
-                    exerciseInfo.sentenceElements?.map((part, i) => {
-                        const setRef = (el: ExerciseInputHandle | null) => {
-                            if (el) {
-                                questionsRefMap.current.set(`${exerciseInfo.exerciseId}-${i}`, el);
-                            }
-                        };
-                        return (
-                            <Fragment key={`ex${exerciseInfo.exerciseId}input-container${i}`}>
-                                {part == PLACEHOLDERS.BLANKS && (
-                                    <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
-                                        ref={setRef}
-                                        charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
-                                        checkAnswer={parentCheckAnswer}
-                                        customKey={`${exerciseInfo.exerciseId}-${i}`}
-                                        onChange={onChangeFromInput}
-                                    />
-                                ) || (
-                                        <div className="content-line-part">{part}</div>
-                                    )}
-                            </Fragment>
-                        );
-                    })
-                }</div>
+                ) ? "exercise-inner-element rtlanswer" : "exercise-inner-element answer"}>
+                    {
+                        exerciseInfo.sentenceElements?.map((part, i) => {
+                            const setRef = (el: ExerciseInputHandle | null) => {
+                                if (el) {
+                                    questionsRefMap.current.set(`${exerciseInfo.exerciseId}-${i}`, el);
+                                }
+                            };
+                            return (
+                                <Fragment key={`ex${exerciseInfo.exerciseId}input-container${i}`}>
+                                    {part == PLACEHOLDERS.BLANKS && (
+                                        <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
+                                            ref={setRef}
+                                            charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
+                                            checkAnswer={parentCheckAnswer}
+                                            customKey={`${exerciseInfo.exerciseId}-${i}`}
+                                            onChange={onChangeFromInput}
+                                        />
+                                    ) || (
+                                            <div className="content-line-part">{part}</div>
+                                        )}
+                                </Fragment>
+                            );
+                        })
+                    }</div>
+            </div>
             {displayAnswer && (
                 <div className="form-row-play">
                     <div className="form-play-container">{second}

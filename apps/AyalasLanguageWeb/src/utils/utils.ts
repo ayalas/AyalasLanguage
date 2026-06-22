@@ -5,8 +5,13 @@ import { type CreateLogRequest, type LogType } from "@ayalaslanguage/types/log"
 export const isSecure = () => (window.location.protocol === 'https:')
 
 export const isTouchDevice = () => {
-  return typeof window !== 'undefined' && 
-    (navigator.maxTouchPoints > 0 || 'ontouchstart' in window);
+  if (typeof window === 'undefined') return false;
+
+  // This checks if the PRIMARY input mechanism is coarse (a finger)
+  // This is the most reliable way to detect "mobile-like" behavior
+  const isMobileQuery = window.matchMedia("(pointer: coarse)").matches;
+
+  return isMobileQuery;
 };
 
 export async function initializePuter() {

@@ -24,8 +24,24 @@ input[type="submit"] {
   }
 }
 
+.lesson-outer-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  place-content: top;
+  place-items: center;
+  flex-grow: 1;
+  flex-wrap: wrap;
+}
+.lesson-inner-container {
+  min-width: 800px;
+  @media (max-width: 1024px) {
+    min-width: 95vw;
+  }
+}
+
 body {
-  color: #2D3748;
+  color: var(--text-h);
 }
 
 .form-button {
@@ -55,7 +71,7 @@ body {
 
 .form-cell-footer {
   text-align: start;
-  color: #2D3748;
+  color: var(--text-h);
   line-height: min(20px);
   padding-left: 10px;
   padding-right: 10px;
@@ -63,7 +79,7 @@ body {
 
 .form-label-row {
   text-align: start;
-  color: #2D3748;
+  color: var(--text-h);
   align-content: center;
 }
 
@@ -142,7 +158,7 @@ label.label-deleted {
   align-items: center;
   /* 2. Vertically center the text and the button */
   text-align: start;
-  color: #2D3748;
+  color: var(--text-h);
   gap: 4px;
   /* 3. Add a small gap between text and button */
 }
@@ -188,6 +204,22 @@ input:required:invalid {
 .exercise-body-container {
   padding-top: 8px;
   padding-bottom: 16px;
+}
+
+.exercise-inner-element {
+  text-align: start;
+  color: var(--text-h);
+  align-content: center;
+}
+
+.exercise-outer-element {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  place-content: top;
+  place-items: center;
+  flex-grow: 1;
+  flex-wrap: wrap;
 }
 
 .form-error {
@@ -380,10 +412,6 @@ input:required:invalid {
   height: --fontsize;
 }
 
-.match-words-container {
-  padding-left: 20px;
-}
-
 .match-words-row {
   text-align: start;
   display: flex;
@@ -396,7 +424,10 @@ input:required:invalid {
   padding-right: 20px;
   padding-top: 5px;
   padding-bottom: 5px;
-  min-width: 12.5%;
+  min-width: 12.5vw;
+  @media (max-width: 1024px) {
+    min-width: 30vw;
+  }
 }
 
 .match-word-item-button {

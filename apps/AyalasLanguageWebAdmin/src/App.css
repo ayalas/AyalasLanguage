@@ -18,7 +18,7 @@ button[type="submit"], input[type="submit"] {
 }
 body {
   font-size: 18px;
-  color: #2D3748;
+  color: var(--text-h);
 }
 
 .form-button {
@@ -45,7 +45,7 @@ body {
 }
 .form-cell-footer {
   text-align: start;
-  color: #2D3748;
+  color: var(--text-h);
   line-height: min(20px);
   padding-left: 10px;
   padding-right: 10px;
@@ -53,7 +53,7 @@ body {
 
 .form-label-row {
   text-align: start;
-  color: #2D3748;
+  color: var(--text-h);
   align-content: center;
 }
 .form-label-center-row {
@@ -136,7 +136,7 @@ label.label-deleted {
   display: flex;          /* 1. Turn on flexbox */
   align-items: center;    /* 2. Vertically center the text and the button */
   text-align: start;
-  color: #2D3748;
+  color: var(--text-h);
   gap: 4px;              /* 3. Add a small gap between text and button */
 }
 

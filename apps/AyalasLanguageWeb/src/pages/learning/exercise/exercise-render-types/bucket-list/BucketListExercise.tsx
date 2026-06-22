@@ -122,32 +122,36 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
 
   return (
     <>
-      <div className="form-row-play">
-        <div className="form-play-container">{first}{shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
-          <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={async() => await playTargetText(first)}><CirclePlay /></button></div>
-        )}</div>
+      <div className="exercise-outer-element">
+        <div className="exercise-inner-element">
+          <div className="form-row-play">
+            <div className="form-play-container">{first}{shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
+              <div className="playButtonContainer"><button data-testid="play-question" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
+            )}</div>
+          </div>
+          {answerList && (
+            <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
+              user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+              user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+            ) ? "form-row rtlanswer" : "form-row answer"}>
+              {answerList.map((item, i) => (
+                <BucketListItem key={`answer-${i}`} itemValue={item} position={i} itemClicked={answerListItemClicked} />
+              ))}
+            </div>
+          )}
+          {bucketList && (
+            <div className="form-row bucket">
+              {bucketList.map((item, i) => (
+                <BucketListItem key={`bucket-${i}`} itemValue={item} position={i} itemClicked={bucketListItemClicked} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-      {answerList && (
-        <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
-                    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-                    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-                  )? "form-row rtlanswer" : "form-row answer"}>
-          {answerList.map((item, i) => (
-            <BucketListItem key={`answer-${i}`} itemValue={item} position={i} itemClicked={answerListItemClicked} />
-          ))}
-        </div>
-      )}
-      {bucketList && (
-        <div className="form-row bucket">
-          {bucketList.map((item, i) => (
-            <BucketListItem key={`bucket-${i}`} itemValue={item} position={i} itemClicked={bucketListItemClicked} />
-          ))}
-        </div>
-      )}
       {displayAnswer && (
         <div className="form-row-play">
           <div className="form-play-container">{second}
-            <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={async() => await playTargetText(second)}><CirclePlay /></button>
+            <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
           </div>
           {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
             <div className="form-content-row">{translation}</div>
