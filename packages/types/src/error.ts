@@ -17,8 +17,11 @@ export function errorHandler(err: unknown, func: (arg: string) => void) {
         if (data != null && data.detail && data.title) {
           message = `${data.title} ${data.detail}`;
         }
-        else if (data != null) {
+        else if (data != null && data != "") {
           message = JSON.stringify(data);
+        }
+        else {
+          message = err.message;
         }
       }
 
