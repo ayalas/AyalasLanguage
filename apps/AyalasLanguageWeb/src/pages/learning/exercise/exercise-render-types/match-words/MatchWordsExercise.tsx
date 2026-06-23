@@ -72,7 +72,7 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
   async function onColumn2Selected(matchObject: MatchSelection | null, setToDone: () => void, setToError: (b: boolean) => void) {
     onColumnSelected(matchObject, setToDone, setToError, column2Selected, column1Selected, setColumn2Selected, setColumn1Selected);
     if (matchObject != null && matchObject.itemValue != null) {
-      await playTargetText(matchObject.itemValue);
+      playTargetText(matchObject.itemValue);
     }
   }
 

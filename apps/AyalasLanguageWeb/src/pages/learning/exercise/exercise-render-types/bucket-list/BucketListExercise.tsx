@@ -122,7 +122,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   }
 
   async function bucketListItemClicked(itemValue: string, position: number) {
-    await playTargetText(itemValue);
+    playTargetText(itemValue);
 
     if (hasSingleBucketAnswer(exerciseInfo.exerciseTypeId)) {
       setBucketList([...answerList, ...bucketList.filter((_, ind) => ind !== position)]);
