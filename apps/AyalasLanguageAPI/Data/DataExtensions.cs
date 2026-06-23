@@ -83,11 +83,6 @@ public static class DataExtensions
                 options.UseMySql(connectionString, serverVersion,
                     b => b.MigrationsHistoryTable("__EFMigrationsHistory")
                     .MigrationsAssembly("AyalasLanguageAPI.Data.Migrations.MySQL"));
-
-                options.UseAsyncSeeding(async (context, _, cancellationToken) =>
-                {
-                    await context.MakeFirstUserAdminBySeeding(cancellationToken);
-                });
             });
         }
         else

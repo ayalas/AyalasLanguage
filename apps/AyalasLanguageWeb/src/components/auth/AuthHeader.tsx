@@ -42,7 +42,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
       const targetId = user.languageSettings.targetLanguageId;
       if (targetId != null) {
         setSelectedLanguageId(targetId);
-        setSelectedLanguage(user.languageSettings.targetLanguage || '');
+        setSelectedLanguage(user.languageSettings.targetLanguageEnglishName || '');
 
         if (!showLanguageNextToProfile && (!user.languageSettings.otherUserLanguages || user.languageSettings.otherUserLanguages.length === 0)) {
           setShowLanguageNextToProfile(true);
@@ -84,7 +84,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
       setSelectedLanguageId(val);
       const fn = switchLanguage as unknown as SwitchLanguageFunc;
       const newUser = await fn(axios, user, login, val, user?.languageSettings?.knownLanguageId);
-      setSelectedLanguage(newUser.languageSettings?.targetLanguage ?? '');
+      setSelectedLanguage(newUser.languageSettings?.targetLanguageEnglishName ?? '');
     } catch (err) {
       console.error('Language switch error:', err);
     }
@@ -99,7 +99,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
           ) || (user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
             <div className="header-input-cell">
               <select id="language-picker" className="header-select" value={String(selectedLanguageId)} onChange={onChangeLanguage} >
-                <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguage}</option>
+                <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguageEnglishName}</option>
                 {
                   user.languageSettings.otherUserLanguages.map((lang: any) => {
                     return (

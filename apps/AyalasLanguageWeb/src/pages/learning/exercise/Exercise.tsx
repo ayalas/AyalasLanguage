@@ -108,7 +108,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
         if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
             const desc = EXERCISE_TYPE_INSTRUCTIONS[exerciseInfo.exerciseTypeId];
             return desc.replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
-                .replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguage || '')
+                .replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '')
         }
         return "";
     }
