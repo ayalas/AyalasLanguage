@@ -37,13 +37,14 @@ public class AyalasLanguageDbContext : DbContext
             .HasIndex(p => new { p.KnownLanguageId, p.TargetLanguageId, p.Level, p.Chapter });
 
         modelBuilder.Entity<ExerciseType>().HasData(
-            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "from Known to target language" },
-            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnown, Name = "from target to Known language" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "From known to target language" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnown, Name = "From target to known language" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FillInTheBlanks, Name = "Fill in the Blank" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.Matching, Name = "Matching" },
-            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTargetBucket, Name = "from Known to target language - bucket list" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTargetBucket, Name = "From known to target language - bucket list" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.CommonResponsesBucket, Name = "Common responses - bucket list" },
-            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.CommonResponses, Name = "Common responses" }
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.CommonResponses, Name = "Common responses" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnownBucket, Name = "From target to known language - bucket list" }
         );
 
         // Seed common languages

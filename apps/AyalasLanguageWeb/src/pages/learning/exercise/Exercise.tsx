@@ -12,7 +12,7 @@ import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { puter } from "@heyputer/puter.js";
 import { initializePuter, isSecure } from '../../../utils/utils';
-import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayRevealedAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
+import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;
@@ -82,7 +82,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
         const newValue = !displayAnswer;
         setDisplayAnswer(newValue);
 
-        if (newValue && shouldPlayRevealedAnswer(exerciseInfo.exerciseTypeId)) {
+        if (newValue && shouldPlayAnswer(exerciseInfo.exerciseTypeId)) {
             playTargetText();
         }
     }

@@ -128,12 +128,12 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         new
                         {
                             ExerciseTypeId = 1,
-                            Name = "from Known to target language"
+                            Name = "From known to target language"
                         },
                         new
                         {
                             ExerciseTypeId = 2,
-                            Name = "from target to Known language"
+                            Name = "From target to known language"
                         },
                         new
                         {
@@ -148,7 +148,7 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         new
                         {
                             ExerciseTypeId = 5,
-                            Name = "from Known to target language - bucket list"
+                            Name = "From known to target language - bucket list"
                         },
                         new
                         {
@@ -159,6 +159,11 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         {
                             ExerciseTypeId = 7,
                             Name = "Common responses"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 8,
+                            Name = "From target to known language - bucket list"
                         });
                 });
 

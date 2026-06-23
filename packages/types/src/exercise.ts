@@ -6,7 +6,8 @@ export const EXERCISE_TYPES =
     MATCHING: 4,
     FROM_KNOWN_TO_TARGET_BUCKET: 5,
     COMMON_RESPONSES_BUCKET: 6,
-    COMMON_RESPONSES: 7
+    COMMON_RESPONSES: 7,
+    FROM_TARGET_TO_KNOWN_BUCKET: 8
   } as const;
 
 export type ExerciseType = typeof EXERCISE_TYPES[keyof typeof EXERCISE_TYPES];

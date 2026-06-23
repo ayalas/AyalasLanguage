@@ -12,6 +12,7 @@ internal static class ExerciseTypeExtensions
         ExerciseTypesEnum.FromTargetToKnown => true,
         ExerciseTypesEnum.FromKnownToTargetBucket => true,
         ExerciseTypesEnum.CommonResponses => true,
+        ExerciseTypesEnum.FromTargetToKnownBucket => true,
         _ => false
     };
 
@@ -19,6 +20,7 @@ internal static class ExerciseTypeExtensions
     {
         ExerciseTypesEnum.CommonResponsesBucket => true,
         ExerciseTypesEnum.FromKnownToTargetBucket => true,
+        ExerciseTypesEnum.FromTargetToKnownBucket => true,
         _ => false
     };
 
@@ -26,6 +28,7 @@ internal static class ExerciseTypeExtensions
     {
         ExerciseTypesEnum.CommonResponsesBucket => ",",
         ExerciseTypesEnum.FromKnownToTargetBucket => " ",
+        ExerciseTypesEnum.FromTargetToKnownBucket => " ",
         _ => throw new ArgumentOutOfRangeException(nameof(type))
     };
 }

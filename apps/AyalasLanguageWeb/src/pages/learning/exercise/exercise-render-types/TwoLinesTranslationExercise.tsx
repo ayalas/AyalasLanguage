@@ -7,7 +7,7 @@ import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles'
 import type { User } from '../../../../types/shared/User';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { CirclePlay } from 'lucide-react';
-import { isRightToLeftInput, shouldPlayQuestion, shouldPlayRevealedAnswer, showTranslationOnRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';
+import { isRightToLeftInput, shouldPlayQuestion, shouldPlayAnswer, showTranslationOnRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -121,7 +121,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       {displayAnswer && (
         <div className="form-row-play">
           <div className="form-play-container">{second}
-            {shouldPlayRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+            {shouldPlayAnswer(exerciseInfo.exerciseTypeId) && (
               <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
             )}</div>
           {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (

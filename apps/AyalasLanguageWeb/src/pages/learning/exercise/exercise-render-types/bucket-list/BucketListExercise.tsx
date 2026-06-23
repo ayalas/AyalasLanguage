@@ -4,7 +4,7 @@ import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
-import { hasSingleBucketAnswer, isRightToLeftInput, shouldPlayQuestion, showTranslationOnRevealedAnswer, supportsAlternativeAnswers } from '../../../../../logic/ExerciseTypeLogic';
+import { hasSingleBucketAnswer, isRightToLeftInput, shouldPlayAnswer, shouldPlayQuestion, showTranslationOnRevealedAnswer, supportsAlternativeAnswers } from '../../../../../logic/ExerciseTypeLogic';
 import type { User } from '../../../../../types/shared/User';
 import { replaceCharsForLanguage } from '../../../../../utils/languageUtils';
 
@@ -122,7 +122,9 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   }
 
   async function bucketListItemClicked(itemValue: string, position: number) {
-    playTargetText(itemValue);
+    if (shouldPlayAnswer(exerciseInfo.exerciseTypeId)) {
+      playTargetText(itemValue);
+    }
 
     if (hasSingleBucketAnswer(exerciseInfo.exerciseTypeId)) {
       setBucketList([...answerList, ...bucketList.filter((_, ind) => ind !== position)]);
@@ -166,7 +168,9 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       {displayAnswer && (
         <div className="form-row-play">
           <div className="form-play-container">{second}
+            {shouldPlayAnswer(exerciseInfo.exerciseTypeId) && (
             <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
+            )}
           </div>
           {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
             <div className="form-content-row">{translation}</div>

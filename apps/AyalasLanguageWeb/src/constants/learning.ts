@@ -32,16 +32,18 @@ EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.MATCHING] = "Match words between the t
 EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET] = `Translate to ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} by selecting some of these words in the right order.`;
 EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.COMMON_RESPONSES_BUCKET] = 'Choose the common response to this sentence';
 EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.COMMON_RESPONSES] = 'Answer the common response to this sentence';
+EXERCISE_TYPE_INSTRUCTIONS[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET] = `Translate to ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} by selecting some of these words in the right order.`;
 
 export const EXERCISE_TYPE_NAME_MAPPING: string[] = [];
 EXERCISE_TYPE_NAME_MAPPING[0]= "Empty";
-EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET]= "Translate to target language";
-EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN]= "Translate to known language";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET]= "Translate";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN]= "Translate back";
 EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FILL_IN_THE_BLANKS]= "Fill in words";
 EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.MATCHING]= "Match words";
 EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET]= "Translate with bucket list";
 EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES_BUCKET]= "Common responses with bucket list";
 EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES]= "Common responses";
+EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET]= "Translate back with bucket list";
 
 export const EXERCISE_GENERATIONS = 
 [
@@ -94,7 +96,7 @@ export const EXERCISE_GENERATIONS =
     {
         type: EXERCISE_TYPES.COMMON_RESPONSES_BUCKET,
         name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES_BUCKET],
-        description:"Generate sentences in the langauge are learning that have common answers - choose the right one from a bucket list.",
+        description:"Generate sentences in the langauge you are learning that have common answers - choose the right one from a bucket list.",
         first_data_instructions: "Sentences in the langauge you are learning that have common answers, separated by semi-colon(;)",
         second_data_instructions: "The correct common responses in the langauge you are learning to those sentences, separated by semi-colon(;)",
         extra_options_instructions: "Sets of wrong responses to each sentence. Each response separated by comma(,). Each set that corresponds to the sentence to respond to - separated by semi-colon(;)",
@@ -104,11 +106,21 @@ export const EXERCISE_GENERATIONS =
     {
         type: EXERCISE_TYPES.COMMON_RESPONSES,
         name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES],
-        description:"Generate sentences in the langauge are learning that have common answers - write the right one.",
+        description:"Generate sentences in the langauge you are learning that have common answers - write the right one.",
         first_data_instructions: "Sentences in the langauge you are learning that have common answers, separated by semi-colon(;)",
         second_data_instructions: "The correct common responses in the langauge you are learning to those sentences, separated by semi-colon(;)",
         ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 25 sentences in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, that have common responses to. I would have to write the correct response in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Then prepare a separate list with the full correct answers. In each list, separate each sentence with semi-colon. Do not include punctuations, just the sentences.`,
         ai_instruction_auto: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER} (on a scale of 1 to ${TOP_LEVEL}). Prepare for me 25 exercises on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}. In each exercise I would have to write a common response to the sentence presented. Both the sentence and the responses are in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}. Do not include punctuations, just the sentences and responses. Add a translation of the exchange that can include punctuations. Return the result as a raw JSON array of objects in this format: {First: string, Second: string, Translation: string } where First would be the sentence to respond to and Second would be the correct response, and Translation would be the full translation of the exchange, the values of First and Second, to ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}`
+    },
+    {
+        type: EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET, 
+        name: EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET], 
+        description:"Generate sentences in the langauge you are learning to translate to the langauge you know from a bucket list.",
+        first_data_instructions: "Sentences in the langauge you are learning, separated by semi-colon(;)",
+        second_data_instructions: "Sentences in the langauge you know, separated by semi-colon(;)",
+        extra_options_instructions: "Sets of words that are wrong choises in the translated sentence. Each word separated by space. Each set separated by semi-colon(;)",
+        ai_instruction: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER}. Prepare for me 10 sentences in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}, on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}, that I would have to translate to ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}. Then prepare a separate list with the full correct answers. In each list, separate each sentence with semi-colon. Do not include punctuations, just the sentences. For each sentence, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} words in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} that do not appear in the corresponding sentence. separate each such set of words with a semi-colon, and present this as a third list of wrong extra options.`,
+        ai_instruction_auto: `I am learning ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} from ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} at level ${PLACEHOLDERS.LEVEL_PLACEHOLDER} (on a scale of 1 to ${TOP_LEVEL}). Prepare for me 10 translation exercises on the subject of ${PLACEHOLDERS.SUBJECT_PLACEHOLDER}. In each exercise I would have to translate from ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER} to ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}. Do not include punctuations, just the sentences, so one would not be able to know, for instance, what's the last word according to the period at its end. For each sentence, generate between ${BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} and ${BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} wrong extra words in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER}, separated only by whitespace, that do not appear in the corresponding translated sentence. Return the result as a raw JSON array of objects in this format: {First: string, Second: string, ExtraOptions: string} where First would be the sentence in ${PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER}, Second would be the sentence in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} and ExtraOptions would be the whitespace-separated list of words in ${PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER} that do not appear in the corresponding translated sentence.`
     }
 ];
 
