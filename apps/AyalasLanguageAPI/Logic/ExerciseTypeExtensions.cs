@@ -10,6 +10,7 @@ internal static class ExerciseTypeExtensions
     {
         ExerciseTypesEnum.FromKnownToTarget => true,
         ExerciseTypesEnum.FromTargetToKnown => true,
+        ExerciseTypesEnum.FromKnownToTargetBucket => true,
         ExerciseTypesEnum.CommonResponses => true,
         _ => false
     };

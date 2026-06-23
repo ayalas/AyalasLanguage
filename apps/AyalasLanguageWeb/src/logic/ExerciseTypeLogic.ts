@@ -1,12 +1,12 @@
 import { EXERCISE_TYPES, type ExerciseType } from "@ayalaslanguage/types/exercise";
 
 export const supportsAlternativeAnswers = (type: ExerciseType | 0): boolean => {
-    const map: Partial<Record<ExerciseType | 0, boolean>> = {
-        [EXERCISE_TYPES.FROM_KNOWN_TO_TARGET]: true,
-        [EXERCISE_TYPES.FROM_TARGET_TO_KNOWN]: true,
-        [EXERCISE_TYPES.COMMON_RESPONSES]: true,
-    };
-    return map[type] ?? false;
+    return ([
+        EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
+        EXERCISE_TYPES.FROM_TARGET_TO_KNOWN,
+        EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET,
+        EXERCISE_TYPES.COMMON_RESPONSES
+    ] as (ExerciseType | 0)[]).includes(type);
 };
 
 export const showCheckAnswers = (type: ExerciseType | 0): boolean => {

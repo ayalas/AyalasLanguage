@@ -4,8 +4,9 @@ import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
-import { hasSingleBucketAnswer, isRightToLeftInput, shouldPlayQuestion, showTranslationOnRevealedAnswer } from '../../../../../logic/ExerciseTypeLogic';
+import { hasSingleBucketAnswer, isRightToLeftInput, shouldPlayQuestion, showTranslationOnRevealedAnswer, supportsAlternativeAnswers } from '../../../../../logic/ExerciseTypeLogic';
 import type { User } from '../../../../../types/shared/User';
+import { replaceCharsForLanguage } from '../../../../../utils/languageUtils';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -24,26 +25,41 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   const [second, setSecond] = useState('');
   const [translation, setTranslation] = useState('');
 
-  function checkAnswerInternal(altAnswers: (string)[] = []) {
+  function checkAnswerInternal(userAnswers: (string)[] = []) {
     let canMoveNext = true;
     let singleAnswer = false;
 
-    if (altAnswers.length == 0) {
-      altAnswers = [...answerList];
+    if (userAnswers.length == 0) {
+      userAnswers = [...answerList];
     }
     else {
-      singleAnswer = (altAnswers.length == 1);
+      singleAnswer = (userAnswers.length == 1);
     }
 
-    if (altAnswers.length === (exerciseInfo.answers?.length || 0)) {
-      for (let i = 0; i < altAnswers.length; i++) {
-        if (altAnswers[i].toLowerCase() !== (exerciseInfo.answers?.[i]?.toLowerCase() || '')) {
+    if (userAnswers.length === (exerciseInfo.answers?.length || 0)) {
+      for (let i = 0; i < userAnswers.length; i++) {
+        if (userAnswers[i].toLowerCase() !== (exerciseInfo.answers?.[i]?.toLowerCase() || '')) {
           canMoveNext = false;
           break;
         }
       }
     } else {
       canMoveNext = false;
+    }
+
+    if (!canMoveNext) {
+      if (supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) {
+        if (exerciseInfo.exerciseObject?.Alternatives != null &&
+          exerciseInfo.exerciseObject?.Alternatives.length > 0) {
+          const userAnswerAsStr = userAnswers.join(" ");
+          for (const alternative of exerciseInfo.exerciseObject.Alternatives) {
+            if (userAnswerAsStr == alternative) {
+              canMoveNext = true;
+              break;
+            }
+          }
+        }
+      }
     }
 
     if (canMoveNext) {
@@ -69,8 +85,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       // focus is not applicable for bucket-list, leave as no-op
     },
     getCurrentAnswer() {
-      //not applicable
-      return '';
+      return answerList.join(" ");
     }
   }));
 
