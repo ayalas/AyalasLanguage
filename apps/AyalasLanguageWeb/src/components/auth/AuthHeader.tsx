@@ -104,7 +104,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
                   user.languageSettings.otherUserLanguages.map((lang: any) => {
                     return (
                       <option key={lang.languageId} value={lang.languageId}>
-                        {lang.nativeName}
+                        {lang.englishName}
                       </option>
                     );
                   })

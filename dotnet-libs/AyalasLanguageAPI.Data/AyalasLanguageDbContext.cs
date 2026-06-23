@@ -39,12 +39,13 @@ public class AyalasLanguageDbContext : DbContext
         modelBuilder.Entity<ExerciseType>().HasData(
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "From known to target language" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnown, Name = "From target to known language" },
-            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FillInTheBlanks, Name = "Fill in the Blank" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FillInTheBlanks, Name = "Fill in the blank" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.Matching, Name = "Matching" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTargetBucket, Name = "From known to target language - bucket list" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.CommonResponsesBucket, Name = "Common responses - bucket list" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.CommonResponses, Name = "Common responses" },
-            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnownBucket, Name = "From target to known language - bucket list" }
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnownBucket, Name = "From target to known language - bucket list" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.MatchingToSpoken, Name = "Matching to spoken word" }
         );
 
         // Seed common languages

@@ -1,3 +1,4 @@
+import { CirclePlay } from 'lucide-react';
 import React, { useState } from 'react';
 
 export type MatchSelection = {
@@ -12,10 +13,10 @@ type Props = {
   itemValue: string;
   matchingValue: string;
   setSelected: (matchObject: MatchSelection | null, setToDone: () => void, setToError: (v: boolean) => void) => void;
-  
+  isSpoken: boolean;
 };
 
-export const MatchWordItem: React.FC<Props> = ({ itemValue, matchingValue, setSelected }) => {
+export const MatchWordItem: React.FC<Props> = ({ itemValue, matchingValue, setSelected, isSpoken }) => {
   const [isSelected, setIsSelected] = useState(false);
   const [errorState, setErrorState] = useState(false);
   const [isDone, setIsDone] = useState(false);
@@ -46,7 +47,15 @@ export const MatchWordItem: React.FC<Props> = ({ itemValue, matchingValue, setSe
 
   return (
     <div className="match-word-item-cell">
-      <button data-testid="click-button" className={className} onClick={clickButton}>{itemValue}</button>
+      <button data-testid="click-button" className={className} onClick={clickButton}>
+        {!isSpoken && (
+          <>
+          {itemValue}
+          </>
+        ) || (
+          <CirclePlay />
+        )}
+      </button>
     </div>
   );
 };

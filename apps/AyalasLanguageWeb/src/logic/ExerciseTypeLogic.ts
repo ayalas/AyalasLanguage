@@ -43,7 +43,8 @@ export const showTranslationOnRevealedAnswer = (type: ExerciseType | 0): boolean
 
 export const isMatchingType = (type: ExerciseType | 0): boolean => {
     return ([
-        EXERCISE_TYPES.MATCHING
+        EXERCISE_TYPES.MATCHING,
+        EXERCISE_TYPES.MATCHING_TO_SPOKEN
     ] as (ExerciseType | 0)[]).includes(type);
 };
 
@@ -77,6 +78,12 @@ export const isRightToLeftInput = (type: ExerciseType | 0, targetIsRtl: boolean,
         EXERCISE_TYPES.FROM_TARGET_TO_KNOWN,
         EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET
     ] as (ExerciseType | 0)[]).includes(type) && knownIsRtl);
+};
+
+export const targetIsSpoken = (type: ExerciseType | 0): boolean => {
+    return ([
+        EXERCISE_TYPES.MATCHING_TO_SPOKEN
+    ] as (ExerciseType | 0)[]).includes(type);
 };
 
 export const shouldPlayAnswer = (type: ExerciseType | 0): boolean => {

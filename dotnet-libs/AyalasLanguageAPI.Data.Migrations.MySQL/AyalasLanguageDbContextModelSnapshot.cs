@@ -138,7 +138,7 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         new
                         {
                             ExerciseTypeId = 3,
-                            Name = "Fill in the Blank"
+                            Name = "Fill in the blank"
                         },
                         new
                         {
@@ -164,6 +164,11 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         {
                             ExerciseTypeId = 8,
                             Name = "From target to known language - bucket list"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 9,
+                            Name = "Matching to spoken word"
                         });
                 });
 

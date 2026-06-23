@@ -39,7 +39,8 @@ public enum ExerciseTypesEnum
     FromKnownToTargetBucket = 5,
     CommonResponsesBucket = 6,
     CommonResponses = 7,
-    FromTargetToKnownBucket = 8
+    FromTargetToKnownBucket = 8,
+    MatchingToSpoken = 9
 }
 
 public enum LogTypeEnum
