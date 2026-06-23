@@ -10,6 +10,13 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_LearningPaths_Languages_TargetLanguageId",
+                table: "LearningPaths");
+            migrationBuilder.DropForeignKey(
+                name: "FK_LearningPaths_Languages_KnownLanguageId",
+                table: "LearningPaths");
+
             migrationBuilder.DropIndex(
                 name: "IX_LearningPaths_KnownLanguageId",
                 table: "LearningPaths");
@@ -27,11 +34,36 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                 name: "IX_LearningPaths_TargetLanguageId",
                 table: "LearningPaths",
                 column: "TargetLanguageId");
+
+            
+            migrationBuilder.AddForeignKey(
+                    name: "FK_LearningPaths_Languages_KnownLanguageId",
+                    table: "LearningPaths",
+                    column: "KnownLanguageId",
+                    principalTable: "Languages",
+                    principalColumn: "LanguageId",
+                    onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                    name: "FK_LearningPaths_Languages_TargetLanguageId",
+                    table: "LearningPaths",
+                    column: "TargetLanguageId",
+                    principalTable: "Languages",
+                    principalColumn: "LanguageId",
+                    onDelete: ReferentialAction.Cascade);
+            
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_LearningPaths_Languages_TargetLanguageId",
+                table: "LearningPaths");
+            migrationBuilder.DropForeignKey(
+                name: "FK_LearningPaths_Languages_KnownLanguageId",
+                table: "LearningPaths");
+
             migrationBuilder.DropIndex(
                 name: "IX_LearningPaths_KnownLanguageId_TargetLanguageId_Level_Chapter",
                 table: "LearningPaths");
@@ -50,6 +82,22 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                 table: "LearningPaths",
                 columns: new[] { "TargetLanguageId", "KnownLanguageId", "Level", "Chapter" },
                 unique: true);
+
+            migrationBuilder.AddForeignKey(
+                    name: "FK_LearningPaths_Languages_KnownLanguageId",
+                    table: "LearningPaths",
+                    column: "KnownLanguageId",
+                    principalTable: "Languages",
+                    principalColumn: "LanguageId",
+                    onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                    name: "FK_LearningPaths_Languages_TargetLanguageId",
+                    table: "LearningPaths",
+                    column: "TargetLanguageId",
+                    principalTable: "Languages",
+                    principalColumn: "LanguageId",
+                    onDelete: ReferentialAction.Cascade);
         }
     }
 }

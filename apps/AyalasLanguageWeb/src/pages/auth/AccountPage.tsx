@@ -136,7 +136,7 @@ export function AccountPage() {
             )}
             <div className="form-row">
               <div className="form-label-cell">
-                <label className="form-label">Display Name</label>
+                <label className="form-label">First Name</label>
               </div>
             </div>
             <div className="form-row">

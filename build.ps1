@@ -38,7 +38,7 @@ function Copy-Frontend {
         [string]$SourcePath
     )
     # Copy API Dist to Web Publish Directory
-    Write-Host "Copying API dist to $DisplayName static files serving folder..." -ForegroundColor Cyan
+    Write-Host "Copying $SourcePath for $DisplayName static files serving..." -ForegroundColor Cyan
     if (Test-Path $SourcePath) {
         Copy-Item -Path $SourcePath -Destination $publishDir -Recurse -Force
     } else {

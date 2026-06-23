@@ -271,7 +271,7 @@ public static class AuthEndpoints
 
         if (!BCrypt.Net.BCrypt.Verify(dto.OldPassword, user.PasswordHash))
         {
-            return Results.BadRequest("Old password is incorrect.");
+            return Results.BadRequest("Current password is incorrect.");
         }
 
         if (!user.EmailConfirmed)

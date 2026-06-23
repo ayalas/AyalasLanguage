@@ -81,7 +81,7 @@ export default function Homepage() {
         )}
         {(learningPath && learningPath.length > 0) && (
           <div className="learning-container">
-            {learningPath.map((level, levelIndex) => {
+            {learningPath.map((level) => {
               return (
                 <div className="learning-level-container" key={`level-${level.level}`}>
                   <h4>Level {level.level}</h4>
