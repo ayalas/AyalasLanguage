@@ -28,6 +28,27 @@ export const InlineExerciseWithBlanks = function (props: Props) {
     const [second, setSecond] = useState('');
     const [translation, setTranslation] = useState('');
 
+    const checkAnswerOrMoveToNextInput = function () {
+        if (currentInputKey.current != "") {
+            const lastChar = Number(currentInputKey.current.at(-1));
+
+            if (exerciseInfo.answers != null && exerciseInfo.answers.length - 1 > lastChar) {
+                //get the next input by the answer with no placeholders
+                const nextIndex = exerciseInfo.answers.findIndex((element, index) => index > lastChar && element != PLACEHOLDERS.BLANKS);
+                if (nextIndex > 0) {
+                    const tryRef = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-${nextIndex}`);
+                    if (tryRef != null) {
+                        tryRef.setFocus();
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (parentCheckAnswer) {
+            parentCheckAnswer();
+        }
+    };
 
     const onChangeFromKeyboard = useCallback((input: string) => {
         if (currentInputKey.current !== "") {
@@ -130,7 +151,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                         <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                             ref={setRef}
                                             charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
-                                            checkAnswer={parentCheckAnswer}
+                                            checkAnswer={checkAnswerOrMoveToNextInput}
                                             customKey={`${exerciseInfo.exerciseId}-${i}`}
                                             onChange={onChangeFromInput}
                                         />
