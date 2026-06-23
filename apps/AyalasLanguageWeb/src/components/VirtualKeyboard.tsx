@@ -10,6 +10,7 @@ type KeyboardInstance = {
     setOptions?: (opts: Record<string, unknown>) => void;
     setInput?: (v: string) => void;
     getInput?: () => string;
+    setCaretPosition?: (index: number | null) => void;
 };
 
 type KeyboardConstructor = new (selector: string | HTMLElement, options?: Record<string, unknown>) => KeyboardInstance;
@@ -53,7 +54,7 @@ type Props = {
     value?: string;
 };
 
-const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft = false, onChange = () => {}, value = '' }) => {
+const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft = false, onChange = () => { }, value = '' }) => {
     const keyboardRef = useRef<KeyboardInstance | null>(null);
     const [showKeyboard, setShowKeyboard] = useState(true);
     const [layoutName, setLayoutName] = useState('default');
@@ -76,14 +77,21 @@ const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft =
         if (!keyboardRef.current) {
             keyboardRef.current = new (Keyboard as KeyboardConstructor)('.simple-keyboard', {
                 onKeyPress: (button: string) => handleKeyPress(button),
+                useCaretPosition: true,
+                syncInstanceInputs: true,
+                // preventMouseDownDefault prevents the input from losing focus
+                preventMouseDownDefault: true 
             });
+            (window as any).keyboard = keyboardRef.current;
         }
 
         // 2. Safely apply current configurations (Layout, Arabic, RTL, and the stable onChange)
         const keyboardOptions: Record<string, unknown> = {
             onChange: (input: string) => onChange?.(input),
             layoutName: layoutName,
-            rtl: !!isRightToLeft
+           // rtl: !!isRightToLeft,
+            //preventMouseDownDefault: true,
+            useCaretPosition: true
         };
 
         if (languageCode !== 'en') {
@@ -104,12 +112,9 @@ const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft =
     useEffect(() => {
         const current = keyboardRef.current;
         if (!current || !isSupported) return;
-        const getInput = current.getInput;
-        const setInput = current.setInput;
-        if (typeof getInput === 'function' && typeof setInput === 'function') {
-            if (value !== getInput.call(current)) {
-                setInput.call(current, value);
-            }
+
+        if (value !== current.getInput?.()) {
+            current.setInput?.(value);
         }
     }, [value, isSupported]);
 

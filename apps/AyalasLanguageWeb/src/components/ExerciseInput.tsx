@@ -13,12 +13,24 @@ interface Props {
   ref?: React.Ref<ExerciseInputHandle | null>;
 }
 
-export const ExerciseInput = function(props: Props) {
-  const { charWidth = 20, checkAnswer, value, onChange = () => {}, customKey, ref } = props;
+export const ExerciseInput = function (props: Props) {
+  const { charWidth = 20, checkAnswer, value, onChange = () => { }, customKey, ref } = props;
   const [internalData, setInternalData] = useState<string>('');
   const [errorState, setErrorState] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const { user } = useOutletContext() as { user?: User };
+
+  const syncVirtualKeyboard = (val: string, pos: number | null) => {
+    const kb = (window as any).keyboard;
+    if (kb) {
+      // 1. Update the internal string buffer
+      kb.setInput(val);
+      // 2. Update the cursor position within that buffer
+      // simple-keyboard needs a small timeout or immediate call depending on version, 
+      // but immediate is usually correct for 3.x
+      kb.setCaretPosition(pos);
+    }
+  };
 
   useImperativeHandle(ref, () => ({
     getUserAnswer() {
@@ -37,7 +49,7 @@ export const ExerciseInput = function(props: Props) {
     }
   }));
 
- useEffect(() => {
+  useEffect(() => {
     if (value != null) {
       setInternalData(value);
       setErrorState(false);
@@ -45,9 +57,20 @@ export const ExerciseInput = function(props: Props) {
   }, [value]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInternalData(e.target.value);
-    onChange?.(e.target.value, customKey);
+    const val = e.target.value;
+    const pos = e.target.selectionStart; // Capture current cursor
+
+    setInternalData(val);
+    onChange?.(val, customKey);
     setErrorState(false);
+
+    // Sync the internal state of the keyboard immediately
+    syncVirtualKeyboard(val, pos);
+  };
+
+  const handleSelect = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+    syncVirtualKeyboard(target.value, target.selectionStart);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -72,6 +95,8 @@ export const ExerciseInput = function(props: Props) {
       type="text"
       value={internalData}
       onChange={onInputChange}
+      onSelect={handleSelect}
+      onKeyUp={handleSelect}
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
       className="input-text-placeholder"

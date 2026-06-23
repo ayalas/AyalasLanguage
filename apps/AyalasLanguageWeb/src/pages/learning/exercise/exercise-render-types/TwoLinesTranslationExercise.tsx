@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import type { ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
@@ -27,9 +27,9 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
   const [second, setSecond] = useState('');
   const [translation, setTranslation] = useState('');
 
-  function OnChange(value: string) {
+  const OnChange = useCallback((value: string) => {
     setInputValue(value);
-  }
+}, []); // Stable reference
 
   function compareToAnswer(userAnswer: string, correctAnswer: string) {
     const target = (replaceCharsForLanguage(user?.languageSettings?.targetLanguage ?? '', correctAnswer) ?? '').trim().toLowerCase();

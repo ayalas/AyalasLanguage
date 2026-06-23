@@ -33,7 +33,9 @@ export function replaceCharsForLanguage(language: string | undefined, str: strin
                 .replaceAll('th', 'þ').replaceAll('Th', 'Þ').replaceAll('TH', 'Þ')
                 .replaceAll('dh', 'ð').replaceAll('Dh', 'Ð').replaceAll('DH', 'Ð');
         case 'العربية':
-            return str.replace(/[\u064B-\u0652\u0640]/g, '');
+            return str.replace(/[\u064B-\u0652\u0640]/g, '').replaceAll('إ', 'ا')
+                .replaceAll('أ', 'ا').replaceAll('آ', 'ا').replaceAll('ئ', 'ى')
+                .replaceAll('ؤ','و');
         default:
             return str;
     }
