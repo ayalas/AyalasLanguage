@@ -40,7 +40,7 @@ export function ContactUsPublicPage() {
                     {!success && (
                         <div className="form-row">
                             <div className="form-button-cell">
-                                <button data-testid="save" type="submit" className="form-button login-button"><Send /> Send</button>
+                                <button data-testid="save" type="submit" className="form-button"><Send /> Send</button>
                             </div>
                         </div>
                     )}
