@@ -6,7 +6,6 @@ import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
 import { hasSingleBucketAnswer, isRightToLeftInput, shouldPlayAnswer, shouldPlayQuestion, showTranslationOnRevealedAnswer, supportsAlternativeAnswers } from '../../../../../logic/ExerciseTypeLogic';
 import type { User } from '../../../../../types/shared/User';
-import { replaceCharsForLanguage } from '../../../../../utils/languageUtils';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
