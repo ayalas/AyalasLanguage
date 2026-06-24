@@ -286,7 +286,6 @@ export function LessonPage() {
                   childLoaded={childLoaded}
                   saveProgress={saveProgress}
                   restartLesson={restartLesson}
-                  learningPathId={Number(learningPathId)}
                   changeMistakesSetting={changeMistakesSetting}
                   practiseMistakesInThisPath={practiseMistakesInThisPath}
                   addMistake={addMistake} />

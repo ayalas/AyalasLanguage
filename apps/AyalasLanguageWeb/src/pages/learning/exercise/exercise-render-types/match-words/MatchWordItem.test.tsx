@@ -11,6 +11,7 @@ describe('MatchWordItem', () => {
     itemValue: 'Apple',
     matchingValue: 'Pomme',
     setSelected: vi.fn(),
+    isSpoken: false
   };
 
   beforeEach(() => {

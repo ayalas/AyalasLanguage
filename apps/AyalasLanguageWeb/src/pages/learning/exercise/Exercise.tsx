@@ -1,6 +1,6 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
-import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History, TicketPlus, ArrowBigLeft } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft } from 'lucide-react';
 import axios from 'axios';
 import { EXERCISE_TYPE_INSTRUCTIONS, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
@@ -21,14 +21,13 @@ type Props = {
     childLoaded: (id: number) => void;
     saveProgress: () => void;
     restartLesson: () => void;
-    learningPathId?: number;
     changeMistakesSetting: (val: boolean) => void;
     practiseMistakesInThisPath?: boolean;
     addMistake: (id: number) => Promise<void>;
     ref: React.Ref<ExerciseHandle>;
 };
 
-export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props) {
+export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);

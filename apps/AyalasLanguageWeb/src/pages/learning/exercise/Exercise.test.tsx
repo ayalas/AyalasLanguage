@@ -60,6 +60,7 @@ describe('Exercise Component', () => {
     const mockProps = {
         exerciseInfo: info,
         moveNext: vi.fn(),
+        movePrev: vi.fn(),
         childLoaded: vi.fn(),
         saveProgress: vi.fn(),
         restartLesson: vi.fn(),

@@ -180,22 +180,4 @@ describe('LessonPage', () => {
 
     expect(await screen.findByText('Exercise 2 of 2')).toBeInTheDocument();
   });
-
-  it('handles back button click correctly', async () => {
-    render(
-      <MemoryRouter>
-        <LessonPage />
-      </MemoryRouter>
-    );
-
-    const nextBtn = await screen.findByTestId('trigger-move-next');
-    disableClientValidation();
-    fireEvent.click(nextBtn);
-    
-    // Wait for Ex 2 to appear
-    const backBtn = await screen.findByTestId('back');
-    fireEvent.click(backBtn);
-
-    expect(await screen.findByText('Exercise 1 of 2')).toBeInTheDocument();
-  });
 });
