@@ -1,7 +1,10 @@
 using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.Data.Model;
 using AyalasLanguageAPI.DTOs;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using AyalasLanguageAPI.Data.Logging;
+using Microsoft.AspNetCore.Components.Server;
 
 namespace AyalasLanguageAPI.Logic;
 
@@ -63,7 +66,7 @@ internal static class ContentCreatorLogic
     /// <param name="exerciseTypeId"></param>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static bool ValidateExerciseData(int exerciseTypeId, string data, ILogger<Program> logger)
+    public static async Task<bool> ValidateExerciseData(int exerciseTypeId, string data, ILogger<Program> logger, int userId, AyalasLanguageDbContext db)
     {
         if (string.IsNullOrEmpty(data))
             return false;
@@ -75,7 +78,17 @@ internal static class ContentCreatorLogic
             {
                 // Validate that data is a JSON array of options
                 var dtoSimple = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(data);
-                return dtoSimple != null && !string.IsNullOrEmpty(dtoSimple.First) && !string.IsNullOrEmpty(dtoSimple.Second);
+                var retValue = dtoSimple != null && !string.IsNullOrEmpty(dtoSimple.First) && !string.IsNullOrEmpty(dtoSimple.Second);
+                if (!retValue)
+                {
+                    await db.CreateLogInternal(userId, LogTypeEnum.ExerciseDataValidationFailed, new ExerciseDataValidationFailed
+                    {
+                        Title = "Exercise data lacks simple required structure",
+                        Data = data,
+                        ExerciseType = exerciseTypeId
+                    });
+                }
+                return retValue;
             }
             else
             {
@@ -89,6 +102,12 @@ internal static class ContentCreatorLogic
                        && dtoBucket.ExtraOptions.Split(separator).Length <= Constants.BUCKET_EXTRA_MAX_COUNT))
                 {
                     logger.LogWarning("Bucket exercise data validation failed. Data: {Data}", data);
+                    await db.CreateLogInternal(userId, LogTypeEnum.ExerciseDataValidationFailed, new ExerciseDataValidationFailed
+                    {
+                        Title = "Bucket exercise data validation failed",
+                        Data = data,
+                        ExerciseType = exerciseTypeId
+                    });
                     return false;
                 }
                 else
@@ -100,6 +119,14 @@ internal static class ContentCreatorLogic
         catch (Exception ex)
         {
             logger.LogError(ex, "Error validating exercise data for exercise type {ExerciseTypeId}. Data: {Data}", exerciseTypeId, data);
+
+            await db.CreateLogInternal(userId, LogTypeEnum.ExerciseDataValidationFailed, new ExerciseDataValidationFailed
+            {
+                Title = "Error validating exercise data for exercise type",
+                Data = data,
+                ExerciseType = exerciseTypeId,
+                Error = ex.Message
+            });
             return false; // If any exception occurs during validation, consider it invalid
         }
     }
@@ -125,7 +152,7 @@ internal static class ContentCreatorLogic
 
     public static decimal FindPath(NextChapterResponseDto[] paths, decimal chapterHint, bool goUp, ILogger<Program> logger)
     {
-        
+
         //get the number and the one closest to it on the same direction
         int index = Array.FindIndex(paths, p => p.Chapter == chapterHint);
         int? nextIndex = null;
@@ -216,5 +243,23 @@ internal static class ContentCreatorLogic
             return input + increment;
         else
             return input - increment;
+    }
+
+    private static async Task CreateLogInternal<T>(this AyalasLanguageDbContext db, int userId, LogTypeEnum logType, T obj)
+    {
+        var baseLog = obj as LoggingBase;
+
+        if (baseLog != null)
+        {
+            baseLog.CallStack = Environment.StackTrace;
+        }
+        Log rec = new()
+        {
+            UserId = userId,
+            LogType = (int)logType,
+            Description = System.Text.Json.JsonSerializer.Serialize<T>(obj)
+        };
+        db.Logs.Add(rec);
+        await db.SaveChangesAsync();
     }
 }

@@ -156,7 +156,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                             onChange={onChangeFromInput}
                                         />
                                     ) || (
-                                            <div className="content-line-part">{part}</div>
+                                            <div className="inline-content-line-part">{part}</div>
                                         )}
                                 </Fragment>
                             );

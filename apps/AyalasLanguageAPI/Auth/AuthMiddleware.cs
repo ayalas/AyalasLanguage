@@ -22,7 +22,7 @@ public static class AuthMiddleware
                 var cache = context.RequestServices.GetRequiredService<IMemoryCache>();
 
                 // Try to get user from cache
-                if (cache.TryGetValue(token, out User user))
+                if (cache.TryGetValue(token, out User? user))
                 {
                     // Store the user object in Items so controllers can access it
                     context.Items["CurrentUser"] = user;

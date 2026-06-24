@@ -13,6 +13,9 @@ using Microsoft.EntityFrameworkCore;
 using AyalasLanguageAPI.Logic;
 using AyalasLanguageAPI.Utils;
 using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json.Nodes;
+using System.Runtime.Serialization;
+using System.Runtime.InteropServices.JavaScript;
 
 public static class ContentCreatorEndpoints
 {
@@ -148,7 +151,7 @@ public static class ContentCreatorEndpoints
         }
         foreach (ExerciseDto dto in dtoList)
         {
-            if (!ContentCreatorLogic.ValidateExerciseData(dto.ExerciseTypeId, dto.Data, logger))
+            if (!await ContentCreatorLogic.ValidateExerciseData(dto.ExerciseTypeId, dto.Data, logger, userId, db))
                 return Results.BadRequest($"Invalid exercise data format for the specified exercise type. Type:{((ExerciseTypesEnum)dto.ExerciseTypeId).ToString()}. Data: {dto.Data}");
 
             var exercise = new Exercise
@@ -223,8 +226,10 @@ public static class ContentCreatorEndpoints
         var learningPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.LearningPathId == dto.LearningPathId);
         if (learningPath == null) return Results.BadRequest("Learning path not found.");
 
-        if (!ContentCreatorLogic.ValidateExerciseData(dto.ExerciseTypeId, dto.Data, logger))
+        if (!await ContentCreatorLogic.ValidateExerciseData(dto.ExerciseTypeId, dto.Data, logger, userId, db))
+        {
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
+        }
 
         var exercise = new Exercise
         {
@@ -262,11 +267,15 @@ public static class ContentCreatorEndpoints
         .FirstOrDefaultAsync(e => e.ExerciseId == id);
         if (exercise == null) return Results.NotFound();
 
-        if ((exercise.UserId != claim.GetUserId() || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
+        int userID = claim.GetUserId();
+
+        if ((exercise.UserId != userID || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        if (!ContentCreatorLogic.ValidateExerciseData(exercise.ExerciseTypeId, dto.Data, logger))
+        if (!await ContentCreatorLogic.ValidateExerciseData(exercise.ExerciseTypeId, dto.Data, logger,userID, db))
+        {
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
+        }
 
         //see if Alternatives changed and we have a source exercise id
         if (((ExerciseTypesEnum)exercise.ExerciseTypeId).SupportsAlternativeAnswers())
@@ -386,5 +395,6 @@ public static class ContentCreatorEndpoints
         return Results.Ok();
     }
 
+    
 
 }

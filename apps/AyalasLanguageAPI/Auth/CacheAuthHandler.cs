@@ -31,7 +31,7 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
         if (string.IsNullOrEmpty(token))
             return AuthenticateResult.Fail("Empty token");
 
-        User user = null;
+        User? user = null;
         // 2. Look up user in cache
         if (!_cache.TryGetValue(token, out user))
         {

@@ -45,7 +45,8 @@ public enum ExerciseTypesEnum
 
 public enum LogTypeEnum
 {
-    AutoAIFailure = 1
+    AutoAIFailure = 1,
+    ExerciseDataValidationFailed = 2
 }
 
 public enum LanguageEnum
