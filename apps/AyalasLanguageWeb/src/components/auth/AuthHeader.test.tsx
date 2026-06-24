@@ -46,11 +46,11 @@ interface User {
   role: number;
   languageSettings: {
     targetLanguageId: number;
-    targetLanguage: string;
+    targetLanguageEnglishName: string;
     targetLanguageCode: string;
     knownLanguageId: number;
     score: number;
-    otherUserLanguages: Array<{ languageId: number; nativeName: string }>;
+    otherUserLanguages: Array<{ languageId: number; englishName: string }>;
   };
 }
 
@@ -62,13 +62,13 @@ const mockUser: User = {
   role: ROLE_TYPE.CONTENT_CREATOR,
   languageSettings: {
     targetLanguageId: 10,
-    targetLanguage: 'Spanish',
+    targetLanguageEnglishName: 'Spanish',
     targetLanguageCode: 'es',
     knownLanguageId: 1,
     score: 500,
     otherUserLanguages: [
-      { languageId: 20, nativeName: 'French' },
-      { languageId: 30, nativeName: 'Hebrew' }
+      { languageId: 20, englishName: 'French' },
+      { languageId: 30, englishName: 'Hebrew' }
     ]
   }
 };
