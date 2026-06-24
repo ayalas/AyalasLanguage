@@ -125,7 +125,8 @@ internal static class ContentCreatorLogic
                 Title = "Error validating exercise data for exercise type",
                 Data = data,
                 ExerciseType = exerciseTypeId,
-                Error = ex.Message
+                Error = ex.Message,
+                CallStack = ex.StackTrace
             });
             return false; // If any exception occurs during validation, consider it invalid
         }
@@ -249,7 +250,7 @@ internal static class ContentCreatorLogic
     {
         var baseLog = obj as LoggingBase;
 
-        if (baseLog != null)
+        if (baseLog != null && baseLog.CallStack == string.Empty)
         {
             baseLog.CallStack = Environment.StackTrace;
         }
