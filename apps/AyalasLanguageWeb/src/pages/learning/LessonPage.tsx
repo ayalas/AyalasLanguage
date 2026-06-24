@@ -1,9 +1,8 @@
 import { useParams, useNavigate, Link, useOutletContext } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
-import { ArrowBigLeft, FilePenLine } from 'lucide-react';
+import { FilePenLine, X } from 'lucide-react';
 
-import { AuthHeader } from '../../components/auth/AuthHeader';
 import { PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '../../utils/languageUtils';
 import { Exercise } from './exercise/Exercise';
@@ -175,9 +174,7 @@ export function LessonPage() {
     }
   };
 
-  const onBackClick = function (e: React.MouseEvent) {
-    e.preventDefault();
-
+  const movePrev = function () {
     if (currentExercise == null) return;
     if ((currentExercise.index ?? 0) > 0) {
       changeCurrentExercise(exercises, (currentExercise.index ?? 0) - 1);
@@ -246,9 +243,9 @@ export function LessonPage() {
 
   return (
     <>
-      <AuthHeader />
       <div className="lesson-outer-container">
         <div className="lesson-inner-container">
+
           {error !== '' && (
             <div className="form-row">
               <label className="form-error">{error}</label>
@@ -257,8 +254,11 @@ export function LessonPage() {
           <form>
             {learningPathData && (
               <>
-                <div className="form-header">
-                  <h1>{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</h1>
+                <div className="lesson-header">
+                  <div className="lesson-name">{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</div>
+                  <div className="lesson-close-row">
+                    <Link to="/home" className="link-button" title="Home"><X /></Link>
+                  </div>
                 </div>
                 {!currentExercise && (
                   <div className="form-row">
@@ -273,12 +273,16 @@ export function LessonPage() {
               <>
                 <div className="form-row">
                   <label className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</label>
+                  <div className="form-button-cell">
+                    <Link to={`/author/path/${learningPathId}`} className="link-lesson-edit" title="Edit lesson"><FilePenLine /></Link>
+                  </div>
                 </div>
 
                 <Exercise key={currentExercise.exerciseId}
                   ref={setRef}
                   exerciseInfo={currentExercise}
                   moveNext={moveNext}
+                  movePrev={movePrev}
                   childLoaded={childLoaded}
                   saveProgress={saveProgress}
                   restartLesson={restartLesson}
@@ -286,11 +290,6 @@ export function LessonPage() {
                   changeMistakesSetting={changeMistakesSetting}
                   practiseMistakesInThisPath={practiseMistakesInThisPath}
                   addMistake={addMistake} />
-                {currentExercise && (currentExercise.index ?? 0) > 0 && (
-                  <div className="form-row">
-                    <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
-                  </div>
-                )}
               </>
             )}
           </form>

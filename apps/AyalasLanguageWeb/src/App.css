@@ -1,4 +1,7 @@
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
   font-size: inherit;
 }
@@ -10,7 +13,7 @@ input[type="submit"] {
   color: var(--text-h);
   border: 2px solid var(--text-h);
   font-size: var(--fontsize);
-  padding: 10px 20px;
+  padding: 7px 14px;
 }
 
 #center {
@@ -37,8 +40,11 @@ input[type="submit"] {
   flex-grow: 1;
   flex-wrap: wrap;
 }
+
 .lesson-inner-container {
+  padding:10px;
   min-width: 800px;
+  
   @media (max-width: 1024px) {
     min-width: 95vw;
   }
@@ -56,9 +62,10 @@ body {
   /* Centers items vertically */
   justify-content: center;
   /* Centers items horizontally */
-  gap: 8px;
+  gap: 4px;
   border-radius: 4px;
-  padding: 10px 20px;
+  padding: 7px 14px;
+  border: 2px solid var(--text-h);
 }
 
 .button-delete-item {
@@ -103,7 +110,7 @@ body {
 }
 
 label.form-label {
-  width: 100%;
+  width: 90%;
   text-align: start;
   white-space: nowrap;
   color: #000000;
@@ -214,9 +221,17 @@ input:required:invalid {
   text-align: start;
   color: var(--text-h);
   align-content: center;
+  font-size: 24px;
+}
+
+.exercise-inner-element input[type="text"],
+button {
+  font-size: 24px;
 }
 
 .exercise-outer-element {
+  padding-top: 30px;
+  padding-bottom: 30px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -225,6 +240,22 @@ input:required:invalid {
   flex-grow: 1;
   flex-wrap: wrap;
 }
+
+.exercise-footer {
+  display: inline-flex;
+  width: 95%;
+}
+
+.exercise-footer-back {
+  display: inline-flex;
+}
+
+.exercise-footer-next {
+  margin-left: auto;
+  display: inline-flex;
+}
+
+
 
 .form-error {
   color: rgb(168, 44, 44);
@@ -285,6 +316,20 @@ input:required:invalid {
   flex-direction: row;
 }
 
+.lesson-header {
+  display: inline-flex;
+  width: 95%;
+}
+
+.lesson-name {
+  display: inline-flex;
+  margin-right: auto;
+}
+
+.lesson-close-row {
+  display: inline-flex;
+}
+
 .header-score {
   display: flex;
   justify-content: flex-end;
@@ -297,7 +342,7 @@ input:required:invalid {
 }
 
 .learning-exercise-type-heading {
-   font-style: italic;
+  font-style: italic;
 }
 
 .learning-exercise-type-heading-icon {
@@ -307,26 +352,27 @@ input:required:invalid {
 
 
 .learning-exercise-type-outer-container {
-   display: inline-flex;
-   padding: 5px;
+  display: inline-flex;
+  padding: 5px;
 }
 
 .learning-exercise-type-inner-body {
   border-top: 1px solid;
   padding: 10px;
   width: 20vw;
+
   @media (max-width: 1024px) {
     width: 45vw;
+
     @media (max-width: 768px) {
       width: 80vw;
     }
   }
+
   margin-top: 5px;
 }
 
-.learning-exercise-type-inner-container {
-
-}
+.learning-exercise-type-inner-container {}
 
 .learning-lesson {
   display: block;
@@ -352,6 +398,8 @@ input:required:invalid {
   color: rgb(116, 117, 116);
 }
 
+
+
 .link-button {
   background-color: inherit;
   cursor: pointer;
@@ -359,9 +407,19 @@ input:required:invalid {
   color: inherit;
   display: inline-flex;
   height: 25px;
-  padding: 10px 20px;
+  padding: 7px 14px;
   border: 2px solid var(--text-h);
   border-radius: 4px;
+}
+
+.link-lesson-edit {
+  background-color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  border: 0;
+  margin-left: 10px;
 }
 
 .menu-button {
@@ -471,6 +529,7 @@ input:required:invalid {
   padding-top: 5px;
   padding-bottom: 5px;
   min-width: 12.5vw;
+
   @media (max-width: 1024px) {
     min-width: 30vw;
   }
@@ -511,11 +570,11 @@ input:required:invalid {
 .bucket-list-item-button {
   background-color: inherit;
   cursor: pointer;
-  padding-left: 5px;
-  padding-right: 5px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 5px;
   border-radius: 8px;
+  margin-top: 10px;
 }
 
 .keyboard-container {

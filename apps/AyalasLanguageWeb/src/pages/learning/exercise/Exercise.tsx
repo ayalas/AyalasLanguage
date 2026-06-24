@@ -1,6 +1,6 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History, TicketPlus } from 'lucide-react';
+import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, FilePenLine, History, TicketPlus, ArrowBigLeft } from 'lucide-react';
 import axios from 'axios';
 import { EXERCISE_TYPE_INSTRUCTIONS, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
@@ -17,6 +17,7 @@ import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayAnswer, sh
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;
     moveNext: () => void;
+    movePrev: () => void;
     childLoaded: (id: number) => void;
     saveProgress: () => void;
     restartLesson: () => void;
@@ -27,7 +28,7 @@ type Props = {
     ref: React.Ref<ExerciseHandle>;
 };
 
-export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props) {
+export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, learningPathId, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -119,8 +120,8 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
             return;
         }
         if (exerciseInfo.exerciseObject == null) return;
-        const dataObj = {...exerciseInfo.exerciseObject};
-          
+        const dataObj = { ...exerciseInfo.exerciseObject };
+
         const alternative = refExercise.current?.getCurrentAnswer?.();
         if (alternative == null || alternative === "") {
             return;
@@ -164,16 +165,15 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
         runAsync();
     }, [exerciseInfo, childLoaded]);
 
+    const onBackClick = function (e: React.MouseEvent) {
+        e.preventDefault();
+
+        movePrev();
+    }
+
     return (
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
             <div className="form-row">
-                {
-                    showCheckAnswers(exerciseInfo.exerciseTypeId) && (
-                        <div className="form-button-cell">
-                            <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks /></button>
-                        </div>
-                    )
-                }
                 {
                     canRevealAnswers(exerciseInfo.exerciseTypeId) && (
                         <div className="form-button-cell">
@@ -181,7 +181,6 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                         </div>
                     )
                 }
-
                 <div className="form-button-cell">
                     <button data-testid="save-progress" type="button" onClick={saveProgress} className="form-button" title="Save progress"><CircleDotDashed /></button>
                 </div>
@@ -203,9 +202,6 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                             <button data-testid="add-alternative-answer" type="button" className="form-button" title="Add alternative answer" onClick={addAlternativeAnswer}><TicketPlus /></button>
                         </div>
                     )}
-                <div className="form-button-cell">
-                    <Link to={`/author/path/${learningPathId}`} className="link-button" title="Edit lesson"><FilePenLine /></Link>
-                </div>
             </div>
             <div className="exercise-body-container">
                 <div className="form-row">
@@ -231,11 +227,25 @@ export const Exercise = function ({ exerciseInfo, moveNext, childLoaded, savePro
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} />
                 )) || (
-                    <TwoLinesTranslationExercise ref={refExercise}
-                        exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer}
-                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
+                        <TwoLinesTranslationExercise ref={refExercise}
+                            exerciseInfo={exerciseInfo} setError={setError}
+                            moveNext={moveNext} displayAnswer={displayAnswer}
+                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
                     ))}
+            </div>
+            <div className="exercise-footer">
+                {(exerciseInfo.index ?? 0) > 0 && (
+                    <div className="exercise-footer-back">
+                        <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Prev</button>
+                    </div>
+                )}
+                {
+                    showCheckAnswers(exerciseInfo.exerciseTypeId) && (
+                        <div className="exercise-footer-next">
+                            <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks />&nbsp;Check</button>
+                        </div>
+                    )
+                }
             </div>
         </Fragment>
     );
