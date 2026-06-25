@@ -16,6 +16,7 @@ export default function Homepage() {
   async function OnRangeFilterChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const tempValue = Number(e.target.value) as DashboardRangFilter;
     setRangeFilter(tempValue);
+    localStorage.setItem('dashboardRangeFilter', tempValue.toString());
     await loadData(tempValue);
   }
 
@@ -29,7 +30,15 @@ export default function Homepage() {
   };
 
   useEffect(() => {
-    loadData(rangeFilter);
+    let tempFilter:DashboardRangFilter = rangeFilter;
+    //load last selection of filter
+    const savedFilterValue = localStorage.getItem('dashboardRangeFilter');
+    if (savedFilterValue != null && savedFilterValue != "") {
+      tempFilter = Number(savedFilterValue) as DashboardRangFilter;
+      setRangeFilter(tempFilter);
+    }
+
+    loadData(tempFilter);
   }, [user]);
   return (
     <>
