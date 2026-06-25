@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 
 import { AuthHeader } from '../components/auth/AuthHeader';
 import type { User } from '../types/shared/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
 import { DASHBOARD_RANG_FILTER, type DashboardRangFilter, type IDashboardCounters } from '../types/grids/grids';
+import { CONTENT_STATUS } from '@ayalaslanguage/types/exercise';
 
 export default function Homepage() {
   const [error, setError] = useState('');
@@ -30,7 +31,7 @@ export default function Homepage() {
   };
 
   useEffect(() => {
-    let tempFilter:DashboardRangFilter = rangeFilter;
+    let tempFilter: DashboardRangFilter = rangeFilter;
     //load last selection of filter
     const savedFilterValue = localStorage.getItem('dashboardRangeFilter');
     if (savedFilterValue != null && savedFilterValue != "") {
@@ -63,51 +64,87 @@ export default function Homepage() {
           </div>
         )}
         {dashboardData && (
-          <>
-            <div className="form-row">
-              <div className="form-input-cell">
-                <div className="content-line-part">Contact Us Records:</div>
-                <div className="content-line-part">{ dashboardData.contactUsRecordsTotal }
+          <div className="dashboard-container">
+
+            <div className="dashboard-counter">
+              <Link className='dashboard-counter-link' to="/contactus">
+                <div className="dashboard-counter-element">
+                  {dashboardData.contactUsRecordsTotal}
                 </div>
-              </div>
+                <div className="dashboard-counter-smallelement">
+                  Contact Us Records
+                </div>
+              </Link>
             </div>
-            <div className="form-row">
-              <div className="form-input-cell">
-                <div className="content-line-part">Logs:</div>
-                <div className="content-line-part">{ dashboardData.logsTotal }</div>
-              </div>
+
+            <div className="dashboard-counter counter-errors">
+              <Link className='dashboard-counter-link' to="/log">
+                <div className="dashboard-counter-element">
+                  {dashboardData.logsTotal}
+                </div>
+                <div className="dashboard-counter-smallelement">
+                  Logs
+                </div>
+              </Link>
             </div>
-            <div className="form-row">
-              <div className="form-input-cell">
-                <div className="content-line-part">Lessons:</div>
-                <div className="content-line-part">{ dashboardData.lessonsTotal }</div>
-              </div>
+
+            <div className="dashboard-counter">
+              <Link className='dashboard-counter-link' to="/paths">
+                <div className="dashboard-counter-element">
+                  {dashboardData.lessonsTotal}
+                </div>
+                <div className="dashboard-counter-smallelement">
+                  Lessons
+                </div>
+              </Link>
             </div>
-            <div className="form-row">
-              <div className="form-input-cell">
-                <div className="content-line-part">Draft Lessons:</div>
-                <div className="content-line-part">{ dashboardData.draftLessonsTotal }</div>
-              </div>
+
+            <div className="dashboard-counter counter-requires-work">
+              <Link className='dashboard-counter-link' to={`/paths?status=${CONTENT_STATUS.DRAFT}`}>
+                <div className="dashboard-counter-element">
+                  {dashboardData.draftLessonsTotal}
+                </div>
+                <div className="dashboard-counter-smallelement">
+                  Draft Lessons
+                </div>
+              </Link>
             </div>
-            <div className="form-row">
-              <div className="form-input-cell">
-                <div className="content-line-part">Exercises:</div>
-                <div className="content-line-part">{ dashboardData.exercisesTotal }</div>
-              </div>
+
+
+            <div className="dashboard-counter">
+              <Link className='dashboard-counter-link' to="/exercises">
+                <div className="dashboard-counter-element">
+                  {dashboardData.exercisesTotal}
+                </div>
+                <div className="dashboard-counter-smallelement">
+                  Exercises
+                </div>
+              </Link>
             </div>
-            <div className="form-row">
-              <div className="form-input-cell">
-                <div className="content-line-part">Users:</div>
-                <div className="content-line-part">{ dashboardData.usersTotal }</div>
-              </div>
+
+            <div className="dashboard-counter">
+              <Link className='dashboard-counter-link' to="/users">
+                <div className="dashboard-counter-element">
+                  {dashboardData.usersTotal}
+                </div>
+                <div className="dashboard-counter-smallelement">
+                  Users
+                </div>
+              </Link>
             </div>
-            <div className="form-row">
-              <div className="form-input-cell">
-                <div className="content-line-part">Logins:</div>
-                <div className="content-line-part">{ dashboardData.loginsTotal }</div>
-              </div>
+
+            <div className="dashboard-counter counter-warnings">
+              <span>
+                <div className="dashboard-counter-element">
+                  {dashboardData.loginsTotal}
+                </div>
+                <div className="dashboard-counter-smallelement">
+                  Logins
+                </div>
+              </span>
             </div>
-          </>
+
+          </div>
         )}
       </div>
     </>
