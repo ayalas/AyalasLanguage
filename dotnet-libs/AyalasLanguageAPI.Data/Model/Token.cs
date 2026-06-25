@@ -14,4 +14,5 @@ public class Token
         [Required, StringLength(1024)]
         public string Content { get; set; } = null!;
         public DateTime ExpiresOn { get; set; }
+        public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
 }

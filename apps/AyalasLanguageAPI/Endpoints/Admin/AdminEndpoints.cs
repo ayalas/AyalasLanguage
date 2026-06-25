@@ -54,6 +54,7 @@ public static class AdminEndpoints
         adminAPIsecured.MapPost("/setexercisestatus", SetExerciseStatus);
         adminAPIsecured.MapPost("/multisetpathstatus", MultiSetLearningPathStatus);
         adminAPIsecured.MapPost("/multisetexercisestatus", MultiSetExerciseStatus);
+        adminAPIsecured.MapGet("/dashboard/counters/{rangeFilter:int}", GetCountersDashboard);
     }
 
     private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
@@ -431,6 +432,60 @@ public static class AdminEndpoints
             db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
             lp.Status
         )).ToArray();
+    }
+
+    private static async Task<AdminDashboardCountersResponse> GetCountersDashboard(int rangeFilter, AyalasLanguageDbContext db)
+    {
+        DashboardRangeFilter range = (DashboardRangeFilter)rangeFilter;
+
+        //base queries
+        var queryContactUs = db.ContactUs.AsQueryable();
+        var queryLogs = db.Logs.AsQueryable();
+        var queryLearningPaths = db.LearningPaths.AsQueryable();
+        var queryDraftLearningPaths = db.LearningPaths.Where(lp => lp.Status == (byte)ContentStatusEnum.Draft).AsQueryable();
+        var queryExercises = db.Exercises.AsQueryable();
+        var queryUsers = db.Users.AsQueryable();
+        var queryTokens = db.Tokens.AsQueryable();
+
+        if (range != DashboardRangeFilter.AllTime)
+        {
+            //get start time
+            DateTime dtStart = default;
+            DateTime dtNow = DateTime.UtcNow;
+            switch (range)
+            {
+                case DashboardRangeFilter.LastDay:
+                    dtStart = dtNow.AddHours(-24);
+                    break;
+                case DashboardRangeFilter.SevenDays:
+                    dtStart = dtNow.AddDays(-7);
+                    break;
+                case DashboardRangeFilter.ThirtyDays:
+                    dtStart = dtNow.AddDays(-30);
+                    break;
+            }
+
+            //add filter to queries
+            queryContactUs = queryContactUs.Where(cs => cs.CreatedOn >= dtStart);
+            queryLogs = queryLogs.Where(cs => cs.CreatedOn >= dtStart);
+            queryLearningPaths = queryLearningPaths.Where(cs => cs.CreatedOn >= dtStart);
+            queryDraftLearningPaths = queryDraftLearningPaths.Where(cs => cs.CreatedOn >= dtStart);
+            queryExercises = queryExercises.Where(cs => cs.CreatedOn >= dtStart);
+            queryUsers = queryUsers.Where(cs => cs.CreatedOn >= dtStart);
+            queryTokens = queryTokens.Where(cs => cs.CreatedOn >= dtStart);
+        }
+
+        int totalContactUs = await queryContactUs.CountAsync();
+        int totalLogs = await queryLogs.CountAsync();
+        int totalLearningPaths = await queryLearningPaths.CountAsync();
+        int totalDraftLearningPaths = await queryDraftLearningPaths.CountAsync();
+        int totalExercises = await queryExercises.CountAsync();
+        int totalUsers = await queryUsers.CountAsync();
+        int totalTokens = await queryTokens.CountAsync();
+
+        return new AdminDashboardCountersResponse(totalContactUs,
+            totalLogs, totalLearningPaths, totalDraftLearningPaths, totalExercises,
+            totalUsers, totalTokens);
     }
 
 

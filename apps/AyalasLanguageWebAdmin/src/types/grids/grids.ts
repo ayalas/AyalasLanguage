@@ -11,6 +11,15 @@ export const CONTENT_STATUS_MAPPING = {
   [CONTENT_STATUS.REMOVED]: "Removed"
 } as const;
 
+export const DASHBOARD_RANG_FILTER = {
+    ALL_TIME: 0,
+    LAST_DAY: 1,
+    SEVEN_DAYS: 2,
+    THIRTY_DAYS: 3
+} as const;
+
+export type DashboardRangFilter = typeof DASHBOARD_RANG_FILTER[keyof typeof DASHBOARD_RANG_FILTER];
+
 export interface IRowContactUs
 {
     contactUsId: number,    
@@ -66,4 +75,14 @@ export interface IRowExercise
 export interface AdminGridResponse<T> {
   numOfRecords: number;
   data: T[];
+}
+
+export interface IDashboardCounters {
+  contactUsRecordsTotal: number;
+  logsTotal: number;
+  lessonsTotal: number;
+  draftLessonsTotal: number;
+  exercisesTotal: number;
+  usersTotal: number;
+  loginsTotal: number; 
 }

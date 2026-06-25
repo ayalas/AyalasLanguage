@@ -16,6 +16,10 @@ input[type="submit"] {
   padding: 7px 14px;
 }
 
+textarea {
+  border: 2px solid var(--text-h);
+}
+
 #center {
   display: flex;
   flex-direction: column;

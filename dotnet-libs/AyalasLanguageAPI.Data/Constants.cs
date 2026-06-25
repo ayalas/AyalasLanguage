@@ -43,6 +43,13 @@ public enum ExerciseTypesEnum
     MatchingToSpoken = 9
 }
 
+public enum DashboardRangeFilter {
+    AllTime = 0,
+    LastDay = 1,
+    SevenDays = 2,
+    ThirtyDays = 3
+}
+
 public enum LogTypeEnum
 {
     AutoAIFailure = 1,

@@ -23,4 +23,7 @@ namespace AyalasLanguageAPI.AdminDTOs
     public record AdminSetExerciseStatusRequest(int ExerciseId, ContentStatusEnum Status);
     public record AdminMultiSetExerciseStatusRequest(int[] ExerciseIds, ContentStatusEnum Status);
     public record AdminGridResponse<T>(int NumOfRecords, T[] Data);
+
+    public record AdminDashboardCountersResponse(int ContactUsRecordsTotal, int LogsTotal, int LessonsTotal, int DraftLessonsTotal, int ExercisesTotal, 
+        int UsersTotal, int LoginsTotal);
 }

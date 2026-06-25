@@ -578,6 +578,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .HasMaxLength(1024)
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("ExpiresOn")
                         .HasColumnType("TEXT");
 
@@ -598,6 +601,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("ConfirmationEmailSent")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DisplayName")
