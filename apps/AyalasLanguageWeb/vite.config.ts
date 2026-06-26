@@ -3,6 +3,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import fs from 'fs'
 import path from 'path'
+import legacy from '@vitejs/plugin-legacy'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,6 +11,10 @@ export default defineConfig({
     react(), // Standard React fast refresh
     babel({
       presets: [reactCompilerPreset()] // Handles the React Compiler automatically
+    }),
+    legacy({
+      targets: ['chrome >= 80', 'android >= 10'],
+      // This will automatically include the replaceAll polyfill among others
     })
   ],
   test: {

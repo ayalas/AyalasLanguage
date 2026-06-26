@@ -11,6 +11,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@ayalaslanguage/types": "workspace:*",
     "@floating-ui/react": "^0.27.19",
     "@heyputer/puter.js": "^2.5.1",
     "axios": "^1.16.1",
@@ -20,8 +21,7 @@
     "react-router": "^7.15.1",
     "react-router-dom": "^7.15.1",
     "simple-keyboard": "^3.8.150",
-    "simple-keyboard-layouts": "^3.4.220",
-    "@ayalaslanguage/types": "workspace:*"
+    "simple-keyboard-layouts": "^3.4.220"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -33,6 +33,7 @@
     "@types/node": "^24.12.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-legacy": "^8.1.0",
     "@vitejs/plugin-react": "^6.0.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^10.3.0",
