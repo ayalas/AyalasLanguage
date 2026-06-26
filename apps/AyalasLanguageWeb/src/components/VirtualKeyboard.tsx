@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import KeyboardModule from 'simple-keyboard';
 import KeyboardLayoutsModule from 'simple-keyboard-layouts';
 import 'simple-keyboard/build/css/index.css';
-import { isTouchDevice } from '../utils/utils';
+import { isTouchDevice, parseBoolean } from '../utils/utils';
 
 // Minimal runtime typings for the keyboard packages used here.
 type KeyboardInstance = {
@@ -56,7 +56,7 @@ type Props = {
 
 const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft = false, onChange = () => { }, value = '' }) => {
     const keyboardRef = useRef<KeyboardInstance | null>(null);
-    const [showKeyboard, setShowKeyboard] = useState(true);
+    const [showKeyboard, setShowKeyboard] = useState(false);
     const [layoutName, setLayoutName] = useState('default');
 
     const isSupported = isLanguageSupported(languageCode) && !isTouchDevice();
@@ -67,11 +67,20 @@ const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft =
         }
     };
 
-    const toggleKeyboard = () => setShowKeyboard(!showKeyboard);
+    const toggleKeyboard = () => {
+        const tempValue = !showKeyboard;
+        setShowKeyboard(!showKeyboard);
+        localStorage.setItem(`keyboard-show-for-${languageCode}`, tempValue.toString());
+    } 
 
     // Consolidate instantiation and updates into a single effect 
     useEffect(() => {
         if (!isSupported) return;
+
+        const tempValue = localStorage.getItem(`keyboard-show-for-${languageCode}`);
+        if (tempValue != null) {
+            setShowKeyboard(parseBoolean(tempValue));
+        }
 
         // 1. Initialize the keyboard instance if it doesn't exist
         if (!keyboardRef.current) {
