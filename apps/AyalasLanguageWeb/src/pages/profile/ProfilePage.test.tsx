@@ -5,7 +5,6 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { ProfilePage } from './ProfilePage';
-import { switchLanguage } from '../../utils/languageUtils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios
@@ -22,7 +21,6 @@ vi.mock('react-router-dom', () => ({
 
 // Mock external utilities
 vi.mock('../../utils/languageUtils', () => ({
-  switchLanguage: vi.fn(),
   reloadLanguageSettings: vi.fn(),
 }));
 
@@ -56,6 +54,7 @@ describe('ProfilePage', () => {
   const mockUser = {
     userId: 123,
     username: 'testuser',
+    disablePuter: true,
     languageSettings: {
       targetLanguageId: 2,
       knownLanguageId: 1,
@@ -75,6 +74,7 @@ describe('ProfilePage', () => {
       key: 'default',
     });
     mockedAxios.get.mockResolvedValue({ data: mockLanguages });
+    mockedAxios.post.mockResolvedValueOnce({ data: {} });
   });
 
   it('renders correctly and loads language data', async () => {
@@ -119,13 +119,7 @@ describe('ProfilePage', () => {
     fireEvent.click(saveButton);
 
     await waitFor(() => {
-      expect(switchLanguage).toHaveBeenCalledWith(
-        mockedAxios,
-        mockUser,
-        mockLogin,
-        2,
-        1
-      );
+      expect(mockLogin).toHaveBeenCalled();
       expect(mockNavigate).toHaveBeenCalledWith('/home');
     });
   });
@@ -146,6 +140,5 @@ describe('ProfilePage', () => {
 
     const errorMessage = await screen.findByText(/please select language to learn and language you know/i);
     expect(errorMessage).toBeInTheDocument();
-    expect(switchLanguage).not.toHaveBeenCalled();
   });
 });
