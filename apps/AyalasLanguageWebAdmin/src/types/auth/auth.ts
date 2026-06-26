@@ -1,4 +1,4 @@
-import { APP_IDENTIFIER, ROLE_TYPE, type AppIdentifier, type RoleType } from "@ayalaslanguage/types/auth";
+import { APP_IDENTIFIER, ROLE_TYPE, type RoleType } from "@ayalaslanguage/types/auth";
 
 export const ROLE_MAPPING = {
   [ROLE_TYPE.LEARNER]: "Learner",
