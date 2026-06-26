@@ -72,6 +72,7 @@ describe('Exercise Component', () => {
     };
 
     const mockUser = {
+        disablePuter: true,
         languageSettings: {
             targetLanguageCode: 'fr',
             knownLanguage: 'English',

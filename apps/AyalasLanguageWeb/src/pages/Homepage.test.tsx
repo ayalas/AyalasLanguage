@@ -42,6 +42,7 @@ describe('Homepage Component', () => {
   });
 
   const mockUser = {
+    disablePuter: true,
     languageSettings: {
       targetLanguageId: 1,
       knownLanguageId: 2,

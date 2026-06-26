@@ -60,6 +60,7 @@ describe('LessonPage', () => {
   const mockNavigate = vi.fn();
   const mockLogin = vi.fn();
   const mockUser = {
+    disablePuter: true,
     languageSettings: { targetLanguage: 'Spanish' },
   };
 

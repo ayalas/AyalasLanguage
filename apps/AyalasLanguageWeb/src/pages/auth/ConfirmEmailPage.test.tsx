@@ -32,7 +32,8 @@ describe('ConfirmEmailPage', () => {
     userName: 'test@example.com',
     emailConfirmed: false,
     use2FALogin: false,
-    role: ROLE_TYPE.CONTENT_CREATOR
+    role: ROLE_TYPE.CONTENT_CREATOR,
+    disablePuter: true
   };
 
   beforeEach(() => {

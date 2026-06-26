@@ -25,6 +25,7 @@ describe('LanguageLineForDelete', () => {
   const mockUser: User = {
     userId: 1,
     userName: 'testuser',
+    disablePuter: true,
     languageSettings: {
       targetLanguageId: 1,
       knownLanguageId: 2,
