@@ -35,6 +35,7 @@ public static class AdminEndpoints
         secureAuth.MapPost("/logout", LogoutUser);
         secureAuth.MapGet("/me", CheckAuthStatus);
         secureAuth.MapGet("/users/{page:int}", GetUsers);
+        secureAuth.MapGet("/logins/{page:int}", GetLogins);
         secureAuth.MapPost("/setuserrole", SetUserRole);
 
         var adminAPIsecured = app.MapGroup("/admin/api").AddEndpointFilter<ErrorLoggingFilter>().WithTags("AdminAPI")
@@ -72,7 +73,7 @@ public static class AdminEndpoints
         var userId = claim.GetUserId();
 
         // Remove all tokens from DB and cache - keep the tokens table clean and simple
-        var tokenEntry = await db.Tokens.Where(t => t.UserId == userId).ToListAsync();
+        var tokenEntry = await db.Tokens.Where(t => t.UserId == userId && (t.AppId == (byte)AppIdEnum.Admin || t.AppId == (byte)AppIdEnum.Admin2FA)).ToListAsync();
         if (tokenEntry != null && tokenEntry.Any())
         {
             foreach (var token in tokenEntry)
@@ -118,7 +119,8 @@ public static class AdminEndpoints
             {
                 UserId = user.UserId,
                 Content = token,
-                ExpiresOn = expires
+                ExpiresOn = expires,
+                AppId = (byte)AppIdEnum.Admin2FA
             };
             db.Tokens.Add(tokenEntry);
             await db.SaveChangesAsync();
@@ -152,7 +154,7 @@ public static class AdminEndpoints
         }
         else
         {
-            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token);
+            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token && t.AppId == (byte)AppIdEnum.Admin2FA);
 
             if (tokenRecord != null && tokenRecord.ExpiresOn.CompareTo(DateTime.UtcNow) >= 0)
             {
@@ -176,7 +178,8 @@ public static class AdminEndpoints
         {
             UserId = user.UserId,
             Content = tokenContent,
-            ExpiresOn = expires
+            ExpiresOn = expires,
+            AppId = (byte)AppIdEnum.Admin
         };
 
         AdminUserIdDto? userIdDto = await GetUserById(user.UserId, db);
@@ -226,7 +229,8 @@ public static class AdminEndpoints
             u.EmailConfirmed,
             u.Use2FALogin,
             u.KnownLanguage == null ? null : u.KnownLanguage.EnglishName,
-            u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName
+            u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName,
+            u.CreatedOn
         )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
 
         int numOfRecords = 0;
@@ -388,6 +392,23 @@ public static class AdminEndpoints
         return new AdminGridResponse<AdminLearningPathRowDto>(numOfRecords, arr);
     }
 
+    public static async Task<AdminGridResponse<AdminLoginRowDto>> GetLogins(int page, AyalasLanguageDbContext db)
+    {
+        var baseQuery = db.Tokens.Include(lp => lp.User);
+        var arr = await baseQuery.OrderByDescending(e => e.TokenId)
+            .Select(e => new
+            AdminLoginRowDto( 
+                e.UserId,
+                e.User != null ? e.User.UserName : null,
+                e.AppId,
+                e.CreatedOn,
+                e.ExpiresOn
+            )
+            ).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+        int numOfRecords = await baseQuery.CountAsync();
+        return new AdminGridResponse<AdminLoginRowDto>(numOfRecords, arr);
+    }
+
     private static async Task<AdminLearningPathRowDto?> GetSingleLearningPath(int learningPathId, AyalasLanguageDbContext db)
     {
         var query = db.LearningPaths
@@ -445,7 +466,7 @@ public static class AdminEndpoints
         var queryDraftLearningPaths = db.LearningPaths.Where(lp => lp.Status == (byte)ContentStatusEnum.Draft).AsQueryable();
         var queryExercises = db.Exercises.AsQueryable();
         var queryUsers = db.Users.AsQueryable();
-        var queryTokens = db.Tokens.AsQueryable();
+        var queryTokens = db.Tokens.Where(t => t.AppId == (byte)AppIdEnum.Main || t.AppId == (byte)AppIdEnum.Admin).AsQueryable();
 
         if (range != DashboardRangeFilter.AllTime)
         {

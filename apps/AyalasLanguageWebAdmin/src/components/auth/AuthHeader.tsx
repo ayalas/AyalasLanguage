@@ -40,6 +40,7 @@ export function AuthHeader() {
           <div className="header-link"><Link to="/paths" data-testid="paths" className="link-button" >Lessons</Link></div>
           <div className="header-link"><Link to="/log" data-testid="log" className="link-button" >Log</Link></div>
           <div className="header-link"><Link to="/contactus" data-testid="contactus" className="link-button" >Contact Us</Link></div>
+          <div className="header-link"><Link to="/logins" data-testid="logins" className="link-button" >Logins</Link></div>
           <div className="header-link"><Link to="/users" data-testid="users" className="link-button" >Users</Link></div>
           <div className="header-link"><button data-testid="logout" className="form-button" type="button" onClick={logoutAction}><LogOut /> Log out</button></div>
         </div>

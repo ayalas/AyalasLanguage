@@ -14,7 +14,16 @@ export const ROLE_TYPE =
     ADMIN: 3
 } as const;
 
+export const APP_IDENTIFIER = 
+{
+    MAIN: 1,
+    ADMIN: 2,
+    MAIN_2FA: 3,
+    ADMIN_2FA: 4
+} as const;
+
 export type RoleType = typeof ROLE_TYPE[keyof typeof ROLE_TYPE];
+export type AppIdentifier = typeof APP_IDENTIFIER[keyof typeof APP_IDENTIFIER];
 
 export type AuthContextType<T> = {
   user: T | null;

@@ -81,7 +81,8 @@ public static class AuthEndpoints
             {
                 UserId = user.UserId,
                 Content = token,
-                ExpiresOn = expires
+                ExpiresOn = expires,
+                AppId = (byte)AppIdEnum.Main2FA
             };
             db.Tokens.Add(tokenEntry);
             await db.SaveChangesAsync();
@@ -115,7 +116,7 @@ public static class AuthEndpoints
         }
         else
         {
-            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token);
+            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token && t.AppId == (byte)AppIdEnum.Main2FA);
 
             if (tokenRecord != null && tokenRecord.ExpiresOn.CompareTo(DateTime.UtcNow) >= 0)
             {
@@ -139,7 +140,8 @@ public static class AuthEndpoints
         {
             UserId = user.UserId,
             Content = tokenContent,
-            ExpiresOn = expires
+            ExpiresOn = expires,
+            AppId = (byte)AppIdEnum.Main
         };
 
         UserIdDto? userIdDto = await GetUserById(user.UserId, db);
@@ -211,7 +213,7 @@ public static class AuthEndpoints
         var userId = claim.GetUserId();
 
         // Remove all tokens from DB and cache - keep the tokens table clean and simple
-        var tokenEntry = await db.Tokens.Where(t => t.UserId == userId).ToListAsync();
+        var tokenEntry = await db.Tokens.Where(t => t.UserId == userId && (t.AppId == (byte)AppIdEnum.Main || t.AppId == (byte)AppIdEnum.Main2FA)).ToListAsync();
         if (tokenEntry != null && tokenEntry.Any())
         {
             foreach (var token in tokenEntry)

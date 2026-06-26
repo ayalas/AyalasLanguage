@@ -17,6 +17,7 @@ import LogGridPage from './pages/log/LogGridPage';
 import LearningPathsGridPage from './pages/content/LearningPathsGridPage';
 import ExercisesGridPage from './pages/content/ExercisesGridPage';
 import { LearningPathPage } from './pages/content/LearningPathPage';
+import LoginsGridPage from './pages/auth/users/LoginsGridPage';
 
 function App() {
   useEffect(() => {
@@ -35,6 +36,7 @@ function App() {
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Homepage />} />
+            <Route path="/logins" element={<LoginsGridPage/>} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/contactus" element={<ContactUsGridPage />} />
             <Route path="/log" element={<LogGridPage />} />

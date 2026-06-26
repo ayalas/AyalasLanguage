@@ -26,18 +26,19 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var token = Request.Cookies[Options.CookieName];
-        bool isAdmin = Options.CookieName == Constants.ADMIN_APP_COOKIE_NAME;
+        AppIdEnum appId = Options.CookieName == Constants.ADMIN_APP_COOKIE_NAME? AppIdEnum.Admin : AppIdEnum.Main;
 
         if (string.IsNullOrEmpty(token))
             return AuthenticateResult.Fail("Empty token");
 
         User? user = null;
+
         // 2. Look up user in cache
         if (!_cache.TryGetValue(token, out user))
         {
             // Optionally, you could also check the database for the token if it's not in cache
             var db = Request.HttpContext.RequestServices.GetRequiredService<AyalasLanguageDbContext>();
-            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token);
+            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token && t.AppId == (byte)appId);
 
             if (tokenRecord == null || tokenRecord.ExpiresOn < DateTime.UtcNow)
                 return AuthenticateResult.Fail("Invalid or Expired Token");
@@ -48,7 +49,7 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
         if (user == null)
             return AuthenticateResult.Fail("Unexpected error: user could not be retrieved by token");
 
-        if (isAdmin && user.Role != (int)UserRoleEnum.Admin)
+        if (appId == AppIdEnum.Admin && user.Role != (int)UserRoleEnum.Admin)
             return AuthenticateResult.Fail("Non-admin user attempt to access admin resources");
 
         // 3. Create "Claims" (This represents the user in the context)

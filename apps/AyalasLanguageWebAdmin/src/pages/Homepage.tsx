@@ -134,14 +134,14 @@ export default function Homepage() {
             </div>
 
             <div className="dashboard-counter counter-warnings">
-              <span>
+               <Link className='dashboard-counter-link' to="/logins">
                 <div className="dashboard-counter-element">
                   {dashboardData.loginsTotal}
                 </div>
                 <div className="dashboard-counter-smallelement">
                   Logins
                 </div>
-              </span>
+              </Link>
             </div>
 
           </div>

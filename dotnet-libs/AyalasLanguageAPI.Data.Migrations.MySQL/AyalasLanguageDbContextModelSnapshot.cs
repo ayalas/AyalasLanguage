@@ -592,6 +592,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("TokenId"));
 
+                    b.Property<byte>("AppId")
+                        .HasColumnType("tinyint unsigned");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasMaxLength(1024)

@@ -10,7 +10,7 @@ namespace AyalasLanguageAPI.AdminDTOs
     public record AdminLoginDto(string UserName, string Password);
 
     //grid dtos
-    public record AdminUserRowDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, string? KnownLanguage, string? TargetLanguage);
+    public record AdminUserRowDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, string? KnownLanguage, string? TargetLanguage, DateTime CreatedOn);
 
     public record AdminContactUsRowDto(int ContactUsId, int? UserId, string? DisplayName, string Email, string? Message, DateTime CreatedOn);
     public record AdminLogRowDto(int LogId, int? UserId, string? Email, LogTypeEnum LogType, string? Description, DateTime CreatedOn);
@@ -24,6 +24,7 @@ namespace AyalasLanguageAPI.AdminDTOs
     public record AdminMultiSetExerciseStatusRequest(int[] ExerciseIds, ContentStatusEnum Status);
     public record AdminGridResponse<T>(int NumOfRecords, T[] Data);
 
+    public record AdminLoginRowDto(int? UserId, string? Email,byte AppId, DateTime CreatedOn, DateTime ExpiresOn);
     public record AdminDashboardCountersResponse(int ContactUsRecordsTotal, int LogsTotal, int LessonsTotal, int DraftLessonsTotal, int ExercisesTotal, 
         int UsersTotal, int LoginsTotal);
 }

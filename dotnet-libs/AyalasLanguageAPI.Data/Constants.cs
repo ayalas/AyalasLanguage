@@ -56,6 +56,14 @@ public enum LogTypeEnum
     ExerciseDataValidationFailed = 2
 }
 
+public enum AppIdEnum
+{
+    Main= 1,
+    Admin= 2,
+    Main2FA = 3,
+    Admin2FA = 4
+}
+
 public enum LanguageEnum
 {
     English = 1,

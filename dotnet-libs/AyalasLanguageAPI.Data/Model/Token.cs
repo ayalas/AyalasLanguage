@@ -10,6 +10,7 @@ public class Token
         [Required]
         public int UserId { get; set; }
         public virtual User User { get; set; } = null!;
+        public byte AppId {get;set;} = 0;
 
         [Required, StringLength(1024)]
         public string Content { get; set; } = null!;

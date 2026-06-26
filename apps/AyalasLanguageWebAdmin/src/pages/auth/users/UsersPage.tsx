@@ -6,6 +6,7 @@ import axios from 'axios';
 import type { RoleType } from '@ayalaslanguage/types/auth';
 import { AuthHeader } from '../../../components/auth/AuthHeader';
 import GenericGrid from '../../../components/GenericGrid';
+import dayjs from 'dayjs';
 
 export default function UsersPage() {
     const [success, setSuccess] = useState('');
@@ -31,7 +32,12 @@ export default function UsersPage() {
         { field: "emailConfirmed", headerName: 'Confirmed', flex: 1, filter: true },
         { field: "use2FALogin", headerName: 'Enabled 2FA', flex: 1, filter: true },
         { field: "knownLanguage", headerName: 'Known Language', flex: 1, filter: true },
-        { field: "targetLanguage", headerName: 'Learning Language', flex: 1, filter: true }
+        { field: "targetLanguage", headerName: 'Learning Language', flex: 1, filter: true },
+        {
+            field: "createdOn", headerName: 'Created On',
+            valueFormatter: params => dayjs(params.value).format('YYYY-MM-DD HH:mm'),
+            flex: 2, filter: true
+        }
     ]);
 
     const handleRoleChange = async (event: CellValueChangedEvent<IRowUser>) => {
