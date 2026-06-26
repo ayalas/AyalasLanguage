@@ -13,6 +13,7 @@ import {
 } from '@floating-ui/react';
 import { BRAND_NAME } from '../constants/public';
 import { useState } from 'react';
+import imgDiscord from '../assets/Discord-Symbol-Black.png';
 
 
 
@@ -50,6 +51,7 @@ export function PublicHeader() {
                         <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                             <li className="menu-line"><Link to='/home' className="menu-item">To the app</Link></li>
                             <li className="menu-line"><div className="menu-item"><div className="header-link"><Link to='/contactus' className="header-link-item"><Mail /> Contact Us</Link></div></div></li>
+                            <li className="menu-line"><Link target='discord' to='https://discord.gg/UkzNfauGd' className="menu-item"><img className="discordIcon" src={imgDiscord} />Discuss on Discord</Link></li>
                             <li className="menu-line"><Link to='/about' className="menu-item">About {BRAND_NAME}</Link></li>
                         </ul>
                     </div>

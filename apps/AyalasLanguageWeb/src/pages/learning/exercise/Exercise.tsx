@@ -82,8 +82,11 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
         const newValue = !displayAnswer;
         setDisplayAnswer(newValue);
 
-        if (newValue && shouldPlayAnswer(exerciseInfo.exerciseTypeId)) {
-            playTargetText();
+        if (newValue) {
+            if (shouldPlayAnswer(exerciseInfo.exerciseTypeId)) {
+                playTargetText();
+            }
+            addMistake(exerciseInfo.exerciseId);
         }
     }
 
@@ -91,7 +94,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
         const success = refExercise.current?.checkAnswer?.() || false;
         if (!success) {
             // fire-and-forget addMistake; caller expects boolean return
-            void addMistake(exerciseInfo.exerciseId);
+            addMistake(exerciseInfo.exerciseId);
         }
         return success;
     }
