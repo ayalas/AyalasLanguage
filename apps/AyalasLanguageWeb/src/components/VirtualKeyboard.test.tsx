@@ -67,6 +67,9 @@ describe('VirtualKeyboard Component', () => {
       />
     );
 
+    const showLink = await screen.findByText(/Show Keyboard/i);
+    fireEvent.click(showLink);
+
     // Using findBy because the keyboard initialization happens in a useEffect
     const keyboard = await screen.findByTestId('keyboard');
     expect(keyboard).toBeInTheDocument();
