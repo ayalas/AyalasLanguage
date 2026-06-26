@@ -339,18 +339,23 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setChapter(res.data.chapter);
         }
 
-        const tempPuterSignin = (await initializePuter() == true);
-        setPuterSignedIn(tempPuterSignin);
-        if (!tempPuterSignin) {
-          //default to manual use of AI if could not sign in
+        if (user?.disablePuter) {
           setUsePuterAI(false);
+        }
+        else {
+          const tempPuterSignin = (await initializePuter() == true);
+          setPuterSignedIn(tempPuterSignin);
+          if (!tempPuterSignin) {
+            //default to manual use of AI if could not sign in
+            setUsePuterAI(false);
+          }
         }
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
     }
     execAsync();
-  }, [initialRecord, searchParams]);
+  }, [initialRecord, searchParams, user]);
 
   useEffect(() => {
     async function execAsync() {
@@ -378,7 +383,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                 <button data-testid="save" type="submit" disabled={isLoading} className="form-button" title="Save and Generate Exercises"><LayersPlus /></button>
               </div>
               <div className="form-button-cell">
-                <button data-testid="switch-ai-use" type="button" disabled={isLoading} onClick={() => { setUsePuterAI(!usePuterAI) }} className="form-button"
+                <button data-testid="switch-ai-use" type="button" disabled={isLoading || user?.disablePuter} onClick={() => { setUsePuterAI(!usePuterAI) }} className="form-button"
                   title={usePuterAI ? "Automated AI use (click to Switch to manual use)" : "Manual AI use (click to Switch to automated use)"}>{usePuterAI && (<Workflow />) || (<UserPen />)}
                 </button>
               </div>

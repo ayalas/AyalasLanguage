@@ -58,87 +58,25 @@ namespace AyalasLanguageAPI.Endpoints.Profile
         private static async Task<IResult> EditUserProfile(ClaimsPrincipal claim, EditUserProfileDto dto, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
-            var user = await db.Users
-                .Include(u => u.UserLanguages)
-                .Include(u => u.UserExerciseTypes)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
-
+            var user = await db.Users.FindAsync(userId);
             if (user == null) return Results.NotFound();
 
-            //if user does not have a known language, assign one here
-            if (user.KnownLanguageId == null && dto.Languages.Any(l => !l.IsLearning))
+            if (dto.TargetLanguageId == null || dto.KnownLanguageId == null)
             {
-                var knownLang = dto.Languages.First(l => !l.IsLearning);
-                user.KnownLanguageId = knownLang.LanguageId;
+                return Results.BadRequest("User must have both target and known languages set to switch.");
             }
 
-            //if user does not have a target language, assign one here
-            if (user.TargetLanguageId == null && dto.Languages.Any(l => l.IsLearning))
-            {
-                var targetLang = dto.Languages.First(l => l.IsLearning);
-                user.TargetLanguageId = targetLang.LanguageId;
-            }
+            user.DisablePuter = dto.DisablePuter;
 
-            if (!string.IsNullOrWhiteSpace(dto.DisplayName))
-            {
-                user.DisplayName = dto.DisplayName;
-            }
+            await AddLanguageToUser(userId, dto.TargetLanguageId.Value, true, db);
+            await AddLanguageToUser(userId, dto.KnownLanguageId.Value, false, db);
 
-
-            var existingLangs = user.UserLanguages.ToList();
-            var existingExerciseTypes = user.UserExerciseTypes.ToList();
-
-            foreach (var lang in dto.Languages)
-            {
-                var existing = existingLangs
-                    .FirstOrDefault(ul => ul.UserId == userId && ul.LanguageId == lang.LanguageId);
-
-                if (existing != null)
-                {
-                    existing.IsLearning = lang.IsLearning;
-                }
-                else
-                {
-                    db.UserLanguages.Add(new UserLanguage
-                    {
-                        UserId = userId,
-                        LanguageId = lang.LanguageId,
-                        IsLearning = lang.IsLearning
-                    });
-                }
-            }
-            foreach (var existing in existingLangs)
-            {
-                if (!dto.Languages.Any(l => l.LanguageId == existing.LanguageId))
-                {
-                    db.UserLanguages.Remove(existing);
-                }
-            }
-
-            foreach (var exType in dto.ExerciseTypes)
-            {
-                var existing = existingExerciseTypes
-                    .FirstOrDefault(ue => ue.UserId == userId && ue.ExerciseTypeId == exType.ExerciseTypeId);
-
-                if (existing == null)
-                {
-                    db.UserExerciseTypes.Add(new UserExerciseType
-                    {
-                        UserId = userId,
-                        ExerciseTypeId = exType.ExerciseTypeId
-                    });
-                }
-            }
-            foreach (var existing in existingExerciseTypes)
-            {
-                if (!dto.ExerciseTypes.Any(e => e.ExerciseTypeId == existing.ExerciseTypeId))
-                {
-                    db.UserExerciseTypes.Remove(existing);
-                }
-            }
+            user.TargetLanguageId = dto.TargetLanguageId;
+            user.KnownLanguageId = dto.KnownLanguageId;
 
             await db.SaveChangesAsync();
-            return Results.Ok();
+            UserIdDto? userIdDto = await AuthEndpoints.GetUserById(user.UserId, db);
+            return Results.Ok(userIdDto);
         }
 
         private static async Task<IResult> SwitchUserLanguages(ClaimsPrincipal claim, SwitchLanguageDto dto, AyalasLanguageDbContext db)

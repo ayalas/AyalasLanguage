@@ -33,5 +33,6 @@ export interface User {
   role: number;
   emailConfirmed: boolean;
   use2FALogin: boolean;
+  disablePuter: boolean;
   languageSettings?: LanguageSettings;
 }

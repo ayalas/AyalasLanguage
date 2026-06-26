@@ -43,6 +43,8 @@ namespace AyalasLanguageAPI.Data.Model
 
         public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
 
+        public bool DisablePuter {get; set;} = false;
+
         // Navigation properties
         public virtual ICollection<UserLanguage> UserLanguages { get; set; } = new List<UserLanguage>();
         public virtual ICollection<LearningPath> LearningPaths { get; set; } = new List<LearningPath>();

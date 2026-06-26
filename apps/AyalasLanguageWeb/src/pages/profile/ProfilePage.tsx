@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Save } from 'lucide-react';
 
 import { AuthHeader } from '../../components/auth/AuthHeader';
-import { switchLanguage, reloadLanguageSettings } from '../../utils/languageUtils';
+import { reloadLanguageSettings } from '../../utils/languageUtils';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
 import type { User, AppLanguageCode } from '../../types/shared/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -22,6 +22,7 @@ export function ProfilePage() {
   const [targetLanguage, setTargetLanguage] = useState<string | number>('');
   const [knownLanguage, setKnownLanguage] = useState<string | number>('');
   const [error, setError] = useState('');
+  const [disablePuter, setDisablePuter] = useState(false);
   const navigate = useNavigate();
   const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
   const location = useLocation();
@@ -32,6 +33,10 @@ export function ProfilePage() {
       const response = await axios.get('/api/static/languages');
       const allLanguagesData = response.data as Language[];
       setAllLanguages(allLanguagesData || []);
+
+      if (user?.disablePuter) {
+        setDisablePuter(true);
+      }
 
       if (user?.languageSettings) {
         if (user.languageSettings.targetLanguageId && user.languageSettings.targetLanguageId > 0) {
@@ -76,7 +81,14 @@ export function ProfilePage() {
         return;
       }
       if (!user) throw new Error('User must be logged in to change language');
-      await switchLanguage(axios, user, login, Number(targetLanguage), Number(knownLanguage));
+
+      const res = await axios.post('/api/profile/', {
+          disablePuter,
+          TargetLanguageId: Number(targetLanguage),
+          KnownLanguageId: Number(knownLanguage)
+      });
+
+      login(res.data);
 
       if (from != null) {
         navigate(from, { replace: true });
@@ -142,6 +154,15 @@ export function ProfilePage() {
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+            <div className="form-input-row">
+              <div className="form-label-cell">
+                <label className="form-label">Disable Puter use in AI and Sounds</label>
+              </div>
+              <div className="form-input-cell">
+                <input type="checkbox" data-testid="disablePuter" checked={disablePuter} onChange={(e) => setDisablePuter(e.target.checked)} />
               </div>
             </div>
           </form>

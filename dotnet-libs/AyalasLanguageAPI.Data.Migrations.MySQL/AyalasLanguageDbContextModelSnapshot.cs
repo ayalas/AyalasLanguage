@@ -630,6 +630,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<bool>("DisablePuter")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasMaxLength(128)

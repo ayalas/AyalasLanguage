@@ -39,7 +39,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
 
-            if (isSecure() && exerciseInfo.exerciseObject != null) {
+            if (isSecure() && exerciseInfo.exerciseObject != null && !user?.disablePuter) {
                 const langCode = user?.languageSettings?.targetLanguageCode;
                 if (langCode != undefined) {
                     const pollyObject = LANGUAGE_TO_POLLY_MAP[langCode]
@@ -162,10 +162,16 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     useEffect(() => {
         childLoaded(exerciseInfo.exerciseId);
         async function runAsync() {
-            setPuterSignedIn(await initializePuter() == true);
+            if (!user?.disablePuter) {
+                if (isSecure() && !puter.auth.isSignedIn()) {
+                    setError("The app is attempting to use the Puter library to facilitate sounds and automatic AI exercise generation. If that does not work out for you, you can disable Puter in the Profile settings page.");
+                }
+                const tempSignIn = (await initializePuter() == true);
+                setPuterSignedIn(tempSignIn);
+            }
         }
         runAsync();
-    }, [exerciseInfo, childLoaded]);
+    }, [exerciseInfo, childLoaded, user]);
 
     const onBackClick = function (e: React.MouseEvent) {
         e.preventDefault();
