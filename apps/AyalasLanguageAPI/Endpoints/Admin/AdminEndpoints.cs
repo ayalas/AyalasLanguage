@@ -172,7 +172,7 @@ public static class AdminEndpoints
     {
         // 2. Generate a unique token: improve this in production (e.g. JWT or GUID + HMAC)
         var tokenContent = TokenGenerator.GenerateToken(); // Implement a secure token generator
-        var expires = DateTime.UtcNow.AddHours(config.GetValue<int>("Session:TokenExpirationHours"));
+        var expires = DateTime.UtcNow.AddHours(config.GetValue<int>("Session:AdminTokenExpirationHours"));
 
         var tokenEntry = new Token
         {
