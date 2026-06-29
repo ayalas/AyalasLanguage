@@ -60,7 +60,6 @@ export const focusOnLoad = (type: ExerciseType | 0): boolean => {
 export const shouldPlayQuestion = (type: ExerciseType | 0): boolean => {
     return ([
         EXERCISE_TYPES.COMMON_RESPONSES,
-        EXERCISE_TYPES.COMMON_RESPONSES_BUCKET,
         EXERCISE_TYPES.FROM_TARGET_TO_KNOWN,
         EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET
     ] as (ExerciseType | 0)[]).includes(type);
