@@ -1,5 +1,30 @@
 import { EXERCISE_TYPES, type ExerciseType } from "@ayalaslanguage/types/exercise";
 
+export const rankExerciseTypeByEase = (type: ExerciseType | 0): number => {
+    switch (type) {
+        case EXERCISE_TYPES.MATCHING:
+            return 10;
+        case EXERCISE_TYPES.MATCHING_TO_SPOKEN:
+            return 15;
+        case EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET:
+            return 20;
+        case EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET:
+            return 25;
+        case EXERCISE_TYPES.COMMON_RESPONSES_BUCKET:
+            return 30;
+        case EXERCISE_TYPES.FILL_IN_THE_BLANKS:
+            return 35;
+        case EXERCISE_TYPES.FROM_TARGET_TO_KNOWN:
+            return 90;
+        case EXERCISE_TYPES.FROM_KNOWN_TO_TARGET:
+            return 100;
+        case EXERCISE_TYPES.COMMON_RESPONSES:
+            return 110;
+        default:
+            return 1000;
+    }
+}
+
 export const supportsAlternativeAnswers = (type: ExerciseType | 0): boolean => {
     return ([
         EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
@@ -73,10 +98,10 @@ export const isRightToLeftInput = (type: ExerciseType | 0, targetIsRtl: boolean,
         EXERCISE_TYPES.FILL_IN_THE_BLANKS,
         EXERCISE_TYPES.FROM_KNOWN_TO_TARGET
     ] as (ExerciseType | 0)[]).includes(type) && targetIsRtl) ||
-    (([
-        EXERCISE_TYPES.FROM_TARGET_TO_KNOWN,
-        EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET
-    ] as (ExerciseType | 0)[]).includes(type) && knownIsRtl);
+        (([
+            EXERCISE_TYPES.FROM_TARGET_TO_KNOWN,
+            EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET
+        ] as (ExerciseType | 0)[]).includes(type) && knownIsRtl);
 };
 
 export const targetIsSpoken = (type: ExerciseType | 0): boolean => {

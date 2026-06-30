@@ -10,6 +10,7 @@ import imgLogo from '../assets/logo.jpg';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
+import { rankExerciseTypeByEase } from '../logic/ExerciseTypeLogic';
 
 type ExerciseTypeGroupObject = {
   exerciseTypeId: 0 | ExerciseType,
@@ -85,7 +86,9 @@ export default function Homepage() {
               return (
                 <div className="learning-level-container" key={`level-${level.level}`}>
                   <h4>Level {level.level}</h4>
-                  {level.exerciseTypes.map((exerciseTypeObject: ExerciseTypeGroupObject) => {
+                  {level.exerciseTypes.sort(
+                      (a:ExerciseTypeGroupObject, b:ExerciseTypeGroupObject) =>  rankExerciseTypeByEase(a.exerciseTypeId) - rankExerciseTypeByEase(b.exerciseTypeId)  
+                    ).map((exerciseTypeObject: ExerciseTypeGroupObject) => {
                     let lastPathObj = { level: level.level, chapter: 1 }
                     if (exerciseTypeObject.paths.length > 0) {
                       lastPathObj.chapter = exerciseTypeObject.paths[exerciseTypeObject.paths.length - 1].chapter;
