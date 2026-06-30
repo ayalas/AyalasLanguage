@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck } from 'lucide-react';
+import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog } from '../../utils/utils';
@@ -24,6 +24,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [chapter, setChapter] = useState(1);
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState('');
   const [access, setAccess] = useState(AUTHOR_ACCESS.CAN_EDIT);
   const [exerciseType, setExerciseType] = useState<ExerciseType | 0>(0);
   const [exerciseTypeDesc, setExerciseTypeDesc] = useState('');
@@ -34,7 +35,6 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [secondSetDesc, setSecondSetDesc] = useState('');
   const [wrongExtraOptionsDesc, setWrongExtraOptionsDesc] = useState('');
   const [aiInstructions, setAIInstructions] = useState('');
-  const [aiInstructionsAuto, setAIInstructionsAuto] = useState('');
   const [searchParams] = useSearchParams();
   const initLevel = searchParams.get('level');
   const initChapter = searchParams.get('chapter');
@@ -103,11 +103,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         return null;
       }
 
-      if (aiInstructionsAuto == '') {
+      //set auto AI instructions to have the latest subject
+      const aiAutoDescNew = handleExerciseTypeLogic(exerciseType);
+
+      if (aiAutoDescNew == '') {
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
-      const response = await puter.ai.chat(aiInstructionsAuto);
+      const response = await puter.ai.chat(aiAutoDescNew);
       if (response != undefined && response.message != undefined) {
         // Extract the raw string response
         const rawText = response.message.content.toString();
@@ -120,7 +123,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setError('Automated generation did not return in the expected result format. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "parsing LLM response failed",
-            Instruction: aiInstructionsAuto,
+            Instruction: aiAutoDescNew,
             Result: rawText
           } as LogAutoAIFailure);
           return null;
@@ -129,7 +132,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "Result is not an array",
-            Instruction: aiInstructionsAuto,
+            Instruction: aiAutoDescNew,
             Result: rawText
           } as LogAutoAIFailure);
           return null;
@@ -140,7 +143,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             setError('Automated generation returned an empty result. Switch to manual use of AI or try again.');
             writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
               Title: "Result is an empty array",
-              Instruction: aiInstructionsAuto,
+              Instruction: aiAutoDescNew,
               Result: rawText
             } as LogAutoAIFailure);
             return null;
@@ -170,7 +173,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
               setError('Automated generation returned the expected result structure. Switch to manual use of AI or try again.');
               writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
                 Title: "Result is invalid",
-                Instruction: aiInstructionsAuto,
+                Instruction: aiAutoDescNew,
                 Result: rawText
               } as LogAutoAIFailure);
               return null;
@@ -191,15 +194,33 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
   const onFormSubmit = async function (e: React.SubmitEvent) {
     e.preventDefault();
+    setLoadingMessage('Generating exercises...');
     setIsLoading(true);
+
+    
     const arrData = await parseForm();
 
     //error is displayed when arrData is null
     if (arrData != null) {
+
       await handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
     }
     setIsLoading(false);
   };
+
+  const saveOnly = async function (e: React.MouseEvent) {
+
+    e.preventDefault();
+
+    setLoadingMessage('Saving lesson...');
+    setIsLoading(true);
+
+    await handleSubmit(setError, null, level, chapter, title, exerciseType, null);
+
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+  }
 
   const createExercises = async function (pathId: number, exerciseType: ExerciseType, arrData: any[]) {
     const created: number[] = [];
@@ -257,13 +278,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     setAIInstructions(aiDesc);
     //automatic ai instructions (returning json)
     aiDesc = replaceAIInstructionsPlaceholders(exType.ai_instruction_auto as string);
-    setAIInstructionsAuto(aiDesc);
 
     setFirstSetDesc(exType.first_data_instructions);
     setSecondSetDesc(exType.second_data_instructions);
     if (hasExtraOptions(exrTypeValue)) {
       setWrongExtraOptionsDesc(exType.extra_options_instructions);
     }
+
+    return aiDesc;
   };
 
 
@@ -379,6 +401,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
               <h1>Lesson editor</h1>
             </div>
             <div className="form-row">
+              {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && usePuterAI && (
+                <div className="form-button-cell">
+                  <button data-testid="save-only" type="button" className="form-button" title="Save" onClick={saveOnly}>
+                    <Save />
+                  </button>
+                </div>
+              )}
               <div className="form-button-cell">
                 <button data-testid="save" type="submit" disabled={isLoading} className="form-button" title="Save and Generate Exercises"><LayersPlus /></button>
               </div>
@@ -418,7 +447,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             {isLoading && (
               <div className="loadingOverlay">
                 <div data-testid="loadingBox" className="loadingBox">
-                  Generating exercises...
+                  {loadingMessage}
                 </div>
               </div>
             ) || (
