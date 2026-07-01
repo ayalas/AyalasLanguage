@@ -129,7 +129,7 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
                   itemValue={item.First}
                   matchingValue={item.Second}
                   setSelected={onColumn2Selected}
-                  isSpoken={false}
+                  isSpoken={targetIsSpoken(exerciseInfo.exerciseTypeId)}
                 />
               ))}
             </div>

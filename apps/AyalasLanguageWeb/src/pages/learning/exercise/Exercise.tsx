@@ -1,17 +1,7 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { useOutletContext, Link } from 'react-router-dom';
-import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, ChevronDown, FilePenLine } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine } from 'lucide-react';
 import axios from 'axios';
-import {
-    useFloating,
-    offset,
-    flip,
-    shift,
-    autoUpdate,
-    useClick,
-    useDismiss,
-    useInteractions
-} from '@floating-ui/react';
 import { EXERCISE_TYPE_INSTRUCTIONS, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
