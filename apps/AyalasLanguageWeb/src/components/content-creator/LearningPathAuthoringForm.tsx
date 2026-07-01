@@ -14,6 +14,7 @@ import type { NextChapterResponse } from '../../types/creator/creator';
 import { hasExtraOptions } from '../../logic/ExerciseTypeLogic';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
+import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: any; reloadExercise?: () => void }) {
@@ -262,7 +263,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '');
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.LEVEL_PLACEHOLDER, String(level));
     const numOfExercies = user?.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES;
-    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.NUM_OF_EXERCISES_PLACEHOLDER, numOfExercies);
+    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.NUM_OF_EXERCISES_PLACEHOLDER, numOfExercies.toString());
 
     let subject = title.trim();
     if (subject == '') {
@@ -402,7 +403,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             <div className="form-header">
               <h1>Lesson editor</h1>
             </div>
-            <div className="form-row">
+            <div className="buttons-container">
               {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && usePuterAI && (
                 <div className="form-button-cell">
                   <button data-testid="save-only" type="button" className="top-button" title="Save" onClick={saveOnly}>
@@ -411,35 +412,51 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                 </div>
               )}
               <div className="form-button-cell">
-                <button data-testid="save" type="submit" disabled={isLoading} className="top-button" title="Save and Generate"><LayersPlus />&nbsp;Save and Generate</button>
+                <button data-testid="save" type="submit" disabled={isLoading} className="top-button"><LayersPlus />&nbsp;{usePuterAI ? "Generate" : "Save & Generate"}</button>
               </div>
-              <div className="form-button-cell">
-                <button data-testid="switch-ai-use" type="button" disabled={isLoading || user?.disablePuter} onClick={() => { setUsePuterAI(!usePuterAI) }} className="form-button"
-                  title={usePuterAI ? "Automated AI use (click to Switch to manual use)" : "Manual AI use (click to Switch to automated use)"}>{usePuterAI && (<Workflow />) || (<UserPen />)}
-                </button>
-              </div>
-              {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && (
-                <>
-                  <div className="form-button-cell">
-                    <button data-testid="import-exercises" type="button" disabled={isLoading} onClick={onImportExercises} className="form-button" title="Import Exercises"><FileDown /></button>
-                  </div>
-                  <div className="form-button-cell">
-                    <button data-testid="export-exercises" type="button" disabled={isLoading} onClick={onExportExercises} className="form-button" title="Export Exercises"><FileUp /></button>
-                  </div>
-                </>
-              )}
-              {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && initialRecord.exerciseCount == 0 && (
-                <div className="form-button-cell">
-                  <button data-testid="delete-lesson" type="button" disabled={isLoading} onClick={deleteLesson} className="form-button" title="Delete lesson"><Trash /></button>
-                </div>
-              )}
-              {initialRecord && !isLoading && (
-                <div className="form-button-cell">
-                  <Link className="link-button" title="Back to Lesson" to={`/path/${initialRecord.learningPathId}`}><BookOpenCheck /></Link>
-                </div>
-              )
-
-              }
+              <ActionsMenuComponent anchorTitle="" items={[
+                {
+                  isVisible: usePuterAI,
+                  dataTestId: "switch-ai-use",
+                  disabled: isLoading || user?.disablePuter,
+                  children: <><UserPen />&nbsp;Switch to Manual Entry</>,
+                  onClick: () => { setUsePuterAI(!usePuterAI) }
+                },
+                {
+                  isVisible: !usePuterAI,
+                  dataTestId: "switch-ai-use",
+                  disabled: isLoading || user?.disablePuter,
+                  children: <><Workflow />&nbsp;Switch to AI Generation</>,
+                  onClick: () => { setUsePuterAI(!usePuterAI) }
+                },
+                {
+                  isVisible: initialRecord != null && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT,
+                  dataTestId: "import-exercises",
+                  disabled: isLoading,
+                  onClick: onImportExercises,
+                  children: <><FileDown />&nbsp;Import Exercises</>
+                },
+                {
+                  isVisible: initialRecord != null && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT,
+                  dataTestId: "export-exercises",
+                  disabled: isLoading,
+                  onClick: onExportExercises,
+                  children: <><FileUp />&nbsp;Export Exercises</>
+                },
+                {
+                  isVisible: initialRecord != null && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && initialRecord.exerciseCount == 0,
+                  dataTestId: "delete-lesson",
+                  disabled: isLoading,
+                  onClick: deleteLesson,
+                  children: <><Trash />&nbsp;Delete Lesson</>
+                },
+                {
+                  isVisible: initialRecord != null && !isLoading,
+                  dataTestId: "back-to-lesson",
+                  children: <><BookOpenCheck />&nbsp;Back to Lesson</>,
+                  toPath: `/path/${initialRecord?.learningPathId}`
+                }
+              ] as ActionsMenuItem[]} />
             </div>
             {error != '' && (
               <div className="form-row">

@@ -665,6 +665,44 @@ button {
   background-color: rgb(127, 222, 127);
 }
 
+.my-confirm-toast {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  padding: 16px !important;
+  width: 320px !important; /* Optional: give it a fixed width */
+}
+
+/* The description text */
+.my-confirm-description {
+  color: #71717a !important; /* Zinc-500 color */
+  font-size: 0.875rem !important;
+}
+
+/* The buttons */
+.my-confirm-btn {
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  padding: 8px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+}
+
+/* Specific styling for action vs cancel (if needed) */
+.my-action-btn {
+  background-color: #ef4444 !important; /* Red */
+  color: white !important;
+  border: none !important;
+}
+
+.my-cancel-btn {
+  background-color: #f4f4f5 !important;
+  color: #18181b !important;
+  border: 1px solid #e4e4e7 !important;
+}
+
 .bucket-list-item-cell {
   display: inline-flex;
   padding-right: 10px;

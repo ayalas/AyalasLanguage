@@ -24,6 +24,7 @@ import { puter } from "@heyputer/puter.js";
 import { initializePuter, isSecure } from '../../../utils/utils';
 import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/ActionsMenuComponent';
+import { toast, Toaster } from 'sonner';
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;
@@ -110,7 +111,32 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     }
 
     const readdMistakes = function () {
-        changeMistakesSetting(true);
+       
+        // 1. Trigger the toast
+        const toastId = toast('Are you sure you want to readd your mistakes here?', {
+            description: 'Every time you make a mistake, a duplicate of the exercise you made a mistake in will be added to this lesson. If you have set this setting to another lesson already, it will be removed from it. Typically, this setting should be applied to the bottom most lesson in the homepage.',
+            action: {
+                label: 'Yes, readd my mistakes here',
+                onClick: (e) => {
+                    e.preventDefault();
+                    changeMistakesSetting(true);
+                    toast.dismiss(toastId);
+                },
+            },
+            cancel: {
+                label: 'Cancel',
+                onClick: (e) => { 
+                    e.preventDefault();
+                    toast.dismiss(toastId);
+                }
+            },
+            classNames: {
+                toast: 'my-confirm-toast',
+                description: 'my-confirm-description', // Optional: styling the description
+                actionButton: 'my-action-btn', // Makes the button full width at the bottom
+                cancelButton: 'my-cancel-btn',
+            },
+        });
     }
 
     const cancelMistakesAdd = function () {
@@ -191,6 +217,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
 
     return (
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
+            <Toaster position="top-center" richColors />
             <div className="buttons-container">
                 {
                     canRevealAnswers(exerciseInfo.exerciseTypeId) && (
@@ -199,6 +226,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                         </div>
                     )
                 }
+
                 <ActionsMenuComponent items={[
                     {
                         dataTestId: "restart-lesson",
@@ -213,7 +241,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     },
                     {
                         dataTestId: "readd-mistakes",
-                        children: <><History />&nbsp;Readd my mistakes</>,
+                        children: <><History />&nbsp;Readd my mistakes here</>,
                         onClick: readdMistakes,
                         isVisible: !practiseMistakesInThisPath,
                     },
