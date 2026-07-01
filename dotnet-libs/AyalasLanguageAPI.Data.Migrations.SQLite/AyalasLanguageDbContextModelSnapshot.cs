@@ -640,6 +640,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Property<int?>("KnownLanguageId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<byte?>("NumOfExercisesToGenerate")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(1024)

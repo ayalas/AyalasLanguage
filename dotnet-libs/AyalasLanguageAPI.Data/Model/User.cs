@@ -45,6 +45,8 @@ namespace AyalasLanguageAPI.Data.Model
 
         public bool DisablePuter {get; set;} = false;
 
+        public byte? NumOfExercisesToGenerate {get; set;} = null!;
+
         // Navigation properties
         public virtual ICollection<UserLanguage> UserLanguages { get; set; } = new List<UserLanguage>();
         public virtual ICollection<LearningPath> LearningPaths { get; set; } = new List<LearningPath>();

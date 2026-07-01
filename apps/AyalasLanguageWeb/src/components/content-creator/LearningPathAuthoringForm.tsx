@@ -4,7 +4,7 @@ import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCh
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog } from '../../utils/utils';
-import { EXERCISE_GENERATIONS, PLACEHOLDERS } from '../../constants/learning';
+import { EXERCISE_GENERATIONS, PLACEHOLDERS, DEFAULT_NUM_OF_EXERCISES } from '../../constants/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
 import type { User } from '../../types/shared/User';
@@ -261,6 +261,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '');
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '');
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.LEVEL_PLACEHOLDER, String(level));
+    const numOfExercies = user?.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES;
+    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.NUM_OF_EXERCISES_PLACEHOLDER, numOfExercies);
 
     let subject = title.trim();
     if (subject == '') {
@@ -468,19 +470,19 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   <div className="form-label-row">Level</div>
                   <div className="form-row">
                     <div className="form-input-row">
-                      <input type="number" data-testid="level" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} value={level} onChange={(e) => { setLevel(Number(e.target.value)) }} />
+                      <input type="number" className="form-input" data-testid="level" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} value={level} onChange={(e) => { setLevel(Number(e.target.value)) }} />
                     </div>
                   </div>
                   <div className="form-label-row">Chapter</div>
                   <div className="form-row">
                     <div className="form-input-row">
-                      <input type="number" data-testid="chapter" min="0.01" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
+                      <input type="number" className="form-input" data-testid="chapter" min="0.01" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
                     </div>
                   </div>
                   <div className="form-label-row">Subject</div>
                   <div className="form-row">
                     <div className="form-input-row">
-                      <input type="text" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onChange={(e) => { setTitle(e.target.value) }} />
+                      <input type="text" className="form-input form-input-long" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onChange={(e) => { setTitle(e.target.value) }} />
                     </div>
                     <div className="form-content-row">AI will generate exercises on this subject.</div>
                   </div>

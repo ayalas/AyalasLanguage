@@ -249,7 +249,7 @@ public static class LearningEndpoints
             .OrderBy(e => e.ExerciseId) // Ensure consistent ordering
             .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data,
                 isAdmin || e.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
-            , null))
+            , pathId))
             .ToListAsync();
 
         return Results.Ok(exercises);

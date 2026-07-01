@@ -19,7 +19,6 @@ namespace AyalasLanguageAPI.Endpoints.Profile
                 {
                     AuthenticationSchemes = "PublicAuth"
                 });
-            profileGroup.MapGet("/", GetUserProfile);
             profileGroup.MapPost("/", EditUserProfile);
             profileGroup.MapPost("/current", SwitchUserLanguages);
             profileGroup.MapGet("/current", GetCurrentLanguage);
@@ -35,26 +34,6 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             return userDto != null ? userDto.languageSettings : null;
         }
 
-        private static async Task<IResult> GetUserProfile(ClaimsPrincipal claim, AyalasLanguageDbContext db)
-        {
-            var userId = claim.GetUserId();
-            var user = await db.Users
-                .Include(u => u.UserLanguages)
-                .Include(u => u.UserExerciseTypes)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
-
-            if (user == null) return Results.NotFound();
-
-            var profile = new UserProfileDto(
-                user.DisplayName,
-                user.UserLanguages.Select(ul => new UserLanguageDto(ul.LanguageId, ul.IsLearning)).ToList(),
-                user.UserExerciseTypes.Select(ue => new UserExerciseTypeDto(ue.ExerciseTypeId)).ToList(),
-                new SwitchLanguageDto(user.TargetLanguageId, user.KnownLanguageId)
-            );
-
-            return Results.Ok(profile);
-        }
-
         private static async Task<IResult> EditUserProfile(ClaimsPrincipal claim, EditUserProfileDto dto, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
@@ -67,6 +46,7 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             }
 
             user.DisablePuter = dto.DisablePuter;
+            user.NumOfExercisesToGenerate = dto.NumOfExercisesToGenerate;
 
             await AddLanguageToUser(userId, dto.TargetLanguageId.Value, true, db);
             await AddLanguageToUser(userId, dto.KnownLanguageId.Value, false, db);

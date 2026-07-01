@@ -1,7 +1,17 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft } from 'lucide-react';
+import { useOutletContext, Link } from 'react-router-dom';
+import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, ChevronDown, FilePenLine } from 'lucide-react';
 import axios from 'axios';
+import {
+    useFloating,
+    offset,
+    flip,
+    shift,
+    autoUpdate,
+    useClick,
+    useDismiss,
+    useInteractions
+} from '@floating-ui/react';
 import { EXERCISE_TYPE_INSTRUCTIONS, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
@@ -34,6 +44,17 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
     const [puterSignedIn, setPuterSignedIn] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const { refs: { setFloating, setReference }, floatingStyles, context } = useFloating({
+        open: isOpen,
+        onOpenChange: setIsOpen,
+        placement: 'bottom-start',
+        whileElementsMounted: autoUpdate,
+        middleware: [offset(8), flip(), shift()],
+    });
+    const click = useClick(context);
+    const dismiss = useDismiss(context, { outsidePress: true });
+    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
 
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
@@ -181,35 +202,65 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
 
     return (
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
-            <div className="form-row">
+            <div className="buttons-container">
                 {
                     canRevealAnswers(exerciseInfo.exerciseTypeId) && (
                         <div className="form-button-cell">
-                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="form-button" title="Reveal answer"><Eye /></button>
+                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="form-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;Reveal</button>
                         </div>
                     )
                 }
                 <div className="form-button-cell">
-                    <button data-testid="save-progress" type="button" onClick={saveProgress} className="form-button" title="Save progress"><CircleDotDashed /></button>
-                </div>
-                <div className="form-button-cell">
-                    <button data-testid="restart-lesson" type="button" onClick={restartLesson} className="form-button" title="Restart lesson"><RotateCcw /></button>
-                </div>
-                {practiseMistakesInThisPath && (
-                    <div className="form-button-cell">
-                        <button data-testid="cancel-readding" type="button" onClick={cancelMistakesAdd} className="form-button" title="Cancel readding my mistakes here"><Ban /></button>
-                    </div>
-                ) || (
-                        <div className="form-button-cell">
-                            <button data-testid="readd-mistakes" type="button" onClick={readdMistakes} className="form-button" title="Readd my mistakes here"><History /></button>
+                    <Link data-testid="more-actions" ref={setReference as any} {...getReferenceProps()} className="actions-menu-link-button" to="#">
+                        More&nbsp;<ChevronDown />
+                    </Link>
+
+                    {isOpen && (
+                        <div className="menu-container"
+                            ref={setFloating}
+                            style={{ ...floatingStyles }}
+                            {...getFloatingProps()}
+                        >
+                            <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                                <li className="menu-line"><button data-testid="restart-lesson" type="button" onClick={restartLesson} className="actions-menu-item"><RotateCcw />&nbsp;Restart Lesson</button></li>
+
+                                {practiseMistakesInThisPath && (
+                                    <>
+                                        <hr className="menu-delimiter" />
+                                        <li className="menu-line">
+                                            <button data-testid="cancel-readding" type="button" onClick={cancelMistakesAdd} className="actions-menu-item"><Ban />&nbsp;Stop readding my mistakes</button>
+                                        </li>
+                                    </>
+                                ) || (
+                                        <>
+                                            <hr className="menu-delimiter" />
+                                            <li className="menu-line">
+                                                <button data-testid="readd-mistakes" type="button" onClick={readdMistakes} className="actions-menu-item"><History />&nbsp;Readd my mistakes</button>
+                                            </li>
+                                        </>
+                                    )}
+                                {displayAnswer && error != ""
+                                    && (supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) && (
+                                        <>
+                                            <hr className="menu-delimiter" />
+                                            <li className="menu-line">
+                                                <button data-testid="add-alternative-answer" type="button" className="actions-menu-item" onClick={addAlternativeAnswer}><TicketPlus />&nbsp;Add alternative answer</button>
+                                            </li>
+                                        </>
+                                    )}
+                                <hr className="menu-delimiter" />
+                                <li className="menu-line">
+                                    <Link to={`/author/path/${exerciseInfo.learningPathId}`} className="actions-menu-item"><FilePenLine />&nbsp;Edit lesson</Link>
+                                </li>
+                                <hr className="menu-delimiter" />
+                                <li className="menu-line">
+                                    <button data-testid="save-progress" type="button" onClick={saveProgress} className="actions-menu-item lesson-button-save"><CircleDotDashed />&nbsp;Save & Exit</button>
+                                </li>
+                            </ul>
                         </div>
                     )}
-                {displayAnswer && error != ""
-                    && (supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) && (
-                        <div className="form-button-cell">
-                            <button data-testid="add-alternative-answer" type="button" className="form-button" title="Add alternative answer" onClick={addAlternativeAnswer}><TicketPlus /></button>
-                        </div>
-                    )}
+                </div>
+
             </div>
             <div className="exercise-body-container">
                 <div className="form-row">
@@ -242,9 +293,10 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     ))}
             </div>
             <div className="exercise-footer">
+
                 {(exerciseInfo.index ?? 0) > 0 && (
                     <div className="exercise-footer-back">
-                        <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Prev</button>
+                        <button data-testid="back" className="lesson-button-left lesson-button-back" onClick={onBackClick}><ArrowBigLeft /> Prev</button>
                     </div>
                 )}
                 {

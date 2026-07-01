@@ -3,7 +3,7 @@ import type { ChangeEvent } from 'react';
 import { useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Save } from 'lucide-react';
-
+import { DEFAULT_NUM_OF_EXERCISES } from '../../constants/learning';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { reloadLanguageSettings } from '../../utils/languageUtils';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
@@ -21,6 +21,7 @@ export function ProfilePage() {
   const [allLanguages, setAllLanguages] = useState<Language[]>([]);
   const [targetLanguage, setTargetLanguage] = useState<string | number>('');
   const [knownLanguage, setKnownLanguage] = useState<string | number>('');
+  const [numOfExercises, setNumOfExercises] = useState<number>(DEFAULT_NUM_OF_EXERCISES);
   const [error, setError] = useState('');
   const [disablePuter, setDisablePuter] = useState(false);
   const navigate = useNavigate();
@@ -83,9 +84,10 @@ export function ProfilePage() {
       if (!user) throw new Error('User must be logged in to change language');
 
       const res = await axios.post('/api/profile/', {
-          disablePuter,
-          TargetLanguageId: Number(targetLanguage),
-          KnownLanguageId: Number(knownLanguage)
+        disablePuter,
+        numOfExercisesToGenerate: numOfExercises,
+        TargetLanguageId: Number(targetLanguage),
+        KnownLanguageId: Number(knownLanguage)
       });
 
       login(res.data);
@@ -165,7 +167,17 @@ export function ProfilePage() {
                 <input type="checkbox" data-testid="disablePuter" checked={disablePuter} onChange={(e) => setDisablePuter(e.target.checked)} />
               </div>
             </div>
+
+            <div className="form-input-row">
+              <div className="form-label-cell">
+                <label className="form-label">Number of Exercises for AI Generation</label>
+              </div>
+              <div className="form-input-cell">
+                <input data-testid="num-of-exercises" className="form-input" step="1" type="number" min="1" max="50" value={numOfExercises} onChange={async (e) => { setNumOfExercises(parseInt(e.target.value) || DEFAULT_NUM_OF_EXERCISES) }} />
+              </div>
+            </div>
           </form>
+
 
           {user?.languageSettings?.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
             <div className="form-row">

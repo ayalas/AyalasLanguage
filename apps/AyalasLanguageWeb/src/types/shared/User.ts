@@ -34,5 +34,6 @@ export interface User {
   emailConfirmed: boolean;
   use2FALogin: boolean;
   disablePuter: boolean;
+  numOfExercisesToGenerate?: number;
   languageSettings?: LanguageSettings;
 }

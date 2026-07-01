@@ -35,6 +35,35 @@ textarea {
   }
 }
 
+.actions-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 16px;
+  text-align: start;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  font-size: var(--fontsize-lg);
+}
+
+.actions-menu-link-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+  padding: 7px 14px;
+  border: 2px solid var(--text-h);
+  border-radius: 4px;
+  font-size: var(--fontsize-lg);
+}
+
 .lesson-outer-container {
   display: flex;
   flex-direction: column;
@@ -46,9 +75,9 @@ textarea {
 }
 
 .lesson-inner-container {
-  padding:10px;
+  padding: 10px;
   min-width: 800px;
-  
+
   @media (max-width: 1024px) {
     min-width: 95vw;
   }
@@ -56,6 +85,12 @@ textarea {
 
 body {
   color: var(--text-h);
+}
+
+.buttons-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .form-button {
@@ -138,6 +173,9 @@ label.label-deleted {
 .form-select {
   display: inline-flex;
   min-height: 30px;
+  border: 1px solid #35bd4e;
+  border-radius: 3px;
+  padding: 4px 8px;
 }
 
 .form-button-cell {
@@ -165,6 +203,11 @@ label.label-deleted {
   min-height: 24px;
   border: 1px solid #35bd4e;
   border-radius: 3px;
+  padding: 4px 8px;
+}
+
+.form-input-long {
+  width: 100%;
 }
 
 .form-play-container {
@@ -242,12 +285,12 @@ input:required:invalid {
   text-align: start;
   color: var(--text-h);
   align-content: center;
-  font-size: 24px;
+  font-size: var(--fontsize-lg);
 }
 
 .exercise-inner-element input[type="text"],
 button {
-  font-size: 24px;
+  font-size: var(--fontsize-lg);
 }
 
 .exercise-outer-element {
@@ -300,7 +343,7 @@ button {
 .header-app-link {
   text-decoration: none;
   color: rgb(55, 194, 20);
-  font-size: 24px;
+  font-size: var(--fontsize-lg);
 }
 
 .header-input-cell {
@@ -413,7 +456,32 @@ button {
   display: block;
 }
 
+.lesson-button-back {
+  color: rgb(51, 172, 21);
+  border: 2px solid rgb(55, 194, 20);
+}
 
+.lesson-button-save {
+  color: rgb(192, 155, 23);
+}
+
+.lesson-button-reveal {
+  color: rgb(1, 1, 232);
+  border: 2px solid rgb(1, 1, 232);
+}
+
+.lesson-button-left {
+  background-color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  /* Centers items vertically */
+  justify-content: center;
+  /* Centers items horizontally */
+  gap: 4px;
+  border-radius: 4px;
+  padding: 7px 14px;
+}
 
 .lesson-done {
   color: rgb(116, 117, 116);
@@ -469,6 +537,8 @@ button {
   min-width: 15%;
   z-index: 999;
 }
+
+
 
 .menu-delimiter {
   border: 0;
@@ -602,11 +672,7 @@ button {
   padding-top: 10px;
 }
 
-.button-back {
-  font-weight: 800;
-  color: rgb(55, 194, 20);
-  border-color: rgb(55, 194, 20);
-}
+
 
 /* The outer full-screen backdrop */
 .loading-overlay {

@@ -257,7 +257,7 @@ export function LessonPage() {
                 <div className="lesson-header">
                   <div className="lesson-name">{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</div>
                   <div className="lesson-close-row">
-                    <Link to="/home" className="link-button" title="Home"><X /></Link>
+                    <Link to="/home" className="actions-menu-link-button" title="Home"><X />&nbsp;Exit</Link>
                   </div>
                 </div>
                 {!currentExercise && (
@@ -273,9 +273,6 @@ export function LessonPage() {
               <>
                 <div className="form-row">
                   <label className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</label>
-                  <div className="form-button-cell">
-                    <Link to={`/author/path/${learningPathId}`} className="link-lesson-edit" title="Edit lesson"><FilePenLine /></Link>
-                  </div>
                 </div>
 
                 <Exercise key={currentExercise.exerciseId}

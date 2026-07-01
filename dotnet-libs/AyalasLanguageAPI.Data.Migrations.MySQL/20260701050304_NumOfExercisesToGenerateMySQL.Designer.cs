@@ -4,6 +4,7 @@ using AyalasLanguageAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AyalasLanguageAPI.Data.Migrations.MySQL
 {
     [DbContext(typeof(AyalasLanguageDbContext))]
-    partial class AyalasLanguageDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260701050304_NumOfExercisesToGenerateMySQL")]
+    partial class NumOfExercisesToGenerateMySQL
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
