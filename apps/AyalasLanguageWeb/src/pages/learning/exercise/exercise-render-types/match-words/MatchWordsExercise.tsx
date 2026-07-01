@@ -14,7 +14,8 @@ type Props = {
 };
 
 const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext, addMistake, playTargetText }) => {
-  const [matches, setMatchs] = useState<Array<{ Column1: { First: string; Second: string }; Column2: { First: string; Second: string } }>>([]);
+  const [column1, setColumn1] = useState<Array<{ First: string; Second: string }>>([]);
+  const [column2, setColumn2] = useState<Array<{ First: string; Second: string }>>([]);
   const [countDone, setCountDone] = useState<number>(0);
   const [column1Selected, setColumn1Selected] = useState<MatchSelection | null>(null);
   const [column2Selected, setColumn2Selected] = useState<MatchSelection | null>(null);
@@ -56,7 +57,7 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
         setToDone();
         const newDoneCount = countDone + 1;
         setCountDone(newDoneCount);
-        if (matches.length <= newDoneCount) {
+        if (column1.length <= newDoneCount) {
           moveNext();
         }
       } else {
@@ -91,45 +92,49 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
         const sequence = getRandomizedSequence(matchesTemp.length);
         for (let i = 0; i < sequence.length; i++) {
           matchesTemp2.push({
-            First: exerciseInfo.sentenceElements[sequence[i]].trim(),
-            Second: exerciseInfo.answers[sequence[i]].trim()
+            First: exerciseInfo.answers[sequence[i]].trim(),
+            Second: exerciseInfo.sentenceElements[sequence[i]].trim()
           });
         }
-        const wrongPairsForExercise: { Column1: { First: string; Second: string }; Column2: { First: string; Second: string } }[] = [];
-        for (let i = 0; i < matchesTemp.length; i++) {
-          wrongPairsForExercise.push({ Column1: matchesTemp[i], Column2: matchesTemp2[i] });
-        }
-
-        setMatchs(wrongPairsForExercise);
+        setColumn1(matchesTemp);
+        setColumn2(matchesTemp2);
       }
     }
     execAsync();
   }, [exerciseInfo]);
 
   return (
-    <div className="exercise-outer-element">
-      <div className="exercise-inner-element">
-        {matches && matches.length > 0 && (
-          matches.map((match, i) => (
-            <div className="match-words-row" key={`qa-${i}`}>
-              <MatchWordItem
-                key={`qi-${i}`}
-                itemValue={match.Column1.First}
-                matchingValue={match.Column1.Second}
-                setSelected={onColumn1Selected}
-                isSpoken={false}
-              />
-
-              <MatchWordItem
-                key={`ai-${i}`}
-                itemValue={match.Column2.Second}
-                matchingValue={match.Column2.First}
-                setSelected={onColumn2Selected}
-                isSpoken={targetIsSpoken(exerciseInfo.exerciseTypeId)}
-              />
+    <div className="exercise-outer-element exercise-outer-element-left">
+      <div className="exercise-inner-element exercise-inner-element-left">
+        <div className="match-words-row">
+          {column1 && column1.length > 0 && (
+            <div className="match-words-column">
+              {column1.map((item, i) => (
+                <MatchWordItem
+                  key={`qi-${i}`}
+                  itemValue={item.First}
+                  matchingValue={item.Second}
+                  setSelected={onColumn1Selected}
+                  isSpoken={false}
+                />
+              ))}
             </div>
-          ))
-        )}
+          )}
+
+          {column2 && column2.length > 0 && (
+            <div className="match-words-column2">
+              {column2.map((item, i) => (
+                <MatchWordItem
+                  key={`qi-${i}`}
+                  itemValue={item.First}
+                  matchingValue={item.Second}
+                  setSelected={onColumn2Selected}
+                  isSpoken={false}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
