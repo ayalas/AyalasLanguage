@@ -23,6 +23,7 @@ import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { puter } from "@heyputer/puter.js";
 import { initializePuter, isSecure } from '../../../utils/utils';
 import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
+import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/ActionsMenuComponent';
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;
@@ -44,18 +45,6 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
     const [puterSignedIn, setPuterSignedIn] = useState(false);
-    const [isOpen, setIsOpen] = useState(false);
-    const { refs: { setFloating, setReference }, floatingStyles, context } = useFloating({
-        open: isOpen,
-        onOpenChange: setIsOpen,
-        placement: 'bottom-start',
-        whileElementsMounted: autoUpdate,
-        middleware: [offset(8), flip(), shift()],
-    });
-    const click = useClick(context);
-    const dismiss = useDismiss(context, { outsidePress: true });
-    const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss]);
-
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
@@ -210,58 +199,42 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                         </div>
                     )
                 }
-                
-                <div className="form-button-cell">
-                    <Link data-testid="more-actions" ref={setReference as any} {...getReferenceProps()} className="actions-menu-link-button" to="#">
-                        More&nbsp;<ChevronDown />
-                    </Link>
-
-                    {isOpen && (
-                        <div className="menu-container"
-                            ref={setFloating}
-                            style={{ ...floatingStyles }}
-                            {...getFloatingProps()}
-                        >
-                            <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                                <li className="menu-line"><button data-testid="restart-lesson" type="button" onClick={restartLesson} className="actions-menu-item"><RotateCcw />&nbsp;Restart Lesson</button></li>
-
-                                {practiseMistakesInThisPath && (
-                                    <>
-                                        <hr className="menu-delimiter" />
-                                        <li className="menu-line">
-                                            <button data-testid="cancel-readding" type="button" onClick={cancelMistakesAdd} className="actions-menu-item"><Ban />&nbsp;Stop readding my mistakes</button>
-                                        </li>
-                                    </>
-                                ) || (
-                                        <>
-                                            <hr className="menu-delimiter" />
-                                            <li className="menu-line">
-                                                <button data-testid="readd-mistakes" type="button" onClick={readdMistakes} className="actions-menu-item"><History />&nbsp;Readd my mistakes</button>
-                                            </li>
-                                        </>
-                                    )}
-                                {displayAnswer && error != ""
-                                    && (supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) && (
-                                        <>
-                                            <hr className="menu-delimiter" />
-                                            <li className="menu-line">
-                                                <button data-testid="add-alternative-answer" type="button" className="actions-menu-item" onClick={addAlternativeAnswer}><TicketPlus />&nbsp;Add alternative answer</button>
-                                            </li>
-                                        </>
-                                    )}
-                                <hr className="menu-delimiter" />
-                                <li className="menu-line">
-                                    <Link to={`/author/path/${exerciseInfo.learningPathId}`} className="actions-menu-item"><FilePenLine />&nbsp;Edit lesson</Link>
-                                </li>
-                                <hr className="menu-delimiter" />
-                                <li className="menu-line">
-                                    <button data-testid="save-progress" type="button" onClick={saveProgress} className="actions-menu-item lesson-button-save"><CircleDotDashed />&nbsp;Save & Exit</button>
-                                </li>
-                            </ul>
-                        </div>
-                    )}
-                </div>
-
+                <ActionsMenuComponent items={[
+                    {
+                        dataTestId: "restart-lesson",
+                        children: <><RotateCcw />&nbsp;Restart Lesson</>,
+                        onClick: restartLesson,
+                    },
+                    {
+                        dataTestId: "cancel-readding",
+                        children: <><Ban />&nbsp;Stop readding my mistakes</>,
+                        onClick: cancelMistakesAdd,
+                        isVisible: practiseMistakesInThisPath,
+                    },
+                    {
+                        dataTestId: "readd-mistakes",
+                        children: <><History />&nbsp;Readd my mistakes</>,
+                        onClick: readdMistakes,
+                        isVisible: !practiseMistakesInThisPath,
+                    },
+                    {
+                        dataTestId: "add-alternative-answer",
+                        children: <><TicketPlus />&nbsp;Add alternative answer</>,
+                        onClick: addAlternativeAnswer,
+                        isVisible: displayAnswer && error != "" && supportsAlternativeAnswers(exerciseInfo.exerciseTypeId),
+                    },
+                    {
+                        dataTestId: "edit-lesson",
+                        children: <><FilePenLine />&nbsp;Edit lesson</>,
+                        toPath: `/author/path/${exerciseInfo.learningPathId}`,
+                    },
+                    {
+                        dataTestId: "save-progress",
+                        children: <><CircleDotDashed />&nbsp;Save & Exit</>,
+                        onClick: saveProgress,
+                        className: "lesson-button-save",
+                    }
+                ] as ActionsMenuItem[]} anchorTitle="More" />
             </div>
             <div className="exercise-body-container">
                 <div className="form-row">

@@ -9,15 +9,14 @@ import {
     useInteractions
 } from '@floating-ui/react';
 import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export interface ActionsMenuItem {
-    isVisible: boolean;
+    isVisible?: boolean;
     toPath?: string;
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     dataTestId: string;
-    prefixWithSeparator?: boolean;
     className?: string;
     children: React.ReactNode;
 }
@@ -47,14 +46,17 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                     style={{ ...floatingStyles }}
                     {...getFloatingProps()}>
                     <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                        {items.map((item, index) => (
-                            item.isVisible && (
-                                <>
-                                    {item.prefixWithSeparator && (
+                        {items.map((item, index) => {
+                            const isVisible = item.isVisible !== false;
+
+                            if (!isVisible) return null;
+                            return (
+                                <Fragment key={`actions-menu-item-fragment-${item.dataTestId}-${index}`}>
+                                    {index > 0 && (
                                         <hr className="menu-delimiter" />
                                     )
                                     }
-                                    <li key={index} className="menu-line">
+                                    <li key={`actions-menu-item-${item.dataTestId}-${index}`} className="menu-line">
                                         {item.toPath != null && (
                                             <Link data-testid={item.dataTestId} to={item.toPath}
                                                 className={item.className != null ? `actions-menu-item ${item.className}` : "actions-menu-item"}>
@@ -68,9 +70,9 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                                         )
                                         }
                                     </li>
-                                </>)
-                        )
-                        )}
+                                </Fragment>
+                            );
+                        })}
                     </ul>
                 </div>
             )}
