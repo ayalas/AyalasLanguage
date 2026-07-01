@@ -607,6 +607,18 @@ button {
   height: var(--fontsize);
 }
 
+.top-button {
+  background-color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 4px;
+  padding: 7px 14px;
+  border: 2px solid var(--text-h);
+}
+
 .match-words-row {
   text-align: start;
   display: flex;

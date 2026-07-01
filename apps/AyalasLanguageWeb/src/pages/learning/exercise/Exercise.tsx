@@ -206,10 +206,11 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                 {
                     canRevealAnswers(exerciseInfo.exerciseTypeId) && (
                         <div className="form-button-cell">
-                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="form-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;Reveal</button>
+                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="top-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;Reveal</button>
                         </div>
                     )
                 }
+                
                 <div className="form-button-cell">
                     <Link data-testid="more-actions" ref={setReference as any} {...getReferenceProps()} className="actions-menu-link-button" to="#">
                         More&nbsp;<ChevronDown />

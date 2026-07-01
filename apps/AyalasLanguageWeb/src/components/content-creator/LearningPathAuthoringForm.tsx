@@ -405,13 +405,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             <div className="form-row">
               {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && usePuterAI && (
                 <div className="form-button-cell">
-                  <button data-testid="save-only" type="button" className="form-button" title="Save" onClick={saveOnly}>
+                  <button data-testid="save-only" type="button" className="top-button" title="Save" onClick={saveOnly}>
                     <Save />
                   </button>
                 </div>
               )}
               <div className="form-button-cell">
-                <button data-testid="save" type="submit" disabled={isLoading} className="form-button" title="Save and Generate Exercises"><LayersPlus /></button>
+                <button data-testid="save" type="submit" disabled={isLoading} className="top-button" title="Save and Generate"><LayersPlus />&nbsp;Save and Generate</button>
               </div>
               <div className="form-button-cell">
                 <button data-testid="switch-ai-use" type="button" disabled={isLoading || user?.disablePuter} onClick={() => { setUsePuterAI(!usePuterAI) }} className="form-button"
