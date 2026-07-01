@@ -50,7 +50,7 @@ describe('LearningPathAuthoringForm', () => {
   });
 
   it('shows loading overlay during submission', async () => {
-    mockHandleSubmit.mockImplementation(() => new Promise(() => {}));
+    mockHandleSubmit.mockImplementation(() => new Promise(() => { }));
 
     render(
       <MemoryRouter>
@@ -61,6 +61,11 @@ describe('LearningPathAuthoringForm', () => {
     // 1. Wait for initial stability
     await waitFor(() => expect(screen.getByTestId('chapter')).toHaveValue(2));
 
+    let menuBtn = await screen.findByTestId('more-actions');
+    await act(async () => {
+      fireEvent.click(menuBtn);
+    });
+
     // 2. Switch to MANUAL mode
     fireEvent.click(screen.getByTestId('switch-ai-use'));
 
@@ -70,7 +75,7 @@ describe('LearningPathAuthoringForm', () => {
     fireEvent.change(screen.getByTestId('title'), { target: { value: 'Loading Test' } });
     fireEvent.change(firstSetArea, { target: { value: 'Hello' } });
     fireEvent.change(screen.getByTestId('second-set'), { target: { value: 'Hola' } });
-    
+
     const typeSelect = screen.getByTestId('exercise-type');
     fireEvent.change(typeSelect, { target: { value: '1' } });
 
@@ -83,12 +88,13 @@ describe('LearningPathAuthoringForm', () => {
     // 4. Submit
     const saveBtn = screen.getByTestId('save');
     disableClientValidation();
+
     act(() => {
       fireEvent.click(saveBtn);
     });
 
     // 5. ASSERTIONS
-    
+
     // A) The loading box should appear
     const overlay = await screen.findByTestId('loadingBox');
     expect(overlay).toBeInTheDocument();

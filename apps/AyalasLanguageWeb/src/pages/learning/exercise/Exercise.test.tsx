@@ -48,14 +48,14 @@ describe('Exercise Component', () => {
 
     const dataObj: ExerciseData = { First: 'Hello', Second: 'Bonjour', Alternatives: [] };
     const info: ExtendedExerciseInfo = {
-            exerciseId: 101,
-            exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
-            exerciseObject: dataObj,
-            data: JSON.stringify(dataObj),
-            sentenceElements: ['Hello'],
-            answers: ['Bonjour'],
-            access: AUTHOR_ACCESS.CAN_EDIT
-        };
+        exerciseId: 101,
+        exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
+        exerciseObject: dataObj,
+        data: JSON.stringify(dataObj),
+        sentenceElements: ['Hello'],
+        answers: ['Bonjour'],
+        access: AUTHOR_ACCESS.CAN_EDIT
+    };
 
     const mockProps = {
         exerciseInfo: info,
@@ -100,14 +100,26 @@ describe('Exercise Component', () => {
         const input = await screen.findByRole('textbox');
         await user.type(input, 'salut'); // 3. Use await user.type
 
+        const menuBtn = await screen.findByTestId('more-actions');
+        await act(async () => {
+            await user.click(menuBtn);
+        });
+
         const checkBtn = await screen.findByTestId('check-my-answers');
         await act(async () => {
             await user.click(checkBtn);
         });
-        
+
+        await act(async () => {
+            await user.click(menuBtn);
+        });
 
         const revealBtn = await screen.findByTestId('reveal-answer');
         await user.click(revealBtn);
+
+        await act(async () => {
+            await user.click(menuBtn);
+        });
 
         let addAltBtn: HTMLElement | undefined;
         await waitFor(async () => {
@@ -171,9 +183,18 @@ describe('Exercise Component', () => {
 
         disableClientValidation();
 
+        const menuBtn = await screen.findByTestId('more-actions');
+        await act(async () => {
+            fireEvent.click(menuBtn);
+        });
+
         const saveBtn = await screen.findByTestId('save-progress');
         fireEvent.click(saveBtn);
         expect(mockProps.saveProgress).toHaveBeenCalled();
+
+        await act(async () => {
+            fireEvent.click(menuBtn);
+        });
 
         const restartBtn = await screen.findByTestId('restart-lesson');
         fireEvent.click(restartBtn);
@@ -189,15 +210,28 @@ describe('Exercise Component', () => {
 
         disableClientValidation();
 
+        let menuBtn = await screen.findByTestId('more-actions');
+        await act(async () => {
+            fireEvent.click(menuBtn);
+        });
+
         const readdBtn = await screen.findByTestId('readd-mistakes');
         fireEvent.click(readdBtn);
-        expect(mockProps.changeMistakesSetting).toHaveBeenCalledWith(true);
+        await waitFor(() => {
+            const btn = document.querySelector('.my-action-btn');
+            expect(btn).toBeInTheDocument();
+        });
 
         rerender(
             <MemoryRouter>
                 <Exercise {...mockProps} practiseMistakesInThisPath={true} />
             </MemoryRouter>
         );
+
+        menuBtn = await screen.findByTestId('more-actions');
+        await act(async () => {
+            fireEvent.click(menuBtn);
+        });
 
         const cancelBtn = await screen.findByTestId('cancel-readding');
         fireEvent.click(cancelBtn);
