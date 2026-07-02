@@ -52,7 +52,6 @@ describe('RegisterPage Component', () => {
   it('renders all registration form inputs and the submit button', () => {
     renderComponent();
 
-    expect(screen.getByRole('heading', { name: /register/i })).toBeInTheDocument();
     expect(screen.getByTestId('display-name')).toBeInTheDocument();
     expect(screen.getByTestId('email')).toBeInTheDocument();
     expect(screen.getByTestId('password')).toBeInTheDocument(); // exact match to separate from confirm

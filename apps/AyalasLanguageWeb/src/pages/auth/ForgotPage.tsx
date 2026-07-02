@@ -5,12 +5,15 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { isValidEmail } from '../../utils/utils';
 import { Send } from 'lucide-react';
 import { PublicHeader } from '../../components/PublicHeader';
+import { TabLinksComponent } from '../../components/tabs/TabLinksComponent';
+import { AUTH_TABS, AuthTabsEnum } from '../../constants/auth';
 
 export function ForgotPage() {
     const [error, setError] = useState("");
     const [email, setEmail] = useState('');
     const [success, setSuccess] = useState(false);
     const [searchParams] = useSearchParams();
+
 
     useEffect(() => {
         async function runAsync() {
@@ -41,9 +44,7 @@ export function ForgotPage() {
             <PublicHeader />
             <div className="form-container">
                 <form onSubmit={handleSubmit} data-testid="main-form">
-                    <div className="form-header">
-                        <h1>Reset Password</h1>
-                    </div>
+                    <TabLinksComponent tabData={AUTH_TABS} activeTab={AuthTabsEnum.ForgotPassword} />
                     {!success && (
                         <div className="form-row">
                             <div className="form-input-row">

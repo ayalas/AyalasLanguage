@@ -5,6 +5,8 @@ import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { checkPasswordStrength, generatePasswordFeedback, isValidEmail } from '../../utils/utils';
 import { PublicHeader } from '../../components/PublicHeader';
+import { TabLinksComponent } from '../../components/tabs/TabLinksComponent';
+import { AUTH_TABS, AuthTabsEnum } from '../../constants/auth';
 
 export function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
@@ -61,9 +63,7 @@ export function RegisterPage() {
       <PublicHeader />
       <div className="form-container">
         <form onSubmit={handleSubmit} data-testid="main-form">
-          <div className="form-header">
-            <h1>Register</h1>
-          </div>
+          <TabLinksComponent tabData={AUTH_TABS} activeTab={AuthTabsEnum.Register} />
           {!success && (
             <div className="form-row">
               <div className="form-input-row">

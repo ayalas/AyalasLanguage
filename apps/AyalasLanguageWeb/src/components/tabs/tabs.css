@@ -1,0 +1,61 @@
+/* Container for the whole tabs component */
+.tabs-container {
+  width: 100%;
+  max-width: 600px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  border: 1px solid #e1e1e1;
+  border-radius: 8px;
+  background-color: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+/* The header row */
+.tab-list {
+  display: flex;
+  border-bottom: 1px solid #e1e1e1;
+  background-color: #f9fafb;
+}
+
+/* Individual tab buttons */
+.tab-button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  font-size: 18px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  outline: none;
+}
+
+.tab-button:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+/* Active tab state */
+.tab-button.active {
+  color: #2563eb;
+  background-color: #ffffff;
+}
+
+/* The blue underline for active tab */
+.tab-button.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #2563eb;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

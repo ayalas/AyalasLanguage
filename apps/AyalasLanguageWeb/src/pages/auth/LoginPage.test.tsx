@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { MemoryRouter, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../components/auth/useAuth';
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -69,13 +69,12 @@ describe('LoginPage Component', () => {
   it('renders login form elements correctly', () => {
     mockGetSearchParams.mockReturnValue(null);
 
-    render(<LoginPage />);
+    render(<MemoryRouter><LoginPage /></MemoryRouter>);
 
-    expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
     expect(screen.getByTestId('email')).toBeInTheDocument();
     expect(screen.getByTestId('password')).toBeInTheDocument();
     expect(screen.getByTestId('log-in')).toBeInTheDocument();
-    expect(screen.getByText(/register/i)).toBeInTheDocument();
+    expect(screen.getByTestId('register-link')).toBeInTheDocument();
   });
 
   it('pre-populates email field if "user" search parameter is present', () => {
@@ -84,7 +83,7 @@ describe('LoginPage Component', () => {
       return null;
     });
 
-    render(<LoginPage />);
+    render(<MemoryRouter><LoginPage /></MemoryRouter>);
 
     const emailInput = screen.getByTestId('email') as HTMLInputElement;
     expect(emailInput.value).toBe('testuser@example.com');
@@ -106,7 +105,7 @@ describe('LoginPage Component', () => {
       },
     });
 
-    render(<LoginPage />);
+    render(<MemoryRouter><LoginPage /></MemoryRouter>);
 
     disableClientValidation();
 
@@ -148,7 +147,7 @@ describe('LoginPage Component', () => {
       },
     });
 
-    render(<LoginPage />);
+    render(<MemoryRouter><LoginPage /></MemoryRouter>);
 
     disableClientValidation();
 
@@ -167,7 +166,7 @@ describe('LoginPage Component', () => {
 
     mockedAxios.post.mockRejectedValueOnce(fakeError);
 
-    render(<LoginPage />);
+    render(<MemoryRouter><LoginPage /></MemoryRouter>);
 
     disableClientValidation();
 

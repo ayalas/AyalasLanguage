@@ -23,6 +23,7 @@ import './App.css'
 import { ContactUsPublicPage } from './pages/contactus/ContactUsPublicPage';
 import { ContactUsAuthenticatedUserPage } from './pages/contactus/ContactUsAuthenticatedUserPage';
 import { AboutPage } from './pages/AboutPage';
+import { PublicRoute } from './components/auth/PublicRoute';
 
 function App() {
   useEffect(() => {
@@ -34,9 +35,10 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public Routes that redirect to home if logged in */}
+          <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>}/>
+          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
           {/* Public Routes */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot" element={<ForgotPage />} />
           <Route path="/reset/:token" element={ <ResetPasswordPage/>} />

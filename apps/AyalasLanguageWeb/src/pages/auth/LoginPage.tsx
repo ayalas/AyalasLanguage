@@ -8,6 +8,8 @@ import axios from 'axios';
 import { PublicHeader } from '../../components/PublicHeader';
 import type { User } from '../../types/shared/User';
 import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Verify2FARequest } from '@ayalaslanguage/types/auth';
+import { TabLinksComponent } from '../../components/tabs/TabLinksComponent';
+import { AUTH_TABS, AuthTabsEnum } from '../../constants/auth';
 
 export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
@@ -77,9 +79,7 @@ export default function LoginPage(): React.ReactElement {
       <PublicHeader />
       <div className="form-container">
         <form onSubmit={handleSubmit}>
-          <div className="form-header">
-            <h1>Login</h1>
-          </div>
+          <TabLinksComponent tabData={AUTH_TABS} activeTab={AuthTabsEnum.Login} />
           <div className="form-row">
             <div className="form-button-cell">
               <button data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
@@ -124,7 +124,7 @@ export default function LoginPage(): React.ReactElement {
             <div className="login-register-line"><Link to={`/forgot?user=${encodeURIComponent(email)}`}>Forgot your password?</Link></div>
           </div>
           <div className="form-row">
-            <div className="login-register-line">Or <Link to="/register">Register</Link> a new account</div>
+            <div className="login-register-line" data-testid="register-link">Or <Link  to="/register">Register</Link> a new account</div>
           </div>
         </form>
       </div>
