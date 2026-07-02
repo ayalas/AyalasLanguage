@@ -212,7 +212,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                 {
                     canRevealAnswers(exerciseInfo.exerciseTypeId) && (
                         <div className="form-button-cell">
-                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="top-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;Reveal</button>
+                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="top-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;{displayAnswer && "Hide" || "Reveal"}</button>
                         </div>
                     )
                 }

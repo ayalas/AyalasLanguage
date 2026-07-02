@@ -86,7 +86,7 @@ export const ExerciseInput = function (props: Props) {
 
   const inputStyle: React.CSSProperties = {
     width: `${charWidth}ch`,
-    backgroundColor: errorState ? 'rgb(228, 180, 180)' : 'white'
+    backgroundColor: errorState ? 'rgb(228, 180, 180)' : 'var(--bg)'
   };
 
   return (

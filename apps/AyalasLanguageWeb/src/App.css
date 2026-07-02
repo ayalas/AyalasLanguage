@@ -6,11 +6,11 @@ textarea {
   font-size: inherit;
 }
 
-button[type="submit"],
+button,
 input[type="submit"] {
   -webkit-appearance: none;
   appearance: none;
-  color: var(--text-h);
+  color: var(--active);
   border: 2px solid var(--text-h);
   font-size: var(--fontsize);
   padding: 7px 14px;
@@ -479,8 +479,8 @@ button {
 }
 
 .lesson-button-reveal {
-  color: rgb(1, 1, 232);
-  border: 2px solid rgb(1, 1, 232);
+  color: var(--accent);
+  border: 2px solid var(--accent);
 }
 
 .lesson-button-left {
@@ -578,7 +578,7 @@ button {
 }
 
 .lucide-eye {
-  color: rgb(1, 1, 232);
+  color: var(--accent);
 }
 
 .lucide-rotate-ccw {
@@ -795,4 +795,8 @@ button {
 .rtlanswer {
   direction: rtl;
   text-align: left;
+}
+
+.hg-theme-default .hg-button {
+  color: #2D3748;
 }
