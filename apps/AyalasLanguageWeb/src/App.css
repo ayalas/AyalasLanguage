@@ -148,15 +148,15 @@ body {
   overflow-wrap: break-word;
 }
 
-label.form-label {
+.form-label {
   width: 90%;
   text-align: start;
   white-space: nowrap;
-  color: #000000;
+  color: var(--text-h);
   font-weight: 400;
 }
 
-label.label-deleted {
+.label-deleted {
   text-decoration: line-through;
 }
 
@@ -244,10 +244,16 @@ input:required:invalid {
 
 .discordIcon {
   height: 24px;
-  width: 24px;
+  width: 32px;
   border: 0;
   padding: 0;
   margin-right: 8px;
+  display: inline-flex;
+  background-image: url("assets/Discord-Symbol-Black.png");
+  @media (prefers-color-scheme: dark) {
+    background-image: url("assets/Discord-Symbol-White.png");
+  }
+  background-size: cover;
 }
 
 .inline-content-line-part {
@@ -331,7 +337,7 @@ button {
 
 
 .form-error {
-  color: rgb(168, 44, 44);
+  color: var(--error);
 }
 
 .header-row {
@@ -351,8 +357,6 @@ button {
 
 .header-app-link {
   text-decoration: none;
-  color: rgb(55, 194, 20);
-  font-size: var(--fontsize-lg);
 }
 
 .header-input-cell {
@@ -457,7 +461,7 @@ button {
 
 .learning-lesson-link {
   text-decoration: none;
-  color: rgb(12, 66, 12);
+  color: var(--layers);
 }
 
 .learning-level-creator {
@@ -493,7 +497,7 @@ button {
 }
 
 .lesson-done {
-  color: rgb(116, 117, 116);
+  color: var(--done);
 }
 
 
@@ -538,9 +542,9 @@ button {
 }
 
 .menu-container {
-  background-color: white;
-  border: 1px solid #ccc;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
   border-radius: 6px;
   padding: 4px 0;
   min-width: 15%;
@@ -566,7 +570,7 @@ button {
 }
 
 .lucide-layers-plus {
-  color: rgb(12, 66, 12);
+  color: var(--layers);
 }
 
 .lucide-circle-dot-dashed {
@@ -679,8 +683,8 @@ button {
 }
 
 .match-words-item-done {
-  color: rgb(69, 69, 69);
-  background-color: rgb(203, 203, 203);
+  color: var(--done-cell);
+  background-color: var(--done-cell-bg);
 }
 
 .match-words-item-error {

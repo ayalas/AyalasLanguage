@@ -17,7 +17,6 @@ import type { User } from '../../types/shared/User';
 import imgLogo from '../../assets/logo.jpg';
 import { BRAND_NAME } from '../../constants/public';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import imgDiscord from '../../assets/Discord-Symbol-Black.png';
 
 type OutletAuthContext = {
   user?: User | null;
@@ -130,7 +129,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
               <li className="menu-line"><Link to='/profile' className="menu-item">Profile settings</Link></li>
               <li className="menu-line"><Link to='/account' className="menu-item">Manage account</Link></li>
               <li className="menu-line"><Link to='/usernote' className="menu-item">Contact Us</Link></li>
-              <li className="menu-line"><Link target='discord' to='https://discord.gg/UkzNfauGd' className="menu-item"><img className="discordIcon" src={imgDiscord} />Discuss on Discord</Link></li>
+              <li className="menu-line"><Link target='discord' to='https://discord.gg/UkzNfauGd' className="menu-item"><div className="discordIcon" ></div>Discuss on Discord</Link></li>
               <li className="menu-line"><Link to='/about' className="menu-item">About {BRAND_NAME}</Link></li>
               <hr className="menu-delimiter" />
               <li className="menu-line"><button onClick={logoutAction} className="menu-item">Logout</button></li>
