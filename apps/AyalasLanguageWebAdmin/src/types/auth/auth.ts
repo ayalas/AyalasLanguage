@@ -25,6 +25,15 @@ export interface IRowUser {
     createdOn: string;
 }
 
+export interface IUserDetails extends IRowUser {
+    disablePuter :boolean
+    numOfExercisesToGenerate?: number,
+    forgotEmailSent?: string,
+    forgotEmailReceived?: string,
+    emailConfirmationReceived?: string,
+    confirmationEmailSent?: string
+}
+
 export interface IRowLogin {
     userId: number;
     email: string;

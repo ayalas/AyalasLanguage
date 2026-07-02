@@ -7,13 +7,25 @@ import type { RoleType } from '@ayalaslanguage/types/auth';
 import { AuthHeader } from '../../../components/auth/AuthHeader';
 import GenericGrid from '../../../components/GenericGrid';
 import dayjs from 'dayjs';
+import { GridLinkCell } from '../../../components/gridcells/GridLinkCell';
 
 export default function UsersPage() {
     const [success, setSuccess] = useState('');
     const [error, setError] = useState('');
     const [colDefs] = useState<ColDef<IRowUser>[]>([
         { field: "userId", flex: 1, headerName: 'User Id' },
-        { field: "displayName", headerName: 'Display Name', flex: 2, filter: true },
+        {
+            field: "displayName", headerName: 'Display Name', flex: 2, filter: true,
+            cellRenderer: GridLinkCell<IRowUser>,
+            cellRendererParams: {
+                getLinkCallback: (data: IRowUser) => {
+                    return `/user/${data.userId}`;
+                },
+                getTitleCallback: (data: IRowUser) => {
+                    return data.displayName;
+                }
+            }
+        },
         { field: "userName", headerName: 'Email', flex: 2, filter: true },
         {
             field: "role", flex: 1, filter: true, editable: true,

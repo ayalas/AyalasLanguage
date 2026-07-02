@@ -18,6 +18,7 @@ import LearningPathsGridPage from './pages/content/LearningPathsGridPage';
 import ExercisesGridPage from './pages/content/ExercisesGridPage';
 import { LearningPathPage } from './pages/content/LearningPathPage';
 import LoginsGridPage from './pages/auth/users/LoginsGridPage';
+import { UserPage } from './pages/auth/users/UserPage';
 
 function App() {
   useEffect(() => {
@@ -38,6 +39,7 @@ function App() {
             <Route path="/home" element={<Homepage />} />
             <Route path="/logins" element={<LoginsGridPage/>} />
             <Route path="/users" element={<UsersPage />} />
+            <Route path="/user/:userId" element={<UserPage />} />
             <Route path="/contactus" element={<ContactUsGridPage />} />
             <Route path="/log" element={<LogGridPage />} />
             <Route path="/paths" element={<LearningPathsGridPage />} />

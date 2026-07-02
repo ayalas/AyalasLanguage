@@ -34,6 +34,7 @@ public static class AdminEndpoints
 
         secureAuth.MapPost("/logout", LogoutUser);
         secureAuth.MapGet("/me", CheckAuthStatus);
+        secureAuth.MapGet("/user/{userId:int}", GetUser);
         secureAuth.MapGet("/users/{page:int}", GetUsers);
         secureAuth.MapGet("/logins/{page:int}", GetLogins);
         secureAuth.MapPost("/setuserrole", SetUserRole);
@@ -215,7 +216,7 @@ public static class AdminEndpoints
 
         return new AdminUserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin);
     }
-
+    
     private static async Task<AdminGridResponse<AdminUserRowDto>> GetUsers(int page, AyalasLanguageDbContext db)
     {
         var arr = await db.Users
@@ -237,6 +238,33 @@ public static class AdminEndpoints
         if (page == 0)
             numOfRecords = await db.Users.CountAsync();
         return new AdminGridResponse<AdminUserRowDto>(numOfRecords, arr);
+    }
+
+    private static async Task<AdminUserDetailsDto?> GetUser(int userId, AyalasLanguageDbContext db)
+    {
+        var user = await db.Users
+            .Include(u => u.KnownLanguage)
+            .Include(u => u.TargetLanguage)
+            .Where(u => u.UserId == userId)
+            .Select(u => new AdminUserDetailsDto(
+            u.UserId,
+            u.DisplayName,
+            u.UserName,
+            u.Role,
+            u.EmailConfirmed,
+            u.Use2FALogin,
+            u.KnownLanguage == null ? null : u.KnownLanguage.EnglishName,
+            u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName,
+            u.CreatedOn,
+            u.DisablePuter,
+            u.NumOfExercisesToGenerate,
+            u.ForgotEmailSent,
+            u.ForgotEmailReceived, 
+            u.EmailConfirmationReceived,
+            u.ConfirmationEmailSent
+        )).FirstOrDefaultAsync();
+
+        return user;
     }
 
     private static async Task<AdminGridResponse<AdminContactUsRowDto>?> GetContactUsRecords(int page, AyalasLanguageDbContext db, ILogger<Program> logger)
