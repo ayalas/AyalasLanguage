@@ -1,5 +1,6 @@
 import type { ExerciseType } from "@ayalaslanguage/types/exercise";
 import { EXERCISE_GENERATIONS, PLACEHOLDERS, type ExerciseGeneration } from "../constants/learning";
+import { encodeXMLElements } from "../utils/utils";
 
 export interface IChatMessage {
     role: "system" | "assistant" | "user" | "tool";
@@ -32,7 +33,7 @@ export function getAIInstructions(targetLanguage: string, knownLanguage: string,
             },
             {
                 role: "user",
-                content: `Create exercises based strictly on the following subject data: <subject>${subject}</subject>`
+                content: `Create exercises based strictly on the following subject data: <subject>${encodeXMLElements(subject)}</subject>`
             }
         ] as IChatMessage[];
     }

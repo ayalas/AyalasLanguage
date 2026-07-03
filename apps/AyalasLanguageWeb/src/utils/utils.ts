@@ -155,3 +155,15 @@ export function downloadFile(blob: Blob, name: string) {
   link.parentNode?.removeChild(link);
   window.URL.revokeObjectURL(localUrl);
 }
+
+export function encodeXMLElements(unsafe: string): string {
+    const xmlEntities: Record<string, string> = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&apos;'
+    };
+
+    return unsafe.replace(/[&<>"']/g, (char) => xmlEntities[char]);
+}
