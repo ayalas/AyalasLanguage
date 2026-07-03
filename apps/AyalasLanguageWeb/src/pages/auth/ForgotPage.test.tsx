@@ -124,10 +124,4 @@ describe('ForgotPage', () => {
             expect(errorHandler).toHaveBeenCalledWith(errorResponse, expect.any(Function));
         });
     });
-
-    it('should render the login link', async () => {
-        renderComponent();
-        const loginLink = await screen.findByRole('link', { name: /log in/i });
-        expect(loginLink).toHaveAttribute('href', '/login');
-    });
 });

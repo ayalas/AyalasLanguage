@@ -131,7 +131,7 @@ describe('ExerciseInput Component', () => {
         // Typing should clear the error (fireEvent.change is typically wrapped in act internally)
         fireEvent.change(input, { target: { value: 'Fixed' } });
         await waitFor(() => {
-            expect(input).toHaveStyle({ backgroundColor: 'rgb(255, 255, 255)' });
+            expect(input).toHaveStyle({ backgroundColor: 'var(--bg)' });
         });
     });
 

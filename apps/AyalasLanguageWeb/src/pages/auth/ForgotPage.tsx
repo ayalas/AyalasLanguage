@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { isValidEmail } from '../../utils/utils';

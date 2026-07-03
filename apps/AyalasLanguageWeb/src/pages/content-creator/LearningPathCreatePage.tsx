@@ -21,7 +21,7 @@ export function LearningPathCreatePage() {
         await createExercises(learningPathId, exerciseType, arrData);
         navigate(`/path/${learningPathId}`);
       } else {
-        //navigate(`/author/path/${learningPathId}`);
+        navigate(`/author/path/${learningPathId}`);
       }
     } catch (err: unknown) {
       if (learningPathId > 0) {

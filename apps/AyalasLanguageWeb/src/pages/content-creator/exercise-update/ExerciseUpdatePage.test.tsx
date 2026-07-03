@@ -38,7 +38,7 @@ vi.mock("./AlternativeLine", async () => {
 // 4. Mock Lucide Icons (Optional, but keeps console clean)
 vi.mock("lucide-react", () => ({
     ArrowBigLeft: () => <span>BackIcon</span>,
-    LayersPlus: () => <span>SaveIcon</span>,
+    Save: () => <span>SaveIcon</span>,
 }));
 
 // 5. Mock AuthHeader

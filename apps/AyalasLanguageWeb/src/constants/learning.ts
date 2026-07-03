@@ -9,7 +9,6 @@ export const PLACEHOLDERS = {
     NUM_OF_EXERCISES_PLACEHOLDER: 'nnnumofexercisesnnn'
 } as const;
 
-const TOP_LEVEL = 100;
 export const DEFAULT_NUM_OF_EXERCISES = 10;
 
 export const BUCKET_LIST_EXTRA_OPTIONS = 

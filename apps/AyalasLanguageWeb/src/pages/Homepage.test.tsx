@@ -90,7 +90,7 @@ describe('Homepage Component', () => {
         chapter: 1,
         name: 'Basics',
         status: LEANRING_STATUS.DONE,
-        exerciseCount: 5,
+        exerciseCount: 15,
         practiseMistakesInThisPath: false,
       },
       {
@@ -99,7 +99,7 @@ describe('Homepage Component', () => {
         chapter: 2,
         name: 'Greetings',
         status: LEANRING_STATUS.IN_PROGRESS,
-        exerciseCount: 10,
+        exerciseCount: 11,
         practiseMistakesInThisPath: true,
       },
     ];
@@ -129,8 +129,8 @@ describe('Homepage Component', () => {
     expect(await screen.findByTestId('icon-history')).toBeInTheDocument();
     
     // Check for Exercise Count
-    expect(screen.getByText('[5]')).toBeInTheDocument();
-    expect(screen.getByText('[10]')).toBeInTheDocument();
+    expect(screen.getByText('[15]')).toBeInTheDocument();
+    expect(screen.getByText('[11]')).toBeInTheDocument();
   });
 
   it('displays error message when API call fails', async () => {

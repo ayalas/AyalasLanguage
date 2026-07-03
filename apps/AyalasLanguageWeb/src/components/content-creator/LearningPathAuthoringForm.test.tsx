@@ -38,6 +38,7 @@ vi.mock('../../utils/utils', () => ({
   parseLLMResponse: vi.fn(),
   writeToLog: vi.fn(),
   downloadFile: vi.fn(),
+  encodeXMLElements: vi.fn((s) => s),
 }));
 
 describe('LearningPathAuthoringForm', () => {

@@ -74,7 +74,6 @@ describe('LoginPage Component', () => {
     expect(screen.getByTestId('email')).toBeInTheDocument();
     expect(screen.getByTestId('password')).toBeInTheDocument();
     expect(screen.getByTestId('log-in')).toBeInTheDocument();
-    expect(screen.getByTestId('register-link')).toBeInTheDocument();
   });
 
   it('pre-populates email field if "user" search parameter is present', () => {

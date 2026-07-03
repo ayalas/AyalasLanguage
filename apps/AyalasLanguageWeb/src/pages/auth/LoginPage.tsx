@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams, Link, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
 import { useAuth } from '../../components/auth/useAuth';
