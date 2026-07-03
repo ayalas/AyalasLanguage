@@ -14,7 +14,6 @@ import {
   useInteractions
 } from '@floating-ui/react';
 import type { User } from '../../types/shared/User';
-import imgLogo from '../../assets/logo.jpg';
 import { BRAND_NAME } from '../../constants/public';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
@@ -95,7 +94,7 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
       <div className="header-row">
         <div className="header-title">
           {!hideAppTitle && (
-            <Link className="header-app-link" to="/home"><img className="logo" src={imgLogo} /></Link>
+            <Link className="header-app-link" to="/home"><div className="logo" ></div></Link>
           ) || (user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
             <div className="header-input-cell">
               <select id="language-picker" className="header-select" value={String(selectedLanguageId)} onChange={onChangeLanguage} >

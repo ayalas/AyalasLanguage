@@ -6,7 +6,6 @@ import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
 import { AuthHeader } from '../components/auth/AuthHeader';
 import { LEANRING_STATUS } from '../constants/learning';
 import type { User } from '../types/shared/User';
-import imgLogo from '../assets/logo.jpg';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
@@ -74,7 +73,7 @@ export default function Homepage() {
     <>
       <AuthHeader hideAppTitle={true} />
       <div className="home-container">
-        <img className="logo" src={imgLogo} />
+        <div className="logo" ></div>
         {error !== '' && (
           <div className="form-row">
             <label className="form-error">{error}</label>

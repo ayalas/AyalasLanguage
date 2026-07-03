@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import imgLogo from '../assets/logo.jpg';
 import { Mail, SquareMenu } from 'lucide-react';
 import {
     useFloating,
@@ -32,7 +31,7 @@ export function PublicHeader() {
     return (
         <div className="header-row">
             <div className="header-title">
-                <Link className="header-app-link" to="/home"><img className="logo" src={imgLogo} /></Link>
+                <Link className="header-app-link" to="/home"><div className="logo" ></div></Link>
             </div>
             <div className="header-links">
                 <Link ref={setReference as any} {...getReferenceProps()} to="#">
