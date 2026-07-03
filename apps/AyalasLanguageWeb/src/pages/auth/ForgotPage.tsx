@@ -45,13 +45,7 @@ export function ForgotPage() {
             <div className="form-container">
                 <form onSubmit={handleSubmit} data-testid="main-form">
                     <TabLinksComponent tabData={AUTH_TABS} activeTab={AuthTabsEnum.ForgotPassword} />
-                    {!success && (
-                        <div className="form-row">
-                            <div className="form-input-row">
-                                <button type="submit" data-testid="complete-registration" className="form-button"><Send /> Send Reset Password Email</button>
-                            </div>
-                        </div>
-                    )}
+                    
                     {error !== "" && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>
@@ -78,10 +72,14 @@ export function ForgotPage() {
                                 </div>
                             </>
                         )}
+                    {!success && (
+                        <div className="form-row">
+                            <div className="form-input-row">
+                                <button type="submit" data-testid="complete-registration" className="form-button"><Send /> Send Reset Password Email</button>
+                            </div>
+                        </div>
+                    )}
                 </form>
-                <div className="form-row">
-                    <div className="login-register-line">Or <Link to="/login">Log in</Link> with your credentials</div>
-                </div>
             </div>
         </>
     )

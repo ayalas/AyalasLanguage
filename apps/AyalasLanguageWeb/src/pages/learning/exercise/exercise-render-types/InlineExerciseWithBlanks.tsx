@@ -167,7 +167,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                 <div className="form-row-play">
                     <div className="form-play-container">{second}
                         {shouldPlayAnswer(exerciseInfo.exerciseTypeId) && (
-                            <button data-testid="play-answer" type="button" className="form-button play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
+                            <button data-testid="play-answer" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
                         )}</div>
                     {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
                         <div className="form-content-row">{translation}</div>

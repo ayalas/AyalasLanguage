@@ -88,11 +88,6 @@ export function ResetPasswordPage() {
                         </>
                     ) : (
                         <>
-                            <div className="form-row">
-                                <div className="form-button-cell">
-                                    <button data-testid="save" type="submit" className="form-button"><Save /> Save</button>
-                                </div>
-                            </div>
                             {error !== "" && (
                                 <div className="form-row">
                                     <label className="form-error">{error}</label>
@@ -112,6 +107,11 @@ export function ResetPasswordPage() {
                                 </div>
                                 <div className="form-input-cell">
                                     <input data-testid="confirm-password" maxLength={32} type="password" required={true} className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
+                                </div>
+                            </div>
+                            <div className="buttons-container">
+                                <div className="form-button-cell">
+                                    <button data-testid="save" type="submit" className="form-button"><Save /> Save</button>
                                 </div>
                             </div>
                         </>)}

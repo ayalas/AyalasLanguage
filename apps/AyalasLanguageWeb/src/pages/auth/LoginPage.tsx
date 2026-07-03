@@ -79,12 +79,7 @@ export default function LoginPage(): React.ReactElement {
       <PublicHeader />
       <div className="form-container">
         <form onSubmit={handleSubmit}>
-          <TabLinksComponent tabData={AUTH_TABS} activeTab={AuthTabsEnum.Login} />
-          <div className="form-row">
-            <div className="form-button-cell">
-              <button data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
-            </div>
-          </div>
+          <TabLinksComponent tabData={AUTH_TABS} activeTab={AuthTabsEnum.Login} />        
           {error !== "" && (
             <div className="form-row">
               <label className="form-error">{error}</label>
@@ -120,11 +115,10 @@ export default function LoginPage(): React.ReactElement {
                 </div>
               </>
             )}
-          <div className="form-row">
-            <div className="login-register-line"><Link to={`/forgot?user=${encodeURIComponent(email)}`}>Forgot your password?</Link></div>
-          </div>
-          <div className="form-row">
-            <div className="login-register-line" data-testid="register-link">Or <Link  to="/register">Register</Link> a new account</div>
+            <div className="form-row">
+            <div className="form-input-row">
+              <button data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
+            </div>
           </div>
         </form>
       </div>

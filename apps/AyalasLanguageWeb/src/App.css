@@ -149,6 +149,27 @@ body {
   flex-wrap: wrap;
 }
 
+.exercise-type-select {
+  width: calc(100% - 40px);
+  ;
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 10px 12px;
+  background: var(--surface-strong);
+  color: var(--text-h);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+}
+
+.exercise-type-difficulty {
+  width: 32px;
+  display: inline-flex;
+  padding: 0 5px;
+  margin-left: auto;
+  white-space: no-wrap;
+  overflow-wrap: anywhere;
+}
+
 .form-label-cell {
   display: inline-flex;
   min-width: 200px;
@@ -260,6 +281,8 @@ input:required:invalid {
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+
 
 .inline-content-line-part {
   margin-top: 15px;
@@ -422,19 +445,27 @@ input:required:invalid {
 .lesson-header {
   display: flex;
   width: 100%;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  flex-direction: row-reverse;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .lesson-name {
   display: inline-flex;
   margin-right: auto;
+  order: 2;
+  min-width: 0;
+  overflow-wrap: break-word;
+  text-align: left;
+  flex: 1;
 }
 
 .lesson-close-row {
   display: inline-flex;
+  order: 1;
+  flex-shrink: 0;
 }
 
 .header-score {
@@ -638,11 +669,21 @@ input:required:invalid {
 }
 
 .play-button {
+  background-color: var(--surface-strong);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   height: 24px;
   width: 24px;
   border: 0;
   padding: 0;
   margin-left: 8px;
+}
+
+.profile-language-names {
+  margin-top: 20px;
 }
 
 .small-icon {
@@ -850,22 +891,16 @@ input:required:invalid {
     gap: 10px;
   }
 
-  .exercise-footer {
-    flex-direction: column;
-    align-items: stretch;
+  .match-words-row {
+    gap: 5px;
   }
 
-  .exercise-footer-next {
-    margin-left: 0;
+  .match-words-column {
+    padding-right: 5px;
   }
 
-  .match-words-column,
   .match-words-column2 {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    align-items: stretch;
-    text-align: left;
+    padding-left: 5px;
   }
 
   .match-word-item-cell {
@@ -873,6 +908,7 @@ input:required:invalid {
   }
 
   .buttons-container {
+    padding-top: 8px;
     flex-direction: column;
     align-items: stretch;
   }
@@ -883,5 +919,17 @@ input:required:invalid {
   .actions-menu-link-button {
     width: 100%;
     justify-content: center;
+  }
+
+  .exercise-footer {
+    padding-right: 10px;
+  }
+
+  .exercise-footer-next {
+    width: calc(100% - 100px);
+  }
+
+  .check-answer-button {
+    width: 100%;
   }
 }

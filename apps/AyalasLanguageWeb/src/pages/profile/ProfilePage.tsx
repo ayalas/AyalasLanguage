@@ -112,13 +112,7 @@ export function ProfilePage() {
             <div className="form-header">
               <h1>Profile</h1>
             </div>
-            <div className="form-row">
-              <div className="form-input-row">
-                <button data-testid="save" type="submit" className="form-button" title="Save">
-                  <Save />
-                </button>
-              </div>
-            </div>
+            
             {error !== '' && (
               <div className="form-row">
                 <label className="form-error">{error}</label>
@@ -174,6 +168,13 @@ export function ProfilePage() {
               </div>
               <div className="form-input-cell">
                 <input data-testid="num-of-exercises" className="form-input" step="1" type="number" min="1" max="50" value={numOfExercises} onChange={async (e) => { setNumOfExercises(parseInt(e.target.value) || DEFAULT_NUM_OF_EXERCISES) }} />
+              </div>
+            </div>
+            <div className="buttons-container">
+              <div className="form-input-row">
+                <button data-testid="save" type="submit" className="form-button" title="Save">
+                  <Save />&nbsp;Save
+                </button>
               </div>
             </div>
           </form>

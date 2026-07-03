@@ -64,13 +64,7 @@ export function RegisterPage() {
       <div className="form-container">
         <form onSubmit={handleSubmit} data-testid="main-form">
           <TabLinksComponent tabData={AUTH_TABS} activeTab={AuthTabsEnum.Register} />
-          {!success && (
-            <div className="form-row">
-              <div className="form-input-row">
-                <button type="submit" data-testid="complete-registration" className="form-button"><UserIcon /> Complete Registration</button>
-              </div>
-            </div>
-          )}
+          
           {error !== "" && (
             <div className="form-row">
               <label className="form-error">{error}</label>
@@ -120,13 +114,16 @@ export function RegisterPage() {
                     <input data-testid="confirm-password" type="password" required={true} className="form-input" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
                   </div>
                 </div>
-
-                <div className="form-row">
-                  <div className="login-register-line">Or <Link to="/login">Log in</Link> with an existing account</div>
-                </div>
               </>
             )
           }
+          {!success && (
+            <div className="form-row">
+              <div className="form-input-row">
+                <button type="submit" data-testid="complete-registration" className="form-button"><UserIcon /> Complete Registration</button>
+              </div>
+            </div>
+          )}
         </form>
       </div>
     </>

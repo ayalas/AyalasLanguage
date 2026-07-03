@@ -208,15 +208,39 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     return (
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
             <Toaster position="top-center" richColors />
-            <div className="buttons-container">
-                {
-                    canRevealAnswers(exerciseInfo.exerciseTypeId) && (
-                        <div className="form-button-cell">
-                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="top-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;{displayAnswer && "Hide" || "Reveal"}</button>
-                        </div>
-                    )
-                }
+            
+            <div className="exercise-body-container">
+                <div className="form-row">
+                    <label className="form-label-row">{ExerciseTypeInstruction()}</label>
+                </div>
+                {error != "" && (
+                    <div className="form-row">
+                        <label className="form-error">{error}</label>
+                    </div>
+                )}
 
+                {usesInlineExerciseWithBlanks(exerciseInfo.exerciseTypeId) && (
+                    <InlineExerciseWithBlanks ref={refExercise}
+                        exerciseInfo={exerciseInfo} setError={setError}
+                        moveNext={moveNext} displayAnswer={displayAnswer}
+                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
+                ) || (isMatchingType(exerciseInfo.exerciseTypeId) && (
+                    <MatchWordsExercise
+                        exerciseInfo={exerciseInfo} setError={setError}
+                        moveNext={moveNext} addMistake={addMistake} playTargetText={playTargetText} />
+                ) || (hasExtraOptions(exerciseInfo.exerciseTypeId) && (
+                    <BucketListExercise ref={refExercise}
+                        exerciseInfo={exerciseInfo} setError={setError}
+                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} />
+                )) || (
+                        <TwoLinesTranslationExercise ref={refExercise}
+                            exerciseInfo={exerciseInfo} setError={setError}
+                            moveNext={moveNext} displayAnswer={displayAnswer}
+                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
+                    ))}
+            </div>
+            
+            <div className="buttons-container">
                 <ActionsMenuComponent items={[
                     {
                         dataTestId: "restart-lesson",
@@ -253,36 +277,13 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                         className: "lesson-button-save",
                     }
                 ] as ActionsMenuItem[]} anchorTitle="More" />
-            </div>
-            <div className="exercise-body-container">
-                <div className="form-row">
-                    <label className="form-label-row">{ExerciseTypeInstruction()}</label>
-                </div>
-                {error != "" && (
-                    <div className="form-row">
-                        <label className="form-error">{error}</label>
-                    </div>
-                )}
-
-                {usesInlineExerciseWithBlanks(exerciseInfo.exerciseTypeId) && (
-                    <InlineExerciseWithBlanks ref={refExercise}
-                        exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer}
-                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
-                ) || (isMatchingType(exerciseInfo.exerciseTypeId) && (
-                    <MatchWordsExercise
-                        exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} addMistake={addMistake} playTargetText={playTargetText} />
-                ) || (hasExtraOptions(exerciseInfo.exerciseTypeId) && (
-                    <BucketListExercise ref={refExercise}
-                        exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} />
-                )) || (
-                        <TwoLinesTranslationExercise ref={refExercise}
-                            exerciseInfo={exerciseInfo} setError={setError}
-                            moveNext={moveNext} displayAnswer={displayAnswer}
-                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
-                    ))}
+                {
+                    canRevealAnswers(exerciseInfo.exerciseTypeId) && (
+                        <div className="form-button-cell">
+                            <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="top-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;{displayAnswer && "Hide" || "Reveal"}</button>
+                        </div>
+                    )
+                }
             </div>
             <div className="exercise-footer">
 

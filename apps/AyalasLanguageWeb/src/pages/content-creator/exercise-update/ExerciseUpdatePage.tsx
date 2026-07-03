@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
-import { ArrowBigLeft, LayersPlus } from "lucide-react";
+import { ArrowBigLeft, Save } from "lucide-react";
 import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from "../../../types/exercise/Exercise";
 import { EXERCISE_GENERATIONS } from "../../../constants/learning";
 import { AlternativeLine } from "./AlternativeLine";
@@ -110,11 +110,6 @@ export function ExerciseUpdatePage() {
                     <div className="form-header">
                         <h1>Exercise editor</h1>
                     </div>
-                    <div className="form-row">
-                        <div className="form-button-cell">
-                            <button data-testid="save" type="submit" className="form-button" title="Save"><LayersPlus /></button>
-                        </div>
-                    </div>
                     {error !== '' && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>
@@ -179,8 +174,13 @@ export function ExerciseUpdatePage() {
                                         );
                                     })}
                             </>)}
-                    <div className="form-row">
-                        <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
+                    <div className="buttons-container">
+                        <div className="form-button-cell">
+                            <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
+                        </div>
+                        <div className="form-button-cell">
+                            <button data-testid="save" type="submit" className="form-button" title="Save"><Save />&nbsp;Save</button>
+                        </div>
                     </div>
                 </form>
             </div>

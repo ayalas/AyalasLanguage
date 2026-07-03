@@ -4,7 +4,7 @@ import axios from 'axios';
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
 
 import { AuthHeader } from '../components/auth/AuthHeader';
-import { LEANRING_STATUS } from '../constants/learning';
+import { DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from '../constants/learning';
 import type { User } from '../types/shared/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
@@ -19,6 +19,7 @@ type ExerciseTypeGroupObject = {
 export default function Homepage() {
   const [learningPath, setLearningPath] = useState<any[]>([]);
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const [hasLanguage, setHasLanguage] = useState(false);
   const { user } = useOutletContext<{ user: User | null }>();
   useEffect(() => {
@@ -65,6 +66,9 @@ export default function Homepage() {
       } catch (err: unknown) {
         errorHandler(err, setError);
       }
+      finally {
+        setIsLoading(false);
+      }
     };
 
     loadData();
@@ -79,7 +83,11 @@ export default function Homepage() {
             <label className="form-error">{error}</label>
           </div>
         )}
-        {(learningPath && learningPath.length > 0) && (
+        {isLoading && (
+            <div className="learning=path-empty">
+                Loading...
+            </div>
+        ) || ((learningPath && learningPath.length > 0) && (
           <div className="learning-container">
             {learningPath.map((level) => {
               return (
@@ -114,7 +122,7 @@ export default function Homepage() {
                                     {path.practiseMistakesInThisPath && (
                                       <span title="Mistakes will be readded to this lesson"><History className="learning-progress-img" /></span>
                                     )}
-                                    <div className="content-line-part" title={`${path.exerciseCount} exercises`}>[{path.exerciseCount}]</div>
+                                    <div className="content-line-part" title={`${path.exerciseCount} exercises`}>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES? `[${path.exerciseCount}]` : ""}</div>
                                   </div>
                                 );
                               })}
@@ -143,7 +151,7 @@ export default function Homepage() {
               You have not selected which language to learn.<br />
               Go to <Link to="/profile">the profile page</Link> to choose one!
             </div>
-          )}
+          ))}
       </div>
     </>
   );

@@ -37,13 +37,7 @@ export function ContactUsPublicPage() {
                     <div className="form-header">
                         <h1>Contact Us</h1>
                     </div>
-                    {!success && (
-                        <div className="form-row">
-                            <div className="form-button-cell">
-                                <button data-testid="save" type="submit" className="form-button"><Send /> Send</button>
-                            </div>
-                        </div>
-                    )}
+                    
                     {error !== "" && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>
@@ -69,6 +63,13 @@ export function ContactUsPublicPage() {
                                 </div>
                             </>
                         )}
+                    {!success && (
+                        <div className="buttons-container">
+                            <div className="form-button-cell">
+                                <button data-testid="save" type="submit" className="form-button"><Send /> Send</button>
+                            </div>
+                        </div>
+                    )}
                 </form>
             </div>
         </>);
