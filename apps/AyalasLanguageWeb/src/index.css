@@ -1,30 +1,34 @@
 :root {
-  --active: #19bd44;
-  --text: #6b6375;
-  --text-h: #2D3748;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --alter-bg: #f4f3ec;
-  --done: rgb(116, 117, 116);
-  --done-cell: rgb(69, 69, 69);
-  --done-cell-bg: rgb(203, 203, 203);
-  --error: rgb(168, 44, 44);
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --layers: rgb(12, 66, 12);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --active: #24b24c;
+  --text: #5f6470;
+  --text-h: #1f2937;
+  --bg: #f4f6fb;
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-strong: #ffffff;
+  --border: #dfe4ec;
+  --alter-bg: #e9eef7;
+  --done: #6b7280;
+  --done-cell: #374151;
+  --done-cell-bg: #e5e7eb;
+  --error: #b91c1c;
+  --accent: #7c3aed;
+  --accent-bg: rgba(124, 58, 237, 0.12);
+  --accent-border: rgba(124, 58, 237, 0.35);
+  --layers: #166534;
+  --social-bg: rgba(244, 243, 236, 0.65);
+  --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --radius: 10px;
+  --radius-lg: 16px;
 
-  --sans: 'Tajawal', system-ui, -apple-system, sans-serif;
-  --heading: 'Tajawal', system-ui, -apple-system, sans-serif;
+  --sans: 'Tajawal', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --heading: 'Tajawal', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --mono: ui-monospace, Consolas, monospace;
-  --fontsize: 20px;
-  --fontsize-lg: 24px;
+  --fontsize: 18px;
+  --fontsize-lg: 22px;
 
-  font: 20px/145% var(--sans);
-  letter-spacing: 0.18px;
+  font: 18px/1.55 var(--sans);
+  letter-spacing: 0.01em;
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
@@ -32,30 +36,27 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --active: #66fa84;
-    --text: #9ca3af;
+    --active: #62f18d;
+    --text: #b8bfcc;
     --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --alter-bg: #1f2028;
-    --done: rgb(224, 231, 224);
-    --error: rgb(252, 1, 1);
+    --bg: #10131a;
+    --surface: rgba(23, 27, 36, 0.94);
+    --surface-strong: #171b24;
+    --border: #2d3440;
+    --alter-bg: #1b2029;
+    --done: #d1d5db;
+    --error: #ff6b6b;
     --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --layers: rgb(54, 241, 54);
-    --social-bg: rgba(47, 48, 58, 0.5);
-
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+    --accent-bg: rgba(192, 132, 252, 0.16);
+    --accent-border: rgba(192, 132, 252, 0.4);
+    --layers: #6ee7b7;
+    --social-bg: rgba(47, 48, 58, 0.6);
+    --shadow: 0 16px 32px rgba(0, 0, 0, 0.36);
+    --shadow-card: 0 10px 26px rgba(0, 0, 0, 0.28);
   }
 
   #social .button-icon {
@@ -63,50 +64,84 @@
   }
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+}
+
 body {
   margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);
+  color: var(--text-h);
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: min(1126px, calc(100% - 24px));
   margin: 0 auto;
   text-align: start;
-  border-inline: none;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   box-sizing: border-box;
-  border: none;
-  padding-left: 10px;
+  padding: 0 0 24px;
+}
+
+a {
+  color: inherit;
 }
 
 h1,
 h2 {
   font-family: var(--heading);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-h);
+  letter-spacing: -0.02em;
 }
 
 h1 {
-  font-size: 28px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 28px;
-    margin: 20px 0;
-  }
+  font-size: clamp(26px, 3vw, 34px);
+  margin: 24px 0 14px;
 }
+
 h2 {
-  font-size: var(--fontsize-lg);
-  line-height: 118%;
-  letter-spacing: -0.24px;
+  font-size: clamp(20px, 2.3vw, 24px);
+  line-height: 1.25;
   margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: var(--fontsize);
-  }
 }
+
 p {
   margin: 0;
+  line-height: 1.6;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --fontsize: 16px;
+    --fontsize-lg: 20px;
+  }
+
+  #root {
+    width: min(100%, calc(100% - 16px));
+  }
 }

@@ -7,39 +7,72 @@ textarea {
 }
 
 button,
-input[type="submit"] {
+input[type="submit"],
+.form-button,
+.top-button,
+.link-button,
+.actions-menu-link-button,
+.menu-button,
+.bucket-list-item-button {
   -webkit-appearance: none;
   appearance: none;
-  color: var(--active);
-  border: 2px solid var(--text-h);
+  color: var(--text-h);
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
   font-size: var(--fontsize);
-  padding: 7px 14px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-textarea {
-  border: 2px solid var(--text-h);
+button:hover,
+input[type="submit"]:hover,
+.form-button:hover,
+.top-button:hover,
+.link-button:hover,
+.actions-menu-link-button:hover,
+.menu-button:hover,
+.bucket-list-item-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+  border-color: var(--accent-border);
 }
 
-#center {
+textarea,
+.form-select,
+.form-input,
+.text-area-wide,
+.text-area-minimal {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 10px 12px;
+  background: var(--surface-strong);
+  color: var(--text-h);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+}
+
+#center,
+.lesson-outer-container {
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  place-content: top;
+  gap: clamp(16px, 2vw, 24px);
+  place-content: flex-start;
   place-items: center;
   flex-grow: 1;
   flex-wrap: wrap;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: var(--fontsize);
-  }
+  width: 100%;
+  padding: 8px 0 24px;
 }
 
-.actions-menu-item {
+.actions-menu-item,
+.menu-item {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 8px 16px;
+  padding: 10px 16px;
   text-align: start;
   background: none;
   border: none;
@@ -47,40 +80,37 @@ textarea {
   color: inherit;
   text-decoration: none;
   font-size: var(--fontsize-lg);
+  border-radius: 8px;
+}
+
+.actions-menu-item:hover,
+.menu-item:hover {
+  background: var(--alter-bg);
 }
 
 .actions-menu-link-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: inherit;
+  background-color: var(--surface-strong);
   cursor: pointer;
   text-decoration: none;
   color: inherit;
-  display: inline-flex;
-  padding: 7px 14px;
-  border: 2px solid var(--text-h);
-  border-radius: 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   font-size: var(--fontsize-lg);
-}
-
-.lesson-outer-container {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: top;
-  place-items: center;
-  flex-grow: 1;
-  flex-wrap: wrap;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .lesson-inner-container {
-  padding: 10px;
-  min-width: 800px;
-
-  @media (max-width: 1024px) {
-    min-width: 95vw;
-  }
+  width: min(920px, 100%);
+  padding: 18px 18px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(8px);
 }
 
 body {
@@ -94,45 +124,43 @@ body {
 }
 
 .form-button {
-  background-color: inherit;
+  background-color: var(--surface-strong);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  /* Centers items vertically */
   justify-content: center;
-  /* Centers items horizontally */
   gap: 4px;
-  border-radius: 4px;
-  padding: 7px 14px;
-  border: 2px solid var(--text-h);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  border: 1px solid var(--border);
 }
 
 .button-delete-item {
   margin-right: 10px;
 }
 
-.exercise-type-selector-container
-{
-    padding-bottom: 5px;
-    line-height: min(40px);
-    display: flex;
-    align-items: center;
-    justify-content: start;
+.exercise-type-selector-container {
+  padding-bottom: 8px;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .form-label-cell {
   display: inline-flex;
   min-width: 200px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 0 10px;
+  align-items: center;
 }
 
 .form-cell-footer {
   text-align: start;
   color: var(--text-h);
-  line-height: min(20px);
-  padding-left: 10px;
-  padding-right: 10px;
+  line-height: 1.4;
+  padding: 0 10px;
 }
 
 .form-label-row {
@@ -158,11 +186,11 @@ body {
 }
 
 .form-label {
-  width: 90%;
+  width: 100%;
   text-align: start;
-  white-space: nowrap;
+  white-space: normal;
   color: var(--text-h);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .label-deleted {
@@ -170,21 +198,13 @@ body {
 }
 
 .form-row {
-  padding-bottom: 5px;
-  line-height: min(40px);
+  padding-bottom: 8px;
+  line-height: 1.4;
 }
 
 .form-row-play {
   padding-top: 10px;
   padding-bottom: 5px;
-}
-
-.form-select {
-  display: inline-flex;
-  min-height: 30px;
-  border: 1px solid #35bd4e;
-  border-radius: 3px;
-  padding: 4px 8px;
 }
 
 .form-button-cell {
@@ -196,23 +216,14 @@ body {
 .form-input-cell {
   display: inline-flex;
   min-width: 150px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 5px;
+  padding: 6px 10px 0;
   min-height: 32px;
 }
 
 .form-input-row {
   max-width: 800px;
   text-align: start;
-  line-height: min(40px);
-}
-
-.form-input {
-  min-height: 24px;
-  border: 1px solid #35bd4e;
-  border-radius: 3px;
-  padding: 4px 8px;
+  line-height: 1.4;
 }
 
 .form-input-long {
@@ -221,17 +232,16 @@ body {
 
 .form-play-container {
   display: flex;
-  /* 1. Turn on flexbox */
   align-items: center;
-  /* 2. Vertically center the text and the button */
   text-align: start;
   color: var(--text-h);
-  gap: 4px;
-  /* 3. Add a small gap between text and button */
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 input:required:invalid {
-  border: 2px solid rgb(180, 27, 27);
+  border-color: var(--error);
+  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
 }
 
 .home-container {
@@ -242,13 +252,17 @@ input:required:invalid {
   margin-right: 10px;
 }
 
-.content-line-part {
+.content-line-part,
+.inline-content-line-part {
   display: inline-flex;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 0 5px;
   margin: 0;
   white-space: normal;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.inline-content-line-part {
+  margin-top: 15px;
 }
 
 .discordIcon {
@@ -259,19 +273,13 @@ input:required:invalid {
   margin-right: 8px;
   display: inline-flex;
   background-image: url("assets/Discord-Symbol-Black.png");
-  @media (prefers-color-scheme: dark) {
-    background-image: url("assets/Discord-Symbol-White.png");
-  }
   background-size: cover;
 }
 
-.inline-content-line-part {
-  display: inline-flex;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-top: 15px;
-  white-space: normal;
-  overflow-wrap: break-word;
+@media (prefers-color-scheme: dark) {
+  .discordIcon {
+    background-image: url("assets/Discord-Symbol-White.png");
+  }
 }
 
 .text-area-wide {
@@ -286,9 +294,12 @@ input:required:invalid {
 
 .form-container {
   margin-top: 10px;
-  padding-left: 5px;
-  padding-right: 5px;
-  max-width: 90vw;
+  padding: 16px;
+  max-width: min(90vw, 920px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
 .exercise-body-container {
@@ -308,21 +319,22 @@ input:required:invalid {
   width: 100%;
 }
 
-.exercise-inner-element input[type="text"],
-button {
+.exercise-inner-element input[type="text"] {
   font-size: var(--fontsize-lg);
 }
 
 .exercise-outer-element {
-  padding-top: 30px;
-  padding-bottom: 30px;
+  padding: 20px 12px 24px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  place-content: top;
+  gap: 12px;
+  place-content: flex-start;
   place-items: center;
   flex-grow: 1;
   flex-wrap: wrap;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.04) 100%);
 }
 
 .exercise-outer-element-left {
@@ -330,8 +342,13 @@ button {
 }
 
 .exercise-footer {
-  display: inline-flex;
-  width: 95%;
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  flex-wrap: wrap;
 }
 
 .exercise-footer-back {
@@ -343,20 +360,20 @@ button {
   display: inline-flex;
 }
 
-
-
 .form-error {
   color: var(--error);
 }
 
 .header-row {
   align-items: center;
-  display: inline-flex;
-  height: 10vh;
+  display: flex;
+  min-height: 72px;
   justify-content: flex-start;
   text-align: start;
-  gap: 15px;
-  max-width: 90vw;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 0;
+  flex-wrap: wrap;
 }
 
 .header-title {
@@ -371,23 +388,20 @@ button {
 .header-input-cell {
   display: inline-flex;
   min-width: 150px;
-  padding-top: 5px;
-  padding-left: 5px;
+  padding: 5px;
   min-height: 32px;
 }
 
 .header-link {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .header-link-item {
   display: inline-flex;
   align-items: center;
-  /* Centers items vertically */
   justify-content: center;
-  /* Centers items horizontally */
   gap: 8px;
 }
 
@@ -395,16 +409,23 @@ button {
   border: 0;
   display: inline-flex;
   min-height: 30px;
+  background: transparent;
 }
 
 .header-profile-container {
   display: inline-flex;
   flex-direction: row;
+  align-items: center;
+  gap: 8px;
 }
 
 .lesson-header {
-  display: inline-flex;
-  width: 95%;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .lesson-name {
@@ -420,6 +441,7 @@ button {
   display: flex;
   justify-content: flex-end;
   gap: 5px;
+  flex-wrap: wrap;
 }
 
 .header-profile-name {
@@ -436,41 +458,42 @@ button {
   padding-left: 10px;
 }
 
-
 .learning-exercise-type-outer-container {
   display: inline-flex;
   padding: 5px;
 }
 
 .learning-exercise-type-inner-body {
-  border-top: 1px solid;
+  border-top: 1px solid var(--border);
   padding: 10px;
   width: 20vw;
-
-  @media (max-width: 1024px) {
-    width: 45vw;
-
-    @media (max-width: 768px) {
-      width: 80vw;
-    }
-  }
-
   margin-top: 5px;
 }
 
-.learning-exercise-type-inner-container {}
+@media (max-width: 1024px) {
+  .learning-exercise-type-inner-body {
+    width: 45vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .learning-exercise-type-inner-body {
+    width: 80vw;
+  }
+}
 
 .learning-lesson {
   display: block;
   overflow-wrap: break-word;
   padding-top: 3px;
   padding-bottom: 3px;
-  line-height: min(40px);
+  line-height: 1.45;
 }
 
 .learning-lesson-link {
   text-decoration: none;
   color: var(--layers);
+  font-weight: 600;
 }
 
 .learning-level-creator {
@@ -479,52 +502,55 @@ button {
 }
 
 .lesson-button-back {
-  color: rgb(51, 172, 21);
-  border: 2px solid rgb(55, 194, 20);
+  color: #238a3d;
+  border: 1px solid #2bbf4e;
+  background: rgba(43, 191, 78, 0.12);
 }
 
 .lesson-button-save {
-  color: rgb(192, 155, 23);
+  color: #b27a00;
+  border: 1px solid #d59d00;
+  background: rgba(213, 157, 0, 0.14);
 }
 
 .lesson-button-reveal {
   color: var(--accent);
-  border: 2px solid var(--accent);
+  border: 1px solid var(--accent);
+  background: var(--accent-bg);
 }
 
 .lesson-button-left {
-  background-color: inherit;
+  background-color: var(--surface-strong);
   cursor: pointer;
   display: flex;
   align-items: center;
-  /* Centers items vertically */
   justify-content: center;
-  /* Centers items horizontally */
   gap: 4px;
-  border-radius: 4px;
-  padding: 7px 14px;
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  border: 1px solid var(--border);
 }
 
 .lesson-done {
   color: var(--done);
 }
 
-
-
 .link-button {
-  background-color: inherit;
+  background-color: var(--surface-strong);
   cursor: pointer;
   text-decoration: none;
   color: inherit;
   display: inline-flex;
-  height: 25px;
-  padding: 7px 14px;
-  border: 2px solid var(--text-h);
-  border-radius: 4px;
+  height: 42px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  align-items: center;
+  justify-content: center;
 }
 
 .link-lesson-edit {
-  background-color: inherit;
+  background-color: transparent;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
@@ -538,44 +564,34 @@ button {
   width: 190px;
   height: 55px;
   background-image: url("assets/logo.png");
-  @media (prefers-color-scheme: dark) {
-    background-image: url("assets/logo-dark.png");
-  }
   background-size: cover;
 }
 
-.menu-button {
-  padding: 10px 20px;
-  cursor: pointer;
+@media (prefers-color-scheme: dark) {
+  .logo {
+    background-image: url("assets/logo-dark.png");
+  }
 }
 
-.menu-item {
-  display: block;
-  width: 100%;
-  padding: 8px 16px;
-  text-align: start;
-  background: none;
-  border: none;
+.menu-button {
+  padding: 10px 16px;
   cursor: pointer;
-  text-decoration: none;
-  color: inherit;
+  border-radius: var(--radius);
 }
 
 .menu-container {
-  background-color: var(--bg);
+  background: var(--surface-strong);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-  border-radius: 6px;
-  padding: 4px 0;
-  min-width: 15%;
+  border-radius: var(--radius);
+  padding: 6px 0;
+  min-width: min(220px, 92vw);
   z-index: 999;
 }
 
-
-
 .menu-delimiter {
   border: 0;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border);
   margin: 4px 0;
 }
 
@@ -621,12 +637,6 @@ button {
   margin-left: 5px;
 }
 
-/*.playButtonContainer {
-  padding-left: 8px;
-  display: inline-flex;
-  height: 40px;
-  align-items: buttom;    
-}*/
 .play-button {
   height: 24px;
   width: 24px;
@@ -641,28 +651,32 @@ button {
 }
 
 .top-button {
-  background-color: inherit;
+  background-color: var(--surface-strong);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  border-radius: 4px;
-  padding: 7px 14px;
-  border: 2px solid var(--text-h);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  border: 1px solid var(--border);
 }
 
 .match-words-row {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  width: 100%;
 }
 
 .match-words-column {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  justify-content: end;
-  align-items: end;
+  justify-content: flex-end;
+  align-items: flex-end;
   text-align: right;
   margin-left: auto;
   padding-right: 15px;
@@ -672,8 +686,8 @@ button {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  justify-content: start;
-  align-items: start;
+  justify-content: flex-start;
+  align-items: flex-start;
   text-align: left;
   margin-right: auto;
   padding-left: 15px;
@@ -692,14 +706,18 @@ button {
 }
 
 .match-word-item-button {
-  background-color: inherit;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
   cursor: pointer;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-wrap: break-word;
-  border-radius: 8px;
+  padding: 10px 12px;
+  overflow-wrap: anywhere;
+  border-radius: 999px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.match-word-item-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
 }
 
 .match-words-item-done {
@@ -723,16 +741,14 @@ button {
   align-items: flex-start !important;
   gap: 12px !important;
   padding: 16px !important;
-  width: 320px !important; /* Optional: give it a fixed width */
+  width: 320px !important;
 }
 
-/* The description text */
 .my-confirm-description {
-  color: #71717a !important; /* Zinc-500 color */
+  color: #71717a !important;
   font-size: 0.875rem !important;
 }
 
-/* The buttons */
 .my-confirm-btn {
   width: 100% !important;
   display: flex !important;
@@ -742,9 +758,8 @@ button {
   cursor: pointer !important;
 }
 
-/* Specific styling for action vs cancel (if needed) */
 .my-action-btn {
-  background-color: #ef4444 !important; /* Red */
+  background-color: #ef4444 !important;
   color: white !important;
   border: none !important;
 }
@@ -761,22 +776,18 @@ button {
 }
 
 .bucket-list-item-button {
-  background-color: inherit;
+  background-color: var(--surface-strong);
   cursor: pointer;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 5px;
+  padding: 10px 12px;
   border-radius: 8px;
   margin-top: 10px;
+  border: 1px solid var(--border);
 }
 
 .keyboard-container {
   padding-top: 10px;
 }
 
-
-
-/* The outer full-screen backdrop */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -784,32 +795,19 @@ button {
   bottom: 0;
   left: 0;
   z-index: 50;
-
-  /* Centering the content */
   display: flex;
   align-items: center;
   justify-content: center;
-
-  /* Colors and Blur */
   background-color: rgba(0, 0, 0, 0.2);
-  /* black at 20% opacity */
   backdrop-filter: blur(4px);
-  /* blur effect on background */
   -webkit-backdrop-filter: blur(4px);
-  /* Safari support */
 }
 
-/* The white box in the center */
 .loading-box {
-  background-color: #ffffff;
+  background: var(--surface-strong);
   padding: 1rem;
-  /* 16px */
-  border-radius: 0.5rem;
-  /* 8px */
-
-  /* shadow-xl translation */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
 }
 
 .rtlanswer {
@@ -818,5 +816,72 @@ button {
 }
 
 .hg-theme-default .hg-button {
-  color: #2D3748;
+  color: #2d3748;
+}
+
+@media (max-width: 1024px) {
+  #center {
+    padding: 12px 0 24px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .lesson-inner-container {
+    padding: 14px 12px 18px;
+  }
+
+  .form-container {
+    max-width: 100%;
+    padding: 12px;
+  }
+
+  .form-label-cell {
+    min-width: 100%;
+    padding: 0 0 4px;
+  }
+
+  .form-input-cell {
+    min-width: 100%;
+    padding: 6px 0 0;
+  }
+
+  .header-row {
+    gap: 10px;
+  }
+
+  .exercise-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .exercise-footer-next {
+    margin-left: 0;
+  }
+
+  .match-words-column,
+  .match-words-column2 {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  .match-word-item-cell {
+    justify-content: flex-start;
+  }
+
+  .buttons-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-button,
+  .top-button,
+  .link-button,
+  .actions-menu-link-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
