@@ -267,8 +267,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   };
 
   const replaceAIInstructionsPlaceholders = function (aiDesc: string): string {
-    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.KNOWN_LANGAUGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '');
-    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.TARGET_LANGAUGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '');
+    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '');
+    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '');
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.LEVEL_PLACEHOLDER, String(level));
     const numOfExercies = user?.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES;
     aiDesc = aiDesc.replaceAll(PLACEHOLDERS.NUM_OF_EXERCISES_PLACEHOLDER, numOfExercies.toString());

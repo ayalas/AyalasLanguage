@@ -53,10 +53,10 @@ export async function setLanguageSettings(languageSettings: LanguageSettings, us
     return newUser;
 }
 
-export async function switchLanguage(axios: any, user: User, login: (u: User) => void, targetLanguageId: number, knownLangaugeId: number) {
+export async function switchLanguage(axios: any, user: User, login: (u: User) => void, targetLanguageId: number, knownLanguageId: number) {
     await axios.post('/api/profile/current', {
         TargetLanguageId: targetLanguageId,
-        KnownLanguageId: knownLangaugeId
+        KnownLanguageId: knownLanguageId
     });
 
     return reloadLanguageSettings(axios, user, login);

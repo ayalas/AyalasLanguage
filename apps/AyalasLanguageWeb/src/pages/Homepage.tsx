@@ -19,13 +19,13 @@ type ExerciseTypeGroupObject = {
 export default function Homepage() {
   const [learningPath, setLearningPath] = useState<any[]>([]);
   const [error, setError] = useState('');
-  const [hasLangauge, setHasLangauge] = useState(false);
+  const [hasLanguage, setHasLanguage] = useState(false);
   const { user } = useOutletContext<{ user: User | null }>();
   useEffect(() => {
     const loadData = async function () {
       try {
         if (user?.languageSettings?.targetLanguageId != null && user.languageSettings.knownLanguageId != null) {
-          setHasLangauge(true);
+          setHasLanguage(true);
         } else {
           return;
         }
@@ -133,7 +133,7 @@ export default function Homepage() {
               );
             })}
           </div>
-        ) || (hasLangauge && (
+        ) || (hasLanguage && (
           <div className="learning-path-empty">
             It looks like there are not yet any lessons in this language.<br />
             But you can <Link to="/author/path">add ones yourself!</Link>
