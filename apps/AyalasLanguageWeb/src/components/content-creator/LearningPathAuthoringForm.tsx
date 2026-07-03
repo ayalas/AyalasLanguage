@@ -4,7 +4,7 @@ import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCh
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog } from '../../utils/utils';
-import { EXERCISE_GENERATIONS, PLACEHOLDERS, DEFAULT_NUM_OF_EXERCISES, type ExerciseGeneration } from '../../constants/learning';
+import { EXERCISE_GENERATIONS, DEFAULT_NUM_OF_EXERCISES, type ExerciseGeneration } from '../../constants/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
 import type { User } from '../../types/shared/User';
@@ -16,6 +16,7 @@ import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
+import { getAIInstructions, type IChatMessage } from '../../logic/AIInstructionsLogic';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: any; reloadExercise?: () => void }) {
@@ -28,6 +29,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [isLoading, setIsLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [access, setAccess] = useState(AUTHOR_ACCESS.CAN_EDIT);
+  
   const [exerciseType, setExerciseType] = useState<ExerciseType | 0>(0);
   const [exerciseTypeDesc, setExerciseTypeDesc] = useState('');
   const [firstSet, setFirstSet] = useState('');
@@ -62,8 +64,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       const arrFirstSet = (removeLastCharIfMatch(firstSet.trim(), ';') ?? '').split(';');
       const arrSecondSet = (removeLastCharIfMatch(secondSet.trim(), ';') ?? '').split(';');
 
-      if ((!arrFirstSet || arrFirstSet.length === 0) && ( !arrSecondSet || arrSecondSet.length === 0)) {
-        
+      if ((!arrFirstSet || arrFirstSet.length === 0) && (!arrSecondSet || arrSecondSet.length === 0)) {
+
         return [];
       }
 
@@ -115,7 +117,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       //set auto AI instructions to have the latest subject
       const aiAutoDescNew = handleExerciseTypeLogic(exerciseType);
 
-      if (aiAutoDescNew == '') {
+      if (!aiAutoDescNew || aiAutoDescNew.length == 0) {
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
@@ -123,6 +125,9 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       if (response != undefined && response.message != undefined) {
         // Extract the raw string response
         const rawText = response.message.content.toString();
+
+
+
         // Parse the string into a JSON object
         let jsonOutput: unknown;
         try {
@@ -132,7 +137,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setError('Automated generation did not return in the expected result format. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "parsing LLM response failed",
-            Instruction: aiAutoDescNew,
+            Instruction: aiAutoDescNew.map(it => it.content).join(' '),
             Result: rawText
           } as LogAutoAIFailure);
           return null;
@@ -141,7 +146,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "Result is not an array",
-            Instruction: aiAutoDescNew,
+            Instruction: aiAutoDescNew.map(it => it.content).join(' '),
             Result: rawText
           } as LogAutoAIFailure);
           return null;
@@ -152,7 +157,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             setError('Automated generation returned an empty result. Switch to manual use of AI or try again.');
             writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
               Title: "Result is an empty array",
-              Instruction: aiAutoDescNew,
+              Instruction: aiAutoDescNew.map(it => it.content).join(' '),
               Result: rawText
             } as LogAutoAIFailure);
             return null;
@@ -182,11 +187,17 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
               setError('Automated generation returned the expected result structure. Switch to manual use of AI or try again.');
               writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
                 Title: "Result is invalid",
-                Instruction: aiAutoDescNew,
+                Instruction: aiAutoDescNew.map(it => it.content).join(' '),
                 Result: rawText
               } as LogAutoAIFailure);
               return null;
             }
+
+            // writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+            //   Title: "TRACE LLM response",
+            //   Instruction: aiAutoDescNew.map(it => it.content).join(' '),
+            //   Result: rawText
+            // } as LogAutoAIFailure);
 
             arrObjects = jsonOutput;
           }
@@ -206,7 +217,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     setLoadingMessage('Generating exercises...');
     setIsLoading(true);
 
-    
+
     const arrData = await parseForm();
 
     //error is displayed when arrData is null
@@ -266,44 +277,38 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     }
   };
 
-  const replaceAIInstructionsPlaceholders = function (aiDesc: string): string {
-    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '');
-    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '');
-    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.LEVEL_PLACEHOLDER, String(level));
-    const numOfExercies = user?.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES;
-    aiDesc = aiDesc.replaceAll(PLACEHOLDERS.NUM_OF_EXERCISES_PLACEHOLDER, numOfExercies.toString());
-
+  const handleExerciseTypeLogic = function (exrTypeValue: ExerciseType) {
+    const exType = EXERCISE_GENERATIONS.find((ex) => ex.type == exrTypeValue) as ExerciseGeneration;
+    setExerciseTypeDesc(exType.description);
+    let aiMessages: IChatMessage[];
+    const numOfExercises = user?.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES;
+    const targetLanguage = user?.languageSettings?.targetLanguageEnglishName || '';
+    const knownLanguage = user?.languageSettings?.knownLanguage || '';
     let subject = title.trim();
     if (subject == '') {
       subject = 'any language exchange';
     }
-    return aiDesc.replaceAll(PLACEHOLDERS.SUBJECT_PLACEHOLDER, subject);
-  };
-
-  const handleExerciseTypeLogic = function (exrTypeValue: ExerciseType) {
-    const exType = EXERCISE_GENERATIONS.find((ex) => ex.type == exrTypeValue) as any;
-    setExerciseTypeDesc(exType.description);
-    let aiDesc: string;
     //manual ai instructions
-    aiDesc = replaceAIInstructionsPlaceholders(exType.ai_instruction as string);
-    setAIInstructions(aiDesc);
+    aiMessages = getAIInstructions(targetLanguage, knownLanguage, numOfExercises, false, subject, exrTypeValue);
+    setAIInstructions(aiMessages.map(it => it.content).join(' '));
     //automatic ai instructions (returning json)
-    aiDesc = replaceAIInstructionsPlaceholders(exType.ai_instruction_auto as string);
+    aiMessages = getAIInstructions(targetLanguage, knownLanguage, numOfExercises, true, subject, exrTypeValue);
 
     setFirstSetDesc(exType.first_data_instructions);
     setSecondSetDesc(exType.second_data_instructions);
     if (hasExtraOptions(exrTypeValue)) {
-      setWrongExtraOptionsDesc(exType.extra_options_instructions);
+      setWrongExtraOptionsDesc(exType.extra_options_instructions || '');
     }
 
-    return aiDesc;
+    return aiMessages;
   };
 
 
 
   const onChangeExerciseType = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setExerciseType(Number(e.target.value) as ExerciseType);
-    handleExerciseTypeLogic(Number(e.target.value) as ExerciseType);
+    const exType = Number(e.target.value) as ExerciseType;
+    setExerciseType(exType);
+    handleExerciseTypeLogic(exType);
   };
 
   async function onImportExercises(e: React.MouseEvent) {
@@ -516,9 +521,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                     <div className="exercise-type-selector-container">
                       <select required data-testid="exercise-type" className="form-select" value={exerciseType} onChange={onChangeExerciseType}>
                         <option value="0" disabled>-- Please choose an option --</option>
-                        {EXERCISE_GENERATIONS.sort(
-                                    (a:ExerciseGeneration, b:ExerciseGeneration) =>  rankExerciseTypeByEase(a.type) - rankExerciseTypeByEase(b.type)  
-                                  ).map((exType) => (
+                        {EXERCISE_GENERATIONS.sort((a: ExerciseGeneration, b: ExerciseGeneration) => rankExerciseTypeByEase(a.type) - rankExerciseTypeByEase(b.type)).map((exType) => (
                           <option key={exType.type} value={exType.type}>{exType.name}</option>
                         ))}
                       </select>
