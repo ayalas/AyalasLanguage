@@ -1,4 +1,4 @@
-import { EXERCISE_TYPES } from "@ayalaslanguage/types/exercise";
+import { EXERCISE_TYPES, type ExerciseType } from "@ayalaslanguage/types/exercise";
 import type { AppLanguageCode } from "../types/shared/User";
 
 export const PLACEHOLDERS = {
@@ -49,7 +49,18 @@ EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.COMMON_RESPONSES]= "Common responses";
 EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET]= "Translate back with bucket list";
 EXERCISE_TYPE_NAME_MAPPING[EXERCISE_TYPES.MATCHING_TO_SPOKEN]= "Match written to spoken words";
 
-export const EXERCISE_GENERATIONS = 
+export interface ExerciseGeneration
+{
+    type: ExerciseType,
+    name: string,
+    description: string,
+    first_data_instructions: string,
+    second_data_instructions: string,
+    extra_options_instructions?: string,
+    ai_instruction: string,
+    ai_instruction_auto: string
+}
+export const EXERCISE_GENERATIONS: ExerciseGeneration[] = 
 [
     {
         type: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, 

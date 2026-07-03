@@ -111,6 +111,15 @@ body {
   margin-right: 10px;
 }
 
+.exercise-type-selector-container
+{
+    padding-bottom: 5px;
+    line-height: min(40px);
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
 .form-label-cell {
   display: inline-flex;
   min-width: 200px;

@@ -4,17 +4,18 @@ import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCh
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog } from '../../utils/utils';
-import { EXERCISE_GENERATIONS, PLACEHOLDERS, DEFAULT_NUM_OF_EXERCISES } from '../../constants/learning';
+import { EXERCISE_GENERATIONS, PLACEHOLDERS, DEFAULT_NUM_OF_EXERCISES, type ExerciseGeneration } from '../../constants/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
 import type { User } from '../../types/shared/User';
 import type { ExerciseData } from '../../types/exercise/Exercise';
 import puter from '@heyputer/puter.js';
 import type { NextChapterResponse } from '../../types/creator/creator';
-import { hasExtraOptions } from '../../logic/ExerciseTypeLogic';
+import { hasExtraOptions, rankExerciseTypeByEase } from '../../logic/ExerciseTypeLogic';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
+import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: any; reloadExercise?: () => void }) {
@@ -512,13 +513,18 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   </div>
                   <div className="form-label-row">Exercise Type</div>
                   <div className="form-row">
-                    <div className="form-input-row">
+                    <div className="exercise-type-selector-container">
                       <select required data-testid="exercise-type" className="form-select" value={exerciseType} onChange={onChangeExerciseType}>
                         <option value="0" disabled>-- Please choose an option --</option>
-                        {EXERCISE_GENERATIONS.map((exType) => (
+                        {EXERCISE_GENERATIONS.sort(
+                                    (a:ExerciseGeneration, b:ExerciseGeneration) =>  rankExerciseTypeByEase(a.type) - rankExerciseTypeByEase(b.type)  
+                                  ).map((exType) => (
                           <option key={exType.type} value={exType.type}>{exType.name}</option>
                         ))}
                       </select>
+                      <div className="content-line-part">
+                        <ExerciseTypeIcon exerciseTypeId={exerciseType} />
+                      </div>
                     </div>
                     <div className="form-content-row">{exerciseTypeDesc}</div>
                   </div>
