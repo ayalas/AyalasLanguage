@@ -105,7 +105,7 @@ export default function Homepage() {
                                 const isInProgress = path.status == LEANRING_STATUS.IN_PROGRESS;
                                 return (
                                   <div className="learning-lesson" key={path.learningPathId}>
-                                    <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} to={`/path/${path.learningPathId}`}>{path.name}</Link>
+                                    <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} to={exerciseTypeObject.exerciseTypeId == 0? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}>{path.name}</Link>
                                     {isDone && (
                                       <span title="Done"><Check className="learning-progress-img" /></span>
                                     )}

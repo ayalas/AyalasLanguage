@@ -48,18 +48,25 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const parseForm = async function () {
     let arrObjects: ExerciseData[] = [];
     if (!usePuterAI) {
-      if (firstSet == '' || secondSet == '') {
+
+      if (firstSet == '' && secondSet == '') {
         return [];
+      }
+
+      if (firstSet == '' || secondSet == '') {
+        setError(`Must fill both sets. Found '${firstSet}' on the first set, and '${secondSet}' on the second set.`);
+        return null;
       }
 
       const arrFirstSet = (removeLastCharIfMatch(firstSet.trim(), ';') ?? '').split(';');
       const arrSecondSet = (removeLastCharIfMatch(secondSet.trim(), ';') ?? '').split(';');
 
-      if (!arrFirstSet || arrFirstSet.length === 0 || !arrSecondSet || arrSecondSet.length === 0) {
+      if ((!arrFirstSet || arrFirstSet.length === 0) && ( !arrSecondSet || arrSecondSet.length === 0)) {
+        
         return [];
       }
 
-      if (arrFirstSet.length != arrSecondSet.length) {
+      if (!arrFirstSet || !arrSecondSet || arrFirstSet.length != arrSecondSet.length) {
         setError(`Must have a match between the number of words/sentences on both sets. Found ${arrFirstSet.length} on the first set, and ${arrSecondSet.length} on the second set.`);
         return null;
       }
