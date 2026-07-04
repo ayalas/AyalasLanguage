@@ -32,6 +32,7 @@ vi.mock('@ayalaslanguage/types/error', () => ({
 
 // Mocking Lucide icons to simplify DOM
 vi.mock('lucide-react', () => ({
+  Mail: () => <div data-testid="mail-icon" />,
   SquareMenu: () => <div data-testid="square-menu-icon" />,
   Volleyball: () => <div data-testid="volleyball-icon" />,
 }));

@@ -17,7 +17,7 @@ vi.mock('../assets/logo.jpg', () => ({
 }));
 
 describe('PublicHeader Component', () => {
-    it('renders the logo linking to home and the contact us link after opening menu', async () => {
+    it('renders the logo linking and the contact us link after opening menu', async () => {
         const user = userEvent.setup(); // 2. Setup user instance
         
         render(
@@ -30,7 +30,7 @@ describe('PublicHeader Component', () => {
 
         // Check Logo (Visible by default)
         const links = await screen.findAllByRole('link');
-        const homeLink = links.find(link => link.getAttribute('href') === '/home');
+        const homeLink = links.find(link => link.getAttribute('href') === '/');
         expect(homeLink).toBeInTheDocument();
 
         // 3. Find the menu trigger (the link wrapping the SquareMenu icon)
