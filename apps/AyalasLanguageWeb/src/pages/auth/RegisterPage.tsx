@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { User as UserIcon } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { checkPasswordStrength, generatePasswordFeedback, isValidEmail } from '../../utils/utils';
+import { checkPasswordStrength, generatePasswordFeedback, handleKeyDown, isValidEmail } from '../../utils/utils';
 import { PublicHeader } from '../../components/PublicHeader';
 import { TabLinksComponent } from '../../components/tabs/TabLinksComponent';
 import { AUTH_TABS, AuthTabsEnum } from '../../constants/auth';
@@ -15,6 +15,18 @@ export function RegisterPage() {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  // 1. Create refs for each focusable element
+  const displayNameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  // 2. Focus the first input on component mount
+  useEffect(() => {
+    displayNameRef.current?.focus();
+  }, []);
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
@@ -87,7 +99,11 @@ export function RegisterPage() {
                     <label className="form-label">Display Name</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="display-name" type="text" maxLength={128} value={displayName} required={true} className="form-input" onChange={e => setDisplayName(e.target.value)} />
+                    <input data-testid="display-name" type="text" maxLength={128} 
+                      ref={displayNameRef}
+                      onKeyDown={(e) => handleKeyDown(e, emailRef)}
+                      value={displayName} required={true} className="form-input" 
+                      onChange={e => setDisplayName(e.target.value)} />
                   </div>
                 </div>
                 <div className="form-row">
@@ -95,7 +111,11 @@ export function RegisterPage() {
                     <label className="form-label">Email</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="email" type="text" maxLength={128} value={email} required={true} className="form-input" onChange={e => setEmail(e.target.value)} />
+                    <input data-testid="email" 
+                      ref={emailRef}
+                      onKeyDown={(e) => handleKeyDown(e, passwordRef)}
+                      type="text" maxLength={128} value={email} required={true} 
+                      className="form-input" onChange={e => setEmail(e.target.value)} />
                   </div>
                 </div>
                 <div className="form-row">
@@ -103,7 +123,11 @@ export function RegisterPage() {
                     <label className="form-label">Password</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="password" type="password" maxLength={32} required={true} className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                    <input data-testid="password" type="password" maxLength={32} 
+                      ref={passwordRef}
+                      onKeyDown={(e) => handleKeyDown(e, confirmPasswordRef)}
+                      required={true} className="form-input" value={password} 
+                      onChange={e => setPassword(e.target.value)} />
                   </div>
                 </div>
                 <div className="form-row">
@@ -111,16 +135,21 @@ export function RegisterPage() {
                     <label className="form-label">Confirm Password</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="confirm-password" type="password" required={true} className="form-input" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
+                    <input data-testid="confirm-password" type="password" 
+                      ref={confirmPasswordRef}
+                      onKeyDown={(e) => handleKeyDown(e, submitButtonRef)}
+                      required={true} className="form-input" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
                   </div>
                 </div>
               </>
             )
           }
           {!success && (
-            <div className="form-row">
+            <div className="buttons-container">
               <div className="form-input-row">
-                <button type="submit" data-testid="complete-registration" className="form-button"><UserIcon /> Complete Registration</button>
+                <button type="submit" data-testid="complete-registration" 
+                  ref={submitButtonRef}
+                  className="form-button"><UserIcon /> Complete Registration</button>
               </div>
             </div>
           )}

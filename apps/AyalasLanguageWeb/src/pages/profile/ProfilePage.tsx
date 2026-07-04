@@ -118,7 +118,7 @@ export function ProfilePage() {
                 <label className="form-error">{error}</label>
               </div>
             )}
-            <div className="form-input-row">
+            <div className="form-row">
               <div className="form-label-cell">
                 <label className="form-label">Language to Learn</label>
               </div>
@@ -135,7 +135,7 @@ export function ProfilePage() {
                 </select>
               </div>
             </div>
-            <div className="form-input-row">
+            <div className="form-row">
               <div className="form-label-cell">
                 <label className="form-label">Language I Know</label>
               </div>
@@ -153,7 +153,7 @@ export function ProfilePage() {
               </div>
             </div>
 
-            <div className="form-input-row">
+            <div className="form-row">
               <div className="form-label-cell">
                 <label className="form-label">Disable Puter use in AI and Sounds</label>
               </div>
@@ -162,7 +162,7 @@ export function ProfilePage() {
               </div>
             </div>
 
-            <div className="form-input-row">
+            <div className="form-row">
               <div className="form-label-cell">
                 <label className="form-label">Number of Exercises for AI Generation</label>
               </div>

@@ -81,7 +81,7 @@ export default function LoginPage(): React.ReactElement {
             </div>
           )}
           {on2FA && (
-            <div className="form-input-row">
+            <div className="form-row">
               <div className="form-label-cell">
                 <label className="form-label">Two Factor Authentication Code</label>
               </div>
@@ -92,7 +92,7 @@ export default function LoginPage(): React.ReactElement {
             </div>
           ) || (
               <>
-                <div className="form-input-row">
+                <div className="form-row">
                   <div className="form-label-cell">
                     <label className="form-label">Email</label>
                   </div>
@@ -100,7 +100,7 @@ export default function LoginPage(): React.ReactElement {
                     <input data-testid="email" type="email" maxLength={128} required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
                   </div>
                 </div>
-                <div className="form-input-row">
+                <div className="form-row">
                   <div className="form-label-cell">
                     <label className="form-label">Password</label>
                   </div>

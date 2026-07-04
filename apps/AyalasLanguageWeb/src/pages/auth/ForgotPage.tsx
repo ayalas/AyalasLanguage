@@ -73,7 +73,7 @@ export function ForgotPage() {
                             </>
                         )}
                     {!success && (
-                        <div className="form-row">
+                        <div className="buttons-container">
                             <div className="form-input-row">
                                 <button type="submit" data-testid="complete-registration" className="form-button"><Send /> Send Reset Password Email</button>
                             </div>

@@ -44,7 +44,7 @@ export function parseBoolean(value: unknown): boolean {
 export async function writeToLog<T>(logType: LogType, obj: T) {
   try {
 
-    const req:CreateLogRequest = {
+    const req: CreateLogRequest = {
       LogType: logType,
       Description: JSON.stringify(obj)
     };
@@ -157,13 +157,22 @@ export function downloadFile(blob: Blob, name: string) {
 }
 
 export function encodeXMLElements(unsafe: string): string {
-    const xmlEntities: Record<string, string> = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&apos;'
-    };
+  const xmlEntities: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&apos;'
+  };
 
-    return unsafe.replace(/[&<>"']/g, (char) => xmlEntities[char]);
+  return unsafe.replace(/[&<>"']/g, (char) => xmlEntities[char]);
 }
+
+export const handleKeyDown = (e: React.KeyboardEvent, nextFieldRef: React.RefObject<HTMLInputElement | HTMLButtonElement | HTMLSelectElement | null>) => {
+  if (e.key === 'Enter') {
+    e.preventDefault(); // Prevent form submission
+    if (nextFieldRef.current != null) {
+      nextFieldRef.current?.focus();
+    }
+  }
+};
