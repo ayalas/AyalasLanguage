@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { isValidEmail } from '../../utils/utils';
+import { handleKeyDown, isValidEmail } from '../../utils/utils';
 import { Send } from 'lucide-react';
 import { PublicHeader } from '../../components/PublicHeader';
 import { TabLinksComponent } from '../../components/tabs/TabLinksComponent';
@@ -13,9 +13,11 @@ export function ForgotPage() {
     const [email, setEmail] = useState('');
     const [success, setSuccess] = useState(false);
     const [searchParams] = useSearchParams();
-
+    const emailRef = useRef<HTMLInputElement>(null);
+    const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
+      emailRef.current?.focus();
         async function runAsync() {
             setEmail(searchParams.get('user') ?? '');
         }
@@ -67,7 +69,7 @@ export function ForgotPage() {
                                         <label className="form-label">Email</label>
                                     </div>
                                     <div className="form-input-cell">
-                                        <input data-testid="email" maxLength={128} type="text" value={email} required={true} className="form-input" onChange={e => setEmail(e.target.value)} />
+                                        <input ref={emailRef} data-testid="email" maxLength={128} type="text" value={email} required={true} className="form-input" onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={e => setEmail(e.target.value)} />
                                     </div>
                                 </div>
                             </>
@@ -75,7 +77,7 @@ export function ForgotPage() {
                     {!success && (
                         <div className="buttons-container">
                             <div className="form-input-row">
-                                <button type="submit" data-testid="complete-registration" className="form-button"><Send /> Send Reset Password Email</button>
+                                <button ref={submitButtonRef} type="submit" data-testid="complete-registration" className="form-button"><Send /> Send Reset Password Email</button>
                             </div>
                         </div>
                     )}

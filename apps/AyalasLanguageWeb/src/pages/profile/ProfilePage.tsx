@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { ChangeEvent } from 'react';
 import { useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -9,6 +9,7 @@ import { reloadLanguageSettings } from '../../utils/languageUtils';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
 import type { User, AppLanguageCode } from '../../types/shared/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
+import { handleKeyDown } from '../../utils/utils';
 
 type Language = {
   languageId?: number;
@@ -26,8 +27,16 @@ export function ProfilePage() {
   const [disablePuter, setDisablePuter] = useState(false);
   const navigate = useNavigate();
   const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
+  const targetLanguageRef = useRef<HTMLSelectElement>(null);
+  const knownLanguageRef = useRef<HTMLSelectElement>(null);
+  const numOfExercisesRef = useRef<HTMLInputElement>(null);
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
   const location = useLocation();
   const from = location.state?.from?.pathname;
+
+  useEffect(() => {
+    targetLanguageRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -123,7 +132,7 @@ export function ProfilePage() {
                 <label className="form-label">Language to Learn</label>
               </div>
               <div className="form-input-cell">
-                <select required data-testid="target-language" className="form-select" value={targetLanguage} onChange={changeTargetLanguage}>
+                <select ref={targetLanguageRef} required data-testid="target-language" className="form-select" value={targetLanguage} onKeyDown={(e) => handleKeyDown(e, knownLanguageRef)} onChange={changeTargetLanguage}>
                   <option value="" disabled>
                     -- Please choose an option --
                   </option>
@@ -140,7 +149,7 @@ export function ProfilePage() {
                 <label className="form-label">Language I Know</label>
               </div>
               <div className="form-input-cell">
-                <select required data-testid="known-language" className="form-select" value={knownLanguage} onChange={changeKnownLanguage}>
+                <select ref={knownLanguageRef} required data-testid="known-language" className="form-select" value={knownLanguage} onKeyDown={(e) => handleKeyDown(e, numOfExercisesRef)} onChange={changeKnownLanguage}>
                   <option value="" disabled>
                     -- Please choose an option --
                   </option>
@@ -167,12 +176,12 @@ export function ProfilePage() {
                 <label className="form-label">Number of Exercises for AI Generation</label>
               </div>
               <div className="form-input-cell">
-                <input data-testid="num-of-exercises" className="form-input" step="1" type="number" min="1" max="50" value={numOfExercises} onChange={async (e) => { setNumOfExercises(parseInt(e.target.value) || DEFAULT_NUM_OF_EXERCISES) }} />
+                <input ref={numOfExercisesRef} data-testid="num-of-exercises" className="form-input" step="1" type="number" min="1" max="50" value={numOfExercises} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={async (e) => { setNumOfExercises(parseInt(e.target.value) || DEFAULT_NUM_OF_EXERCISES) }} />
               </div>
             </div>
             <div className="buttons-container">
               <div className="form-input-row">
-                <button data-testid="save" type="submit" className="form-button" title="Save">
+                <button ref={saveButtonRef} data-testid="save" type="submit" className="form-button" title="Save">
                   <Save />&nbsp;Save
                 </button>
               </div>

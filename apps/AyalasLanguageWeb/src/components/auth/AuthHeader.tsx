@@ -23,13 +23,20 @@ type OutletAuthContext = {
   login?: (u: User) => void;
 };
 
+export const LANGUAGE_INDICATOR_ENUM = {
+  NONE: 0,
+  SWITCH: 1,
+  SHOW_LANGUAGE: 2
+};
+
+export type LanguageIndicator = typeof LANGUAGE_INDICATOR_ENUM[keyof typeof LANGUAGE_INDICATOR_ENUM];
+
 type SwitchLanguageFunc = (axiosInstance: any, user: User | null | undefined, loginFn: ((u: User) => void) | undefined, targetLanguageId: number, knownLanguageId?: number) => Promise<User>;
 
-export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
+export function AuthHeader({ languageIndicator = LANGUAGE_INDICATOR_ENUM.NONE }: { languageIndicator?: LanguageIndicator }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedLanguageId, setSelectedLanguageId] = useState<string | number>('');
   const [selectedLanguage, setSelectedLanguage] = useState('');
-  const [showLanguageNextToProfile, setShowLanguageNextToProfile] = useState(!hideAppTitle);
   const { user, logout, login } = useOutletContext<OutletAuthContext>();
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -42,16 +49,10 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
       if (targetId != null) {
         setSelectedLanguageId(targetId);
         setSelectedLanguage(user.languageSettings.targetLanguageEnglishName || '');
-
-        if (!showLanguageNextToProfile && (!user.languageSettings.otherUserLanguages || user.languageSettings.otherUserLanguages.length === 0)) {
-          setShowLanguageNextToProfile(true);
-        }
-      } else {
-        setShowLanguageNextToProfile(false);
       }
     };
     loadLanguage();
-  }, [user, showLanguageNextToProfile]);
+  }, [user]);
 
   const { refs: { setFloating, setReference }, floatingStyles, context } = useFloating({
     open: isOpen,
@@ -93,27 +94,15 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
     <>
       <div className="header-row">
         <div className="header-title">
-          {!hideAppTitle && (
-            <Link className="header-app-link" to="/home"><div className="logo" ></div></Link>
-          ) || (user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
-            <div className="header-input-cell">
-              <select id="language-picker" className="header-select" value={String(selectedLanguageId)} onChange={onChangeLanguage} >
-                <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguageEnglishName}</option>
-                {
-                  user.languageSettings.otherUserLanguages.map((lang: any) => {
-                    return (
-                      <option key={lang.languageId} value={lang.languageId}>
-                        {lang.englishName}
-                      </option>
-                    );
-                  })
-                }
-              </select>
-            </div>
-          ))}
+          <Link className="header-app-link" to="/home"><div className="logo" ></div></Link>
         </div>
 
-        <div className="header-profile-container"><div className="header-profile-name">{showLanguageNextToProfile ? `${selectedLanguage}, ` : ''}{user?.displayName}<div className="header-score" title="Total Score"><Volleyball /> {user?.languageSettings?.score}</div></div></div>
+        <div className="header-profile-container">
+            <div className="header-profile-name">
+              {user?.displayName}
+              <div className="header-score" title="Total Score"><Volleyball /> {user?.languageSettings?.score}</div>
+            </div>
+        </div>
         <Link ref={setReference as any} {...getReferenceProps()} to="#">
           <SquareMenu />
         </Link>
@@ -136,6 +125,33 @@ export function AuthHeader({ hideAppTitle }: { hideAppTitle?: boolean }) {
           </div>
         )}
       </div>
+      {languageIndicator !== LANGUAGE_INDICATOR_ENUM.NONE && (
+          <div className="switch-container">
+        {(user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
+            <div className="header-input-cell">
+              {languageIndicator === LANGUAGE_INDICATOR_ENUM.SWITCH && (
+                <select id="language-picker" className="header-select" value={String(selectedLanguageId)} onChange={onChangeLanguage} >
+                <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguageEnglishName}</option>
+                {
+                  user.languageSettings.otherUserLanguages.map((lang: any) => {
+                    return (
+                      <option key={lang.languageId} value={lang.languageId}>
+                        {lang.englishName}
+                      </option>
+                    );
+                  })
+                }
+              </select>
+              ) || (
+                <>
+                {selectedLanguage}
+                </>
+              )}
+            </div>
+          ))}
+        
+      </div>
+      ) }
       {
         error !== '' && (
           <div className="form-row">

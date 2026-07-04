@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, X } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog } from '../../utils/utils';
+import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog, handleKeyDown } from '../../utils/utils';
 import { EXERCISE_GENERATIONS, DEFAULT_NUM_OF_EXERCISES, type ExerciseGeneration } from '../../constants/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
@@ -45,6 +45,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const navigate = useNavigate();
   const [puterSignedIn, setPuterSignedIn] = useState(false);
   const [usePuterAI, setUsePuterAI] = useState(true);
+
+  const titleRef = useRef<HTMLInputElement>(null);
+  const exerciseTypeRef = useRef<HTMLSelectElement>(null);
+  const firstSetRef = useRef<HTMLTextAreaElement>(null);
+  const secondSetRef = useRef<HTMLTextAreaElement>(null);
+  const wrongExtraOptionsRef = useRef<HTMLTextAreaElement>(null);
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
 
   const { user } = useOutletContext<{ user: User | null }>();
 
@@ -404,6 +411,10 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     execAsync();
   }, [exerciseType]);
 
+  useEffect(() => {
+   titleRef.current?.focus();
+  }, []);
+
   return (
     <div className="form-container">
       <div className="lesson-header">
@@ -460,14 +471,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   <div className="form-label-row">Subject</div>
                   <div className="form-row">
                     <div className="form-input-row">
-                      <input type="text" className="form-input form-input-long" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onChange={(e) => { setTitle(e.target.value) }} />
+                      <input ref={titleRef} type="text" className="form-input form-input-long" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onKeyDown={(e) => handleKeyDown(e, exerciseTypeRef)} onChange={(e) => { setTitle(e.target.value) }} />
                     </div>
                     <div className="form-content-row">AI will generate exercises on this subject.</div>
                   </div>
                   <div className="form-label-row">Exercise Type</div>
                   <div className="form-row">
                     <div className="exercise-type-selector-container">
-                      <select required data-testid="exercise-type" className="exercise-type-select" value={exerciseType} onChange={onChangeExerciseType}>
+                      <select ref={exerciseTypeRef} required data-testid="exercise-type" className="exercise-type-select" value={exerciseType} onKeyDown={(e) => handleKeyDown(e, usePuterAI ? saveButtonRef : firstSetRef)} onChange={onChangeExerciseType}>
                         <option value="0" disabled>-- Please choose an option --</option>
                         {EXERCISE_GENERATIONS.sort((a: ExerciseGeneration, b: ExerciseGeneration) => rankExerciseTypeByEase(a.type) - rankExerciseTypeByEase(b.type)).map((exType) => (
                           <option key={exType.type} value={exType.type}>{exType.name}</option>
@@ -488,14 +499,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                       <div className="form-label-row">First set of words/sentences</div>
                       <div className="form-row">
                         <div className="form-input-row">
-                          <textarea data-testid="first-set" className="text-area-wide" value={firstSet} onChange={(e) => { setFirstSet(e.target.value) }} />
+                          <textarea ref={firstSetRef} data-testid="first-set" className="text-area-wide" value={firstSet} onKeyDown={(e) => handleKeyDown(e, secondSetRef)} onChange={(e) => { setFirstSet(e.target.value) }} />
                         </div>
                         <div className="form-content-row">{firstSetDesc}</div>
                       </div>
                       <div className="form-label-row">Second set of words/sentences</div>
                       <div className="form-row">
                         <div className="form-input-row">
-                          <textarea data-testid="second-set" className="text-area-wide" value={secondSet} onChange={(e) => { setSecondSet(e.target.value) }} />
+                          <textarea ref={secondSetRef} data-testid="second-set" className="text-area-wide" value={secondSet} onKeyDown={(e) => handleKeyDown(e, hasExtraOptions(exerciseType) ? wrongExtraOptionsRef : saveButtonRef)} onChange={(e) => { setSecondSet(e.target.value) }} />
                         </div>
                         <div className="form-content-row">{secondSetDesc}</div>
                       </div>
@@ -504,7 +515,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                           <div className="form-label-row">Wrong Extra Options</div>
                           <div className="form-row">
                             <div className="form-input-row">
-                              <textarea data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
+                              <textarea ref={wrongExtraOptionsRef} data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
                             </div>
                             <div className="form-content-row">{wrongExtraOptionsDesc}</div>
                           </div>
@@ -565,7 +576,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                 </div>
               )}
               <div className="form-button-cell">
-                <button data-testid="save" type="submit" disabled={isLoading} className="top-button"><LayersPlus />&nbsp;{usePuterAI ? "Generate" : "Save & Generate"}</button>
+                <button ref={saveButtonRef} data-testid="save" type="submit" disabled={isLoading} className="top-button"><LayersPlus />&nbsp;{usePuterAI ? "Generate" : "Save & Generate"}</button>
               </div>
             </div>
           </form>

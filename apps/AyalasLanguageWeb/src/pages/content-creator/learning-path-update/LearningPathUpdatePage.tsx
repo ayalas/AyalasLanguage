@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-import { AuthHeader } from '../../../components/auth/AuthHeader';
+import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../../../components/auth/AuthHeader';
 
 import { LearningPathAuthoringForm } from '../../../components/content-creator/LearningPathAuthoringForm';
 import { ExerciseLine } from './ExerciseLine';
@@ -76,7 +76,7 @@ export function LearningPathUpdatePage() {
 
   return (
     <>
-      <AuthHeader />
+      <AuthHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE} />
       {updateFormError !== '' && (
         <div className="form-row">
           <label className="form-error">{updateFormError}</label>

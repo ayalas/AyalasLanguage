@@ -1,8 +1,8 @@
 import axios from "axios";
 import { PublicHeader } from "../../components/PublicHeader";
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { isValidEmail } from "../../utils/utils";
-import { useState } from "react";
+import { handleKeyDown, isValidEmail } from "../../utils/utils";
+import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 
 export function ContactUsPublicPage() {
@@ -10,6 +10,13 @@ export function ContactUsPublicPage() {
     const [message, setMessage] = useState('');
     const [email, setEmail] = useState('');
     const [success, setSuccess] = useState(false);
+    const emailRef = useRef<HTMLInputElement>(null);
+    const messageRef = useRef<HTMLTextAreaElement>(null);
+    const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+    useEffect(() => {
+        emailRef.current?.focus();
+    }, []);
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
@@ -52,13 +59,13 @@ export function ContactUsPublicPage() {
                                 <div className="form-label-row">Email address</div>
                                 <div className="form-row">
                                     <div className="form-input-row">
-                                        <input type="email" data-testid="email" maxLength={128} required={true} className="form-input" value={email} onChange={(e) => { setEmail(e.target.value) }} />
+                                        <input ref={emailRef} type="email" data-testid="email" maxLength={128} required={true} className="form-input" value={email} onKeyDown={(e) => handleKeyDown(e, messageRef)} onChange={(e) => { setEmail(e.target.value) }} />
                                     </div>
                                 </div>
                                 <div className="form-label-row">Message</div>
                                 <div className="form-row">
                                     <div className="form-input-row">
-                                        <textarea data-testid="message" maxLength={500} required={true} className="text-area-wide" value={message} onChange={(e) => { setMessage(e.target.value) }} />
+                                        <textarea ref={messageRef} data-testid="message" maxLength={500} required={true} className="text-area-wide" value={message} onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={(e) => { setMessage(e.target.value) }} />
                                     </div>
                                 </div>
                             </>
@@ -66,7 +73,7 @@ export function ContactUsPublicPage() {
                     {!success && (
                         <div className="buttons-container">
                             <div className="form-button-cell">
-                                <button data-testid="save" type="submit" className="form-button"><Send /> Send</button>
+                                <button ref={submitButtonRef} data-testid="save" type="submit" className="form-button"><Send /> Send</button>
                             </div>
                         </div>
                     )}

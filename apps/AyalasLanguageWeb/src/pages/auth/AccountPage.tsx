@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Save, Send } from 'lucide-react';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import type { User } from '../../types/shared/User';
-import { checkPasswordStrength, generatePasswordFeedback } from '../../utils/utils';
+import { checkPasswordStrength, generatePasswordFeedback, handleKeyDown } from '../../utils/utils';
 
 export function AccountPage() {
   const [displayName, setDisplayName] = useState('');
@@ -19,6 +19,13 @@ export function AccountPage() {
   const [newUserName, setNewUserName] = useState("");
   const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
   const navigate = useNavigate();
+  const displayNameRef = useRef<HTMLInputElement>(null);
+  const oldPasswordRef = useRef<HTMLInputElement>(null);
+  const newPasswordRef = useRef<HTMLInputElement>(null);
+  const newPasswordConfirmRef = useRef<HTMLInputElement>(null);
+  const use2FALoginRef = useRef<HTMLInputElement>(null);
+  const newEmailAddressRef = useRef<HTMLInputElement>(null);
+  const saveButtonRef = useRef<HTMLButtonElement>(null);
 
   const confirmEmail = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -84,6 +91,10 @@ export function AccountPage() {
   };
 
   useEffect(() => {
+    displayNameRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
     async function runAsync() {
       if (user != null) {
         setUse2FALogin(user?.use2FALogin);
@@ -130,7 +141,7 @@ export function AccountPage() {
             </div>
             <div className="form-row">
               <div className="form-input-cell">
-                <input data-testid="display-name" type="text" maxLength={128} required={true} className="form-input" value={displayName} onChange={e => setDisplayName(e.target.value)} />
+                <input ref={displayNameRef} data-testid="display-name" type="text" maxLength={128} required={true} className="form-input" value={displayName} onKeyDown={(e) => handleKeyDown(e, oldPasswordRef)} onChange={e => setDisplayName(e.target.value)} />
               </div>
             </div>
             <div className="form-row">
@@ -147,7 +158,7 @@ export function AccountPage() {
               <>
                 <div className="form-row">
                   <div className="form-label-cell">
-                    <label className="form-label"><input data-testid="use-2fa" type="checkbox" checked={use2FALogin} onChange={(e) => { setUse2FALogin(e.target.checked) }} />Use Two Factor Authentication</label>
+                    <label className="form-label"><input ref={use2FALoginRef} data-testid="use-2fa" type="checkbox" checked={use2FALogin} onKeyDown={(e) => handleKeyDown(e, oldPasswordRef)} onChange={(e) => { setUse2FALogin(e.target.checked) }} />Use Two Factor Authentication</label>
                   </div>
                   <div className="form-cell-footer">Protect your account: every time you login, you will be required to provide an extra code sent to you by email</div>
                 </div>
@@ -160,7 +171,7 @@ export function AccountPage() {
             </div>
             <div className="form-row">
               <div className="form-input-cell">
-                <input data-testid="current-password" type="password" maxLength={32} required={true} className="form-input" value={oldPassword} onChange={e => setOldPassword(e.target.value)} />
+                <input ref={oldPasswordRef} data-testid="current-password" type="password" maxLength={32} required={true} className="form-input" value={oldPassword} onKeyDown={(e) => handleKeyDown(e, newPasswordRef)} onChange={e => setOldPassword(e.target.value)} />
               </div>
             </div>
 
@@ -172,7 +183,7 @@ export function AccountPage() {
             </div>
             <div className="form-row">
               <div className="form-input-cell">
-                <input data-testid="new-password" type="password" maxLength={32} className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                <input ref={newPasswordRef} data-testid="new-password" type="password" maxLength={32} className="form-input" value={newPassword} onKeyDown={(e) => handleKeyDown(e, newPasswordConfirmRef)} onChange={e => setNewPassword(e.target.value)} />
               </div>
               <div className="form-cell-footer">Fill only to change your password and click Save Changes</div>
             </div>
@@ -183,7 +194,7 @@ export function AccountPage() {
             </div>
             <div className="form-row">
               <div className="form-input-cell">
-                <input data-testid="confirm-new-password" maxLength={32} type="password" className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
+                <input ref={newPasswordConfirmRef} data-testid="confirm-new-password" maxLength={32} type="password" className="form-input" value={newPasswordConfirm} onKeyDown={(e) => handleKeyDown(e, user?.emailConfirmed ? saveButtonRef : newEmailAddressRef)} onChange={e => setNewPasswordConfirm(e.target.value)} />
               </div>
             </div>
 
@@ -196,7 +207,7 @@ export function AccountPage() {
                 </div>
                 <div className="form-row">
                   <div className="form-input-cell">
-                    <input data-testid="new-email-address" maxLength={128} type="text" className="form-input" value={newUserName} onChange={e => setNewUserName(e.target.value)} />
+                    <input ref={newEmailAddressRef} data-testid="new-email-address" maxLength={128} type="text" className="form-input" value={newUserName} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={e => setNewUserName(e.target.value)} />
                   </div>
                   <div className="form-cell-footer">Fill only to change your email address and click Save Changes.</div>
                 </div>
@@ -204,7 +215,7 @@ export function AccountPage() {
             )}
             <div className="buttons-container">
               <div className="form-button-cell">
-                <button data-testid="save" type="submit" className="form-button"><Save /> Save Changes</button>
+                <button ref={saveButtonRef} data-testid="save" type="submit" className="form-button"><Save /> Save Changes</button>
               </div>
               {!user?.emailConfirmed && (
                 <div className="form-button-cell">

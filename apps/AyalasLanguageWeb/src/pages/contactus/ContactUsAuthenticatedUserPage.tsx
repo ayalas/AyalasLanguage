@@ -1,13 +1,20 @@
 import axios from "axios";
 import { AuthHeader } from "../../components/auth/AuthHeader";
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
+import { handleKeyDown } from "../../utils/utils";
 
 export function ContactUsAuthenticatedUserPage() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState(false);
+    const messageRef = useRef<HTMLTextAreaElement>(null);
+    const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+    useEffect(() => {
+        messageRef.current?.focus();
+    }, []);
 
     const handleSubmit = async (e: React.SubmitEvent) => {
         e.preventDefault();
@@ -45,7 +52,7 @@ export function ContactUsAuthenticatedUserPage() {
                                 <div className="form-label-row">Message</div>
                                 <div className="form-row">
                                     <div className="form-input-row">
-                                        <textarea data-testid="message" maxLength={4000} required={true} className="text-area-wide" value={message} onChange={(e) => { setMessage(e.target.value) }} />
+                                        <textarea ref={messageRef} data-testid="message" maxLength={4000} required={true} className="text-area-wide" value={message} onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={(e) => { setMessage(e.target.value) }} />
                                     </div>
                                 </div>
                             </>
@@ -53,7 +60,7 @@ export function ContactUsAuthenticatedUserPage() {
                     {!success && (
                         <div className="buttons-container">
                             <div className="form-button-cell">
-                                <button data-testid="save" type="submit" className="form-button login-button"><Send /> Send</button>
+                                <button ref={submitButtonRef} data-testid="save" type="submit" className="form-button login-button"><Send /> Send</button>
                             </div>
                         </div>
                     )}

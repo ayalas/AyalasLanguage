@@ -1,8 +1,8 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { checkPasswordStrength, generatePasswordFeedback } from '../../utils/utils';
+import { checkPasswordStrength, generatePasswordFeedback, handleKeyDown } from '../../utils/utils';
 import { Save } from 'lucide-react';
 import { PublicHeader } from '../../components/PublicHeader';
 
@@ -14,8 +14,12 @@ export function ResetPasswordPage() {
     const [accountChanged, setAccountChanged] = useState(false);
     const [userName, setUserName] = useState('');
     const [error, setError] = useState("");
+    const newPasswordRef = useRef<HTMLInputElement>(null);
+    const confirmPasswordRef = useRef<HTMLInputElement>(null);
+    const saveButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
+      newPasswordRef.current?.focus();
         async function runAsync() {
             setUserName(searchParams.get('user')?.trim() ?? '');
         }
@@ -98,7 +102,7 @@ export function ResetPasswordPage() {
                                     <label className="form-label">New Password</label>
                                 </div>
                                 <div className="form-input-cell">
-                                    <input data-testid="password" maxLength={32} type="password" required={true} className="form-input" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                                    <input ref={newPasswordRef} data-testid="password" maxLength={32} type="password" required={true} className="form-input" value={newPassword} onKeyDown={(e) => handleKeyDown(e, confirmPasswordRef)} onChange={e => setNewPassword(e.target.value)} />
                                 </div>
                             </div>
                             <div className="form-row">
@@ -106,12 +110,12 @@ export function ResetPasswordPage() {
                                     <label className="form-label">Confirm New Password</label>
                                 </div>
                                 <div className="form-input-cell">
-                                    <input data-testid="confirm-password" maxLength={32} type="password" required={true} className="form-input" value={newPasswordConfirm} onChange={e => setNewPasswordConfirm(e.target.value)} />
+                                    <input ref={confirmPasswordRef} data-testid="confirm-password" maxLength={32} type="password" required={true} className="form-input" value={newPasswordConfirm} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={e => setNewPasswordConfirm(e.target.value)} />
                                 </div>
                             </div>
                             <div className="buttons-container">
                                 <div className="form-button-cell">
-                                    <button data-testid="save" type="submit" className="form-button"><Save /> Save</button>
+                                    <button ref={saveButtonRef} data-testid="save" type="submit" className="form-button"><Save /> Save</button>
                                 </div>
                             </div>
                         </>)}

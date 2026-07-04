@@ -168,7 +168,7 @@ export function encodeXMLElements(unsafe: string): string {
   return unsafe.replace(/[&<>"']/g, (char) => xmlEntities[char]);
 }
 
-export const handleKeyDown = (e: React.KeyboardEvent, nextFieldRef: React.RefObject<HTMLInputElement | HTMLButtonElement | HTMLSelectElement | null>) => {
+export const handleKeyDown = (e: React.KeyboardEvent, nextFieldRef: React.RefObject<HTMLInputElement | HTMLButtonElement | HTMLSelectElement | HTMLTextAreaElement | null>) => {
   if (e.key === 'Enter') {
     e.preventDefault(); // Prevent form submission
     if (nextFieldRef.current != null) {

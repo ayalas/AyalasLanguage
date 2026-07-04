@@ -3,7 +3,7 @@ import { Link, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
 
-import { AuthHeader } from '../components/auth/AuthHeader';
+import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../components/auth/AuthHeader';
 import { DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from '../constants/learning';
 import type { User } from '../types/shared/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -75,9 +75,8 @@ export default function Homepage() {
   }, [user]);
   return (
     <>
-      <AuthHeader hideAppTitle={true} />
+      <AuthHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SWITCH} />
       <div className="home-container">
-        <div className="logo" ></div>
         {error !== '' && (
           <div className="form-row">
             <label className="form-error">{error}</label>

@@ -926,7 +926,11 @@ input:required:invalid {
   }
 
   .exercise-footer-next {
-    width: calc(100% - 100px);
+    width: calc(100% - 102px);
+  }
+
+  .exercise-footer-next-noback {
+    width: 100%;
   }
 
   .check-answer-button {

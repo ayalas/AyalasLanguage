@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
@@ -10,6 +10,7 @@ import type { User } from '../../types/shared/User';
 import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Verify2FARequest } from '@ayalaslanguage/types/auth';
 import { TabLinksComponent } from '../../components/tabs/TabLinksComponent';
 import { AUTH_TABS, AuthTabsEnum } from '../../constants/auth';
+import { handleKeyDown } from '../../utils/utils';
 
 export default function LoginPage(): React.ReactElement {
   const [searchParams] = useSearchParams();
@@ -24,6 +25,18 @@ export default function LoginPage(): React.ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname;
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const codeRef = useRef<HTMLInputElement>(null);
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (on2FA) {
+      codeRef.current?.focus();
+    } else {
+      emailRef.current?.focus();
+    }
+  }, [on2FA]);
 
   function completeLogin(tmpUser: User) {
     try {
@@ -91,7 +104,7 @@ export default function LoginPage(): React.ReactElement {
                 <label className="form-label">Two Factor Authentication Code</label>
               </div>
               <div className="form-input-cell">
-                <input data-testid="code" type="text" maxLength={TWO_FACTOR_CODE_LENGTH} required={true} value={code} className="form-input" onChange={e => setCode(e.target.value)} />
+                <input ref={codeRef} data-testid="code" type="text" maxLength={TWO_FACTOR_CODE_LENGTH} required={true} value={code} className="form-input" onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={e => setCode(e.target.value)} />
               </div>
               <div className="form-cell-footer">Fill the 6-digit code that has been sent to you by email</div>
             </div>
@@ -102,7 +115,7 @@ export default function LoginPage(): React.ReactElement {
                     <label className="form-label">Email</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="email" type="email" maxLength={128} required={true} value={email} className="form-input" onChange={e => setEmail(e.target.value)} />
+                    <input ref={emailRef} data-testid="email" type="email" maxLength={128} required={true} value={email} className="form-input" onKeyDown={(e) => handleKeyDown(e, passwordRef)} onChange={e => setEmail(e.target.value)} />
                   </div>
                 </div>
                 <div className="form-row">
@@ -110,14 +123,14 @@ export default function LoginPage(): React.ReactElement {
                     <label className="form-label">Password</label>
                   </div>
                   <div className="form-input-cell">
-                    <input data-testid="password" required={true} maxLength={32} type="password" className="form-input" value={password} onChange={e => setPassword(e.target.value)} />
+                    <input ref={passwordRef} data-testid="password" required={true} maxLength={32} type="password" className="form-input" value={password} onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={e => setPassword(e.target.value)} />
                   </div>
                 </div>
               </>
             )}
             <div className="buttons-container">
             <div className="form-input-row">
-              <button data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
+              <button ref={submitButtonRef} data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
             </div>
           </div>
         </form>

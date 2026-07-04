@@ -294,7 +294,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                 )}
                 {
                     showCheckAnswers(exerciseInfo.exerciseTypeId) && (
-                        <div className="exercise-footer-next">
+                        <div className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"}`}>
                             <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks />&nbsp;Check</button>
                         </div>
                     )
