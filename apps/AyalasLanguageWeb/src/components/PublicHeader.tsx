@@ -47,7 +47,7 @@ export function PublicHeader() {
                         <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
                             <li className="menu-line"><Link to='/login' className="menu-item">Log-in</Link></li>
                             <li className="menu-line"><Link to='/register' className="menu-item">Register new account</Link></li>
-                            <li className="menu-line"><div className="menu-item"><Link to='/contactus' className="header-link-item"><Mail /> Contact Us</Link></div></li>
+                            <li className="menu-line"><Link to='/contactus' className="menu-item"><Mail />&nbsp;Contact Us</Link></li>
                             <li className="menu-line"><Link target='discord' to='https://discord.gg/UkzNfauGd' className="menu-item"><div className="discordIcon" ></div>Discuss on Discord</Link></li>
                             <li className="menu-line"><Link to='/about' className="menu-item">More on {BRAND_NAME}</Link></li>
                         </ul>
