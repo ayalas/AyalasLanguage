@@ -35,10 +35,6 @@ export function ProfilePage() {
   const from = location.state?.from?.pathname;
 
   useEffect(() => {
-    targetLanguageRef.current?.focus();
-  }, []);
-
-  useEffect(() => {
     async function loadData() {
       const response = await axios.get('/api/static/languages');
       const allLanguagesData = response.data as Language[];
@@ -59,6 +55,8 @@ export function ProfilePage() {
           setKnownLanguage(english?.languageId || '');
         }
       }
+
+      targetLanguageRef.current?.focus();
     }
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -84,8 +82,7 @@ export function ProfilePage() {
     validateForm(true);
   };
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
+  async function submitAction() {
     try {
       if (!validateForm(false)) {
         return;
@@ -110,6 +107,11 @@ export function ProfilePage() {
     } catch (err: unknown) {
       errorHandler(err, setError);
     }
+  }
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    await submitAction();
   };
 
   return (
@@ -132,7 +134,8 @@ export function ProfilePage() {
                 <label className="form-label">Language to Learn</label>
               </div>
               <div className="form-input-cell">
-                <select ref={targetLanguageRef} required data-testid="target-language" className="form-select" value={targetLanguage} onKeyDown={(e) => handleKeyDown(e, knownLanguageRef)} onChange={changeTargetLanguage}>
+                <select ref={targetLanguageRef} required data-testid="target-language" className="form-select" value={targetLanguage} 
+                  onChange={changeTargetLanguage}>
                   <option value="" disabled>
                     -- Please choose an option --
                   </option>
@@ -149,7 +152,8 @@ export function ProfilePage() {
                 <label className="form-label">Language I Know</label>
               </div>
               <div className="form-input-cell">
-                <select ref={knownLanguageRef} required data-testid="known-language" className="form-select" value={knownLanguage} onKeyDown={(e) => handleKeyDown(e, numOfExercisesRef)} onChange={changeKnownLanguage}>
+                <select ref={knownLanguageRef} required data-testid="known-language" className="form-select" value={knownLanguage} 
+                   onChange={changeKnownLanguage}>
                   <option value="" disabled>
                     -- Please choose an option --
                   </option>

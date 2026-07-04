@@ -1,4 +1,5 @@
 import { PublicHeader } from "../components/PublicHeader";
+import { WelcomeSnippet } from "../components/WelcomeSnippet";
 import { BRAND_NAME } from "../constants/public";
 
 export function AboutPage() {
@@ -7,6 +8,7 @@ export function AboutPage() {
         <>
             <PublicHeader />
             <div className="form-container">
+                <WelcomeSnippet />
                 <div className="form-header">
                     <h1>About this app</h1>
                 </div>

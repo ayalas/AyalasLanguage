@@ -10,14 +10,12 @@ export function ContactUsAuthenticatedUserPage() {
     const [message, setMessage] = useState('');
     const [success, setSuccess] = useState(false);
     const messageRef = useRef<HTMLTextAreaElement>(null);
-    const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         messageRef.current?.focus();
     }, []);
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
-        e.preventDefault();
+    async function submitAction() {
         try {
             await axios.post('/api/profile/message', { message });
 
@@ -27,6 +25,11 @@ export function ContactUsAuthenticatedUserPage() {
         } catch (err) {
             errorHandler(err, setError);
         }
+    }
+
+    const handleSubmit = async (e: React.SubmitEvent) => {
+        e.preventDefault();
+        await submitAction();
     };
 
     return (
@@ -52,7 +55,9 @@ export function ContactUsAuthenticatedUserPage() {
                                 <div className="form-label-row">Message</div>
                                 <div className="form-row">
                                     <div className="form-input-row">
-                                        <textarea ref={messageRef} data-testid="message" maxLength={4000} required={true} className="text-area-wide" value={message} onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={(e) => { setMessage(e.target.value) }} />
+                                        <textarea ref={messageRef} data-testid="message" maxLength={4000} 
+                                        required={true} className="text-area-wide" value={message} 
+                                        onKeyDown={(e) => handleKeyDown(e, null, submitAction)} onChange={(e) => { setMessage(e.target.value) }} />
                                     </div>
                                 </div>
                             </>
@@ -60,7 +65,7 @@ export function ContactUsAuthenticatedUserPage() {
                     {!success && (
                         <div className="buttons-container">
                             <div className="form-button-cell">
-                                <button ref={submitButtonRef} data-testid="save" type="submit" className="form-button login-button"><Send /> Send</button>
+                                <button data-testid="save" type="submit" className="form-button login-button"><Send /> Send</button>
                             </div>
                         </div>
                     )}

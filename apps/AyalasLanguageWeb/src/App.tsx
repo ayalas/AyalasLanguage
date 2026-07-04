@@ -35,14 +35,14 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Public Routes that redirect to home if logged in */}
+          {/* Public Routes that redirect to an authenticated page if logged in */}
           <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>}/>
           <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/contactus" element={ <PublicRoute authPath='/usernote'><ContactUsPublicPage/></PublicRoute>}/>
           {/* Public Routes */}
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot" element={<ForgotPage />} />
           <Route path="/reset/:token" element={ <ResetPasswordPage/>} />
-          <Route path="/contactus" element={ <ContactUsPublicPage/>}/>
           <Route path="/about" element={ <AboutPage/>} />
 
           {/* Secured/Protected Routes */}

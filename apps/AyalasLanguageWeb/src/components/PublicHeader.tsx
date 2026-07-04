@@ -31,7 +31,7 @@ export function PublicHeader() {
     return (
         <div className="header-row">
             <div className="header-title">
-                <Link className="header-app-link" to="/home"><div className="logo" ></div></Link>
+                <Link className="header-app-link" to="/"><div className="logo" ></div></Link>
             </div>
             <div className="header-links">
                 <Link ref={setReference as any} {...getReferenceProps()} to="#">
@@ -45,10 +45,11 @@ export function PublicHeader() {
                         {...getFloatingProps()}
                     >
                         <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                            <li className="menu-line"><Link to='/home' className="menu-item">To the app</Link></li>
+                            <li className="menu-line"><Link to='/login' className="menu-item">Log-in</Link></li>
+                            <li className="menu-line"><Link to='/register' className="menu-item">Register new account</Link></li>
                             <li className="menu-line"><div className="menu-item"><div className="header-link"><Link to='/contactus' className="header-link-item"><Mail /> Contact Us</Link></div></div></li>
                             <li className="menu-line"><Link target='discord' to='https://discord.gg/UkzNfauGd' className="menu-item"><div className="discordIcon" ></div>Discuss on Discord</Link></li>
-                            <li className="menu-line"><Link to='/about' className="menu-item">About {BRAND_NAME}</Link></li>
+                            <li className="menu-line"><Link to='/about' className="menu-item">More on {BRAND_NAME}</Link></li>
                         </ul>
                     </div>
                 )}

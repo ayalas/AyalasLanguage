@@ -28,7 +28,6 @@ export default function LoginPage(): React.ReactElement {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const codeRef = useRef<HTMLInputElement>(null);
-  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (on2FA) {
@@ -63,8 +62,7 @@ export default function LoginPage(): React.ReactElement {
     }
   }
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
+  async function submitAction() {
     try {
       if (on2FA) {
         const response = await axios.post<LoginResponse<User>>('/api/auth/verify2fa', { verify2FAToken, code } as Verify2FARequest);
@@ -85,6 +83,11 @@ export default function LoginPage(): React.ReactElement {
     } catch (err) {
       errorHandler(err, setError);
     }
+  }
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    await submitAction();
   };
 
   return (
@@ -104,7 +107,7 @@ export default function LoginPage(): React.ReactElement {
                 <label className="form-label">Two Factor Authentication Code</label>
               </div>
               <div className="form-input-cell">
-                <input ref={codeRef} data-testid="code" type="text" maxLength={TWO_FACTOR_CODE_LENGTH} required={true} value={code} className="form-input" onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={e => setCode(e.target.value)} />
+                <input ref={codeRef} data-testid="code" type="text" maxLength={TWO_FACTOR_CODE_LENGTH} required={true} value={code} className="form-input" onKeyDown={(e) => handleKeyDown(e, null, submitAction)} onChange={e => setCode(e.target.value)} />
               </div>
               <div className="form-cell-footer">Fill the 6-digit code that has been sent to you by email</div>
             </div>
@@ -123,14 +126,14 @@ export default function LoginPage(): React.ReactElement {
                     <label className="form-label">Password</label>
                   </div>
                   <div className="form-input-cell">
-                    <input ref={passwordRef} data-testid="password" required={true} maxLength={32} type="password" className="form-input" value={password} onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={e => setPassword(e.target.value)} />
+                    <input ref={passwordRef} data-testid="password" required={true} maxLength={32} type="password" className="form-input" value={password} onKeyDown={(e) => handleKeyDown(e, null, submitAction)} onChange={e => setPassword(e.target.value)} />
                   </div>
                 </div>
               </>
             )}
             <div className="buttons-container">
             <div className="form-input-row">
-              <button ref={submitButtonRef} data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
+              <button data-testid="log-in" type="submit" className="form-button login-button"><LogIn /> Log In</button>
             </div>
           </div>
         </form>

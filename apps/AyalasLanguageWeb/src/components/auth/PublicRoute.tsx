@@ -3,10 +3,11 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from './useAuth';
 
 interface PublicRouteProps {
+  authPath?: string;
   children: React.ReactElement;
 }
 
-export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
+export const PublicRoute: React.FC<PublicRouteProps> = ({ authPath = "/home", children }) => {
   const { user, loading } = useAuth();
 
   // While checking the API, return null or a loading spinner
@@ -17,7 +18,7 @@ export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
 
   // If we have a user, they shouldn't be here. Redirect to home.
   if (user) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to={authPath} replace />;
   }
 
   // Otherwise, show the landing page/login/register

@@ -395,6 +395,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             setUsePuterAI(false);
           }
         }
+        titleRef.current?.focus();
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
@@ -410,10 +411,6 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     }
     execAsync();
   }, [exerciseType]);
-
-  useEffect(() => {
-   titleRef.current?.focus();
-  }, []);
 
   return (
     <div className="form-container">
@@ -478,7 +475,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   <div className="form-label-row">Exercise Type</div>
                   <div className="form-row">
                     <div className="exercise-type-selector-container">
-                      <select ref={exerciseTypeRef} required data-testid="exercise-type" className="exercise-type-select" value={exerciseType} onKeyDown={(e) => handleKeyDown(e, usePuterAI ? saveButtonRef : firstSetRef)} onChange={onChangeExerciseType}>
+                      <select ref={exerciseTypeRef} required data-testid="exercise-type" className="exercise-type-select" value={exerciseType} 
+                        onChange={onChangeExerciseType}>
                         <option value="0" disabled>-- Please choose an option --</option>
                         {EXERCISE_GENERATIONS.sort((a: ExerciseGeneration, b: ExerciseGeneration) => rankExerciseTypeByEase(a.type) - rankExerciseTypeByEase(b.type)).map((exType) => (
                           <option key={exType.type} value={exType.type}>{exType.name}</option>

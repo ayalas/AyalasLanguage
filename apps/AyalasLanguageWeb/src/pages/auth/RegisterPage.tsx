@@ -21,15 +21,13 @@ export function RegisterPage() {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
-  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   // 2. Focus the first input on component mount
   useEffect(() => {
     displayNameRef.current?.focus();
   }, []);
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
-    e.preventDefault();
+  async function submitAction() {
     try {
       if (!isValidEmail(email)) {
         setError("Please enter a valid email address");
@@ -68,6 +66,11 @@ export function RegisterPage() {
     } catch (err: unknown) {
       errorHandler(err, setError);
     }
+  }
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    await submitAction();
   };
 
   return (
@@ -137,7 +140,7 @@ export function RegisterPage() {
                   <div className="form-input-cell">
                     <input data-testid="confirm-password" type="password" 
                       ref={confirmPasswordRef}
-                      onKeyDown={(e) => handleKeyDown(e, submitButtonRef)}
+                      onKeyDown={(e) => handleKeyDown(e, null, submitAction)}
                       required={true} className="form-input" value={passwordConfirm} onChange={e => setPasswordConfirm(e.target.value)} />
                   </div>
                 </div>
@@ -148,7 +151,6 @@ export function RegisterPage() {
             <div className="buttons-container">
               <div className="form-input-row">
                 <button type="submit" data-testid="complete-registration" 
-                  ref={submitButtonRef}
                   className="form-button"><UserIcon /> Complete Registration</button>
               </div>
             </div>

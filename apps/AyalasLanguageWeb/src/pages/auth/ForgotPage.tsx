@@ -14,7 +14,6 @@ export function ForgotPage() {
     const [success, setSuccess] = useState(false);
     const [searchParams] = useSearchParams();
     const emailRef = useRef<HTMLInputElement>(null);
-    const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
       emailRef.current?.focus();
@@ -24,8 +23,7 @@ export function ForgotPage() {
         runAsync();
     }, [searchParams]);
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
-        e.preventDefault();
+    async function submitAction() {
         try {
             if (!isValidEmail(email)) {
                 setError("Please enter a valid email address");
@@ -39,6 +37,11 @@ export function ForgotPage() {
         } catch (err: unknown) {
             errorHandler(err, setError);
         }
+    }
+
+    const handleSubmit = async (e: React.SubmitEvent) => {
+        e.preventDefault();
+        await submitAction();
     };
 
     return (
@@ -69,7 +72,8 @@ export function ForgotPage() {
                                         <label className="form-label">Email</label>
                                     </div>
                                     <div className="form-input-cell">
-                                        <input ref={emailRef} data-testid="email" maxLength={128} type="text" value={email} required={true} className="form-input" onKeyDown={(e) => handleKeyDown(e, submitButtonRef)} onChange={e => setEmail(e.target.value)} />
+                                        <input ref={emailRef} data-testid="email" maxLength={128} type="text" value={email} required={true} className="form-input" 
+                                            onKeyDown={(e) => handleKeyDown(e, null, submitAction)} onChange={e => setEmail(e.target.value)} />
                                     </div>
                                 </div>
                             </>
@@ -77,7 +81,7 @@ export function ForgotPage() {
                     {!success && (
                         <div className="buttons-container">
                             <div className="form-input-row">
-                                <button ref={submitButtonRef} type="submit" data-testid="complete-registration" className="form-button"><Send /> Send Reset Password Email</button>
+                                <button type="submit" data-testid="complete-registration" className="form-button"><Send /> Send Reset Password Email</button>
                             </div>
                         </div>
                     )}

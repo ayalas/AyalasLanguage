@@ -168,10 +168,13 @@ export function encodeXMLElements(unsafe: string): string {
   return unsafe.replace(/[&<>"']/g, (char) => xmlEntities[char]);
 }
 
-export const handleKeyDown = (e: React.KeyboardEvent, nextFieldRef: React.RefObject<HTMLInputElement | HTMLButtonElement | HTMLSelectElement | HTMLTextAreaElement | null>) => {
+export const handleKeyDown = async (e: React.KeyboardEvent, nextFieldRef: React.RefObject<HTMLInputElement | HTMLButtonElement | HTMLSelectElement | HTMLTextAreaElement | null> | null, callback: (() => Promise<void>) | null = null) => {
   if (e.key === 'Enter') {
     e.preventDefault(); // Prevent form submission
-    if (nextFieldRef.current != null) {
+    if (callback != null) {
+      await callback();
+    }
+    else if (nextFieldRef != null && nextFieldRef.current != null) {
       nextFieldRef.current?.focus();
     }
   }

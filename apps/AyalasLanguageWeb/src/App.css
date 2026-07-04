@@ -118,6 +118,7 @@ body {
 }
 
 .buttons-container {
+  padding-top: 15px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -908,7 +909,6 @@ input:required:invalid {
   }
 
   .buttons-container {
-    padding-top: 8px;
     flex-direction: column;
     align-items: stretch;
   }

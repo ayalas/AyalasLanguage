@@ -16,7 +16,6 @@ export function ResetPasswordPage() {
     const [error, setError] = useState("");
     const newPasswordRef = useRef<HTMLInputElement>(null);
     const confirmPasswordRef = useRef<HTMLInputElement>(null);
-    const saveButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
       newPasswordRef.current?.focus();
@@ -26,9 +25,8 @@ export function ResetPasswordPage() {
         runAsync();
     }, [searchParams]);
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
-        e.preventDefault();
-        try {
+    async function submitAction() {
+         try {
 
             if (token == null || token.length == 0) {
                 setError("Error: no token received.")
@@ -71,6 +69,11 @@ export function ResetPasswordPage() {
         } catch (err: unknown) {
             errorHandler(err, setError);
         }
+    }
+
+    const handleSubmit = async (e: React.SubmitEvent) => {
+        e.preventDefault();
+        await submitAction();
     };
 
     return (
@@ -110,12 +113,14 @@ export function ResetPasswordPage() {
                                     <label className="form-label">Confirm New Password</label>
                                 </div>
                                 <div className="form-input-cell">
-                                    <input ref={confirmPasswordRef} data-testid="confirm-password" maxLength={32} type="password" required={true} className="form-input" value={newPasswordConfirm} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={e => setNewPasswordConfirm(e.target.value)} />
+                                    <input ref={confirmPasswordRef} data-testid="confirm-password" maxLength={32} type="password" required={true} 
+                                    className="form-input" value={newPasswordConfirm} 
+                                    onKeyDown={(e) => handleKeyDown(e, null, submitAction)} onChange={e => setNewPasswordConfirm(e.target.value)} />
                                 </div>
                             </div>
                             <div className="buttons-container">
                                 <div className="form-button-cell">
-                                    <button ref={saveButtonRef} data-testid="save" type="submit" className="form-button"><Save /> Save</button>
+                                    <button data-testid="save" type="submit" className="form-button"><Save /> Save</button>
                                 </div>
                             </div>
                         </>)}
