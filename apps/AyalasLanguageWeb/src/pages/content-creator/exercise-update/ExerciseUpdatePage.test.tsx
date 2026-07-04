@@ -42,9 +42,13 @@ vi.mock("lucide-react", () => ({
 }));
 
 // 5. Mock AuthHeader
-vi.mock("../../../components/auth/AuthHeader", () => ({
-    AuthHeader: () => <div data-testid="auth-header" />
-}));
+vi.mock('../../../components/auth/AuthHeader', async () => {
+  const actual = await vi.importActual('../../../components/auth/AuthHeader');
+  return {
+    ...actual,
+    AuthHeader: () => <div data-testid="auth-header" />,
+  };
+});
 
 describe("ExerciseUpdatePage", () => {
     const mockNavigate = vi.fn();

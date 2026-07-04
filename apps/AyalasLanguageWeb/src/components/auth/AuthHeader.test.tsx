@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { AuthHeader } from './AuthHeader'; // Adjust path as needed
+import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from './AuthHeader'; // Adjust path as needed
 import { MemoryRouter, useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { switchLanguage } from '../../utils/languageUtils';
@@ -91,7 +91,7 @@ describe('AuthHeader Component', () => {
   it('renders user information correctly', async () => {
     render(
       <MemoryRouter>
-        <AuthHeader />
+        <AuthHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE} />
       </MemoryRouter>
     );
 
@@ -142,7 +142,7 @@ describe('AuthHeader Component', () => {
 
     render(
       <MemoryRouter>
-        <AuthHeader hideAppTitle={true} />
+        <AuthHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SWITCH} />
       </MemoryRouter>
     );
 

@@ -35,9 +35,13 @@ vi.mock('@ayalaslanguage/types/error', () => ({
 
 
 // Mock child components to keep the test focused
-vi.mock('../../components/auth/AuthHeader', () => ({
+vi.mock('../../components/auth/AuthHeader', async () => {
+  const actual = await vi.importActual('../../components/auth/AuthHeader');
+  return {
+    ...actual,
     AuthHeader: () => <div data-testid="auth-header" />,
-}));
+  };
+});
 
 describe('AccountPage Component', () => {
     const mockLogin = vi.fn();

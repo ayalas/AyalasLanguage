@@ -21,9 +21,13 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock internal components and utils
-vi.mock('../../components/auth/AuthHeader', () => ({
-  AuthHeader: () => <div data-testid="auth-header">Auth Header</div>,
-}));
+vi.mock('../../components/auth/AuthHeader', async () => {
+  const actual = await vi.importActual('../../components/auth/AuthHeader');
+  return {
+    ...actual,
+    AuthHeader: () => <div data-testid="auth-header" />,
+  };
+});
 
 vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn(),

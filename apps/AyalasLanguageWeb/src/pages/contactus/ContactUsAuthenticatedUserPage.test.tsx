@@ -10,9 +10,13 @@ vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
 
 // Mocking external components and utils
-vi.mock("../../components/auth/AuthHeader", () => ({
-    AuthHeader: () => <div data-testid="mock-auth-header">Auth Header</div>,
-}));
+vi.mock('../../components/auth/AuthHeader', async () => {
+  const actual = await vi.importActual('../../components/auth/AuthHeader');
+  return {
+    ...actual,
+    AuthHeader: () => <div data-testid="mock-auth-header" />,
+  };
+});
 
 vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn(),

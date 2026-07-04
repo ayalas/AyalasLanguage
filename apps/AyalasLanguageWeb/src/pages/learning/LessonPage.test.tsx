@@ -31,11 +31,6 @@ vi.mock('../../utils/languageUtils', () => ({
   setLanguageSettings: vi.fn(),
 }));
 
-// Mock AuthHeader
-vi.mock('../../components/auth/AuthHeader', () => ({
-  AuthHeader: () => <div data-testid="auth-header" />,
-}));
-
 // Mock Exercise sub-component
 vi.mock('./exercise/Exercise', () => ({
   Exercise: React.forwardRef((props: any, ref: any) => {

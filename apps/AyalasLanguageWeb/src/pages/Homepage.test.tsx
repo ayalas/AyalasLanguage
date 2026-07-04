@@ -21,9 +21,13 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock external components and icons to keep the snapshot clean
-vi.mock('../components/auth/AuthHeader', () => ({
-  AuthHeader: () => <div data-testid="auth-header" />,
-}));
+vi.mock('../components/auth/AuthHeader', async () => {
+  const actual = await vi.importActual('../components/auth/AuthHeader');
+  return {
+    ...actual,
+    AuthHeader: () => <div data-testid="auth-header" />,
+  };
+});
 
 vi.mock('lucide-react', () => ({
   LayersPlus: () => <span data-testid="icon-layers" />,

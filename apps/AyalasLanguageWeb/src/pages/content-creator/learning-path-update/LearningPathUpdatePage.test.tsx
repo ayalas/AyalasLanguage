@@ -21,9 +21,13 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock child components to isolate page logic
-vi.mock('../../../components/auth/AuthHeader', () => ({
-  AuthHeader: () => <div data-testid="auth-header">Auth Header</div>,
-}));
+vi.mock('../../../components/auth/AuthHeader', async () => {
+  const actual = await vi.importActual('../../../components/auth/AuthHeader');
+  return {
+    ...actual,
+    AuthHeader: () => <div data-testid="auth-header" />,
+  };
+});
 
 vi.mock('./ExerciseLine', () => ({
   ExerciseLine: ({ exerciseInfo }: any) => (

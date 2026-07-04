@@ -34,9 +34,13 @@ vi.mock('lucide-react', () => ({
 }));
 
 // Mock sub-components
-vi.mock('../../components/auth/AuthHeader', () => ({
-  AuthHeader: () => <div data-testid="auth-header-mock" />,
-}));
+vi.mock('../../components/auth/AuthHeader', async () => {
+  const actual = await vi.importActual('../../components/auth/AuthHeader');
+  return {
+    ...actual,
+    AuthHeader: () => <div data-testid="auth-header" />,
+  };
+});
 
 vi.mock('./LanguageLineForDelete', () => ({
   LanguageLineForDelete: () => <div data-testid="lang-delete-mock" />,

@@ -13,9 +13,13 @@ vi.mock('@ayalaslanguage/types/error', () => ({
 }));
 
 // Mock AuthHeader component to keep the test light
-vi.mock('../../components/auth/AuthHeader', () => ({
-  AuthHeader: () => <div data-testid="auth-header">Mocked Auth Header</div>,
-}));
+vi.mock('../../components/auth/AuthHeader', async () => {
+  const actual = await vi.importActual('../../components/auth/AuthHeader');
+  return {
+    ...actual,
+    AuthHeader: () => <div data-testid="auth-header" />,
+  };
+});
 
 // Create stable mock functions for react-router-dom hooks
 const mockLogin = vi.fn();
