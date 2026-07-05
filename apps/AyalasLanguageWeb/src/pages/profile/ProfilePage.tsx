@@ -10,6 +10,7 @@ import { LanguageLineForDelete } from './LanguageLineForDelete';
 import type { User, AppLanguageCode } from '../../types/shared/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { handleKeyDown } from '../../utils/utils';
+import { FormHeader } from '../../components/FormHeader';
 
 type Language = {
   languageId?: number;
@@ -125,9 +126,7 @@ export function ProfilePage() {
         <AuthHeader />
         <div className="form-container">
           <form onSubmit={handleSubmit}>
-            <div className="form-header">
-              <h1>Profile</h1>
-            </div>
+             <FormHeader isPublic={false} title="Profile" />
 
             {error !== '' && (
               <div className="form-row">

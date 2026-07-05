@@ -4,6 +4,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { handleKeyDown } from "../../utils/utils";
+import { FormHeader } from "../../components/FormHeader";
 
 export function ContactUsAuthenticatedUserPage() {
     const [error, setError] = useState('');
@@ -37,10 +38,7 @@ export function ContactUsAuthenticatedUserPage() {
             <AuthHeader />
             <div className="form-container">
                 <form onSubmit={handleSubmit}>
-                    <div className="form-header">
-                        <h1>Contact Us</h1>
-                    </div>
-
+                    <FormHeader isPublic={false} title="Contact Us" />
                     {error !== "" && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>

@@ -4,6 +4,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { handleKeyDown, isValidEmail } from "../../utils/utils";
 import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
+import { FormHeader } from "../../components/FormHeader";
 
 export function ContactUsPublicPage() {
     const [error, setError] = useState('');
@@ -44,10 +45,7 @@ export function ContactUsPublicPage() {
             <PublicHeader />
             <div className="form-container">
                 <form onSubmit={handleSubmit}>
-                    <div className="form-header">
-                        <h1>Contact Us</h1>
-                    </div>
-                    
+                    <FormHeader isPublic={true} title="Contact Us" />
                     {error !== "" && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>

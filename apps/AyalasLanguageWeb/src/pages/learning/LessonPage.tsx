@@ -254,9 +254,9 @@ export function LessonPage() {
           <form>
             {learningPathData && (
               <>
-                <div className="lesson-header">
-                  <div className="lesson-name">{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</div>
-                  <div className="lesson-close-row">
+                <div className="form-header">
+                  <div className="form-name">{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</div>
+                  <div className="form-close-row">
                     <Link to="/home" className="actions-menu-link-button" title="Home"><X />&nbsp;Exit</Link>
                   </div>
                 </div>

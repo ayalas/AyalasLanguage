@@ -9,6 +9,7 @@ import { EXERCISE_GENERATIONS } from "../../../constants/learning";
 import { AlternativeLine } from "./AlternativeLine";
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
 import { hasExtraOptions, showTranslationOnRevealedAnswer } from "../../../logic/ExerciseTypeLogic";
+import { FormHeader } from "../../../components/FormHeader";
 
 export function ExerciseUpdatePage() {
     const { exerciseId } = useParams();
@@ -107,9 +108,8 @@ export function ExerciseUpdatePage() {
             <AuthHeader />
             <div className="form-container">
                 <form onSubmit={onFormSubmit}>
-                    <div className="form-header">
-                        <h1>Exercise editor</h1>
-                    </div>
+                    <FormHeader isPublic={false} title="Exercise editor" />
+                    
                     {error !== '' && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>

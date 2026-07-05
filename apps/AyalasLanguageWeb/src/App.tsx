@@ -22,8 +22,9 @@ import axios from 'axios';
 import './App.css'
 import { ContactUsPublicPage } from './pages/contactus/ContactUsPublicPage';
 import { ContactUsAuthenticatedUserPage } from './pages/contactus/ContactUsAuthenticatedUserPage';
-import { AboutPage } from './pages/AboutPage';
 import { PublicRoute } from './components/auth/PublicRoute';
+import { AboutPublicPage } from './pages/about/AboutPublicPage';
+import { AboutAuthenticatedUserPage } from './pages/about/AboutAuthenticatedUserPage';
 
 function App() {
   useEffect(() => {
@@ -43,7 +44,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot" element={<ForgotPage />} />
           <Route path="/reset/:token" element={ <ResetPasswordPage/>} />
-          <Route path="/about" element={ <AboutPage/>} />
+          <Route path="/about" element={ <PublicRoute authPath='/userabout'><AboutPublicPage/></PublicRoute>} />
 
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
@@ -55,6 +56,11 @@ function App() {
             <Route path="/author/exercise/:exerciseId" element={<ExerciseUpdatePage />} />
             <Route path="/path/:learningPathId" element={<LessonPage />} />
             <Route path="/confirm/:token" element={ <ConfirmEmailPage/>} />
+          </Route>
+          <Route element={<ProtectedRoute publicPath='/about' />}>
+            <Route path="/userabout" element={ <AboutAuthenticatedUserPage/>}/>
+          </Route>
+          <Route element={<ProtectedRoute publicPath='/contactus' />}>
             <Route path="/usernote" element={ <ContactUsAuthenticatedUserPage/>}/>
           </Route>
 

@@ -4,6 +4,7 @@ import axios from 'axios';
 import type { User } from '../../types/shared/User';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { errorHandler } from '@ayalaslanguage/types/error';
+import { FormHeader } from '../../components/FormHeader';
 
 export function ConfirmEmailPage() {
     const { token } = useParams();
@@ -35,9 +36,7 @@ export function ConfirmEmailPage() {
         <>
             <AuthHeader />
             <div className="form-container">
-                <div className="form-header">
-                    <h1>Email address confirmation</h1>
-                </div>
+                <FormHeader isPublic={false} title="Email address confirmation" />
                 {error !== "" && (
                     <div className="form-row">
                         <label data-testid="error" className="form-error">{error}</label>

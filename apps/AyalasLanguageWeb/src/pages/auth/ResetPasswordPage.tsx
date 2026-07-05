@@ -5,6 +5,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { checkPasswordStrength, generatePasswordFeedback, handleKeyDown } from '../../utils/utils';
 import { Save } from 'lucide-react';
 import { PublicHeader } from '../../components/PublicHeader';
+import { FormHeader } from '../../components/FormHeader';
 
 export function ResetPasswordPage() {
     const { token } = useParams();
@@ -81,9 +82,7 @@ export function ResetPasswordPage() {
             <PublicHeader />
             <div className="form-container">
                 <form onSubmit={handleSubmit}>
-                    <div className="form-header">
-                        <h1>Reset Password</h1>
-                    </div>
+                    <FormHeader isPublic={true} title="Reset Password" />
                     {accountChanged ? (
                         <>
                             <div className="form-row">

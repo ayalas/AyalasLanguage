@@ -443,7 +443,7 @@ input:required:invalid {
   gap: 8px;
 }
 
-.lesson-header {
+.form-header {
   display: flex;
   width: 100%;
   align-items: flex-start;
@@ -453,7 +453,7 @@ input:required:invalid {
   flex-wrap: nowrap;
 }
 
-.lesson-name {
+.form-name {
   display: inline-flex;
   margin-right: auto;
   order: 2;
@@ -463,7 +463,7 @@ input:required:invalid {
   flex: 1;
 }
 
-.lesson-close-row {
+.form-close-row {
   display: inline-flex;
   order: 1;
   flex-shrink: 0;

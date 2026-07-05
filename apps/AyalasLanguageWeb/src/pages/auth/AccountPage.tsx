@@ -6,6 +6,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import type { User } from '../../types/shared/User';
 import { checkPasswordStrength, generatePasswordFeedback, handleKeyDown } from '../../utils/utils';
+import { FormHeader } from '../../components/FormHeader';
 
 export function AccountPage() {
   const [displayName, setDisplayName] = useState('');
@@ -126,9 +127,7 @@ export function AccountPage() {
           </>
         ) : (
           <form onSubmit={handleSubmit}>
-            <div className="form-header">
-              <h1>Account Details</h1>
-            </div>
+            <FormHeader isPublic={false} title="Account Details" />
             {error !== "" && (
               <div className="form-row">
                 <label className="form-error">{error}</label>

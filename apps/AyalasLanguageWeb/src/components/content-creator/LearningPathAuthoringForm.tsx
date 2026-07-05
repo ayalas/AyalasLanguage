@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, X } from 'lucide-react';
+import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog, handleKeyDown } from '../../utils/utils';
@@ -17,6 +17,7 @@ import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
 import { getAIInstructions, type IChatMessage } from '../../logic/AIInstructionsLogic';
+import { FormHeader } from '../FormHeader';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: any; reloadExercise?: () => void }) {
@@ -414,12 +415,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
   return (
     <div className="form-container">
-      <div className="lesson-header">
-        <div className="lesson-name"><h2>Lesson editor</h2></div>
-        <div className="lesson-close-row">
-          <Link to="/home" className="actions-menu-link-button" title="Home"><X />&nbsp;Exit</Link>
-        </div>
-      </div>
+      <FormHeader isPublic={false} title="Lesson editor" />
       {user?.role != ROLE_TYPE.ADMIN && user?.role != ROLE_TYPE.CONTENT_CREATOR && (
         <div className="form-row">
           <div className="form-content-row">An email address confirmation request has been sent to '{user?.userName}'. Please confirm your email, so you'll be able to generate exercise content on this page and recover your account, in case you forget your password. </div>

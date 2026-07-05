@@ -6,7 +6,7 @@ export default function LandingPage() {
     <>
       <PublicHeader />
       <div  className="form-container">
-          <WelcomeSnippet />
+          <WelcomeSnippet isPublic={true} />
       </div>
     </>
   );
