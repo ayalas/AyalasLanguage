@@ -40,20 +40,25 @@ export function ProfilePage() {
       const allLanguagesData = response.data as Language[];
       setAllLanguages(allLanguagesData || []);
 
-      if (user?.disablePuter) {
-        setDisablePuter(true);
-      }
+      //load data from user context
+      if (user != null) {
+        if (user.disablePuter) {
+          setDisablePuter(true);
+        }
 
-      if (user?.languageSettings) {
-        if (user.languageSettings.targetLanguageId && user.languageSettings.targetLanguageId > 0) {
-          setTargetLanguage(user.languageSettings.targetLanguageId as number);
+        if (user.languageSettings) {
+          if (user.languageSettings.targetLanguageId && user.languageSettings.targetLanguageId > 0) {
+            setTargetLanguage(user.languageSettings.targetLanguageId as number);
+          }
+          if (user.languageSettings.knownLanguageId && user.languageSettings.knownLanguageId > 0) {
+            setKnownLanguage(user.languageSettings.knownLanguageId as number);
+          } else {
+            const english = allLanguagesData.find((lang) => lang.code === 'en');
+            setKnownLanguage(english?.languageId || '');
+          }
         }
-        if (user.languageSettings.knownLanguageId && user.languageSettings.knownLanguageId > 0) {
-          setKnownLanguage(user.languageSettings.knownLanguageId as number);
-        } else {
-          const english = allLanguagesData.find((lang) => lang.code === 'en');
-          setKnownLanguage(english?.languageId || '');
-        }
+
+        setNumOfExercises(user.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES)
       }
 
       targetLanguageRef.current?.focus();
@@ -123,7 +128,7 @@ export function ProfilePage() {
             <div className="form-header">
               <h1>Profile</h1>
             </div>
-            
+
             {error !== '' && (
               <div className="form-row">
                 <label className="form-error">{error}</label>
@@ -134,7 +139,7 @@ export function ProfilePage() {
                 <label className="form-label">Language to Learn</label>
               </div>
               <div className="form-input-cell">
-                <select ref={targetLanguageRef} required data-testid="target-language" className="form-select" value={targetLanguage} 
+                <select ref={targetLanguageRef} required data-testid="target-language" className="form-select" value={targetLanguage}
                   onChange={changeTargetLanguage}>
                   <option value="" disabled>
                     -- Please choose an option --
@@ -152,8 +157,8 @@ export function ProfilePage() {
                 <label className="form-label">Language I Know</label>
               </div>
               <div className="form-input-cell">
-                <select ref={knownLanguageRef} required data-testid="known-language" className="form-select" value={knownLanguage} 
-                   onChange={changeKnownLanguage}>
+                <select ref={knownLanguageRef} required data-testid="known-language" className="form-select" value={knownLanguage}
+                  onChange={changeKnownLanguage}>
                   <option value="" disabled>
                     -- Please choose an option --
                   </option>
@@ -180,7 +185,7 @@ export function ProfilePage() {
                 <label className="form-label">Number of Exercises for AI Generation</label>
               </div>
               <div className="form-input-cell">
-                <input ref={numOfExercisesRef} data-testid="num-of-exercises" className="form-input" step="1" type="number" min="1" max="50" value={numOfExercises} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={async (e) => { setNumOfExercises(parseInt(e.target.value) || DEFAULT_NUM_OF_EXERCISES) }} />
+                <input ref={numOfExercisesRef} data-testid="num-of-exercises" required={true} className="form-input" step="1" type="number" min="1" max="50" value={numOfExercises} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={async (e) => { setNumOfExercises(parseInt(e.target.value)) }} />
               </div>
             </div>
             <div className="buttons-container">
