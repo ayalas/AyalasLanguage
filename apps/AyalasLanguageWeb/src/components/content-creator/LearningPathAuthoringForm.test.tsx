@@ -41,6 +41,15 @@ vi.mock('../../utils/utils', () => ({
   encodeXMLElements: vi.fn((s) => s),
 }));
 
+//Mock FormHeader component to keep the test light
+vi.mock('../FormHeader', async () => {
+  const actual = await vi.importActual('../FormHeader');
+  return {
+    ...actual,
+    FormHeader: () => <div data-testid="form-header"><h1>Lesson editor</h1></div>,
+  };
+});
+
 describe('LearningPathAuthoringForm', () => {
   const mockHandleSubmit = vi.fn();
 

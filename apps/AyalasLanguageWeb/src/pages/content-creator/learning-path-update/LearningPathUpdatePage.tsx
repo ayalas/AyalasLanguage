@@ -84,7 +84,7 @@ export function LearningPathUpdatePage() {
       )}
       <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
       {existingExercises && existingExercises.length > 0 && (
-        <div className="form-row">
+        <div className="form-container">
           <div className="form-content-row">
             <h2>Existing exercises</h2>
           </div>

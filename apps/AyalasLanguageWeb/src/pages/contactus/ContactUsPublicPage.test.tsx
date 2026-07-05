@@ -23,6 +23,15 @@ vi.mock("../../components/PublicHeader", () => ({
     PublicHeader: () => <div data-testid="mock-header">Public Header</div>,
 }));
 
+//Mock FormHeader component to keep the test light
+vi.mock('../../components/FormHeader', async () => {
+  const actual = await vi.importActual('../../components/FormHeader');
+  return {
+    ...actual,
+    FormHeader: () => <div data-testid="form-header"><h1>Contact Us</h1></div>,
+  };
+});
+
 describe("ContactUsPublicPage", () => {
     beforeEach(() => {
         vi.clearAllMocks();

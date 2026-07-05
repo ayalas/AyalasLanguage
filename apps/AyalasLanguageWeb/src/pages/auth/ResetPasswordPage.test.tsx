@@ -19,6 +19,15 @@ vi.mock('../../components/PublicHeader', () => ({
   PublicHeader: () => <div data-testid="mock-public-header">Mock Public Header</div>,
 }));
 
+//Mock FormHeader component to keep the test light
+vi.mock('../../components/FormHeader', async () => {
+  const actual = await vi.importActual('../../components/FormHeader');
+  return {
+    ...actual,
+    FormHeader: () => <div data-testid="form-header"><h1>Reset Password</h1></div>,
+  };
+});
+
 vi.mock('lucide-react', () => ({
     Save: () => null,
 }));

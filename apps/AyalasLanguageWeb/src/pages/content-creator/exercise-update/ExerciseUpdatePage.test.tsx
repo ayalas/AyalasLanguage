@@ -50,6 +50,15 @@ vi.mock('../../../components/auth/AuthHeader', async () => {
   };
 });
 
+//Mock FormHeader component to keep the test light
+vi.mock('../../../components/FormHeader', async () => {
+  const actual = await vi.importActual('../../../components/FormHeader');
+  return {
+    ...actual,
+    FormHeader: () => <div data-testid="form-header"><h1>Exercise editor</h1></div>,
+  };
+});
+
 describe("ExerciseUpdatePage", () => {
     const mockNavigate = vi.fn();
     const mockExerciseId = "123";

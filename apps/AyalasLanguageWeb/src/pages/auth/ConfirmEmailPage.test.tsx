@@ -21,6 +21,15 @@ vi.mock('../../components/auth/AuthHeader', async () => {
   };
 });
 
+//Mock FormHeader component to keep the test light
+vi.mock('../../components/FormHeader', async () => {
+  const actual = await vi.importActual('../../components/FormHeader');
+  return {
+    ...actual,
+    FormHeader: () => <div data-testid="form-header"><h1>email address confirmation</h1></div>,
+  };
+});
+
 // Create stable mock functions for react-router-dom hooks
 const mockLogin = vi.fn();
 let mockToken: string | undefined = 'test-token-123';

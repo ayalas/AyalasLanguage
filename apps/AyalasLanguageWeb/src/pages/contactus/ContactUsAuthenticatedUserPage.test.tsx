@@ -18,6 +18,15 @@ vi.mock('../../components/auth/AuthHeader', async () => {
   };
 });
 
+//Mock FormHeader component to keep the test light
+vi.mock('../../components/FormHeader', async () => {
+  const actual = await vi.importActual('../../components/FormHeader');
+  return {
+    ...actual,
+    FormHeader: () => <div data-testid="form-header"><h1>Contact Us</h1></div>,
+  };
+});
+
 vi.mock('@ayalaslanguage/types/error', () => ({
   errorHandler: vi.fn(),
 }));
