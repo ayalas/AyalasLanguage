@@ -5,6 +5,7 @@ import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../../components/auth/AuthH
 
 import { LearningPathAuthoringForm } from '../../components/content-creator/LearningPathAuthoringForm';
 import { errorHandler } from '@ayalaslanguage/types/error';
+import { FormHeader } from '../../components/FormHeader';
 
 export function LearningPathCreatePage() {
   const navigate = useNavigate();
@@ -34,7 +35,10 @@ export function LearningPathCreatePage() {
   return (
     <>
       <AuthHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE} />
-      <LearningPathAuthoringForm handleSubmit={handleSubmit} />
+      <div className="form-container">
+        <FormHeader isPublic={false} title="Generate Lesson" />
+        <LearningPathAuthoringForm handleSubmit={handleSubmit} />
+      </div>
     </>
   );
 }

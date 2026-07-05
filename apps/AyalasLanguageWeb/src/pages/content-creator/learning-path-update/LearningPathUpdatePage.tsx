@@ -10,6 +10,7 @@ import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { safeParseData } from '../../../logic/ExerciseDataLogic';
+import { FormHeader } from '../../../components/FormHeader';
 
 export function LearningPathUpdatePage() {
   const [initialRecord, setInitialRecord] = useState<any | null>(null);
@@ -82,17 +83,20 @@ export function LearningPathUpdatePage() {
           <label className="form-error">{updateFormError}</label>
         </div>
       )}
-      <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
-      {existingExercises && existingExercises.length > 0 && (
-        <div className="form-container">
-          <div className="form-content-row">
-            <h2>Existing exercises</h2>
-          </div>
-          {existingExercises.map((existing) => (
-            <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
-          ))}
-        </div>
-      )}
+      <div className="form-container">
+        <FormHeader isPublic={false} title="Lesson editor" />
+        <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
+        {existingExercises && existingExercises.length > 0 && (
+          <>
+            <div className="inform-header">
+              <h2>Existing exercises</h2>
+            </div>
+            {existingExercises.map((existing) => (
+              <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
+            ))}
+          </>
+        )}
+      </div>
     </>
   );
 }

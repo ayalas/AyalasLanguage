@@ -17,7 +17,6 @@ import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
 import { getAIInstructions, type IChatMessage } from '../../logic/AIInstructionsLogic';
-import { FormHeader } from '../FormHeader';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: any; reloadExercise?: () => void }) {
@@ -414,8 +413,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   }, [exerciseType]);
 
   return (
-    <div className="form-container">
-      <FormHeader isPublic={false} title="Lesson editor" />
+    <>
       {user?.role != ROLE_TYPE.ADMIN && user?.role != ROLE_TYPE.CONTENT_CREATOR && (
         <div className="form-row">
           <div className="form-content-row">An email address confirmation request has been sent to '{user?.userName}'. Please confirm your email, so you'll be able to generate exercise content on this page and recover your account, in case you forget your password. </div>
@@ -471,7 +469,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   <div className="form-label-row">Exercise Type</div>
                   <div className="form-row">
                     <div className="exercise-type-selector-container">
-                      <select ref={exerciseTypeRef} required data-testid="exercise-type" className="exercise-type-select" value={exerciseType} 
+                      <select ref={exerciseTypeRef} required data-testid="exercise-type" className="exercise-type-select" value={exerciseType}
                         onChange={onChangeExerciseType}>
                         <option value="0" disabled>-- Please choose an option --</option>
                         {EXERCISE_GENERATIONS.sort((a: ExerciseGeneration, b: ExerciseGeneration) => rankExerciseTypeByEase(a.type) - rankExerciseTypeByEase(b.type)).map((exType) => (
@@ -575,7 +573,6 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             </div>
           </form>
         )}
-
-    </div>
+    </>
   );
 }
