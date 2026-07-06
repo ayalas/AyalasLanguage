@@ -711,7 +711,7 @@ input:required:invalid {
 .match-words-row {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: no-wrap;
   gap: 16px;
   justify-content: center;
   width: 100%;

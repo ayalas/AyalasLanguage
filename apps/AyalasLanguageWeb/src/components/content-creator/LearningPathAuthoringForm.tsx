@@ -452,6 +452,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                         <div className="form-input-row">
                           <input data-testid="import-file" type="file" onChange={handleFileChange} accept=".json" />
                         </div>
+                      </div>
+                      <div className="form-row">
                         <div className="form-input-row">
                           <button data-testid="cancel-import" type="button" onClick={cancelImport} className="form-button" title="Cancel"><Ban /> Cancel</button>
                         </div>
