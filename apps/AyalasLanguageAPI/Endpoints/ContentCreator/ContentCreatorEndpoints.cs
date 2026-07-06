@@ -209,9 +209,6 @@ public static class ContentCreatorEndpoints
         if ((path.UserId != claim.GetUserId() || path.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        if (db.UserProgresses.Any(up => up.LearningPathId == id))
-            return Results.BadRequest("Learning path in use.");
-
         if (db.Exercises.Any(up => up.LearningPathId == id))
             return Results.BadRequest("Learning path has exercises.");
 
