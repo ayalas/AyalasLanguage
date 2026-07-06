@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MatchWordsExercise from './MatchWordsExercise';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
-import { type ExerciseData, type ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
+import { type ExerciseData, type ExtendedExerciseInfo } from '../../../../../types/Exercise';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 

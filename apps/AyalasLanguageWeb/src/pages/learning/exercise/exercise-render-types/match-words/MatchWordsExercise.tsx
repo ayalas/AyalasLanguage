@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import MatchWordItem from './MatchWordItem';
 import type { MatchSelection } from './MatchWordItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../../../types/Exercise';
 import { targetIsSpoken } from '../../../../../logic/ExerciseTypeLogic';
 
 type Props = {

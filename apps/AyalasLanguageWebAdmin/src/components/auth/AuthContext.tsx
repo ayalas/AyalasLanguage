@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import axios from 'axios';
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 import { ROLE_TYPE, type AuthContextType } from '@ayalaslanguage/types/auth';
 
 const AuthContext = createContext<AuthContextType<User> | undefined>(undefined);

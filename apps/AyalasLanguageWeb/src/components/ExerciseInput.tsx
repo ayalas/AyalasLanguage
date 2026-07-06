@@ -2,7 +2,7 @@ import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { replaceCharsForLanguage } from '../utils/languageUtils';
 import type { ExerciseInputHandle } from '../types/ui/ComponentHandles';
-import type { User } from '../types/shared/User';
+import type { User } from '../types/User';
 
 interface Props {
   charWidth?: number;

@@ -13,7 +13,7 @@ import {
   useDismiss,
   useInteractions
 } from '@floating-ui/react';
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 import { BRAND_NAME } from '../../constants/public';
 import { errorHandler } from '@ayalaslanguage/types/error';
 

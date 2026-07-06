@@ -6,7 +6,7 @@ import { useAuth } from '../../components/auth/useAuth';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
 import { PublicHeader } from '../../components/PublicHeader';
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Verify2FARequest } from '@ayalaslanguage/types/auth';
 
 export default function LoginPage(): React.ReactElement {

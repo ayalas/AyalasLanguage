@@ -7,15 +7,17 @@ import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExercise
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
 import BucketListExercise from './exercise-render-types/bucket-list/BucketListExercise';
-import type { User } from '../../../types/shared/User';
+
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
-import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
+
 import { puter } from "@heyputer/puter.js";
 import { initializePuter, isSecure } from '../../../utils/utils';
 import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/ActionsMenuComponent';
-import { toast, Toaster } from 'sonner';
+import { Toaster } from 'sonner';
 import { useMistakesReadd } from '../../../components/useMistakesReadd';
+import type { ExtendedExerciseInfo } from '../../../types/Exercise';
+import type { User } from '../../../types/User';
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;

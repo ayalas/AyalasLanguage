@@ -4,7 +4,7 @@ import React, { createRef } from 'react';
 import { InlineExerciseWithBlanks } from './InlineExerciseWithBlanks';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
-import { type ExerciseData, type ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
+import { type ExerciseData, type ExtendedExerciseInfo } from '../../../../types/Exercise';
 import { PLACEHOLDERS } from '../../../../constants/learning';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES, type ExerciseType } from '@ayalaslanguage/types/exercise';

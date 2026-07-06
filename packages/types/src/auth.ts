@@ -7,6 +7,8 @@ export const AUTHOR_ACCESS =
     CAN_EDIT: 2
 } as const;
 
+export type AuthorAccess = typeof AUTHOR_ACCESS[keyof typeof AUTHOR_ACCESS];
+
 export const ROLE_TYPE = 
 {
     LEARNER: 1,

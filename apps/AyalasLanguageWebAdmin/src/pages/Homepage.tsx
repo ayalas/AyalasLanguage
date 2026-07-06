@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 
 import { AuthHeader } from '../components/auth/AuthHeader';
-import type { User } from '../types/shared/User';
+import type { User } from '../types/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
 import { DASHBOARD_RANG_FILTER, type DashboardRangFilter, type IDashboardCounters } from '../types/grids/grids';

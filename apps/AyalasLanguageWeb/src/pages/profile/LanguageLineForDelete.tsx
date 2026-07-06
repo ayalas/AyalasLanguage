@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { Trash2 } from 'lucide-react';
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
 export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguageSettings }:

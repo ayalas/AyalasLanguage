@@ -1,11 +1,11 @@
 import { useEffect, useState, useImperativeHandle } from 'react';
 import { BucketListItem } from './BucketListItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../../../types/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
 import { hasSingleBucketAnswer, isRightToLeftInput, shouldPlayAnswer, shouldPlayQuestion, showTranslationOnRevealedAnswer, supportsAlternativeAnswers } from '../../../../../logic/ExerciseTypeLogic';
-import type { User } from '../../../../../types/shared/User';
+import type { User } from '../../../../../types/User';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;

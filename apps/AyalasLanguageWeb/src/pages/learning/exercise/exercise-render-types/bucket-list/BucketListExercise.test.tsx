@@ -3,7 +3,7 @@ import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import BucketListExercise from './BucketListExercise';
 import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExerciseData, ExtendedExerciseInfo } from '../../../../../types/exercise/Exercise';
+import type { ExerciseData, ExtendedExerciseInfo } from '../../../../../types/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';

@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import { ConfirmEmailPage } from './ConfirmEmailPage'; // Adjust path as needed
 import { errorHandler } from '@ayalaslanguage/types/error';
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
 
 // 1. Mock external dependencies

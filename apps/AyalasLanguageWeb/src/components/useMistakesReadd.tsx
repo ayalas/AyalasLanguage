@@ -1,7 +1,7 @@
 import { errorHandler } from "@ayalaslanguage/types/error";
 import axios from "axios";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 
 interface MistakesReaddProps
 {
@@ -16,12 +16,16 @@ export function useMistakesReadd({learningPathId, exerciseId, setError, initialV
 
     const changeMistakesSetting = async function (readd: boolean) {
         try {
-            if (exerciseId == null || learningPathId == null) return;
-            await axios.post('/api/learning/progress', {
+            if (learningPathId == null) return;
+
+            const postData: any = {
                 learningPathId: learningPathId,
-                exerciseId: exerciseId,
                 practiseMistakesInThisPath: readd
-            });
+            };
+            if (exerciseId != null) {
+                postData.exerciseId = exerciseId;
+            }
+            await axios.post('/api/learning/progress', postData);
 
             setPractiseMistakesInThisPath(readd);
         } catch (err: unknown) {

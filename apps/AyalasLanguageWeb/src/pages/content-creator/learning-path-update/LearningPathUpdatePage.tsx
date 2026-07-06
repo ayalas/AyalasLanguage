@@ -7,13 +7,14 @@ import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../../../components/auth/Au
 import { LearningPathAuthoringForm } from '../../../components/content-creator/LearningPathAuthoringForm';
 import { ExerciseLine } from './ExerciseLine';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
-import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { safeParseData } from '../../../logic/ExerciseDataLogic';
 import { FormHeader } from '../../../components/FormHeader';
+import type { LearningPathInfo } from '../../../types/LearningPath';
+import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '../../../types/Exercise';
 
 export function LearningPathUpdatePage() {
-  const [initialRecord, setInitialRecord] = useState<any | null>(null);
+  const [initialRecord, setInitialRecord] = useState<LearningPathInfo | null>(null);
   const [existingExercises, setExistingExercises] = useState<any[]>([]);
   const [updateFormError, setUpdateFormError] = useState('');
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ export function LearningPathUpdatePage() {
     async function loadAsync() {
       try {
         if (Number(learningPathId) > 0) {
-          const res = await axios.get(`/api/learning/path/${learningPathId}`);
+          const res = await axios.get<LearningPathInfo>(`/api/learning/path/${learningPathId}`);
           setInitialRecord(res.data);
           await loadExercises();
         }

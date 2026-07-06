@@ -1,25 +1,29 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save } from 'lucide-react';
+import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, History } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog, handleKeyDown } from '../../utils/utils';
 import { EXERCISE_GENERATIONS, DEFAULT_NUM_OF_EXERCISES, type ExerciseGeneration } from '../../constants/learning';
-import { ROLE_TYPE, AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
 
-import type { User } from '../../types/shared/User';
-import type { ExerciseData } from '../../types/exercise/Exercise';
+
 import puter from '@heyputer/puter.js';
-import type { NextChapterResponse } from '../../types/creator/creator';
 import { hasExtraOptions, rankExerciseTypeByEase } from '../../logic/ExerciseTypeLogic';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
 import { getAIInstructions, type IChatMessage } from '../../logic/AIInstructionsLogic';
+import type { User } from '../../types/User';
+import type { ExerciseData } from '../../types/Exercise';
+import type { NextChapterResponse } from '../../types/Creator';
+import type { LearningPathInfo } from '../../types/LearningPath';
+import { useMistakesReadd } from '../useMistakesReadd';
+import { Toaster } from 'sonner';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
-  { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: any; reloadExercise?: () => void }) {
+  { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: LearningPathInfo; reloadExercise?: () => void }) {
   const [error, setError] = useState('');
   const [level, setLevel] = useState(1);
   const [fileForImport, setFileForImport] = useState<File | null>(null);
@@ -28,7 +32,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState('');
-  const [access, setAccess] = useState(AUTHOR_ACCESS.CAN_EDIT);
+  const [access, setAccess] = useState<AuthorAccess>(AUTHOR_ACCESS.CAN_EDIT);
 
   const [exerciseType, setExerciseType] = useState<ExerciseType | 0>(0);
   const [exerciseTypeDesc, setExerciseTypeDesc] = useState('');
@@ -54,6 +58,9 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const saveButtonRef = useRef<HTMLButtonElement>(null);
 
   const { user } = useOutletContext<{ user: User | null }>();
+
+  const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: initialRecord?.learningPathId, 
+        exerciseId: initialRecord?.exerciseId, setError, initialValue: initialRecord?.practiseMistakesInThisPath ?? false});
 
   const parseForm = async function () {
     let arrObjects: ExerciseData[] = [];
@@ -277,6 +284,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
   const deleteLesson = async function () {
     try {
+      if (initialRecord == null) return;
       await axios.delete(`/api/creator/learning-path/${initialRecord.learningPathId}`);
       navigate('/home');
     } catch (ex: unknown) {
@@ -321,6 +329,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   async function onImportExercises(e: React.MouseEvent) {
     e.preventDefault();
     try {
+      if (initialRecord == null) return;
       if (!importStart) {
         setImportStart(true);
         return;
@@ -352,6 +361,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   async function onExportExercises(e: React.MouseEvent) {
     try {
       e.preventDefault();
+      if (initialRecord == null) return;
       const response = await axios.get(`/api/learning/path/${initialRecord.learningPathId}/exercises`, {
         responseType: 'blob' // This is the equivalent of .blob()
       });
@@ -368,7 +378,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         if (initialRecord != null) {
           setLevel(initialRecord.level);
           setChapter(initialRecord.chapter);
-          setTitle(initialRecord.name);
+          setTitle(initialRecord.name ?? "");
           setAccess(initialRecord.access);
         } else {
           let tempLevel = 1;
@@ -414,6 +424,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
   return (
     <>
+      <Toaster position="top-center" richColors />
       {user?.role != ROLE_TYPE.ADMIN && user?.role != ROLE_TYPE.CONTENT_CREATOR && (
         <div className="form-row">
           <div className="form-content-row">An email address confirmation request has been sent to '{user?.userName}'. Please confirm your email, so you'll be able to generate exercise content on this page and recover your account, in case you forget your password. </div>
@@ -531,6 +542,18 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   disabled: isLoading || user?.disablePuter,
                   children: <><Workflow />&nbsp;Switch to AI Generation</>,
                   onClick: () => { setUsePuterAI(!usePuterAI) }
+                },
+                {
+                    dataTestId: "cancel-readding",
+                    children: <><Ban />&nbsp;Stop readding my mistakes</>,
+                    onClick: cancelMistakesAdd,
+                    isVisible: initialRecord != null && practiseMistakesInThisPath,
+                },
+                {
+                    dataTestId: "readd-mistakes",
+                    children: <><History />&nbsp;Readd my mistakes here</>,
+                    onClick: readdMistakes,
+                    isVisible: initialRecord != null && !practiseMistakesInThisPath,
                 },
                 {
                   isVisible: initialRecord != null && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT,

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { SquarePen, Trash2 } from 'lucide-react';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { useNavigate } from 'react-router-dom';
-import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../types/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
 export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseInfo }) {

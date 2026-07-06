@@ -9,7 +9,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import LoginPage from './LoginPage'; // Adjust this path to match your actual file structure
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import type { AuthContextType } from '@ayalaslanguage/types/auth';
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 
 // --- External Mocks ---
 

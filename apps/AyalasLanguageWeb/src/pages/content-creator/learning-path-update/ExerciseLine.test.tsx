@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import { MemoryRouter } from 'react-router-dom';
 import { ExerciseLine } from './ExerciseLine';
-import type { ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../types/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';

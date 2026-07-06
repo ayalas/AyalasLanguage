@@ -2,8 +2,8 @@ import { Fragment, useRef, useState, useImperativeHandle, useCallback, useEffect
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
-import type { ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
-import type { User } from '../../../../types/shared/User';
+import type { ExtendedExerciseInfo } from '../../../../types/Exercise';
+import type { User } from '../../../../types/User';
 import type { ExerciseInputHandle, ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import { isRightToLeftInput, shouldPlayAnswer, showTranslationOnRevealedAnswer } from '../../../../logic/ExerciseTypeLogic';
 import { CirclePlay } from 'lucide-react';

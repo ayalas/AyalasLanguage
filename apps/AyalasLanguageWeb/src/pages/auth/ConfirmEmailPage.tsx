@@ -1,7 +1,7 @@
 import { useParams, useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { FormHeader } from '../../components/FormHeader';

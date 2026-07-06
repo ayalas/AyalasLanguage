@@ -4,7 +4,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
 import { ArrowBigLeft, Save } from "lucide-react";
-import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from "../../../types/exercise/Exercise";
+import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from "../../../types/Exercise";
 import { EXERCISE_GENERATIONS } from "../../../constants/learning";
 import { AlternativeLine } from "./AlternativeLine";
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";

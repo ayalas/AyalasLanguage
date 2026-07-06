@@ -6,18 +6,19 @@ import { FilePenLine, X } from 'lucide-react';
 import { PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '../../utils/languageUtils';
 import { Exercise } from './exercise/Exercise';
-import type { User } from '../../types/shared/User';
-import type { ExerciseInfo, ExtendedExerciseInfo } from '../../types/exercise/Exercise';
 import type { ExerciseHandle } from '../../types/ui/ComponentHandles';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { focusOnLoad, getExtraOptionsSeparator, hasExtraOptions, hasSingleBucketAnswer, isMatchingType, usesInlineExerciseWithBlanks } from '../../logic/ExerciseTypeLogic';
 import { safeParseData } from '../../logic/ExerciseDataLogic';
+import type { LearningPathInfo } from '../../types/LearningPath';
+import type { ExerciseInfo, ExtendedExerciseInfo } from '../../types/Exercise';
+import type { User } from '../../types/User';
 
 export function LessonPage() {
   const { learningPathId } = useParams();
   const [exercises, setExercises] = useState<ExerciseInfo[]>([]);
   const [scoreToAdd, setScoreToAdd] = useState(0);
-  const [learningPathData, setLearningPathData] = useState<Record<string, unknown> | null>(null);
+  const [learningPathData, setLearningPathData] = useState<LearningPathInfo | null>(null);
   const [currentExercise, setCurrentExercise] = useState<ExtendedExerciseInfo | null>(null);
   const [practiseMistakesInThisPath, setPractiseMistakesInThisPath] = useState(false);
   const [error, setError] = useState('');
@@ -198,7 +199,7 @@ export function LessonPage() {
   useEffect(() => {
     async function getData() {
       try {
-        const response = await axios.get(`/api/learning/path/${learningPathId}`);
+        const response = await axios.get<LearningPathInfo>(`/api/learning/path/${learningPathId}`);
         const learningPathTemp = response.data;
         setLearningPathData(learningPathTemp);
         setPractiseMistakesInThisPath(learningPathTemp.practiseMistakesInThisPath);

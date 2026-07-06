@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
-import type { ExtendedExerciseInfo } from '../../../../types/exercise/Exercise';
+import type { ExtendedExerciseInfo } from '../../../../types/Exercise';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles';
-import type { User } from '../../../../types/shared/User';
+import type { User } from '../../../../types/User';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { CirclePlay } from 'lucide-react';
 import { isRightToLeftInput, shouldPlayQuestion, shouldPlayAnswer, showTranslationOnRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';

@@ -3,7 +3,7 @@ import { useOutletContext, Link, useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import axios from 'axios';
 
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import imgLogo from '../../assets/logo.jpg';
 

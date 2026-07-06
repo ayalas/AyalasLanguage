@@ -4,7 +4,7 @@ import { Exercise } from './Exercise';
 import { MemoryRouter, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { createRef } from 'react';
-import { type ExerciseData, type ExtendedExerciseInfo } from '../../../types/exercise/Exercise';
+import { type ExerciseData, type ExtendedExerciseInfo } from '../../../types/Exercise';
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import userEvent from '@testing-library/user-event'; // 1. Import userEvent
@@ -204,7 +204,7 @@ describe('Exercise Component', () => {
     it('handles mistake setting toggles correctly', async () => {
         const { rerender } = render(
             <MemoryRouter>
-                <Exercise {...mockProps} practiseMistakesInThisPath={false} />
+                <Exercise {...mockProps} practiseMistakesInitialValue={false} />
             </MemoryRouter>
         );
 
@@ -224,7 +224,7 @@ describe('Exercise Component', () => {
 
         rerender(
             <MemoryRouter>
-                <Exercise {...mockProps} practiseMistakesInThisPath={true} />
+                <Exercise {...mockProps} practiseMistakesInitialValue={true} />
             </MemoryRouter>
         );
 
