@@ -1,4 +1,4 @@
-import type { LanguageSettings, User } from '../types/shared/User';
+import type { LanguageSettings, User } from '../types/User';
 
 export function replaceCharsForLanguage(language: string | undefined, str: string | undefined): string | undefined {
     if (!str) return str;

@@ -14,7 +14,7 @@ import type { LearningPathInfo } from '../../../types/LearningPath';
 import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '../../../types/Exercise';
 
 export function LearningPathUpdatePage() {
-  const [initialRecord, setInitialRecord] = useState<LearningPathInfo | null>(null);
+  const [initialRecord, setInitialRecord] = useState<LearningPathInfo | null | undefined>(null);
   const [existingExercises, setExistingExercises] = useState<any[]>([]);
   const [updateFormError, setUpdateFormError] = useState('');
   const navigate = useNavigate();

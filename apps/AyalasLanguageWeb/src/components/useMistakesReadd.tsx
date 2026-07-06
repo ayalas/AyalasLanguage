@@ -1,7 +1,7 @@
 import { errorHandler } from "@ayalaslanguage/types/error";
 import axios from "axios";
 import { useState } from "react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 
 interface MistakesReaddProps
 {

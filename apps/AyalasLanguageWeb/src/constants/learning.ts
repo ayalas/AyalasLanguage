@@ -1,5 +1,5 @@
 import { EXERCISE_TYPES, type ExerciseType } from "@ayalaslanguage/types/exercise";
-import type { AppLanguageCode } from "../types/shared/User";
+import type { AppLanguageCode } from "../types/User";
 
 export const PLACEHOLDERS = {
     KNOWN_LANGUAGE_PLACEHOLDER: "kkknownnn",

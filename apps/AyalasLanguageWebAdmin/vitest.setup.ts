@@ -1,3 +1,6 @@
+// Enable React 18 `act(...)` support in the test environment
+(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
