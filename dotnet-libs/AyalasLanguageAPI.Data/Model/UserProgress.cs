@@ -18,4 +18,8 @@ public class UserProgress
     public virtual Exercise Exercise { get; set; } = null!;
 
     public bool practiseMistakesInThisPath { get; set; } = false;
+
+     public DateTime ModifiedOn {get; set;} = DateTime.UtcNow;
+
+
 }

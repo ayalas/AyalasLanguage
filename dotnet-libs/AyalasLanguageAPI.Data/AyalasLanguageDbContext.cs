@@ -20,6 +20,8 @@ public class AyalasLanguageDbContext : DbContext
     public DbSet<ContactUs> ContactUs { get; set; }
     public DbSet<Log> Logs { get; set; }
 
+    public DbSet<Job> Jobs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Composite Key for UserLanguage

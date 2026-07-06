@@ -32,6 +32,7 @@
     <ProjectReference Include="..\..\dotnet-libs\AyalasLanguageAPI.Data.Migrations.MySQL\AyalasLanguageAPI.Data.Migrations.MySQL.csproj" />
     <ProjectReference Include="..\..\dotnet-libs\AyalasLanguageAPI.Data.Migrations.SQLite\AyalasLanguageAPI.Data.Migrations.SQLite.csproj" />
     <ProjectReference Include="..\..\dotnet-libs\AyalasLanguageAPI.Data\AyalasLanguageAPI.Data.csproj" />
+    <ProjectReference Include="..\..\dotnet-libs\AyalasLanguageJobs\AyalasLanguageJobs.csproj" />
   </ItemGroup>
 
 </Project>

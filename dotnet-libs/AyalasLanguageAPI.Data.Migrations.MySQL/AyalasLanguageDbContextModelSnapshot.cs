@@ -172,6 +172,54 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         });
                 });
 
+            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Job", b =>
+                {
+                    b.Property<int>("JobId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("JobId"));
+
+                    b.Property<int>("Completed")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Errors")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ExtraData")
+                        .HasMaxLength(512)
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<string>("FirstError")
+                        .HasMaxLength(8000)
+                        .HasColumnType("varchar(8000)");
+
+                    b.Property<byte>("JobStatus")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<byte>("JobType")
+                        .HasColumnType("tinyint unsigned");
+
+                    b.Property<int?>("LeftToProcess")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MainRecordId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("SecondaryRecordId")
+                        .HasColumnType("int");
+
+                    b.HasKey("JobId");
+
+                    b.ToTable("Jobs");
+                });
+
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Language", b =>
                 {
                     b.Property<int>("LanguageId")
@@ -738,6 +786,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
 
                     b.Property<int?>("ExerciseId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("ModifiedOn")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<bool>("practiseMistakesInThisPath")
                         .HasColumnType("tinyint(1)");

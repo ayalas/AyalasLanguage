@@ -17,6 +17,7 @@ using System.Text.Json.Nodes;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices.JavaScript;
 using AyalasLanguageAPI.Endpoints.Learning;
+using AyalasLanguageJobs;
 
 public static class ContentCreatorEndpoints
 {
@@ -253,7 +254,16 @@ public static class ContentCreatorEndpoints
             && userProgress.ExerciseId == null)
         {
             userProgress.ExerciseId = exercise.ExerciseId;
+            userProgress.ModifiedOn = DateTime.UtcNow;
             await db.SaveChangesAsync();
+        }
+
+        //job for other users
+        var jobId = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate, 
+                dto.LearningPathId, exercise.ExerciseId, db);
+        if (jobId != null) {
+            JobRun run = new JobRun(jobId.Value, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
+            run.Run();
         }
 
         return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", new CreateExerciseResponseDto(exercise.ExerciseId));

@@ -53,7 +53,8 @@ public enum DashboardRangeFilter {
 public enum LogTypeEnum
 {
     AutoAIFailure = 1,
-    ExerciseDataValidationFailed = 2
+    ExerciseDataValidationFailed = 2,
+    UsersProgressUpdateOnExerciseCreateJobRunFailed = 3
 }
 
 public enum AppIdEnum
@@ -62,6 +63,21 @@ public enum AppIdEnum
     Admin= 2,
     Main2FA = 3,
     Admin2FA = 4
+}
+
+public enum JobTypeEnum
+{
+    UsersProgressUpdateOnExerciseCreate = 1
+}
+
+public enum JobStatusEnum
+{
+    NotStarted = 0,
+    Running = 1,
+    Stopped = 2,
+    Completed = 3,
+    PartiallyFailed = 4,
+    Failed = 5
 }
 
 public enum LanguageEnum
@@ -113,6 +129,8 @@ public static class Constants
     public const int MATCH_MAX_COUNT = 8;
     public const int BUCKET_EXTRA_MIN_COUNT = 1;
     public const int BUCKET_EXTRA_MAX_COUNT = 5;
+
+    public const int IMMEDIATE_JOB_BATCH_SIZE = 25;
 
     //cache protections
     public const string LANGUAGE_SET_CACHE_KEY = "LanguageSet";

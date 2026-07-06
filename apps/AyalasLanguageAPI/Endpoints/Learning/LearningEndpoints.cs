@@ -7,6 +7,7 @@ using AyalasLanguageAPI.DTOs;
 using AyalasLanguageAPI.Data.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using AyalasLanguageJobs;
 
 namespace AyalasLanguageAPI.Endpoints.Learning;
 
@@ -171,6 +172,7 @@ public static class LearningEndpoints
         {
             progress.ExerciseId = exerciseId;
             progress.practiseMistakesInThisPath = practiseMistakesInThisPath;
+            progress.ModifiedOn = DateTime.UtcNow;
             await db.SaveChangesAsync();
 
             modified = true;
@@ -288,17 +290,17 @@ public static class LearningEndpoints
 
         //check if we have a user progress record, with mistakeAdd flag on, 
         // for these langauges and user
-        var learningPathForMistakes = await GetMistakesLearningPathForUser(userId, exercise.LearningPath.TargetLanguageId, exercise.LearningPath.KnownLanguageId, db);
-        
+        var userProgress = await GetMistakesLearningPathForUser(userId, exercise.LearningPath.TargetLanguageId, exercise.LearningPath.KnownLanguageId, db);
+
         //no learning path for mistakes found
-        if (learningPathForMistakes == null)
+        if (userProgress == null)
         {
             return Results.NoContent();
         }
 
         //get last added exercise data
         var lastExercise = await db.Exercises
-            .Where(e => e.LearningPathId == learningPathForMistakes.LearningPathId)
+            .Where(e => e.LearningPathId == userProgress.LearningPathId)
             .OrderByDescending(e => e.ExerciseId)
             .FirstOrDefaultAsync();
 
@@ -313,7 +315,7 @@ public static class LearningEndpoints
             {
                 TargetLanguageId = exercise.TargetLanguageId,
                 KnownLanguageId = exercise.KnownLanguageId,
-                LearningPathId = learningPathForMistakes.LearningPathId,
+                LearningPathId = userProgress.LearningPathId,
                 ExerciseTypeId = exercise.ExerciseTypeId,
                 Data = exercise.Data,
                 UserId = userId,
@@ -323,10 +325,20 @@ public static class LearningEndpoints
             db.Exercises.Add(exerciseToAdd);
             await db.SaveChangesAsync();
 
-            if (learningPathForMistakes.ExerciseId == null)
+            if (userProgress.ExerciseId == null)
             {
-                learningPathForMistakes.ExerciseId = exerciseToAdd.ExerciseId;
+                userProgress.ExerciseId = exerciseToAdd.ExerciseId;
+                userProgress.ModifiedOn = DateTime.UtcNow;
                 await db.SaveChangesAsync();
+            }
+
+            //job for other users
+            var jobId = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
+                    userProgress.LearningPathId, exerciseToAdd.ExerciseId, db);
+            if (jobId != null)
+            {
+                JobRun run = new JobRun(jobId.Value, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
+                run.Run();
             }
 
             return Results.Created($"/api/learning/exercise/{exerciseToAdd.ExerciseId}", new CreateExerciseResponseDto(exerciseToAdd.ExerciseId));
