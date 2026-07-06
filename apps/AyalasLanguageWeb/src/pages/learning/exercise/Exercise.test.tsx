@@ -44,6 +44,18 @@ vi.mock('../../../utils/utils', () => ({
     getRandomizedSequence: vi.fn((len) => Array.from({ length: len }, (_, i) => i)),
 }));
 
+// Mock useMistakesReadd hook
+const mockCancelMistakesAdd = vi.fn();
+const mockReaddMistakes = vi.fn();
+
+vi.mock('../../../components/useMistakesReadd', () => ({
+    useMistakesReadd: vi.fn(({ initialValue }) => ({
+        practiseMistakesInThisPath: initialValue || false,
+        readdMistakes: mockReaddMistakes,
+        cancelMistakesAdd: mockCancelMistakesAdd,
+    })),
+}));
+
 describe('Exercise Component', () => {
 
     const dataObj: ExerciseData = { First: 'Hello', Second: 'Bonjour', Alternatives: [] };
@@ -65,8 +77,7 @@ describe('Exercise Component', () => {
         saveProgress: vi.fn(),
         restartLesson: vi.fn(),
         learningPathId: 1,
-        changeMistakesSetting: vi.fn(),
-        practiseMistakesInThisPath: false,
+        practiseMistakesInitialValue: false,
         addMistake: vi.fn().mockResolvedValue(undefined),
         ref: { current: null },
     };
@@ -217,10 +228,7 @@ describe('Exercise Component', () => {
 
         const readdBtn = await screen.findByTestId('readd-mistakes');
         fireEvent.click(readdBtn);
-        await waitFor(() => {
-            const btn = document.querySelector('.my-action-btn');
-            expect(btn).toBeInTheDocument();
-        });
+        expect(mockReaddMistakes).toHaveBeenCalled();
 
         rerender(
             <MemoryRouter>
@@ -235,6 +243,7 @@ describe('Exercise Component', () => {
 
         const cancelBtn = await screen.findByTestId('cancel-readding');
         fireEvent.click(cancelBtn);
-        expect(mockProps.changeMistakesSetting).toHaveBeenCalledWith(false);
+
+        expect(mockCancelMistakesAdd).toHaveBeenCalled();
     });
 });
