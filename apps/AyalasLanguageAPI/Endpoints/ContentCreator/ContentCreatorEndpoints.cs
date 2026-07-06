@@ -229,7 +229,10 @@ public static class ContentCreatorEndpoints
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
         }
 
-        var learningPathForMistakes = await LearningEndpoints.GetMistakesLearningPathForUser(userId, learningPath.TargetLanguageId, learningPath.KnownLanguageId, db);
+        //get the user progresss record to see if it needs changing
+        var userProgress = await db.UserProgresses
+            .Where(p => p.UserId == userId && p.LearningPathId == dto.LearningPathId)
+            .FirstOrDefaultAsync();
 
         var exercise = new Exercise
         {
@@ -245,12 +248,11 @@ public static class ContentCreatorEndpoints
 
         await db.SaveChangesAsync();
 
-        //if we are generating more exercises on the practice lesson - set it not to be done (marginal)
-        if (learningPathForMistakes != null 
-            && learningPathForMistakes.LearningPathId == dto.LearningPathId 
-            && learningPathForMistakes.ExerciseId == null)
+        //if we are generating more exercises on a done/empty lesson with a progress record - set it not to be done
+        if (userProgress != null 
+            && userProgress.ExerciseId == null)
         {
-            learningPathForMistakes.ExerciseId = exercise.ExerciseId;
+            userProgress.ExerciseId = exercise.ExerciseId;
             await db.SaveChangesAsync();
         }
 
