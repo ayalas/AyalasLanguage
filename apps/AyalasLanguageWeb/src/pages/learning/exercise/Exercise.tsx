@@ -15,6 +15,7 @@ import { initializePuter, isSecure } from '../../../utils/utils';
 import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/ActionsMenuComponent';
 import { toast, Toaster } from 'sonner';
+import { useMistakesReadd } from '../../../components/useMistakesReadd';
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;
@@ -23,19 +24,21 @@ type Props = {
     childLoaded: (id: number) => void;
     saveProgress: () => void;
     restartLesson: () => void;
-    changeMistakesSetting: (val: boolean) => void;
-    practiseMistakesInThisPath?: boolean;
+    practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
     ref: React.Ref<ExerciseHandle>;
 };
 
-export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, changeMistakesSetting, practiseMistakesInThisPath, addMistake, ref }: Props) {
+export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, practiseMistakesInitialValue, addMistake, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
     const [puterSignedIn, setPuterSignedIn] = useState(false);
+
+    const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: exerciseInfo.learningPathId , 
+        exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue});
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
@@ -98,39 +101,6 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
             addMistake(exerciseInfo.exerciseId);
         }
         return success;
-    }
-
-    const readdMistakes = function () {
-       
-        // 1. Trigger the toast
-        const toastId = toast('Are you sure you want to readd your mistakes here?', {
-            description: 'Every time you make a mistake, a duplicate of the exercise you made a mistake in will be added to this lesson. If you have set this setting to another lesson already, it will be removed from it. Typically, this setting should be applied to the bottom most lesson in the homepage.',
-            action: {
-                label: 'Yes, readd my mistakes here',
-                onClick: (e) => {
-                    e.preventDefault();
-                    changeMistakesSetting(true);
-                    toast.dismiss(toastId);
-                },
-            },
-            cancel: {
-                label: 'Cancel',
-                onClick: (e) => { 
-                    e.preventDefault();
-                    toast.dismiss(toastId);
-                }
-            },
-            classNames: {
-                toast: 'my-confirm-toast',
-                description: 'my-confirm-description', // Optional: styling the description
-                actionButton: 'my-action-btn', // Makes the button full width at the bottom
-                cancelButton: 'my-cancel-btn',
-            },
-        });
-    }
-
-    const cancelMistakesAdd = function () {
-        changeMistakesSetting(false);
     }
 
     function ExerciseTypeInstruction() {

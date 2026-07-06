@@ -255,6 +255,16 @@ public static class LearningEndpoints
         return Results.Ok(exercises);
     }
 
+    internal static async Task<UserProgress?> GetMistakesLearningPathForUser(int userId, int targetLanguageId, int knownLanguageId, AyalasLanguageDbContext db)
+    {
+        return await db.UserProgresses.Where(p => p.UserId == userId && p.practiseMistakesInThisPath == true)
+            .Join(db.LearningPaths.Where((lp) => lp.TargetLanguageId == targetLanguageId && lp.KnownLanguageId == knownLanguageId),
+            (up) => up.LearningPathId,
+            (lp) => lp.LearningPathId,
+            (up, lp) => up)
+            .FirstOrDefaultAsync();
+    }
+
     private static async Task<IResult> AddMistake(AddMistakeDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
@@ -278,13 +288,8 @@ public static class LearningEndpoints
 
         //check if we have a user progress record, with mistakeAdd flag on, 
         // for these langauges and user
-        var learningPathForMistakes = await db.UserProgresses.Where(p => p.UserId == userId && p.practiseMistakesInThisPath == true)
-            .Join(db.LearningPaths.Where((lp) => lp.TargetLanguageId == exercise.LearningPath.TargetLanguageId && lp.KnownLanguageId == exercise.LearningPath.KnownLanguageId),
-            (up) => up.LearningPathId,
-            (lp) => lp.LearningPathId,
-            (up, lp) => lp)
-            .FirstOrDefaultAsync();
-
+        var learningPathForMistakes = await GetMistakesLearningPathForUser(userId, exercise.LearningPath.TargetLanguageId, exercise.LearningPath.KnownLanguageId, db);
+        
         //no learning path for mistakes found
         if (learningPathForMistakes == null)
         {
@@ -317,6 +322,12 @@ public static class LearningEndpoints
 
             db.Exercises.Add(exerciseToAdd);
             await db.SaveChangesAsync();
+
+            if (learningPathForMistakes.ExerciseId == null)
+            {
+                learningPathForMistakes.ExerciseId = exerciseToAdd.ExerciseId;
+                await db.SaveChangesAsync();
+            }
 
             return Results.Created($"/api/learning/exercise/{exerciseToAdd.ExerciseId}", new CreateExerciseResponseDto(exerciseToAdd.ExerciseId));
         }

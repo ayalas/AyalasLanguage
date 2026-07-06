@@ -116,21 +116,6 @@ export function LessonPage() {
     }
   };
 
-  const changeMistakesSetting = async function (readd: boolean) {
-    try {
-      if (!currentExercise) return;
-      await axios.post('/api/learning/progress', {
-        learningPathId: learningPathId,
-        exerciseId: currentExercise.exerciseId,
-        practiseMistakesInThisPath: readd
-      });
-
-      setPractiseMistakesInThisPath(readd);
-    } catch (err: unknown) {
-      errorHandler(err, setError);
-    }
-  };
-
   const addMistake = async function (exerciseId: number) {
     try {
       await axios.post('/api/learning/mistake', { exerciseId });
@@ -283,8 +268,7 @@ export function LessonPage() {
                   childLoaded={childLoaded}
                   saveProgress={saveProgress}
                   restartLesson={restartLesson}
-                  changeMistakesSetting={changeMistakesSetting}
-                  practiseMistakesInThisPath={practiseMistakesInThisPath}
+                  practiseMistakesInitialValue={practiseMistakesInThisPath}
                   addMistake={addMistake} />
               </>
             )}

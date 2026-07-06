@@ -16,6 +16,7 @@ using Microsoft.Extensions.Caching.Memory;
 using System.Text.Json.Nodes;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices.JavaScript;
+using AyalasLanguageAPI.Endpoints.Learning;
 
 public static class ContentCreatorEndpoints
 {
@@ -24,10 +25,10 @@ public static class ContentCreatorEndpoints
         var creator = app.MapGroup("/api/creator")
             .AddEndpointFilter<ErrorLoggingFilter>()
             .WithTags("Content Creator").RequireAuthorization(new AuthorizeAttribute
-        {
-            AuthenticationSchemes = "PublicAuth",
-            Roles = "Admin,ContentCreator"
-        });
+            {
+                AuthenticationSchemes = "PublicAuth",
+                Roles = "Admin,ContentCreator"
+            });
 
         // Learning Path Creation
         creator.MapPost("/learning-path", CreateLearningPath);
@@ -75,8 +76,8 @@ public static class ContentCreatorEndpoints
                     hint = sortedArray[0].Chapter;
                 }
                 decimal nextPath = ContentCreatorLogic.FindPath(sortedArray, hint, dto.ChapterHint != 0, logger);
-                logger.LogInformation("NextChapter (1.1.1.1): parameters: ChapterHint:{ChapterHint}, Level:{Level}. Process: hint:{hint}, sortedArrayLength:{sortedArrayLength}. Result:{nextChapter} ", 
-                    dto.ChapterHint, dto.Level, hint,sortedArray.Length,nextPath );
+                logger.LogInformation("NextChapter (1.1.1.1): parameters: ChapterHint:{ChapterHint}, Level:{Level}. Process: hint:{hint}, sortedArrayLength:{sortedArrayLength}. Result:{nextChapter} ",
+                    dto.ChapterHint, dto.Level, hint, sortedArray.Length, nextPath);
                 //if the desired chapter exists we need to find the closest to it
                 return Results.Ok(new NextChapterResponseDto(nextPath));
             }
@@ -179,7 +180,7 @@ public static class ContentCreatorEndpoints
         if ((path.UserId != claim.GetUserId() || path.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        
+
 
         if (dto.Chapter <= 0)
         {
@@ -231,6 +232,8 @@ public static class ContentCreatorEndpoints
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
         }
 
+        var learningPathForMistakes = await LearningEndpoints.GetMistakesLearningPathForUser(userId, learningPath.TargetLanguageId, learningPath.KnownLanguageId, db);
+
         var exercise = new Exercise
         {
             TargetLanguageId = learningPath.TargetLanguageId,
@@ -242,7 +245,17 @@ public static class ContentCreatorEndpoints
         };
 
         db.Exercises.Add(exercise);
+
         await db.SaveChangesAsync();
+
+        //if we are generating more exercises on the practice lesson - set it not to be done (marginal)
+        if (learningPathForMistakes != null 
+            && learningPathForMistakes.LearningPathId == dto.LearningPathId 
+            && learningPathForMistakes.ExerciseId == null)
+        {
+            learningPathForMistakes.ExerciseId = exercise.ExerciseId;
+            await db.SaveChangesAsync();
+        }
 
         return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", new CreateExerciseResponseDto(exercise.ExerciseId));
     }
@@ -272,7 +285,7 @@ public static class ContentCreatorEndpoints
         if ((exercise.UserId != userID || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        if (!await ContentCreatorLogic.ValidateExerciseData(exercise.ExerciseTypeId, dto.Data, logger,userID, db))
+        if (!await ContentCreatorLogic.ValidateExerciseData(exercise.ExerciseTypeId, dto.Data, logger, userID, db))
         {
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
         }
@@ -395,6 +408,6 @@ public static class ContentCreatorEndpoints
         return Results.Ok();
     }
 
-    
+
 
 }
