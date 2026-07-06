@@ -14,7 +14,7 @@ import type { LearningPathInfo } from '../../../types/LearningPath';
 import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '../../../types/Exercise';
 
 export function LearningPathUpdatePage() {
-  const [initialRecord, setInitialRecord] = useState<LearningPathInfo | null | undefined>(null);
+  const [initialRecord, setInitialRecord] = useState<LearningPathInfo | null>(null);
   const [existingExercises, setExistingExercises] = useState<any[]>([]);
   const [updateFormError, setUpdateFormError] = useState('');
   const navigate = useNavigate();
@@ -86,15 +86,19 @@ export function LearningPathUpdatePage() {
       )}
       <div className="form-container">
         <FormHeader isPublic={false} title="Lesson editor" />
-        <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
-        {existingExercises && existingExercises.length > 0 && (
+        {initialRecord != null && (
           <>
-            <div className="inform-header">
-              <h2>Existing exercises</h2>
-            </div>
-            {existingExercises.map((existing) => (
-              <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
-            ))}
+            <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
+            {existingExercises && existingExercises.length > 0 && (
+              <>
+                <div className="inform-header">
+                  <h2>Existing exercises</h2>
+                </div>
+                {existingExercises.map((existing) => (
+                  <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
+                ))}
+              </>
+            )}
           </>
         )}
       </div>

@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import AuthContext from './AuthContext';
 import type { AuthContextType } from '@ayalaslanguage/types/auth';
-import type { User } from '../../types/shared/User';
+import type { User } from '../../types/User';
 
 export const useAuth = (): AuthContextType<User> => {
   const ctx = useContext(AuthContext as unknown as React.Context<AuthContextType<User> | undefined>);
