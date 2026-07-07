@@ -19,6 +19,7 @@ import ExercisesGridPage from './pages/content/ExercisesGridPage';
 import { LearningPathPage } from './pages/content/LearningPathPage';
 import LoginsGridPage from './pages/auth/users/LoginsGridPage';
 import { UserPage } from './pages/auth/users/UserPage';
+import JobGridPage from './pages/job/JobGridPage';
 
 function App() {
   useEffect(() => {
@@ -42,6 +43,7 @@ function App() {
             <Route path="/user/:userId" element={<UserPage />} />
             <Route path="/contactus" element={<ContactUsGridPage />} />
             <Route path="/log" element={<LogGridPage />} />
+            <Route path="/jobs" element={<JobGridPage />} />
             <Route path="/paths" element={<LearningPathsGridPage />} />
             <Route path="/exercises" element={<ExercisesGridPage />} />
             <Route path="/path/:learningPathId" element={<LearningPathPage />} />

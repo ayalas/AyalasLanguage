@@ -48,6 +48,7 @@ public static class AdminEndpoints
 
         adminAPIsecured.MapGet("/contactus/{page:int}", GetContactUsRecords);
         adminAPIsecured.MapGet("/logs/{page:int}", GetLogsRecords);
+        adminAPIsecured.MapGet("/jobs/{page:int}", GetJobsRecords);
         adminAPIsecured.MapGet("/exercises/{page:int}", GetExercises);
         adminAPIsecured.MapGet("/learning-paths/{page:int}", GetLearningPaths);
         adminAPIsecured.MapGet("/learning-path/{learningPathId:int}", GetSingleLearningPath);
@@ -307,6 +308,52 @@ public static class AdminEndpoints
         return new AdminGridResponse<AdminLogRowDto>(numOfRecords, arr);
     }
 
+    private static async Task<AdminGridResponse<AdminJobRowDto>> GetJobsRecords(int page, int? filter, IMemoryCache cache, AyalasLanguageDbContext db)
+    {
+        JobFilter jobFilter = filter == null? JobFilter.All : (JobFilter)filter;
+
+        var baseQuery = db.Jobs.AsQueryable();
+
+        if (jobFilter == JobFilter.Completed)
+        {
+            baseQuery = baseQuery.Where(j => j.JobStatus == (byte)JobStatusEnum.Completed);
+        }
+        else if (jobFilter != JobFilter.All)
+        {
+            var (failedJobStatuses, incompleteJobStatuses) = GetJobStatusesForFilters();
+            if (jobFilter == JobFilter.Failed)
+            {
+                baseQuery = baseQuery.Where(j => failedJobStatuses.Contains(j.JobStatus));
+            }
+            else //if (jobFilter == JobFilter.Incomplete)
+            {
+                baseQuery = baseQuery.Where(j => incompleteJobStatuses.Contains(j.JobStatus));
+            }
+        }
+
+        var arr = await baseQuery
+            .OrderByDescending(l => l.JobId)
+            .Select(l => new AdminJobRowDto(
+            l.JobId,
+            l.MainRecordId,
+            l.SecondaryRecordId,
+            l.ExtraData,
+            (JobTypeEnum)l.JobType,
+            (JobStatusEnum)l.JobStatus,
+            l.CreatedOn,
+            l.ModifiedOn,
+            l.FirstError,
+            l.Completed,
+            l.Errors,
+            l.LeftToProcess
+        )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+
+        int numOfRecords = 0;
+        if (page == 0)
+            numOfRecords = await db.Logs.CountAsync();
+        return new AdminGridResponse<AdminJobRowDto>(numOfRecords, arr);
+    }
+
     private static async Task<AdminGridResponse<AdminExerciseRowDto>> GetLearningPathExercises(int page, int learningPathId, byte? status, IMemoryCache cache, AyalasLanguageDbContext db)
     {
         var baseQuery = db.Exercises.Where(lp => lp.LearningPathId == learningPathId).AsQueryable();
@@ -487,9 +534,13 @@ public static class AdminEndpoints
     {
         DashboardRangeFilter range = (DashboardRangeFilter)rangeFilter;
 
+        var (failedJobStatuses, incompleteJobStatuses) = GetJobStatusesForFilters();
+
         //base queries
         var queryContactUs = db.ContactUs.AsQueryable();
         var queryLogs = db.Logs.AsQueryable();
+        var queryIncompleteJobs = db.Jobs.Where(j => incompleteJobStatuses.Contains(j.JobStatus)).AsQueryable();
+        var queryFailedJobs = db.Jobs.Where(j => failedJobStatuses.Contains(j.JobStatus)).AsQueryable();
         var queryLearningPaths = db.LearningPaths.AsQueryable();
         var queryDraftLearningPaths = db.LearningPaths.Where(lp => lp.Status == (byte)ContentStatusEnum.Draft).AsQueryable();
         var queryExercises = db.Exercises.AsQueryable();
@@ -517,6 +568,8 @@ public static class AdminEndpoints
             //add filter to queries
             queryContactUs = queryContactUs.Where(cs => cs.CreatedOn >= dtStart);
             queryLogs = queryLogs.Where(cs => cs.CreatedOn >= dtStart);
+            queryIncompleteJobs = queryIncompleteJobs.Where(cs => cs.CreatedOn >= dtStart);
+            queryFailedJobs = queryFailedJobs.Where(cs => cs.CreatedOn >= dtStart);
             queryLearningPaths = queryLearningPaths.Where(cs => cs.CreatedOn >= dtStart);
             queryDraftLearningPaths = queryDraftLearningPaths.Where(cs => cs.CreatedOn >= dtStart);
             queryExercises = queryExercises.Where(cs => cs.CreatedOn >= dtStart);
@@ -531,10 +584,12 @@ public static class AdminEndpoints
         int totalExercises = await queryExercises.CountAsync();
         int totalUsers = await queryUsers.CountAsync();
         int totalTokens = await queryTokens.CountAsync();
+        int totalIncompleteJobs = await queryIncompleteJobs.CountAsync();
+        int totalFailedJobs = await queryFailedJobs.CountAsync();
 
         return new AdminDashboardCountersResponse(totalContactUs,
             totalLogs, totalLearningPaths, totalDraftLearningPaths, totalExercises,
-            totalUsers, totalTokens);
+            totalUsers, totalTokens, totalIncompleteJobs, totalFailedJobs);
     }
 
 
@@ -612,5 +667,17 @@ public static class AdminEndpoints
         user.Role = req.Role;
         await db.SaveChangesAsync();
         return Results.Ok();
+    }
+
+    private static (byte[] failedJobStatuses, byte[]incompleteJobStatuses) GetJobStatusesForFilters()
+    {
+        return( new byte[] { 
+            (byte)JobStatusEnum.PartiallyFailed, 
+            (byte)JobStatusEnum.Failed
+        }, new byte[] { 
+            (byte)JobStatusEnum.NotStarted, 
+            (byte)JobStatusEnum.Running, 
+            (byte)JobStatusEnum.Stopped 
+        });
     }
 }

@@ -4,6 +4,7 @@
   "private": true,
   "exports": {
     "./log": "./src/log.ts",
+    "./job": "./src/job.ts",
     "./exercise": "./src/exercise.ts",
     "./auth": "./src/auth.ts",
     "./error": "./src/error.ts",

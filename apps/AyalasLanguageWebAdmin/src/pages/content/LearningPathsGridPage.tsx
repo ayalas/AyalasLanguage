@@ -66,7 +66,6 @@ export default function LearningPathsGridPage() {
     useEffect(() => {
         const statusFromQs = searchParams.get('status');
         if (statusFromQs != undefined && statusFromQs != "") {
-            console.log("setting statusFromQs", statusFromQs);
             setInitialStatusFilter(Number(statusFromQs));
             setFilterQS(`status=${statusFromQs}`);
         }

@@ -168,6 +168,15 @@ input:required:invalid {
   white-space: normal;    /* Required for wrapping */
 }
 
+.small-message-cell {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: scroll;
+  line-height: 24px;      /* Adjust based on your font */
+  height: 60px;      /* line-height * line-clamp */
+  white-space: normal;    /* Required for wrapping */
+}
+
 .content-line-part {
   display: inline-flex;
   padding-left: 5px;

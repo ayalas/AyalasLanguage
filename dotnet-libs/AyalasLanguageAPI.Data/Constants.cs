@@ -50,6 +50,13 @@ public enum DashboardRangeFilter {
     ThirtyDays = 3
 }
 
+public enum JobFilter {
+    All = 0,
+    Incomplete = 1,
+    Failed = 2,
+    Completed = 3
+}
+
 public enum LogTypeEnum
 {
     AutoAIFailure = 1,

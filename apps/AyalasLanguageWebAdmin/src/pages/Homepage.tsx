@@ -5,7 +5,7 @@ import { AuthHeader } from '../components/auth/AuthHeader';
 import type { User } from '../types/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
-import { DASHBOARD_RANG_FILTER, type DashboardRangFilter, type IDashboardCounters } from '../types/grids/grids';
+import { DASHBOARD_RANG_FILTER, JOB_FILTER, type DashboardRangFilter, type IDashboardCounters } from '../types/grids/grids';
 import { CONTENT_STATUS } from '@ayalaslanguage/types/exercise';
 
 export default function Homepage() {
@@ -88,6 +88,8 @@ export default function Homepage() {
               </Link>
             </div>
 
+            
+
             <div className="dashboard-counter">
               <Link className='dashboard-counter-link' to="/paths">
                 <div className="dashboard-counter-element">
@@ -140,6 +142,28 @@ export default function Homepage() {
                 </div>
                 <div className="dashboard-counter-smallelement">
                   Logins
+                </div>
+              </Link>
+            </div>
+
+            <div className="dashboard-counter counter-requires-work">
+              <Link className='dashboard-counter-link' to={`/jobs?filter=${JOB_FILTER.INCOMPLETE}`}>
+                <div className="dashboard-counter-element">
+                  {dashboardData.incompleteJobsTotal}
+                </div>
+                <div className="dashboard-counter-smallelement">
+                  Incomplete Jobs
+                </div>
+              </Link>
+            </div>
+
+            <div className="dashboard-counter counter-errors">
+              <Link className='dashboard-counter-link' to={`/jobs?filter=${JOB_FILTER.FAILED}`}>
+                <div className="dashboard-counter-element">
+                  {dashboardData.failedJobsTotal}
+                </div>
+                <div className="dashboard-counter-smallelement">
+                  Failed Jobs
                 </div>
               </Link>
             </div>

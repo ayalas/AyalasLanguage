@@ -38,6 +38,7 @@ export function AuthHeader() {
         <div className="header-links">
           <div className="header-link"><Link to="/exercises" data-testid="exercises" className="link-button" >Exercises</Link></div>
           <div className="header-link"><Link to="/paths" data-testid="paths" className="link-button" >Lessons</Link></div>
+          <div className="header-link"><Link to="/jobs" data-testid="jobs" className="link-button" >Jobs</Link></div>
           <div className="header-link"><Link to="/log" data-testid="log" className="link-button" >Log</Link></div>
           <div className="header-link"><Link to="/contactus" data-testid="contactus" className="link-button" >Contact Us</Link></div>
           <div className="header-link"><Link to="/logins" data-testid="logins" className="link-button" >Logins</Link></div>
