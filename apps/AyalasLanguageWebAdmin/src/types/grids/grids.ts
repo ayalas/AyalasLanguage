@@ -14,6 +14,7 @@ export const JOB_TYPE_MAPPING = {
 
 export const JOB_STATUS_MAPPING = {
   [JOB_STATUS.NotStarted]: "Not Started",
+  [JOB_STATUS.Running]: "Running",
   [JOB_STATUS.Stopped]: "Stopped",
   [JOB_STATUS.Completed]: "Completed",
   [JOB_STATUS.PartiallyFailed]: "Partially Failed",
