@@ -134,10 +134,10 @@ export const InlineExerciseWithBlanks = function (props: Props) {
     return (
         <>
             <div className="exercise-outer-element">
-                <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
+                <div className={`exercise-inner-element fill-in-inner-element ${isRightToLeftInput(exerciseInfo.exerciseTypeId,
                     user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
                     user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-                ) ? "exercise-inner-element rtlanswer" : "exercise-inner-element answer"}>
+                ) ? "rtlanswer" : "answer"}`}>
                     {
                         exerciseInfo.sentenceElements?.map((part, i) => {
                             const setRef = (el: ExerciseInputHandle | null) => {
@@ -145,6 +145,8 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                     questionsRefMap.current.set(`${exerciseInfo.exerciseId}-${i}`, el);
                                 }
                             };
+                            //break part into words, to have an effect of wrapping elements separately:
+                            const words = part.split(' ');
                             return (
                                 <Fragment key={`ex${exerciseInfo.exerciseId}input-container${i}`}>
                                     {part == PLACEHOLDERS.BLANKS && (
@@ -156,8 +158,15 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                             onChange={onChangeFromInput}
                                         />
                                     ) || (
-                                            <div className="inline-content-line-part">{part}</div>
-                                        )}
+                                            <>
+                                                {
+                                                    words.map((word, index) => (<div 
+                                                        key={`ex-word-${exerciseInfo.exerciseId}input-container${i}-${index}`} 
+                                                        className="inline-content-line-part">{word}
+                                                    </div>))
+                                                }
+                                            </>)
+                                    }
                                 </Fragment>
                             );
                         })
