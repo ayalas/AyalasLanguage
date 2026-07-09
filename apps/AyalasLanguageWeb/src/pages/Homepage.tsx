@@ -91,7 +91,7 @@ export default function Homepage() {
             {learningPath.map((level) => {
               return (
                 <div className="learning-level-container" key={`level-${level.level}`}>
-                  <h4>Level {level.level}</h4>
+                  <h1>Level {level.level}</h1>
                   {level.exerciseTypes.sort(
                       (a:ExerciseTypeGroupObject, b:ExerciseTypeGroupObject) =>  rankExerciseTypeByEase(a.exerciseTypeId) - rankExerciseTypeByEase(b.exerciseTypeId)  
                     ).map((exerciseTypeObject: ExerciseTypeGroupObject) => {

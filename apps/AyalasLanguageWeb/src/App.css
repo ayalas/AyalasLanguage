@@ -523,6 +523,8 @@ input:required:invalid {
   overflow-wrap: break-word;
   padding-top: 3px;
   padding-bottom: 3px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   line-height: 1.45;
 }
 
@@ -939,5 +941,10 @@ input:required:invalid {
 
   .check-answer-button {
     width: 100%;
+  }
+
+  .learning-lesson {
+      margin-top: 12px;
+      margin-bottom: 12px;
   }
 }
