@@ -1,7 +1,8 @@
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
+import dayjs from 'dayjs';
 
 import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../components/auth/AuthHeader';
 import { DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from '../constants/learning';
@@ -10,18 +11,27 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { rankExerciseTypeByEase } from '../logic/ExerciseTypeLogic';
+import type { ILearningPath } from '../types/LearningPath';
 
 type ExerciseTypeGroupObject = {
   exerciseTypeId: 0 | ExerciseType,
-  paths: any[];
+  paths: ILearningPath[];
 };
+
+type LevelGroupObject = {
+  level: number;
+  exerciseTypes: ExerciseTypeGroupObject[]
+}
 
 export default function Homepage() {
   const [learningPath, setLearningPath] = useState<any[]>([]);
   const [error, setError] = useState('');
+  const [latestLesson, setLatestLesson] = useState(0);
+  const latestLessonRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasLanguage, setHasLanguage] = useState(false);
   const { user } = useOutletContext<{ user: User | null }>();
+  
   useEffect(() => {
     const loadData = async function () {
       try {
@@ -30,20 +40,23 @@ export default function Homepage() {
         } else {
           return;
         }
-        const response = await axios.get('/api/learning/path');
+        const response = await axios.get<ILearningPath[]>('/api/learning/path');
 
         if (response.data != null) {
           const learningPaths = response.data;
 
+          let lastModifiedLessonId: number = 0;
+          let lastModifiedLessonDate: dayjs.Dayjs | null = null;
+
           //group by level and then by exerciseTypeId (which can be null for empty lessons)
           const transformedArray = Object.values(
-            learningPaths.reduce((acc: any, current: any) => {
+            learningPaths.reduce((acc: any, current: ILearningPath) => {
               //if we don't have the level - create it
               if (!acc[current.level]) {
                 acc[current.level] = {
                   level: current.level,
                   exerciseTypes: []
-                };
+                } as LevelGroupObject;
               }
 
               const exerciseTypeId: number = current.exerciseTypeId ?? 0;
@@ -55,14 +68,33 @@ export default function Homepage() {
                     paths: []
                   } as ExerciseTypeGroupObject;
               }
+              //find latest modified lesson logic
+              if (current.lastModified != null) {
+                //save the first modified element's details
+                if (lastModifiedLessonDate == null) {
+                  lastModifiedLessonId = current.learningPathId;
+                  lastModifiedLessonDate = dayjs(current.lastModified);
+                }
+                //compare and save latest element
+                else if (dayjs(current.lastModified).isAfter(lastModifiedLessonDate))
+                {
+                  lastModifiedLessonId = current.learningPathId;
+                  lastModifiedLessonDate = dayjs(current.lastModified);
+                }
+              }
               //add the lesson inside the exercise type paths array
               acc[current.level].exerciseTypes[exerciseTypeId].paths.push(current);
               return acc;
             }, {})
           );
 
+          if (lastModifiedLessonId > 0) {
+            setLatestLesson(lastModifiedLessonId);
+          }
+
           setLearningPath(transformedArray);
         }
+
       } catch (err: unknown) {
         errorHandler(err, setError);
       }
@@ -73,6 +105,16 @@ export default function Homepage() {
 
     loadData();
   }, [user]);
+
+  useEffect(() => {
+    if (latestLessonRef.current != null && !isLoading) {
+          latestLessonRef.current.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+              inline: 'nearest'
+            });
+    }
+  }, [latestLessonRef, isLoading])
   return (
     <>
       <AuthHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SWITCH} />
@@ -110,7 +152,9 @@ export default function Homepage() {
                                 const isDone = path.status == LEANRING_STATUS.DONE;
                                 const isInProgress = path.status == LEANRING_STATUS.IN_PROGRESS;
                                 return (
-                                  <div className="learning-lesson" key={path.learningPathId}>
+                                  <div className="learning-lesson" key={path.learningPathId}
+                                    ref={path.learningPathId == latestLesson? latestLessonRef : null}
+                                    >
                                     <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} to={exerciseTypeObject.exerciseTypeId == 0? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}>{path.name}</Link>
                                     {isDone && (
                                       <span title="Done"><Check className="learning-progress-img" /></span>

@@ -19,7 +19,7 @@ public class UserProgress
 
     public bool practiseMistakesInThisPath { get; set; } = false;
 
-     public DateTime ModifiedOn {get; set;} = DateTime.UtcNow;
+    public DateTime ModifiedOn {get; set;} = DateTime.UtcNow;
 
 
 }

@@ -107,7 +107,7 @@ public static class LearningEndpoints
                         : (byte)UserProgressEnum.InProgress,
                 db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
                 up != null && up.practiseMistakesInThisPath,
-
+                up != null? up.ModifiedOn : null,
                 // --- Get ExerciseTypeId START ---
                 up == null || up.ExerciseId == null
                     ? db.Exercises

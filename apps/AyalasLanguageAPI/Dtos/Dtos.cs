@@ -28,7 +28,7 @@ namespace AyalasLanguageAPI.DTOs
     public record LanguageDto(int LanguageId, string? Code, string EnglishName, string? NativeName);
     
     // Learning Path & Progress
-    public record LearningPathDto(int LearningPathId, uint Level, decimal Chapter, string? Name, ContentStatusEnum ContentStatus,  int? Status = null,  int ExerciseCount = 0, bool PractiseMistakesInThisPath = false, int? ExerciseTypeId = null);
+    public record LearningPathDto(int LearningPathId, uint Level, decimal Chapter, string? Name, ContentStatusEnum ContentStatus,  int? Status = null,  int ExerciseCount = 0, bool PractiseMistakesInThisPath = false, DateTime? LastModified = null, int? ExerciseTypeId = null);
     public record LearningPathSingleDto(int LearningPathId, uint Level, decimal Chapter, string? Name,  int? Status = null, int? ExerciseId = null,  int ExerciseCount = 0, byte Access = 0, bool practiseMistakesInThisPath = false);
 
     
