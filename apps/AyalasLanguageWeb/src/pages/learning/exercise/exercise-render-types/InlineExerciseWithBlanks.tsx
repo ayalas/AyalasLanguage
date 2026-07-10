@@ -5,7 +5,7 @@ import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import type { ExtendedExerciseInfo } from '../../../../types/Exercise';
 import type { User } from '../../../../types/User';
 import type { ExerciseInputHandle, ExerciseHandle } from '../../../../types/ui/ComponentHandles';
-import { isRightToLeftInput, shouldPlayAnswer, showTranslationOnRevealedAnswer } from '../../../../logic/ExerciseTypeLogic';
+import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '../../../../logic/ExerciseTypeLogic';
 import { CirclePlay } from 'lucide-react';
 import { PLACEHOLDERS } from '../../../../constants/learning';
 
@@ -175,10 +175,10 @@ export const InlineExerciseWithBlanks = function (props: Props) {
             {displayAnswer && (
                 <div className="form-row-play">
                     <div className="form-play-container">{second}
-                        {shouldPlayAnswer(exerciseInfo.exerciseTypeId) && (
+                        {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
                             <button data-testid="play-answer" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
                         )}</div>
-                    {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+                    { EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
                         <div className="form-content-row">{translation}</div>
                     )}
                 </div>

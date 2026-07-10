@@ -1,21 +1,22 @@
 import type { ExerciseType } from "@ayalaslanguage/types/exercise";
-import { hasMultiBucketAnswers, hasSingleBucketAnswer, isMatchingType, usesInlineExerciseWithBlanks, writingExercise } from "../logic/ExerciseTypeLogic";
+import { EXERCISE_TYPE_LOGIC } from "../logic/ExerciseTypeLogic";
 import { PencilSparkles, PenLine, Tally1, Tally2, Tally4 } from "lucide-react";
 
 export function ExerciseTypeIcon({ exerciseTypeId }: { exerciseTypeId: 0 | ExerciseType }) {
     return (
         <>
-            {writingExercise(exerciseTypeId) && (
+            {EXERCISE_TYPE_LOGIC[exerciseTypeId].IsWritingExercise && (
                 <PenLine />
-            ) || isMatchingType(exerciseTypeId) && (
-                <Tally2 />
-            ) || hasMultiBucketAnswers(exerciseTypeId) && (
-                <Tally4 />
-            ) || hasSingleBucketAnswer(exerciseTypeId) && (
-                <Tally1 />
-            ) || usesInlineExerciseWithBlanks(exerciseTypeId) && (
-                <PencilSparkles />
-            )}
+            ) ||
+                EXERCISE_TYPE_LOGIC[exerciseTypeId].IsMatchingType && (
+                    <Tally2 />
+                ) || EXERCISE_TYPE_LOGIC[exerciseTypeId].HasMultiBucketAnswers && (
+                    <Tally4 />
+                ) || EXERCISE_TYPE_LOGIC[exerciseTypeId].HasSingleBucketAnswer && (
+                    <Tally1 />
+                ) || EXERCISE_TYPE_LOGIC[exerciseTypeId].UsesInlineExerciseWithBlanks && (
+                    <PencilSparkles />
+                )}
         </>
     );
 }

@@ -10,7 +10,7 @@ import type { User } from '../types/User';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
-import { rankExerciseTypeByEase } from '../logic/ExerciseTypeLogic';
+import { EXERCISE_TYPE_LOGIC } from '../logic/ExerciseTypeLogic';
 import type { ILearningPath } from '../types/LearningPath';
 
 type ExerciseTypeGroupObject = {
@@ -135,7 +135,7 @@ export default function Homepage() {
                 <div className="learning-level-container" key={`level-${level.level}`}>
                   <h1>Level {level.level}</h1>
                   {level.exerciseTypes.sort(
-                      (a:ExerciseTypeGroupObject, b:ExerciseTypeGroupObject) =>  rankExerciseTypeByEase(a.exerciseTypeId) - rankExerciseTypeByEase(b.exerciseTypeId)  
+                      (a:ExerciseTypeGroupObject, b:ExerciseTypeGroupObject) =>  EXERCISE_TYPE_LOGIC[a.exerciseTypeId].SortByEaseRank - EXERCISE_TYPE_LOGIC[b.exerciseTypeId].SortByEaseRank 
                     ).map((exerciseTypeObject: ExerciseTypeGroupObject) => {
                     let lastPathObj = { level: level.level, chapter: 1 }
                     if (exerciseTypeObject.paths.length > 0) {

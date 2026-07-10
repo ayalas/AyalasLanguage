@@ -4,7 +4,7 @@ import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExtendedExerciseInfo } from '../../../../../types/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
-import { hasSingleBucketAnswer, isRightToLeftInput, shouldPlayAnswer, shouldPlayQuestion, showTranslationOnRevealedAnswer, supportsAlternativeAnswers } from '../../../../../logic/ExerciseTypeLogic';
+import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '../../../../../logic/ExerciseTypeLogic';
 import type { User } from '../../../../../types/User';
 
 type Props = {
@@ -47,7 +47,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
     }
 
     if (!canMoveNext) {
-      if (supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) {
+      if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers) {
         if (exerciseInfo.exerciseObject?.Alternatives != null &&
           exerciseInfo.exerciseObject?.Alternatives.length > 0) {
           const userAnswerAsStr = userAnswers.join(" ");
@@ -94,7 +94,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
 
         setFirst(exerciseInfo.exerciseObject.First as string);
         setSecond(exerciseInfo.exerciseObject.Second as string);
-        if (showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && exerciseInfo.exerciseObject.Translation != null) {
+        if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && exerciseInfo.exerciseObject.Translation != null) {
           setTranslation(exerciseInfo.exerciseObject.Translation as string);
         }
         const optionsListTemp = [...exerciseInfo.extraItems, ...exerciseInfo.answers];
@@ -105,7 +105,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         }
         setBucketList(optionsListRandomized);
 
-        if (shouldPlayQuestion(exerciseInfo.exerciseTypeId)) {
+        if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayQuestion) {
           //play the sentence shown
           await playTargetText(exerciseInfo.exerciseObject.First as string);
         }
@@ -121,11 +121,11 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   }
 
   async function bucketListItemClicked(itemValue: string, position: number) {
-    if (shouldPlayAnswer(exerciseInfo.exerciseTypeId)) {
+    if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer) {
       playTargetText(itemValue);
     }
 
-    if (hasSingleBucketAnswer(exerciseInfo.exerciseTypeId)) {
+    if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasSingleBucketAnswer) {
       setBucketList([...answerList, ...bucketList.filter((_, ind) => ind !== position)]);
       setAnswerList([itemValue]);
       checkAnswerInternal([itemValue]);
@@ -141,7 +141,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       <div className="exercise-outer-element">
         <div className="exercise-inner-element">
           <div className="form-row-play">
-            <div className="form-play-container">{first}{shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
+            <div className="form-play-container">{first}{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayQuestion && (
               <div className="playButtonContainer"><button data-testid="play-question" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
             )}</div>
           </div>
@@ -167,11 +167,11 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       {displayAnswer && (
         <div className="form-row-play">
           <div className="form-play-container">{second}
-            {shouldPlayAnswer(exerciseInfo.exerciseTypeId) && (
+            {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
             <button data-testid="play-answer" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
             )}
           </div>
-          {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+          {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
             <div className="form-content-row">{translation}</div>
           )}
         </div>

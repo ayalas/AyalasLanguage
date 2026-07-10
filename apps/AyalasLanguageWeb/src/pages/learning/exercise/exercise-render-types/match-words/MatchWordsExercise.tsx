@@ -3,7 +3,7 @@ import MatchWordItem from './MatchWordItem';
 import type { MatchSelection } from './MatchWordItem';
 import { getRandomizedSequence } from '../../../../../utils/utils';
 import type { ExtendedExerciseInfo } from '../../../../../types/Exercise';
-import { targetIsSpoken } from '../../../../../logic/ExerciseTypeLogic';
+import { EXERCISE_TYPE_LOGIC } from '../../../../../logic/ExerciseTypeLogic';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -129,7 +129,7 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
                   itemValue={item.First}
                   matchingValue={item.Second}
                   setSelected={onColumn2Selected}
-                  isSpoken={targetIsSpoken(exerciseInfo.exerciseTypeId)}
+                  isSpoken={EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].TargetIsSpoken}
                 />
               ))}
             </div>

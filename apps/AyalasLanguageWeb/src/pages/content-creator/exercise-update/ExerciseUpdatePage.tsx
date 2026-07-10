@@ -5,10 +5,9 @@ import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
 import { ArrowBigLeft, Save } from "lucide-react";
 import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from "../../../types/Exercise";
-import { EXERCISE_GENERATIONS } from "../../../constants/learning";
 import { AlternativeLine } from "./AlternativeLine";
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
-import { hasExtraOptions, showTranslationOnRevealedAnswer } from "../../../logic/ExerciseTypeLogic";
+import { EXERCISE_TYPE_LOGIC } from "../../../logic/ExerciseTypeLogic";
 import { FormHeader } from "../../../components/FormHeader";
 
 export function ExerciseUpdatePage() {
@@ -77,10 +76,7 @@ export function ExerciseUpdatePage() {
                         exerciseTemp.exerciseObject = JSON.parse(exerciseTemp.data);
                     }
                     setInitialRecord(exerciseTemp);
-                    const typeObj = EXERCISE_GENERATIONS.find(t => t.type == exerciseTemp.exerciseTypeId);
-                    if (typeObj != null) {
-                        setTypeName(typeObj.name);
-                    }
+                    setTypeName(EXERCISE_TYPE_LOGIC[exerciseTemp.exerciseTypeId].Name);
                     if (exerciseTemp.exerciseObject != null) {
                         if (exerciseTemp.exerciseObject.First != null) {
                             setFirstLine(exerciseTemp.exerciseObject.First);
@@ -88,10 +84,10 @@ export function ExerciseUpdatePage() {
                         if (exerciseTemp.exerciseObject.Second != null) {
                             setSecondLine(exerciseTemp.exerciseObject.Second);
                         }
-                        if (showTranslationOnRevealedAnswer(exerciseTemp.exerciseTypeId)) {
+                        if (EXERCISE_TYPE_LOGIC[exerciseTemp.exerciseTypeId].ShowsTranslationOnRevealedAnswer) {
                             setTranslation(exerciseTemp.exerciseObject.Translation as string);
                         }
-                        if (hasExtraOptions(exerciseTemp.exerciseTypeId)) {
+                        if (EXERCISE_TYPE_LOGIC[exerciseTemp.exerciseTypeId].HasExtraOptions) {
                             setExtraOptions(exerciseTemp.exerciseObject.ExtraOptions as string);
                         }
                     }
@@ -109,7 +105,7 @@ export function ExerciseUpdatePage() {
             <div className="form-container">
                 <form onSubmit={onFormSubmit}>
                     <FormHeader isPublic={false} title="Exercise editor" />
-                    
+
                     {error !== '' && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>
@@ -133,7 +129,7 @@ export function ExerciseUpdatePage() {
                             <textarea data-testid="second-line" className="text-area-minimal" required={true} value={secondLine} onChange={(e) => { setSecondLine(e.target.value) }} />
                         </div>
                     </div>
-                    {initialRecord != null && showTranslationOnRevealedAnswer(initialRecord?.exerciseTypeId) && (
+                    {initialRecord != null && EXERCISE_TYPE_LOGIC[initialRecord.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
                         <>
                             <div className="form-label-row">Translation</div>
                             <div className="form-row">
@@ -143,7 +139,7 @@ export function ExerciseUpdatePage() {
                             </div>
                         </>
                     )}
-                    {initialRecord != null && hasExtraOptions(initialRecord.exerciseTypeId) && (
+                    {initialRecord != null && EXERCISE_TYPE_LOGIC[initialRecord.exerciseTypeId].HasExtraOptions && (
                         <>
                             <div className="form-label-row">Extra Options</div>
                             <div className="form-row">

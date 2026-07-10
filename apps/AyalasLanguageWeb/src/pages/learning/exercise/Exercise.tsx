@@ -2,7 +2,7 @@ import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'reac
 import { useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine } from 'lucide-react';
 import axios from 'axios';
-import { EXERCISE_TYPE_INSTRUCTIONS, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
+import { LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
@@ -12,7 +12,7 @@ import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 
 import { puter } from "@heyputer/puter.js";
 import { initializePuter, isSecure } from '../../../utils/utils';
-import { canRevealAnswers, hasExtraOptions, isMatchingType, shouldPlayAnswer, showCheckAnswers, supportsAlternativeAnswers, usesInlineExerciseWithBlanks } from '../../../logic/ExerciseTypeLogic';
+import { EXERCISE_TYPE_LOGIC } from '../../../logic/ExerciseTypeLogic';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/ActionsMenuComponent';
 import { Toaster } from 'sonner';
 import { useMistakesReadd } from '../../../components/useMistakesReadd';
@@ -89,7 +89,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
         setDisplayAnswer(newValue);
 
         if (newValue) {
-            if (shouldPlayAnswer(exerciseInfo.exerciseTypeId)) {
+            if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer) {
                 playTargetText();
             }
             addMistake(exerciseInfo.exerciseId);
@@ -107,7 +107,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
 
     function ExerciseTypeInstruction() {
         if (exerciseInfo && exerciseInfo.exerciseTypeId > 0) {
-            const desc = EXERCISE_TYPE_INSTRUCTIONS[exerciseInfo.exerciseTypeId];
+            const desc = EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].GenerationInfo?.instruction ?? '';
             return desc.replaceAll(PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER, user?.languageSettings?.knownLanguage || '')
                 .replaceAll(PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER, user?.languageSettings?.targetLanguageEnglishName || '')
         }
@@ -116,7 +116,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
 
     async function addAlternativeAnswer(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        if (!supportsAlternativeAnswers(exerciseInfo.exerciseTypeId)) {
+        if (!EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers) {
             return;
         }
         if (exerciseInfo.exerciseObject == null) return;
@@ -191,16 +191,16 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     </div>
                 )}
 
-                {usesInlineExerciseWithBlanks(exerciseInfo.exerciseTypeId) && (
+                {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].UsesInlineExerciseWithBlanks && (
                     <InlineExerciseWithBlanks ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer}
                         parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
-                ) || (isMatchingType(exerciseInfo.exerciseTypeId) && (
+                ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].IsMatchingType && (
                     <MatchWordsExercise
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} addMistake={addMistake} playTargetText={playTargetText} />
-                ) || (hasExtraOptions(exerciseInfo.exerciseTypeId) && (
+                ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasExtraOptions && (
                     <BucketListExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} />
@@ -235,7 +235,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                         dataTestId: "add-alternative-answer",
                         children: <><TicketPlus />&nbsp;Add alternative answer</>,
                         onClick: addAlternativeAnswer,
-                        isVisible: displayAnswer && error != "" && supportsAlternativeAnswers(exerciseInfo.exerciseTypeId),
+                        isVisible: displayAnswer && error != "" && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers,
                     },
                     {
                         dataTestId: "edit-lesson",
@@ -250,7 +250,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     }
                 ] as ActionsMenuItem[]} anchorTitle="More" />
                 {
-                    canRevealAnswers(exerciseInfo.exerciseTypeId) && (
+                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
                         <div className="form-button-cell">
                             <button data-testid="reveal-answer" type="button" onClick={toggleAnswer} className="top-button lesson-button-reveal" title="Reveal answer"><Eye />&nbsp;{displayAnswer && "Hide" || "Reveal"}</button>
                         </div>
@@ -265,7 +265,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     </div>
                 )}
                 {
-                    showCheckAnswers(exerciseInfo.exerciseTypeId) && (
+                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && (
                         <div className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"}`}>
                             <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks />&nbsp;Check</button>
                         </div>

@@ -8,7 +8,7 @@ import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAnd
 import { Exercise } from './exercise/Exercise';
 import type { ExerciseHandle } from '../../types/ui/ComponentHandles';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { focusOnLoad, getExtraOptionsSeparator, hasExtraOptions, hasSingleBucketAnswer, isMatchingType, usesInlineExerciseWithBlanks } from '../../logic/ExerciseTypeLogic';
+import { EXERCISE_TYPE_LOGIC } from '../../logic/ExerciseTypeLogic';
 import { safeParseData } from '../../logic/ExerciseDataLogic';
 import type { LearningPathInfo } from '../../types/LearningPath';
 import type { ExerciseInfo, ExtendedExerciseInfo } from '../../types/Exercise';
@@ -38,7 +38,7 @@ export function LessonPage() {
     const firstData = replaceCharsForLanguage(targetLang, dataObj?.First || '') || '';
     const secondData = replaceCharsForLanguage(targetLang, dataObj?.Second || '') || '';
 
-    if (usesInlineExerciseWithBlanks(curItem.exerciseTypeId)) {
+    if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].UsesInlineExerciseWithBlanks) {
       const sentenceElements = splitAndKeep((firstData || ''), PLACEHOLDERS.BLANKS).map((s) => s.trim()).filter(s => s !== '');
       const tempElements = (firstData || '').split(PLACEHOLDERS.BLANKS).map((s) => s.trim()).filter(s => s !== '');
       let answersTemp = getMissingParts(secondData || '', tempElements);
@@ -62,11 +62,11 @@ export function LessonPage() {
         answers,
         index
       });
-    } else if (hasExtraOptions(curItem.exerciseTypeId)) {
-      const separator = getExtraOptionsSeparator(curItem.exerciseTypeId);
+    } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].HasExtraOptions) {
+      const separator = EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].ExtraOptionsSeparator;
       let tempAnswers: string[];
       const secondAsStr = (secondData || '').trim();
-      if (hasSingleBucketAnswer(curItem.exerciseTypeId)) {
+      if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].HasSingleBucketAnswer) {
         tempAnswers = [secondAsStr];
       }
       else {
@@ -80,7 +80,7 @@ export function LessonPage() {
         extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(separator),
         index
       });
-    } else if (isMatchingType(curItem.exerciseTypeId)) {
+    } else if ( EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].IsMatchingType) {
       const sentenceElements = (firstData || '').split(',');
       const answers = (secondData || '').split(',');
 
@@ -102,7 +102,7 @@ export function LessonPage() {
       });
     }
 
-    if (focusOnLoad(curItem.exerciseTypeId)) {
+    if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].FocusOnLoad) {
       const refItem = exerciseRefs.current.get(curItem.exerciseId);
       refItem?.setFocus();
     }
@@ -110,7 +110,7 @@ export function LessonPage() {
 
   const childLoaded = function (exerciseId: number) {
     if (exerciseId == currentExercise?.exerciseId) {
-      if (focusOnLoad(currentExercise.exerciseTypeId)) {
+      if (EXERCISE_TYPE_LOGIC[currentExercise.exerciseTypeId].FocusOnLoad) {
         const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
         refItem?.setFocus();
       }

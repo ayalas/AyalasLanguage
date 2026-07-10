@@ -4,12 +4,12 @@ import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCh
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog, handleKeyDown } from '../../utils/utils';
-import { EXERCISE_GENERATIONS, DEFAULT_NUM_OF_EXERCISES, type ExerciseGeneration } from '../../constants/learning';
+import { DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES, BUCKET_LIST_EXTRA_OPTIONS } from '../../constants/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
 
 
 import puter from '@heyputer/puter.js';
-import { hasExtraOptions, rankExerciseTypeByEase } from '../../logic/ExerciseTypeLogic';
+import { EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES } from '../../logic/ExerciseTypeLogic';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
@@ -29,19 +29,17 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [fileForImport, setFileForImport] = useState<File | null>(null);
   const [importStart, setImportStart] = useState(false);
   const [chapter, setChapter] = useState(1);
+  const [matches, setMatches] = useState<number>(MAX_MATCHES);
+  const [extraOptions, setExtraOptions] = useState<number>(BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS);
   const [title, setTitle] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [access, setAccess] = useState<AuthorAccess>(AUTHOR_ACCESS.CAN_EDIT);
 
   const [exerciseType, setExerciseType] = useState<ExerciseType | 0>(0);
-  const [exerciseTypeDesc, setExerciseTypeDesc] = useState('');
   const [firstSet, setFirstSet] = useState('');
   const [secondSet, setSecondSet] = useState('');
   const [wrongExtraOptions, setWrongExtraOptions] = useState('');
-  const [firstSetDesc, setFirstSetDesc] = useState('');
-  const [secondSetDesc, setSecondSetDesc] = useState('');
-  const [wrongExtraOptionsDesc, setWrongExtraOptionsDesc] = useState('');
   const [aiInstructions, setAIInstructions] = useState('');
   const [searchParams] = useSearchParams();
   const initLevel = searchParams.get('level');
@@ -59,8 +57,33 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
   const { user } = useOutletContext<{ user: User | null }>();
 
-  const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: initialRecord?.learningPathId, 
-        exerciseId: initialRecord?.exerciseId, setError, initialValue: initialRecord?.practiseMistakesInThisPath ?? false});
+  const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({
+    learningPathId: initialRecord?.learningPathId,
+    exerciseId: initialRecord?.exerciseId, setError, initialValue: initialRecord?.practiseMistakesInThisPath ?? false
+  });
+
+
+  const loadFromLocalStorage = function () {
+    let tempValue = localStorage.getItem("lesson-generator-matches");
+    if (tempValue != null) {
+      setMatches(Number(tempValue))
+    }
+
+    tempValue = localStorage.getItem("lesson-generator-wrong-options");
+    if (tempValue != null) {
+      setExtraOptions(Number(tempValue))
+    }
+  }
+
+  const saveToLocalStorage = function () {
+    if (EXERCISE_TYPE_LOGIC[exerciseType].IsMatchingType) {
+      localStorage.setItem("lesson-generator-matches", matches.toString());
+    }
+
+    if (EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions) {
+      localStorage.setItem("lesson-generator-wrong-options", extraOptions.toString());
+    }
+  }
 
   const parseForm = async function () {
     let arrObjects: ExerciseData[] = [];
@@ -89,7 +112,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       }
 
       let arrExtraOptions: string[] = [];
-      if (hasExtraOptions(exerciseType)) {
+      if (EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions) {
         arrExtraOptions = (removeLastCharIfMatch(wrongExtraOptions.trim(), ';') ?? '').split(';');
         if (arrFirstSet.length != arrExtraOptions.length) {
           setError(`Must have a match between the number of words/sentences and sets of extra options. Found ${arrFirstSet.length} on the first set, and ${arrExtraOptions.length} on the wrong extra options.`);
@@ -102,7 +125,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           First: arrFirstSet[i].trim(),
           Second: arrSecondSet[i].trim()
         };
-        if (hasExtraOptions(exerciseType)) {
+        if (EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions) {
           objExerciseData.ExtraOptions = arrExtraOptions[i].trim();
         }
         arrObjects.push(objExerciseData);
@@ -185,13 +208,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                 break;
               }
               if (!('First' in item) || !('Second' in item)
-                || (hasExtraOptions(exerciseType) && !('ExtraOptions' in item))) {
+                || (EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions && !('ExtraOptions' in item))) {
                 isValid = false;
                 break;
               }
 
               if ((typeof (item as Record<string, unknown>).First !== 'string') || (typeof (item as Record<string, unknown>).Second !== 'string')
-                || (hasExtraOptions(exerciseType) && (typeof (item as Record<string, unknown>).ExtraOptions !== 'string'))) {
+                || (EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions && (typeof (item as Record<string, unknown>).ExtraOptions !== 'string'))) {
                 isValid = false;
                 break;
               }
@@ -236,7 +259,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
     //error is displayed when arrData is null
     if (arrData != null) {
-
+      saveToLocalStorage();
       await handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
     }
     setIsLoading(false);
@@ -293,8 +316,9 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   };
 
   const handleExerciseTypeLogic = function (exrTypeValue: ExerciseType) {
-    const exType = EXERCISE_GENERATIONS.find((ex) => ex.type == exrTypeValue) as ExerciseGeneration;
-    setExerciseTypeDesc(exType.description);
+    const exType = EXERCISE_TYPE_LOGIC[exrTypeValue].GenerationInfo;
+    if (exType == null) return [];
+
     let aiMessages: IChatMessage[];
     const numOfExercises = user?.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES;
     const targetLanguage = user?.languageSettings?.targetLanguageEnglishName || '';
@@ -304,21 +328,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       subject = 'any language exchange';
     }
     //manual ai instructions
-    aiMessages = getAIInstructions(targetLanguage, knownLanguage, numOfExercises, false, subject, exrTypeValue);
+    aiMessages = getAIInstructions(exType, targetLanguage, knownLanguage, numOfExercises, matches, extraOptions, false, subject);
     setAIInstructions(aiMessages.map(it => it.content).join(' '));
     //automatic ai instructions (returning json)
-    aiMessages = getAIInstructions(targetLanguage, knownLanguage, numOfExercises, true, subject, exrTypeValue);
-
-    setFirstSetDesc(exType.first_data_instructions);
-    setSecondSetDesc(exType.second_data_instructions);
-    if (hasExtraOptions(exrTypeValue)) {
-      setWrongExtraOptionsDesc(exType.extra_options_instructions || '');
-    }
+    aiMessages = getAIInstructions(exType, targetLanguage, knownLanguage, numOfExercises, matches, extraOptions, true, subject);
 
     return aiMessages;
   };
-
-
 
   const onChangeExerciseType = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const exType = Number(e.target.value) as ExerciseType;
@@ -374,7 +390,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   useEffect(() => {
     async function execAsync() {
       try {
-        setIsLoading(false);
+        loadFromLocalStorage();
         if (initialRecord != null) {
           setLevel(initialRecord.level);
           setChapter(initialRecord.chapter);
@@ -393,7 +409,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { Level: tempLevel, ChapterHint: hintChapter });
           setChapter(res.data.chapter);
         }
-
+        setIsLoading(false);
         if (user?.disablePuter) {
           setUsePuterAI(false);
         }
@@ -405,6 +421,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             setUsePuterAI(false);
           }
         }
+        
         titleRef.current?.focus();
       } catch (ex: unknown) {
         errorHandler(ex, setError);
@@ -485,16 +502,40 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                       <select ref={exerciseTypeRef} required data-testid="exercise-type" className="exercise-type-select" value={exerciseType}
                         onChange={onChangeExerciseType}>
                         <option value="0" disabled>-- Please choose an option --</option>
-                        {EXERCISE_GENERATIONS.sort((a: ExerciseGeneration, b: ExerciseGeneration) => rankExerciseTypeByEase(a.type) - rankExerciseTypeByEase(b.type)).map((exType) => (
-                          <option key={exType.type} value={exType.type}>{exType.name}</option>
+                        {SORTED_EXERCISE_TYPES.map((exType) => (
+                          <option key={exType.Type} value={exType.Type}>{exType.Name}</option>
                         ))}
                       </select>
                       <div className="exercise-type-difficulty">
                         <ExerciseTypeIcon exerciseTypeId={exerciseType} />
                       </div>
                     </div>
-                    <div className="form-content-row">{exerciseTypeDesc}</div>
+                    <div className="form-content-row">{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.description ?? ''}</div>
                   </div>
+                  {EXERCISE_TYPE_LOGIC[exerciseType].IsMatchingType && (
+                    <>
+                      <div className="form-label-row">Number of Matches</div>
+                      <div className="form-row">
+                        <div className="form-input-row">
+                          <input type="number" className="form-input" data-testid="matches"
+                            min={MIN_MATCHES} max={MAX_MATCHES} step="1"
+                            value={matches} onChange={(e) => { setMatches(Number(e.target.value)) }} />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  {EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions && (
+                    <>
+                      <div className="form-label-row">Wrong Extra Options</div>
+                      <div className="form-row">
+                        <div className="form-input-row">
+                          <input type="number" className="form-input" data-testid="extraOptions"
+                            min={BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} max={BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} step="1"
+                            value={extraOptions} onChange={(e) => { setExtraOptions(Number(e.target.value)) }} />
+                        </div>
+                      </div>
+                    </>
+                  )}
                   {!usePuterAI && (
                     <>
                       <div className="form-label-row">AI instructions</div>
@@ -506,23 +547,23 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                         <div className="form-input-row">
                           <textarea ref={firstSetRef} data-testid="first-set" className="text-area-wide" value={firstSet} onKeyDown={(e) => handleKeyDown(e, secondSetRef)} onChange={(e) => { setFirstSet(e.target.value) }} />
                         </div>
-                        <div className="form-content-row">{firstSetDesc}</div>
+                        <div className="form-content-row">{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.first_data_instructions ?? ''}</div>
                       </div>
                       <div className="form-label-row">Second set of words/sentences</div>
                       <div className="form-row">
                         <div className="form-input-row">
-                          <textarea ref={secondSetRef} data-testid="second-set" className="text-area-wide" value={secondSet} onKeyDown={(e) => handleKeyDown(e, hasExtraOptions(exerciseType) ? wrongExtraOptionsRef : saveButtonRef)} onChange={(e) => { setSecondSet(e.target.value) }} />
+                          <textarea ref={secondSetRef} data-testid="second-set" className="text-area-wide" value={secondSet} onKeyDown={(e) => handleKeyDown(e, EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions ? wrongExtraOptionsRef : saveButtonRef)} onChange={(e) => { setSecondSet(e.target.value) }} />
                         </div>
-                        <div className="form-content-row">{secondSetDesc}</div>
+                        <div className="form-content-row">{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.second_data_instructions ?? ''}</div>
                       </div>
-                      {hasExtraOptions(exerciseType) && (
+                      {EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions && (
                         <>
                           <div className="form-label-row">Wrong Extra Options</div>
                           <div className="form-row">
                             <div className="form-input-row">
                               <textarea ref={wrongExtraOptionsRef} data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
                             </div>
-                            <div className="form-content-row">{wrongExtraOptionsDesc}</div>
+                            <div className="form-content-row">{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.extra_options_instructions ?? ''}</div>
                           </div>
                         </>
                       )}
@@ -546,16 +587,16 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   onClick: () => { setUsePuterAI(!usePuterAI) }
                 },
                 {
-                    dataTestId: "cancel-readding",
-                    children: <><Ban />&nbsp;Stop readding my mistakes</>,
-                    onClick: cancelMistakesAdd,
-                    isVisible: initialRecord != null && practiseMistakesInThisPath,
+                  dataTestId: "cancel-readding",
+                  children: <><Ban />&nbsp;Stop readding my mistakes</>,
+                  onClick: cancelMistakesAdd,
+                  isVisible: initialRecord != null && practiseMistakesInThisPath,
                 },
                 {
-                    dataTestId: "readd-mistakes",
-                    children: <><History />&nbsp;Readd my mistakes here</>,
-                    onClick: readdMistakes,
-                    isVisible: initialRecord != null && !practiseMistakesInThisPath,
+                  dataTestId: "readd-mistakes",
+                  children: <><History />&nbsp;Readd my mistakes here</>,
+                  onClick: readdMistakes,
+                  isVisible: initialRecord != null && !practiseMistakesInThisPath,
                 },
                 {
                   isVisible: initialRecord != null && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT,

@@ -7,7 +7,7 @@ import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles'
 import type { User } from '../../../../types/User';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { CirclePlay } from 'lucide-react';
-import { isRightToLeftInput, shouldPlayQuestion, shouldPlayAnswer, showTranslationOnRevealedAnswer, useVirtualKeyboard } from '../../../../logic/ExerciseTypeLogic';
+import { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '../../../../logic/ExerciseTypeLogic';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -87,7 +87,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       if (exerciseInfo.exerciseObject.Translation != null) {
         setTranslation(exerciseInfo.exerciseObject.Translation as string);
       }
-      if (shouldPlayQuestion(exerciseInfo.exerciseTypeId)) {
+      if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayQuestion) {
         //play the sentence shown
         await playTargetText(exerciseInfo.exerciseObject.First as string);
       }
@@ -100,7 +100,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       <div className="exercise-outer-element">
         <div className="exercise-inner-element">
           <div className="form-row-play">
-            <div className="form-play-container">{first}{shouldPlayQuestion(exerciseInfo.exerciseTypeId) && (
+            <div className="form-play-container">{first}{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayQuestion && (
               <div className="playButtonContainer"><button data-testid="play-question" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
             )}</div>
           </div>
@@ -121,15 +121,15 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       {displayAnswer && (
         <div className="form-row-play">
           <div className="form-play-container">{second}
-            {shouldPlayAnswer(exerciseInfo.exerciseTypeId) && (
+            {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
               <button data-testid="play-answer" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
             )}</div>
-          {showTranslationOnRevealedAnswer(exerciseInfo.exerciseTypeId) && (
+          {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
             <div className="form-content-row">{translation}</div>
           )}
         </div>
       )}
-      {useVirtualKeyboard(exerciseInfo.exerciseTypeId) && (
+      {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].UsesVirtualKeyboard && (
         <VirtualKeyboard languageCode={(user?.languageSettings?.targetLanguageEnglishName ?? 'en').toLowerCase()} isRightToLeft={user?.languageSettings?.targetLanguageIsRightToLeft} onChange={OnChange} value={inputValue} />
       )}
     </>
