@@ -21,6 +21,7 @@ import type { NextChapterResponse } from '../../types/Creator';
 import type { LearningPathInfo } from '../../types/LearningPath';
 import { useMistakesReadd } from '../useMistakesReadd';
 import { Toaster } from 'sonner';
+import { NumberSelector } from '../number-selector/NumberSelector';
 
 export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: LearningPathInfo; reloadExercise?: () => void }) {
@@ -431,13 +432,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   }, [initialRecord, searchParams, user]);
 
   useEffect(() => {
-    async function execAsync() {
+    const timeoutid = setTimeout(() => {
       if (exerciseType > 0) {
         handleExerciseTypeLogic(exerciseType as ExerciseType);
       }
-    }
-    execAsync();
-  }, [exerciseType]);
+    }, 500);
+    // This cleans up the OLD timer before starting a NEW one (for key stroke changes in title)
+    return () => clearTimeout(timeoutid);
+  }, [exerciseType, title, matches, extraOptions]);
 
   return (
     <>
@@ -515,25 +517,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   {EXERCISE_TYPE_LOGIC[exerciseType].IsMatchingType && (
                     <>
                       <div className="form-label-row">Number of Matches</div>
-                      <div className="form-row">
-                        <div className="form-input-row">
-                          <input type="number" className="form-input" data-testid="matches"
-                            min={MIN_MATCHES} max={MAX_MATCHES} step="1"
-                            value={matches} onChange={(e) => { setMatches(Number(e.target.value)) }} />
-                        </div>
-                      </div>
+                      <NumberSelector min={MIN_MATCHES} max={MAX_MATCHES} defaultValue={matches} onChange={setMatches} />
                     </>
                   )}
                   {EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions && (
                     <>
                       <div className="form-label-row">Wrong Extra Options</div>
-                      <div className="form-row">
-                        <div className="form-input-row">
-                          <input type="number" className="form-input" data-testid="extraOptions"
-                            min={BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} max={BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} step="1"
-                            value={extraOptions} onChange={(e) => { setExtraOptions(Number(e.target.value)) }} />
-                        </div>
-                      </div>
+                      <NumberSelector min={BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} max={BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} defaultValue={extraOptions} onChange={setExtraOptions} />
                     </>
                   )}
                   {!usePuterAI && (
