@@ -16,7 +16,7 @@ export function ForgotPage() {
     const emailRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-      emailRef.current?.focus();
+        emailRef.current?.focus();
         async function runAsync() {
             setEmail(searchParams.get('user') ?? '');
         }
@@ -49,8 +49,12 @@ export function ForgotPage() {
             <PublicHeader />
             <div className="form-container">
                 <form onSubmit={handleSubmit} data-testid="main-form">
-                    <TabLinksComponent tabData={AUTH_TABS} activeTab={AuthTabsEnum.ForgotPassword} />
-                    
+                    <TabLinksComponent tabData={AUTH_TABS} />
+
+                    <div className="form-row">
+                        <h3>Password Reset</h3>
+                    </div>
+
                     {error !== "" && (
                         <div className="form-row">
                             <label className="form-error">{error}</label>
@@ -72,7 +76,7 @@ export function ForgotPage() {
                                         <label className="form-label">Email</label>
                                     </div>
                                     <div className="form-input-cell">
-                                        <input ref={emailRef} data-testid="email" maxLength={128} type="text" value={email} required={true} className="form-input" 
+                                        <input ref={emailRef} data-testid="email" maxLength={128} type="text" value={email} required={true} className="form-input"
                                             onKeyDown={(e) => handleKeyDown(e, null, submitAction)} onChange={e => setEmail(e.target.value)} />
                                     </div>
                                 </div>

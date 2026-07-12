@@ -59,16 +59,6 @@
   background: var(--accent);
 }
 
-@media (max-width: 768px) {
-  .tab-list {
-    flex-direction: column;
-  }
-
-  .tab-button {
-    width: 100%;
-  }
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;

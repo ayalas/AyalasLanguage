@@ -7,7 +7,7 @@ export interface Tab {
   path: string;
 }
 
-export function TabLinksComponent({tabData, activeTab}: {tabData: Tab[], activeTab: number}) {
+export function TabLinksComponent({tabData, activeTab}: {tabData: Tab[], activeTab?: number}) {
   const navigate = useNavigate();
 
   return (

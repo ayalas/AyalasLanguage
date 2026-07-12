@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import { LogIn } from 'lucide-react';
 
 import { useAuth } from '../../components/auth/useAuth';
@@ -128,6 +128,9 @@ export default function LoginPage(): React.ReactElement {
                   <div className="form-input-cell">
                     <input ref={passwordRef} data-testid="password" required={true} maxLength={32} type="password" className="form-input" value={password} onKeyDown={(e) => handleKeyDown(e, null, submitAction)} onChange={e => setPassword(e.target.value)} />
                   </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-label-cell"><Link to="/forgot">Forgot your password?</Link></div>
                 </div>
               </>
             )}
