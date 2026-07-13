@@ -22,7 +22,8 @@ export type ExcerciseTypeLogic = {
     ShowsTranslationOnRevealedAnswer: boolean;
     IsMatchingType: boolean;
     FocusOnLoad: boolean;
-    ShouldPlayQuestion: boolean;
+    CanPlayQuestion: boolean;
+    AutoPlayQuestion: boolean;
     TargetIsSpoken: boolean;
     ShouldPlayAnswer: boolean;
     UsesVirtualKeyboard: boolean;
@@ -45,7 +46,8 @@ const BASE_LOGIC: Omit<ExcerciseTypeLogic, 'GenerationInfo'> = {
     ShowsTranslationOnRevealedAnswer: false,
     IsMatchingType: false,
     FocusOnLoad: false,
-    ShouldPlayQuestion: false,
+    CanPlayQuestion: false,
+    AutoPlayQuestion: false,
     TargetIsSpoken: false,
     ShouldPlayAnswer: false,
     UsesVirtualKeyboard: false,
@@ -107,7 +109,8 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
         ShowsCheckAnswers: true,
         CanRevealAnswers: true,
         FocusOnLoad: true,
-        ShouldPlayQuestion: true,
+        CanPlayQuestion: true,
+        AutoPlayQuestion: true,
         IsWritingExercise: true
     }),
 
@@ -185,6 +188,7 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
         CanRevealAnswers: true,
         ShowsTranslationOnRevealedAnswer: true,
         ShouldPlayAnswer: true,
+        CanPlayQuestion: true,
         HasExtraOptions: true,
         HasSingleBucketAnswer: true,
         ExtraOptionsSeparator: ","
@@ -207,7 +211,8 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
         CanRevealAnswers: true,
         ShowsTranslationOnRevealedAnswer: true,
         FocusOnLoad: true,
-        ShouldPlayQuestion: true,
+        CanPlayQuestion: true,
+        AutoPlayQuestion: true,
         ShouldPlayAnswer: true,
         UsesVirtualKeyboard: true,
         IsWritingExercise: true
@@ -229,7 +234,8 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
         SupportsAlternativeAnswers: true,
         ShowsCheckAnswers: true,
         CanRevealAnswers: true,
-        ShouldPlayQuestion: true,
+        CanPlayQuestion: true,
+        AutoPlayQuestion: true,
         HasExtraOptions: true,
         HasMultiBucketAnswers: true,
         ExtraOptionsSeparator: " "

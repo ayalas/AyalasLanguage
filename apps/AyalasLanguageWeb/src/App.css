@@ -277,6 +277,7 @@ input:required:invalid {
 .input-text-placeholder {
   margin-left: 10px;
   margin-right: 10px;
+  max-width: 80vw;
 }
 
 .content-line-part,
@@ -936,7 +937,7 @@ input:required:invalid {
   }
 
   .exercise-footer-next {
-    width: calc(100% - 102px);
+    width: calc(100% - 115px);
   }
 
   .exercise-footer-next-noback {

@@ -87,7 +87,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       if (exerciseInfo.exerciseObject.Translation != null) {
         setTranslation(exerciseInfo.exerciseObject.Translation as string);
       }
-      if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayQuestion) {
+      if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].AutoPlayQuestion) {
         //play the sentence shown
         await playTargetText(exerciseInfo.exerciseObject.First as string);
       }
@@ -100,7 +100,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       <div className="exercise-outer-element">
         <div className="exercise-inner-element">
           <div className="form-row-play">
-            <div className="form-play-container">{first}{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayQuestion && (
+            <div className="form-play-container">{first}{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
               <div className="playButtonContainer"><button data-testid="play-question" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
             )}</div>
           </div>
