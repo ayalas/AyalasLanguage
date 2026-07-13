@@ -1,5 +1,7 @@
 import type { AppLanguageCode } from "../types/User";
 
+export const BRAND_NAME = "langapp.xyz";
+
 export const PLACEHOLDERS = {
     KNOWN_LANGUAGE_PLACEHOLDER: "kkknownnn",
     TARGET_LANGUAGE_PLACEHOLDER: "tttargettt",

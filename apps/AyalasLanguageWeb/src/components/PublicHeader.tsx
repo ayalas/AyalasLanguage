@@ -10,7 +10,7 @@ import {
     useDismiss,
     useInteractions
 } from '@floating-ui/react';
-import { BRAND_NAME } from '../constants/public';
+import { BRAND_NAME } from '../constants/learning';
 import { useState } from 'react';
 
 export function PublicHeader() {

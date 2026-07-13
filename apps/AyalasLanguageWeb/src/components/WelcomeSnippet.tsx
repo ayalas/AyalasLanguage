@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { BRAND_NAME } from "../constants/public";
+import { BRAND_NAME } from "../constants/learning";
 import { FormHeader } from "./FormHeader";
 
 export function WelcomeSnippet({ isPublic }: { isPublic: boolean }) {
