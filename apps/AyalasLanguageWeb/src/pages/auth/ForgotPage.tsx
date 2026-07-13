@@ -6,7 +6,7 @@ import { handleKeyDown, isValidEmail } from '../../utils/utils';
 import { Send } from 'lucide-react';
 import { PublicHeader } from '../../components/PublicHeader';
 import { TabLinksComponent } from '../../components/tabs/TabLinksComponent';
-import { AUTH_TABS, AuthTabsEnum } from '../../constants/auth';
+import { AUTH_TABS } from '../../constants/auth';
 
 export function ForgotPage() {
     const [error, setError] = useState("");
