@@ -1,9 +1,29 @@
-import { Tabs } from 'expo-router'
+import { useAuth } from '@/lib/AuthContext';
+import { useRouter, Tabs, usePathname } from 'expo-router'
+import { useEffect } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 
 export default function PublicAuthLayout() {
-    
-  return (
-    <Tabs screenOptions={{
+    const { user, loading } = useAuth();
+    const router = useRouter();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        if (!loading && pathname === "/login" && user != null) {
+            router.replace({ pathname: "/" });
+        }
+    }, [user, loading]);
+
+    if (loading) {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', backgroundColor: "#0F0D23" }}>
+                <ActivityIndicator size="large" color="#ffffff" />
+            </View>
+        );
+    }
+
+    return (
+        <Tabs screenOptions={{
             tabBarShowLabel: true,
             headerShown: false,
             tabBarItemStyle: {
@@ -31,6 +51,6 @@ export default function PublicAuthLayout() {
                 options={{
                     title: "Sign Up"
                 }} />
-      </Tabs>
-  )
+        </Tabs>
+    )
 }

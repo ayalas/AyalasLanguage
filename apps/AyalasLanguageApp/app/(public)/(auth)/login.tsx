@@ -1,12 +1,13 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import { Link, router } from 'expo-router';
+import { Link, router, useLocalSearchParams, Href } from 'expo-router';
 import { LogIn } from 'lucide-react-native';
 import axios from 'axios';
 import { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Verify2FARequest } from '@ayalaslanguage/types/auth';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '@/lib/AuthContext';
 
 const LogInPage = () => {
   const [error, setError] = useState('');
@@ -15,27 +16,32 @@ const LogInPage = () => {
   const [on2FA, setOn2FA] = useState(false);
   const [verify2FAToken, setVerify2FAToken] = useState('');
   const [code, setCode] = useState('');
+  const { login } = useAuth();
+  const { from } = useLocalSearchParams();
 
   function completeLogin(tmpUser: User) {
     try {
-      //login(tmpUser);
+      login(tmpUser);
 
-     /*  if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
-        if (from != null) {
-          navigate('/profile', { state: { from: { pathname: from } }, replace: true });
+      if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
+        if (from != null && typeof from == 'string') {
+          router.push({
+            pathname: '/profile',
+            params: { from }
+          });
         }
         else {
-          navigate('/profile');
+          router.replace('/profile');
         }
         return;
-      } */
-
-     /*  if (from != null) {
-        navigate(from, { replace: true });
       }
-      else { */
-       router.replace('/');
-      //}
+
+      if (from != null && typeof from == 'string') {
+        router.replace(from as Href);
+      }
+      else {
+        router.replace('/');
+      }
     } catch (err) {
       errorHandler(err, setError);
     }
@@ -77,9 +83,9 @@ const LogInPage = () => {
             <Text className="form-label">Two Factor Authentication Code</Text>
           </View>
           <View className="form-input-cell">
-            <TextInput maxLength={TWO_FACTOR_CODE_LENGTH} value={code} 
+            <TextInput maxLength={TWO_FACTOR_CODE_LENGTH} value={code}
               keyboardType="number-pad"
-              className="form-input" 
+              className="form-input"
               onChangeText={setCode} />
           </View>
           <View className="form-cell-footer"><Text className='text'>Fill the 6-digit code that has been sent to you by email</Text></View>
@@ -121,11 +127,11 @@ const LogInPage = () => {
         )}
       <View className="buttons-container">
         <View className="form-input-row">
-            <TouchableOpacity className="form-button login-button" onPress={submitAction}>
-                <LogIn /><Text className='text'> Log In</Text>
-            </TouchableOpacity>
+          <TouchableOpacity className="form-button login-button" onPress={submitAction}>
+            <LogIn /><Text className='text'> Log In</Text>
+          </TouchableOpacity>
         </View>
-    </View>
+      </View>
     </SafeAreaView>
   )
 }

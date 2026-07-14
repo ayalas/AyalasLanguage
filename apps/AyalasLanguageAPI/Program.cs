@@ -20,6 +20,8 @@ builder.Services.AddAuthorization();
 
 builder.AddRouteConstraints();
 
+builder.AddCorsSettings();
+
 var app = builder.Build();
 
 app.MigrateDb();
@@ -29,11 +31,17 @@ await app.MakeFirstUserAdmin();
 //support forward headers for reverse proxy scenarios (e.g., when deployed behind Nginx or Apache)
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
-    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | 
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor |
                        Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
 });
 
 app.UseWebSockets();
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors();
+}
 
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();

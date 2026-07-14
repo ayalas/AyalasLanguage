@@ -28,4 +28,20 @@ public static class AuthExtensions
             options.CookieName = Constants.ADMIN_APP_COOKIE_NAME;
         });
     }
+
+    public static void AddCorsSettings(this WebApplicationBuilder builder)
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+        }
+    }
 }
