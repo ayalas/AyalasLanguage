@@ -5,6 +5,7 @@
     "build": "dotnet build",
     "dev": "dotnet watch run",
     "native": "dotnet watch run",
+    "api-only": "dotnet watch run --launch-profile \"http\"",
     "test": "dotnet test"
   }
 }

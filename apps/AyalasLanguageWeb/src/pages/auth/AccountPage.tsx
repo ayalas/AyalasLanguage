@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Save, Send } from 'lucide-react';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { AuthHeader } from '../../components/auth/AuthHeader';
-import type { User } from '../../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { checkPasswordStrength, generatePasswordFeedback, handleKeyDown } from '../../utils/utils';
 import { FormHeader } from '../../components/FormHeader';
 

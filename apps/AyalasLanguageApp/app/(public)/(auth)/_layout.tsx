@@ -1,9 +1,12 @@
+import axios from 'axios';
 import { Tabs } from 'expo-router'
 
 export default function PublicAuthLayout() {
+    axios.defaults.baseURL = process.env.BACKEND_BASE_URL;
+    
   return (
     <Tabs screenOptions={{
-            tabBarShowLabel: false,
+            tabBarShowLabel: true,
             headerShown: false,
             tabBarItemStyle: {
                 width: "100%",
@@ -16,8 +19,7 @@ export default function PublicAuthLayout() {
                 borderRadius: 50,
                 marginHorizontal: 20,
                 marginBottom: 36,
-                height: 52,
-                position: "absolute",
+                height: 152,
                 overflow: "hidden",
                 borderWidth: 1,
                 borderColor: "#0F0D23",

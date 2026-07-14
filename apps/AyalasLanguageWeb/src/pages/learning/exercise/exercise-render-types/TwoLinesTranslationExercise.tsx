@@ -4,7 +4,7 @@ import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import type { ExtendedExerciseInfo } from '../../../../types/Exercise';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles';
-import type { User } from '../../../../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { CirclePlay } from 'lucide-react';
 import { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '../../../../logic/ExerciseTypeLogic';

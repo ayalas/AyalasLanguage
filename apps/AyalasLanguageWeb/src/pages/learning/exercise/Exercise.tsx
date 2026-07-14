@@ -17,7 +17,7 @@ import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/
 import { Toaster } from 'sonner';
 import { useMistakesReadd } from '../../../components/useMistakesReadd';
 import type { ExtendedExerciseInfo } from '../../../types/Exercise';
-import type { User } from '../../../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;

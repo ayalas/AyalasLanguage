@@ -9,6 +9,10 @@
       "cache": false,
       "persistent": true
     },
+    "api-only": {
+      "cache": false,
+      "persistent": true
+    },
     "native": {
       "cache": false,
       "persistent": true

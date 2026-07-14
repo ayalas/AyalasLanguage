@@ -3,7 +3,7 @@ import axios from 'axios';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import type { User } from '../../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios as requested

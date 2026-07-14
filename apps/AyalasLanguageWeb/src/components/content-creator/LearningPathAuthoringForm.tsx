@@ -15,7 +15,7 @@ import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
 import { getAIInstructions, type IChatMessage } from '../../logic/AIInstructionsLogic';
-import type { User } from '../../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import type { ExerciseData } from '../../types/Exercise';
 import type { NextChapterResponse } from '../../types/Creator';
 import type { LearningPathInfo } from '../../types/LearningPath';

@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 
 import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../components/auth/AuthHeader';
 import { DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from '../constants/learning';
-import type { User } from '../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';

@@ -73,22 +73,15 @@
   box-sizing: border-box;
 }
 
-.root-container {
-  margin: 0;
-  min-height: 100vh;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);
-  color: var(--text-h);
-}
-
 .root {
-  width: min(1512px, calc(100% - 24px));
-  margin: 0 auto;
+  width: 100vw;
   text-align: start;
-  min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 0 0 24px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);
+  color: var(--text-h);
 }
 
 .h1,
@@ -108,12 +101,6 @@
   font-size: clamp(20px, 2.3vw, 24px);
   line-height: 1.25;
   margin: 0 0 8px;
-}
-
-@media (max-width: 768px) {
-  .root {
-    width: min(100%, calc(100% - 16px));
-  }
 }
 
 .button,
@@ -150,6 +137,13 @@
   transform: translateY(-1px);
   box-shadow: var(--shadow-card);
   border-color: var(--accent-border);
+}
+
+.text {
+  font-size: var(--fontsize);
+  color: var(--text);
+  font-family: var(--suns);
+  display: inline-flex;
 }
 
 .textarea,
@@ -357,6 +351,7 @@
 
 .form-input-row {
   max-width: 800px;
+  width: 100%;
   text-align: start;
   line-height: 1.4;
 }
@@ -380,7 +375,8 @@
 }
 
 .home-container {
-  padding-bottom: 20px;
+  padding: 24px;
+  margin: 0;
 }
 
 .input-text-placeholder {
@@ -409,15 +405,15 @@
   padding: 0;
   margin-right: 8px;
   display: inline-flex;
-  background-image: url("assets/images/Discord-Symbol-Black.png");
+/*   background-image: url("assets/images/Discord-Symbol-Black.png"); */
   background-size: cover;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .discordIcon {
     background-image: url("assets/images/Discord-Symbol-White.png");
   }
-}
+} */
 
 .text-area-wide {
   width: 100%;
@@ -713,15 +709,15 @@
   display: inline-flex;
   width: 190px;
   height: 55px;
-  background-image: url("assets/images/logo.png");
+ /*  background-image: url("assets/images/logo.png"); */
   background-size: cover;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   .logo {
     background-image: url("assets/images/logo-dark.png");
   }
-}
+} */
 
 .menu-button {
   padding: 10px 16px;

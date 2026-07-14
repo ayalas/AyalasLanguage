@@ -12,7 +12,7 @@ import { EXERCISE_TYPE_LOGIC } from '../../logic/ExerciseTypeLogic';
 import { safeParseData } from '../../logic/ExerciseDataLogic';
 import type { LearningPathInfo } from '../../types/LearningPath';
 import type { ExerciseInfo, ExtendedExerciseInfo } from '../../types/Exercise';
-import type { User } from '../../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 export function LessonPage() {
   const { learningPathId } = useParams();

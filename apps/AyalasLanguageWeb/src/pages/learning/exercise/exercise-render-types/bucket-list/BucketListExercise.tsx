@@ -5,7 +5,7 @@ import type { ExtendedExerciseInfo } from '../../../../../types/Exercise';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '../../../../../logic/ExerciseTypeLogic';
-import type { User } from '../../../../../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;

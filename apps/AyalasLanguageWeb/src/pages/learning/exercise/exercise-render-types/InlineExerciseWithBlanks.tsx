@@ -3,7 +3,7 @@ import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import type { ExtendedExerciseInfo } from '../../../../types/Exercise';
-import type { User } from '../../../../types/User';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import type { ExerciseInputHandle, ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '../../../../logic/ExerciseTypeLogic';
 import { CirclePlay } from 'lucide-react';
