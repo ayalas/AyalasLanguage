@@ -1,10 +1,8 @@
-import axios from 'axios';
 import { Slot } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function PublicAuthOtherLayout() {
-  axios.defaults.baseURL = process.env.BACKEND_BASE_URL;
   
   return (
     <SafeAreaView className="root">

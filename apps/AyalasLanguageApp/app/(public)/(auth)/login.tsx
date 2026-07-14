@@ -44,12 +44,12 @@ const LogInPage = () => {
   async function submitAction() {
     try {
       if (on2FA) {
-        const response = await axios.post<LoginResponse<User>>(`${process.env.BACKEND_BASE_URL}/api/auth/verify2fa`, { verify2FAToken, code } as Verify2FARequest);
+        const response = await axios.post<LoginResponse<User>>('/api/auth/verify2fa', { verify2FAToken, code } as Verify2FARequest);
 
         completeLogin(response.data.user);
       }
       else {
-        const response = await axios.post<LoginResponse<User>>(`${process.env.BACKEND_BASE_URL}/api/auth/login`, { userName: email, password } as LoginRequest);
+        const response = await axios.post<LoginResponse<User>>('/api/auth/login', { userName: email, password } as LoginRequest);
 
         if (response.data.requires2FA) {
           setOn2FA(true);

@@ -1,8 +1,6 @@
-import axios from 'axios';
 import { Tabs } from 'expo-router'
 
 export default function PublicAuthLayout() {
-    axios.defaults.baseURL = process.env.BACKEND_BASE_URL;
     
   return (
     <Tabs screenOptions={{
