@@ -9,6 +9,10 @@
       "cache": false,
       "persistent": true
     },
+    "native": {
+      "cache": false,
+      "persistent": true
+    },
     "test": {
       "cache": true,
       "inputs": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js"]

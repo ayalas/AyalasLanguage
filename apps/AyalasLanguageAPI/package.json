@@ -4,6 +4,7 @@
   "scripts": {
     "build": "dotnet build",
     "dev": "dotnet watch run",
+    "native": "dotnet watch run",
     "test": "dotnet test"
   }
 }
