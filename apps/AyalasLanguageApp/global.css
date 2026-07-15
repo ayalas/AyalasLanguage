@@ -30,6 +30,7 @@
   --heading: 'Tajawal', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --mono: ui-monospace, Consolas, monospace;
   --fontsize: 22px;
+  --exrsize: 22px;
   --fontsize-lg: 26px;
 
   font: var(--fontsize)/1.55 var(--sans);
@@ -41,6 +42,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --fontsize: 18px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -84,6 +91,13 @@
   color: var(--text-h);
 }
 
+.root-container {
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  padding: 10px 24px;
+}
+
 .h1,
 .h2 {
   font-family: var(--heading);
@@ -106,8 +120,7 @@
 .button,
 .input,
 .select,
-.textarea
-.form-button,
+.textarea .form-button,
 .top-button,
 .link-button,
 .actions-menu-link-button,
@@ -141,9 +154,18 @@
 
 .text {
   font-size: var(--fontsize);
-  color: var(--text);
+  color: var(--text-h);
   font-family: var(--suns);
   display: inline-flex;
+  flex-direction: row;
+}
+
+.text-nowrap {
+  white-space: nowrap;
+}
+
+.text-dimmed {
+  color: var(--text);
 }
 
 .textarea,
@@ -231,6 +253,7 @@
   background-color: var(--surface-strong);
   cursor: pointer;
   display: inline-flex;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   gap: 4px;
@@ -278,7 +301,7 @@
   display: inline-flex;
   min-width: 200px;
   padding: 0 10px;
-  align-items: center;
+  align-items: start;
 }
 
 .form-cell-footer {
@@ -304,10 +327,10 @@
 }
 
 .form-content-row {
-  text-align: start;
-  display: inline-flex;
-  height: auto;
-  overflow-wrap: break-word;
+  text-align: left; /* Use 'left' instead of 'start' for better RN compatibility */
+  font-size: var(--fontsize);
+  color: var(--text-h);
+  font-family: var(--suns);
 }
 
 .form-label {
@@ -316,6 +339,11 @@
   white-space: normal;
   color: var(--text-h);
   font-weight: 500;
+  font-size: var(--fontsize);
+  font-family: var(--suns);
+  display: inline-flex;
+  flex-direction: row;
+  white-space: nowrap;
 }
 
 .label-deleted {
@@ -338,12 +366,14 @@
 
 .form-button-cell {
   display: inline-flex;
+  flex-direction: row;
   padding-right: 10px;
   padding-top: 10px;
 }
 
 .form-input-cell {
   display: inline-flex;
+  flex-direction: row;
   min-width: 150px;
   padding: 6px 10px 0;
   min-height: 32px;
@@ -407,7 +437,7 @@
   padding: 0;
   margin-right: 8px;
   display: inline-flex;
-/*   background-image: url("assets/images/Discord-Symbol-Black.png"); */
+  /*   background-image: url("assets/images/Discord-Symbol-Black.png"); */
   background-size: cover;
 }
 
@@ -497,6 +527,8 @@
 
 .form-error {
   color: var(--error);
+  font-size: var(--fontsize);
+  font-family: var(--suns);
 }
 
 .header-row {
@@ -522,6 +554,7 @@
 
 .header-input-cell {
   display: inline-flex;
+  flex-direction: row;
   min-width: 150px;
   padding: 5px;
   min-height: 32px;
@@ -652,6 +685,10 @@
   text-decoration: none;
   color: var(--layers);
   font-weight: 600;
+  font-size: var(--fontsize);
+  font-family: var(--suns);
+  flex-direction: row;
+  white-space: nowrap;
 }
 
 .learning-level-creator {
@@ -721,7 +758,7 @@
   display: inline-flex;
   width: 190px;
   height: 55px;
- /*  background-image: url("assets/images/logo.png"); */
+  /*  background-image: url("assets/images/logo.png"); */
   background-size: cover;
 }
 
@@ -865,6 +902,7 @@
 .match-word-item-cell {
   text-align: right;
   display: inline-flex;
+  flex-direction: row;
   padding-top: 5px;
   padding-bottom: 5px;
 }
@@ -940,6 +978,7 @@
 
 .bucket-list-item-cell {
   display: inline-flex;
+  flex-direction: row;
   padding-right: 10px;
 }
 
@@ -1037,6 +1076,7 @@
   .buttons-container {
     flex-direction: column;
     align-items: stretch;
+    width: 100%;
   }
 
   .form-button,
@@ -1045,6 +1085,14 @@
   .actions-menu-link-button {
     width: 100%;
     justify-content: center;
+  }
+
+  .form-row {
+    width: 100%;
+  }
+
+  .form-container {
+    width: 100%;
   }
 
   .exercise-footer {
@@ -1064,7 +1112,7 @@
   }
 
   .learning-lesson {
-      margin-top: 12px;
-      margin-bottom: 12px;
+    margin-top: 12px;
+    margin-bottom: 12px;
   }
 }

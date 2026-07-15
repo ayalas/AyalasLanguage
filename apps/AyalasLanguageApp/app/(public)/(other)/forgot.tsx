@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Forgot = () => {
+const ForgotScreen = () => {
   return (
     <View>
       <Text>Forgot</Text>
@@ -9,4 +9,4 @@ const Forgot = () => {
   )
 }
 
-export default Forgot;
+export default ForgotScreen;

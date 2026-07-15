@@ -1,18 +1,39 @@
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter, Tabs, usePathname } from 'expo-router'
+import { LogInIcon, UserIcon } from 'lucide-react-native';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
+
+const TabIcon = ({
+    focused,
+    title,
+}: {
+    focused: boolean;
+    title: string;
+}) => (
+    <View className="flex-1 flex flex-row items-center mt-4">
+        {title === "Log In" && (
+            <LogInIcon className={`text ${focused ? "" : "text-dimmed" }`} />
+        ) || (
+                <UserIcon className={`text ${focused ? "" : "text-dimmed" }`} />
+            )}
+        <Text
+            className={`text text-nowrap ${focused ? "" : "text-dimmed" }`}>
+            &nbsp;{title}
+        </Text>
+    </View>
+);
 
 export default function PublicAuthLayout() {
     const { user, loading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
 
-    useEffect(() => {
+    /* useEffect(() => {
         if (!loading && pathname === "/login" && user != null) {
             router.replace({ pathname: "/" });
         }
-    }, [user, loading]);
+    }, [user, loading]); */
 
     if (loading) {
         return (
@@ -24,32 +45,33 @@ export default function PublicAuthLayout() {
 
     return (
         <Tabs screenOptions={{
-            tabBarShowLabel: true,
+            tabBarShowLabel: false,
             headerShown: false,
-            tabBarItemStyle: {
-                width: "100%",
-                height: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-            },
             tabBarStyle: {
-                backgroundColor: "#0F0D23",
-                borderRadius: 50,
-                marginHorizontal: 20,
-                marginBottom: 36,
-                height: 152,
-                overflow: "hidden",
-                borderWidth: 1,
-                borderColor: "#0F0D23",
-            },
+                backgroundColor: "white",
+                borderTopColor: "#0061FF1A",
+                position: 'absolute',
+                borderRadius: 20,
+                borderTopWidth: 1,
+                minHeight: 70,
+                marginHorizontal: 24,
+                marginBottom: 10,
+                maxWidth: 350,
+            }
         }}>
             <Tabs.Screen name="login"
                 options={{
-                    title: "Log In"
+                    title: "Log In",
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon focused={focused} title="Log In" />
+                    ),
                 }} />
             <Tabs.Screen name="signup"
                 options={{
-                    title: "Sign Up"
+                    title: "Sign Up",
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon focused={focused} title="Sign Up" />
+                    ),
                 }} />
         </Tabs>
     )

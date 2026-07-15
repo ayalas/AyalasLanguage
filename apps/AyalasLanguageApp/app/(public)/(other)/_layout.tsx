@@ -1,12 +1,9 @@
-import { Slot } from 'expo-router'
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Stack } from 'expo-router'
 
 
 export default function PublicAuthOtherLayout() {
   
   return (
-    <SafeAreaView className="root">
-      <Slot/>
-    </SafeAreaView>
+    <Stack screenOptions={{headerShown: false}} />
   )
 }

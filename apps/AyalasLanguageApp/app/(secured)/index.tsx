@@ -1,8 +1,6 @@
 import { useEffect, useState, Fragment, useRef } from "react";
-import { Button, findNodeHandle, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Button, findNodeHandle, ScrollView, Text, View, Platform } from "react-native";
 import { Link, useRouter } from 'expo-router';
-import { Platform } from 'react-native';
 
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react-native';
 import dayjs from 'dayjs';
@@ -145,18 +143,18 @@ export default function HomeScreen() {
 
   return (
       <View className="root home-container">
+        <View className="inline-row"><Button title="Logout" onPress={handleLogout} /></View>
         {error !== '' && (
           <View className="form-row">
             <Text className="form-error">{error}</Text>
           </View>
         )}
         {isLoading && (
-          <View className="learning=path-empty">
+          <Text className="text text-dimmed learning=path-empty">
             Loading...
-          </View>
+          </Text>
         ) || ((learningPath && learningPath.length > 0) && (
-          <ScrollView className="learning-container" showsVerticalScrollIndicator={false} ref={scrollViewRef}>
-            <View className="inline-row"><Button title="Logout" onPress={handleLogout} /></View>
+          <ScrollView className="learning-container" showsVerticalScrollIndicator={false} ref={scrollViewRef}> 
             {learningPath.map((level) => {
               return (
                 <View className="learning-level-container" key={`level-${level.level}`}>
@@ -187,17 +185,17 @@ export default function HomeScreen() {
                                       <Text><Check className="learning-progress-img" /></Text>
                                     )}
                                     {isInProgress && (
-                                      <Text><CircleDotDashed className="learning-progress-img" /></Text>
+                                      <Text><CircleDotDashed className="lucide-circle-dot-dashed learning-progress-img" /></Text>
                                     )}
                                     {path.practiseMistakesInThisPath && (
                                       <Text><History className="learning-progress-img" /></Text>
                                     )}
-                                    <View className="content-line-part"><Text>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
+                                    <View className="content-line-part"><Text className="text-dimmed">{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
                                   </View>
                                 );
                               })}
                               <View className="learning-level-creator">
-                                <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`} title="Generate more exercises here"><LayersPlus /></Link>
+                                <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`} title="Generate more exercises here"><LayersPlus className="lucide-layers-plus" /></Link>
                               </View>
                             </View>
                           </View>
@@ -212,15 +210,15 @@ export default function HomeScreen() {
             })}
           </ScrollView>
         ) || (hasLanguage && (
-          <View className="learning-path-empty">
-            It looks like there are not yet any lessons in this language.<br />
+          <Text className="form-content-row">
+            It looks like there are not yet any lessons in this language.{"\n"}
             But you can <Link href="/author/create">add ones yourself!</Link>
-          </View>
+          </Text>
         )) || (
-            <View className="learning-path-empty">
-              You have not selected which language to learn.<br />
-              Go to <Link href="/profile">the profile page</Link> to choose one!
-            </View>
+            <Text className="form-content-row">
+              You have not selected which language to learn.{"\n"}
+              Go to <Link className="text-dimmed underline" href="/profile">the profile page</Link> to choose one!
+            </Text>
           ))}
       </View>
   );
