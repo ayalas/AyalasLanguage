@@ -1,9 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MatchWordsExercise from './MatchWordsExercise';
-import { getRandomizedSequence } from '../../../../../utils/utils';
+import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
-import { type ExerciseData, type ExtendedExerciseInfo } from '../../../../../types/Exercise';
+import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 
@@ -11,7 +11,7 @@ import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 vi.mock('axios');
 
 // Mock randomized sequence to be predictable (returning original indices)
-vi.mock('../../../../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
   getRandomizedSequence: vi.fn((len: number) => Array.from({ length: len }, (_, i) => i)),
 }));
 

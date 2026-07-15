@@ -1,4 +1,4 @@
-import type { ExerciseData } from "../types/Exercise";
+import type { ExerciseData } from "../learning/Exercise";
 
 export const safeParseData = (data: string | ExerciseData) => {
   if (typeof data === 'string') {

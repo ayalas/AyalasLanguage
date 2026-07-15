@@ -1,8 +1,9 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import type { ReactNode } from 'react';
-import axios from 'axios';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import type { AuthContextType } from '@ayalaslanguage/types/auth';
+import api from './api'; // Use the custom axios instance
+import { getToken, saveToken, deleteToken } from './authStorage';
 
 const AuthContext = createContext<AuthContextType<User> | undefined>(undefined);
 
@@ -15,27 +16,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const checkAuthStatus = async () => {
+    const initializeAuth = async () => {
       try {
-       // axios.defaults.withCredentials = true;
+        const token = await getToken();
 
-        if (user) return;
-
-        const response = await axios.get('/api/auth/me');
-        const data = response.data;
-        setUser(data);
-      } catch {
-        setUser(null);
+        if (token && user == null) {
+          // Verify token by calling /me
+          const response = await api.get('/api/auth/me');
+          setUser(response.data);
+        }
+      } catch (error) {
+        console.error("Session expired or invalid", error);
+        await deleteToken();
       } finally {
         setLoading(false);
       }
     };
 
-    checkAuthStatus();
+    initializeAuth();
   }, [user]);
 
-  const login = (userData: User | null) => setUser(userData);
-  const logout = () => setUser(null);
+  const login = async (userData: User | null, token?: string) => {
+    if (userData != null && token != null) {
+      await saveToken(token);
+      setUser(userData);
+    }
+  };
+
+  const logout = async () => {
+    await deleteToken();
+    setUser(null);
+  };
 
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>

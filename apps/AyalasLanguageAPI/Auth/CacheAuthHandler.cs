@@ -26,15 +26,23 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var token = Request.Cookies[Options.CookieName];
-        AppIdEnum appId = Options.CookieName == Constants.ADMIN_APP_COOKIE_NAME? AppIdEnum.Admin : AppIdEnum.Main;
 
         if (string.IsNullOrEmpty(token))
-            return AuthenticateResult.Fail("Empty token");
+        {
+            string? authHeader = Request.Headers.Authorization;
+            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+            {
+                token = authHeader.Substring("Bearer ".Length).Trim();
+            }
+        }
 
-        User? user = null;
+        if (string.IsNullOrEmpty(token))
+            return AuthenticateResult.Fail("No token found in cookie or header");
+
+        AppIdEnum appId = Options.CookieName == Constants.ADMIN_APP_COOKIE_NAME? AppIdEnum.Admin : AppIdEnum.Main;
 
         // 2. Look up user in cache
-        if (!_cache.TryGetValue(token, out user))
+        if (!_cache.TryGetValue(token, out User? user))
         {
             // Optionally, you could also check the database for the token if it's not in cache
             var db = Request.HttpContext.RequestServices.GetRequiredService<AyalasLanguageDbContext>();

@@ -377,6 +377,7 @@
 .home-container {
   padding: 24px;
   margin: 0;
+  flex: 1 1 0%;
 }
 
 .input-text-placeholder {
@@ -388,6 +389,7 @@
 .content-line-part,
 .inline-content-line-part {
   display: inline-flex;
+  flex-direction: row;
   padding: 0 5px;
   margin: 0;
   white-space: normal;
@@ -590,12 +592,20 @@
   white-space: nowrap;
 }
 
+.inline-row {
+  display: inline-flex;
+  flex-direction: row;
+}
+
 .learning-exercise-type-heading {
   font-style: italic;
+  display: inline-flex;
+  flex-direction: row;
 }
 
 .learning-exercise-type-heading-icon {
   display: inline-flex;
+  flex-direction: row;
   padding-left: 10px;
 }
 
@@ -627,7 +637,8 @@
 }
 
 .learning-lesson {
-  display: block;
+  display: flex;
+  flex-direction: row;
   overflow-wrap: break-word;
   padding-top: 3px;
   padding-bottom: 3px;
@@ -637,6 +648,7 @@
 }
 
 .learning-lesson-link {
+  display: inline-flex;
   text-decoration: none;
   color: var(--layers);
   font-weight: 600;

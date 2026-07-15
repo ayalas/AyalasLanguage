@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ContactUsPublicPage } from "./ContactUsPublicPage";
 import axios from "axios";
-import * as utils from "../../utils/utils";
+import * as utils from "@ayalaslanguage/types/sharedfrontlib/utils";
 import { errorHandler } from "@ayalaslanguage/types/error";
 
 // 1. Mock Axios
@@ -10,7 +10,7 @@ vi.mock("axios");
 const mockedAxios = vi.mocked(axios);
 
 // 2. Mock the Utils module
-vi.mock("../../utils/utils", () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
     isValidEmail: vi.fn(),
 }));
 

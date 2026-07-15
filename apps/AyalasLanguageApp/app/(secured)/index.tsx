@@ -1,12 +1,227 @@
-import { Text, View } from "react-native";
+import { useEffect, useState, Fragment, useRef } from "react";
+import { Button, findNodeHandle, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Link, useRouter } from 'expo-router';
+import { Platform } from 'react-native';
 
-export default function Index() {
+import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react-native';
+import dayjs from 'dayjs';
+
+import type { ExerciseType } from '@ayalaslanguage/types/exercise';
+import { errorHandler } from '@ayalaslanguage/types/error';
+import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import { type ILearningPath, DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from "@ayalaslanguage/types/sharedfrontlib/learning";
+
+import { ExerciseTypeGroupTitle } from '@/components/ExerciseTypeGroupTitle';
+
+import api from '@/lib/api'; //secured axios instance
+import { useAuth } from "@/lib/AuthContext";
+
+type ExerciseTypeGroupObject = {
+  exerciseTypeId: 0 | ExerciseType,
+  paths: ILearningPath[];
+};
+
+type LevelGroupObject = {
+  level: number;
+  exerciseTypes: ExerciseTypeGroupObject[]
+}
+
+export default function HomeScreen() {
+  const [learningPath, setLearningPath] = useState<any[]>([]);
+  const [error, setError] = useState('');
+  const [latestLesson, setLatestLesson] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasLanguage, setHasLanguage] = useState(false);
+  const { user, logout } = useAuth();
+  const router = useRouter();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const latestLessonRef = useRef<View>(null);
+
+  useEffect(() => {
+    const loadData = async function () {
+      try {
+        if (user?.languageSettings?.targetLanguageId != null && user.languageSettings.knownLanguageId != null) {
+          setHasLanguage(true);
+        } else {
+          return;
+        }
+        const response = await api.get<ILearningPath[]>('/api/learning/path');
+
+        if (response.data != null) {
+          const learningPaths = response.data;
+
+          let lastModifiedLessonId: number = 0;
+          let lastModifiedLessonDate: dayjs.Dayjs | null = null;
+
+          //group by level and then by exerciseTypeId (which can be null for empty lessons)
+          const transformedArray = Object.values(
+            learningPaths.reduce((acc: any, current: ILearningPath) => {
+              //if we don't have the level - create it
+              if (!acc[current.level]) {
+                acc[current.level] = {
+                  level: current.level,
+                  exerciseTypes: []
+                } as LevelGroupObject;
+              }
+
+              const exerciseTypeId: number = current.exerciseTypeId ?? 0;
+              //if we don't have the exercise type id inside the level - create it
+              if (!acc[current.level].exerciseTypes[exerciseTypeId]) {
+                acc[current.level].exerciseTypes[exerciseTypeId] =
+                  {
+                    exerciseTypeId: exerciseTypeId,
+                    paths: []
+                  } as ExerciseTypeGroupObject;
+              }
+              //find latest modified lesson logic
+              if (current.lastModified != null) {
+                //save the first modified element's details
+                if (lastModifiedLessonDate == null) {
+                  lastModifiedLessonId = current.learningPathId;
+                  lastModifiedLessonDate = dayjs(current.lastModified);
+                }
+                //compare and save latest element
+                else if (dayjs(current.lastModified).isAfter(lastModifiedLessonDate)) {
+                  lastModifiedLessonId = current.learningPathId;
+                  lastModifiedLessonDate = dayjs(current.lastModified);
+                }
+              }
+              //add the lesson inside the exercise type paths array
+              acc[current.level].exerciseTypes[exerciseTypeId].paths.push(current);
+              return acc;
+            }, {})
+          );
+
+          if (lastModifiedLessonId > 0) {
+            setLatestLesson(lastModifiedLessonId);
+          }
+
+          setLearningPath(transformedArray);
+        }
+
+      } catch (err: unknown) {
+        errorHandler(err, setError);
+      }
+      finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [user]);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  }
+
+  //scroll into view logic
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      // 3. Ensure refs exist and loading is finished
+      if (!isLoading && latestLessonRef.current && scrollViewRef.current) {
+
+        // We need to measure the target view relative to the ScrollView
+        latestLessonRef.current.measureLayout(
+          // The first argument is the "ancestor" (the ScrollView node)
+          // findNodeHandle is the most reliable way to get the native ID in TS
+          findNodeHandle(scrollViewRef.current) as number,
+          (x, y, width, height) => {
+            // 4. Perform the scroll
+            scrollViewRef.current?.scrollTo({
+              y: y - 100, // Adjust this offset to center the item
+              animated: true,
+            });
+          },
+          () => {
+            console.error("scroll into view logic failed");
+          }
+        );
+      }
+    }
+  }, [isLoading, latestLessonRef]);
+
   return (
-    <SafeAreaView className="root">
-      <View className="home-container">
-        <Text className="learning-path-empty text">It looks like there are not yet any lessons in this language.</Text>
+      <View className="root home-container">
+        {error !== '' && (
+          <View className="form-row">
+            <Text className="form-error">{error}</Text>
+          </View>
+        )}
+        {isLoading && (
+          <View className="learning=path-empty">
+            Loading...
+          </View>
+        ) || ((learningPath && learningPath.length > 0) && (
+          <ScrollView className="learning-container" showsVerticalScrollIndicator={false} ref={scrollViewRef}>
+            <View className="inline-row"><Button title="Logout" onPress={handleLogout} /></View>
+            {learningPath.map((level) => {
+              return (
+                <View className="learning-level-container" key={`level-${level.level}`}>
+                  <Text className="h1">Level {level.level}</Text>
+                  {level.exerciseTypes.sort(
+                    (a: ExerciseTypeGroupObject, b: ExerciseTypeGroupObject) => EXERCISE_TYPE_LOGIC[a.exerciseTypeId].SortByEaseRank - EXERCISE_TYPE_LOGIC[b.exerciseTypeId].SortByEaseRank
+                  ).map((exerciseTypeObject: ExerciseTypeGroupObject) => {
+                    let lastPathObj = { level: level.level, chapter: 1 }
+                    if (exerciseTypeObject.paths.length > 0) {
+                      lastPathObj.chapter = exerciseTypeObject.paths[exerciseTypeObject.paths.length - 1].chapter;
+                    }
+                    return (
+                      <Fragment key={`level-${level.level}-type-${exerciseTypeObject.exerciseTypeId}`}>
+                        <View className="learning-exercise-type-outer-container">
+
+                          <View className="learning-exercise-type-inner-container">
+                            <ExerciseTypeGroupTitle exerciseTypeId={exerciseTypeObject.exerciseTypeId} />
+                            <View className="learning-exercise-type-inner-body">
+                              {exerciseTypeObject.paths.map((path: any) => {
+                                const isDone = path.status === LEANRING_STATUS.DONE;
+                                const isInProgress = path.status === LEANRING_STATUS.IN_PROGRESS;
+                                return (
+                                  <View className="learning-lesson" key={path.learningPathId}
+                                    ref={path.learningPathId === latestLesson ? latestLessonRef : null}
+                                  >
+                                    <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} href={exerciseTypeObject.exerciseTypeId == 0 ? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}>{path.name}</Link>
+                                    {isDone && (
+                                      <Text><Check className="learning-progress-img" /></Text>
+                                    )}
+                                    {isInProgress && (
+                                      <Text><CircleDotDashed className="learning-progress-img" /></Text>
+                                    )}
+                                    {path.practiseMistakesInThisPath && (
+                                      <Text><History className="learning-progress-img" /></Text>
+                                    )}
+                                    <View className="content-line-part"><Text>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
+                                  </View>
+                                );
+                              })}
+                              <View className="learning-level-creator">
+                                <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`} title="Generate more exercises here"><LayersPlus /></Link>
+                              </View>
+                            </View>
+                          </View>
+                        </View>
+                      </Fragment>
+                    );
+                  })}
+
+
+                </View>
+              );
+            })}
+          </ScrollView>
+        ) || (hasLanguage && (
+          <View className="learning-path-empty">
+            It looks like there are not yet any lessons in this language.<br />
+            But you can <Link href="/author/create">add ones yourself!</Link>
+          </View>
+        )) || (
+            <View className="learning-path-empty">
+              You have not selected which language to learn.<br />
+              Go to <Link href="/profile">the profile page</Link> to choose one!
+            </View>
+          ))}
       </View>
-    </SafeAreaView>
   );
 }

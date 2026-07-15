@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-export default function ProfileScreen() {
+export default function LearningPathCreateScreen() {
   return (
     <View>
-      <Text>Profile</Text>
+      <Text>path</Text>
     </View>
   )
 }

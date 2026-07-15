@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import MatchWordItem from './MatchWordItem';
 import type { MatchSelection } from './MatchWordItem';
-import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExtendedExerciseInfo } from '../../../../../types/Exercise';
-import { EXERCISE_TYPE_LOGIC } from '../../../../../logic/ExerciseTypeLogic';
+import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import {EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;

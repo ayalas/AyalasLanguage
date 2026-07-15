@@ -1,5 +1,5 @@
-import type { AuthorAccess } from "@ayalaslanguage/types/auth";
-import type { ContentStatus } from "@ayalaslanguage/types/exercise";
+import type { AuthorAccess } from "../../auth";
+import type { ContentStatus } from "../../exercise";
 
 export interface LearningPathInfo {
     learningPathId: number;
@@ -26,4 +26,3 @@ export interface ILearningPath {
     lastModified: string,
     exerciseTypeId?: number;
 }
-//int LearningPathId, uint Level, decimal Chapter, string? Name, ContentStatusEnum ContentStatus,  int? Status = null,  int ExerciseCount = 0, bool PractiseMistakesInThisPath = false, int? ExerciseTypeId = null

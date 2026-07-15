@@ -17,6 +17,16 @@ public static class AuthMiddleware
                 : Constants.APP_COOKIE_NAME;
             string? token = context.Request.Cookies[cookieName];
 
+            // Try Header if Cookie is missing
+            if (string.IsNullOrEmpty(token))
+            {
+                string? authHeader = context.Request.Headers.Authorization;
+                if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+                {
+                    token = authHeader[7..];
+                }
+            }
+
             if (!string.IsNullOrEmpty(token))
             {
                 var cache = context.RequestServices.GetRequiredService<IMemoryCache>();

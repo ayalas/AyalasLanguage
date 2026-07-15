@@ -19,9 +19,9 @@ const LogInPage = () => {
   const { login } = useAuth();
   const { from } = useLocalSearchParams();
 
-  function completeLogin(tmpUser: User) {
+  function completeLogin(tmpUser: User, token:string) {
     try {
-      login(tmpUser);
+      login(tmpUser, token); 
 
       if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
         if (from != null && typeof from == 'string') {
@@ -52,17 +52,17 @@ const LogInPage = () => {
       if (on2FA) {
         const response = await axios.post<LoginResponse<User>>('/api/auth/verify2fa', { verify2FAToken, code } as Verify2FARequest);
 
-        completeLogin(response.data.user);
+        completeLogin(response.data.user, response.data.token);
       }
       else {
         const response = await axios.post<LoginResponse<User>>('/api/auth/login', { userName: email, password } as LoginRequest);
 
         if (response.data.requires2FA) {
           setOn2FA(true);
-          setVerify2FAToken(response.data.verify2FAToken);
+          setVerify2FAToken(response.data.token);
         }
         else {
-          completeLogin(response.data.user);
+          completeLogin(response.data.user, response.data.token);
         }
       }
     } catch (err) {

@@ -3,22 +3,19 @@ import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-rout
 import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, History } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { removeLastCharIfMatch, downloadFile, initializePuter, parseLLMResponse, writeToLog, handleKeyDown } from '../../utils/utils';
-import { DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES, BUCKET_LIST_EXTRA_OPTIONS } from '../../constants/learning';
+import { initializePuter, handleKeyDown, downloadFile } from '../../utils/utils';
+import { removeLastCharIfMatch, parseLLMResponse, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import { DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES, BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
 
-
-import puter from '@heyputer/puter.js';
-import { EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES } from '../../logic/ExerciseTypeLogic';
+import puter, { type ChatMessage } from '@heyputer/puter.js';
+import { EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES, getAIInstructions, type IChatMessage } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
-import { getAIInstructions, type IChatMessage } from '../../logic/AIInstructionsLogic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import type { ExerciseData } from '../../types/Exercise';
 import type { NextChapterResponse } from '../../types/Creator';
-import type { LearningPathInfo } from '../../types/LearningPath';
 import { useMistakesReadd } from '../useMistakesReadd';
 import { Toaster } from 'sonner';
 import { NumberSelector } from '../number-selector/NumberSelector';
@@ -159,7 +156,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
-      const response = await puter.ai.chat(aiAutoDescNew);
+      const response = await puter.ai.chat(aiAutoDescNew as ChatMessage[]);
       if (response != undefined && response.message != undefined) {
         // Extract the raw string response
         const rawText = response.message.content.toString();
@@ -173,7 +170,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         }
         catch {
           setError('Automated generation did not return in the expected result format. Switch to manual use of AI or try again.');
-          writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+          writeToLog<LogAutoAIFailure>(axios, LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "parsing LLM response failed",
             Instruction: aiAutoDescNew.map(it => it.content).join(' '),
             Result: rawText
@@ -182,7 +179,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         }
         if (!Array.isArray(jsonOutput)) {
           setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
-          writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+          writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "Result is not an array",
             Instruction: aiAutoDescNew.map(it => it.content).join(' '),
             Result: rawText
@@ -193,7 +190,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           //verify that has at least one element that can be assigned to ExerciseData
           if (jsonOutput.length == 0) {
             setError('Automated generation returned an empty result. Switch to manual use of AI or try again.');
-            writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+            writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
               Title: "Result is an empty array",
               Instruction: aiAutoDescNew.map(it => it.content).join(' '),
               Result: rawText
@@ -223,7 +220,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
             if (!isValid) {
               setError('Automated generation returned the expected result structure. Switch to manual use of AI or try again.');
-              writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
+              writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
                 Title: "Result is invalid",
                 Instruction: aiAutoDescNew.map(it => it.content).join(' '),
                 Result: rawText

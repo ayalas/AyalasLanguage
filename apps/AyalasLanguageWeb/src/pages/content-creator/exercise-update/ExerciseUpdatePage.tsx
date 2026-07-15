@@ -4,10 +4,10 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
 import { ArrowBigLeft, Save } from "lucide-react";
-import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from "../../../types/Exercise";
+import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { AlternativeLine } from "./AlternativeLine";
 import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
-import { EXERCISE_TYPE_LOGIC } from "../../../logic/ExerciseTypeLogic";
+import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { FormHeader } from "../../../components/FormHeader";
 
 export function ExerciseUpdatePage() {

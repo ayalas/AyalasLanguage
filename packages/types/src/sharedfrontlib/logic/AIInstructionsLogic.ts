@@ -1,5 +1,5 @@
-import { PLACEHOLDERS } from "../constants/learning";
-import { encodeXMLElements } from "../utils/utils";
+import { PLACEHOLDERS } from "../learning/learning";
+import { encodeXMLElements } from "../utils";
 import type { ExerciseGeneration } from "./ExerciseTypeLogic";
 
 export interface IChatMessage {

@@ -3,13 +3,15 @@ import type { ChangeEvent } from 'react';
 import { useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Save } from 'lucide-react';
-import { DEFAULT_NUM_OF_EXERCISES } from '../../constants/learning';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { reloadLanguageSettings } from '../../utils/languageUtils';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
 import type { User, AppLanguageCode } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { handleKeyDown } from '../../utils/utils';
+
+import { handleKeyDown } from "../../utils/utils";
+import { DEFAULT_NUM_OF_EXERCISES } from '@ayalaslanguage/types/sharedfrontlib/learning'
+
 import { FormHeader } from '../../components/FormHeader';
 
 type Language = {

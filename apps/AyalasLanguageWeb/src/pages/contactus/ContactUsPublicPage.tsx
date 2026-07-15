@@ -1,7 +1,8 @@
 import axios from "axios";
 import { PublicHeader } from "../../components/PublicHeader";
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { handleKeyDown, isValidEmail } from "../../utils/utils";
+import { handleKeyDown } from "../../utils/utils";
+import { isValidEmail } from '@ayalaslanguage/types/sharedfrontlib/utils'
 import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { FormHeader } from "../../components/FormHeader";

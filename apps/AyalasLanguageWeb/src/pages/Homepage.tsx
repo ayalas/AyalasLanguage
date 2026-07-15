@@ -4,14 +4,14 @@ import axios from 'axios';
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
 import dayjs from 'dayjs';
 
-import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../components/auth/AuthHeader';
-import { DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from '../constants/learning';
-import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import { errorHandler } from '@ayalaslanguage/types/error';
-import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
-import { EXERCISE_TYPE_LOGIC } from '../logic/ExerciseTypeLogic';
-import type { ILearningPath } from '../types/LearningPath';
+import { errorHandler } from '@ayalaslanguage/types/error';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
+import { EXERCISE_TYPE_LOGIC } from "@ayalaslanguage/types/sharedfrontlib/logic";
+import { type ILearningPath, DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from "@ayalaslanguage/types/sharedfrontlib/learning";
+
+import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../components/auth/AuthHeader';
+import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
 
 type ExerciseTypeGroupObject = {
   exerciseTypeId: 0 | ExerciseType,
@@ -106,6 +106,7 @@ export default function Homepage() {
     loadData();
   }, [user]);
 
+  //scroll into view logic
   useEffect(() => {
     if (latestLessonRef.current != null && !isLoading) {
           latestLessonRef.current.scrollIntoView({
@@ -115,6 +116,8 @@ export default function Homepage() {
             });
     }
   }, [latestLessonRef, isLoading])
+
+
   return (
     <>
       <AuthHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SWITCH} />

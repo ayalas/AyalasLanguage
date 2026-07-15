@@ -2,7 +2,6 @@ import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'reac
 import { useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine } from 'lucide-react';
 import axios from 'axios';
-import { LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '../../../constants/learning';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
 import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
@@ -11,12 +10,13 @@ import BucketListExercise from './exercise-render-types/bucket-list/BucketListEx
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 
 import { puter } from "@heyputer/puter.js";
-import { initializePuter, isSecure } from '../../../utils/utils';
-import { EXERCISE_TYPE_LOGIC } from '../../../logic/ExerciseTypeLogic';
+import { initializePuter, isSecure } from '../../../utils/utils'
+import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import { type ExtendedExerciseInfo, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '@ayalaslanguage/types/sharedfrontlib/learning';
+
 import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/ActionsMenuComponent';
 import { Toaster } from 'sonner';
 import { useMistakesReadd } from '../../../components/useMistakesReadd';
-import type { ExtendedExerciseInfo } from '../../../types/Exercise';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 type Props = {

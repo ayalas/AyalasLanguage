@@ -30,7 +30,7 @@ export type AppIdentifier = typeof APP_IDENTIFIER[keyof typeof APP_IDENTIFIER];
 export type AuthContextType<T> = {
   user: T | null;
   loading: boolean;
-  login: (userData: T | null) => void;
+  login: (userData: T | null, token?: string) => void;
   logout: () => void;
 };
 
@@ -45,7 +45,7 @@ export interface LoginResponse<T>
     expires: string;
     user: T;
     requires2FA: boolean;
-    verify2FAToken: string;
+    token: string;
 }
 
 export interface Verify2FARequest

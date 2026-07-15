@@ -2,7 +2,7 @@ import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import React, { createRef } from 'react';
 import { TwoLinesTranslationExercise } from './TwoLinesTranslationExercise';
-import { type ExerciseData, type ExtendedExerciseInfo } from '../../../../types/Exercise';
+import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';

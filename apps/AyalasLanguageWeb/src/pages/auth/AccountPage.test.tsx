@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AccountPage } from './AccountPage';
 import axios from 'axios';
 import { useOutletContext } from 'react-router-dom';
-import { checkPasswordStrength, generatePasswordFeedback } from '../../utils/utils';
+import { checkPasswordStrength, generatePasswordFeedback } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // 1. Mock External Dependencies
@@ -17,7 +17,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
     checkPasswordStrength: vi.fn(),
     // Complete the return signature so it matches what the component expects
     generatePasswordFeedback: vi.fn(() => ({

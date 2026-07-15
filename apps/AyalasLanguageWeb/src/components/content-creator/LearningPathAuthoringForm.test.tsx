@@ -33,11 +33,14 @@ vi.mock('react-router-dom', async () => {
 });
 
 vi.mock('../../utils/utils', () => ({
-  removeLastCharIfMatch: vi.fn((s) => s),
   initializePuter: vi.fn().mockResolvedValue(true),
+  downloadFile: vi.fn(),
+}));
+
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
+  removeLastCharIfMatch: vi.fn((s) => s),
   parseLLMResponse: vi.fn(),
   writeToLog: vi.fn(),
-  downloadFile: vi.fn(),
   encodeXMLElements: vi.fn((s) => s),
 }));
 

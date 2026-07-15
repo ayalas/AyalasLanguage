@@ -1,4 +1,4 @@
-import type { AppLanguageCode } from "./User";
+import type { AppLanguageCode } from "@ayalaslanguage/types/sharedfrontlib/user";
 export interface Language {
   languageId: number;
   englishName: string;

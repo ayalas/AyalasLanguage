@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
-import type { ExtendedExerciseInfo } from '../../../../types/Exercise';
+import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import  { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { ExerciseHandle } from '../../../../types/ui/ComponentHandles';
 import type { ExerciseInputHandle } from '../../../../types/ui/ComponentHandles';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { CirclePlay } from 'lucide-react';
-import { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '../../../../logic/ExerciseTypeLogic';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;

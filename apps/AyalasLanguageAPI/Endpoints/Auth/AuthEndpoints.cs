@@ -166,7 +166,7 @@ public static class AuthEndpoints
             Expires = new DateTimeOffset(expires)
         });
 
-        return Results.Ok(new LoginResponseDto(expires, userIdDto, false, null));
+        return Results.Ok(new LoginResponseDto(expires, userIdDto, false, tokenContent));
     }
 
     public static async Task<UserIdDto?> GetUserById(int userId, AyalasLanguageDbContext db)

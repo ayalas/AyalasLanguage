@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import KeyboardModule from 'simple-keyboard';
 import KeyboardLayoutsModule from 'simple-keyboard-layouts';
 import 'simple-keyboard/build/css/index.css';
-import { isTouchDevice, parseBoolean } from '../utils/utils';
+import { parseBoolean } from '@ayalaslanguage/types/sharedfrontlib/utils'
 
 // Minimal runtime typings for the keyboard packages used here.
 type KeyboardInstance = {
@@ -59,7 +59,7 @@ const VirtualKeyboard: React.FC<Props> = ({ languageCode = 'en', isRightToLeft =
     const [showKeyboard, setShowKeyboard] = useState(false);
     const [layoutName, setLayoutName] = useState('default');
 
-    const isSupported = isLanguageSupported(languageCode) && !isTouchDevice();
+    const isSupported = isLanguageSupported(languageCode);
 
     const handleKeyPress = (button: string) => {
         if (button === '{shift}' || button === '{lock}') {

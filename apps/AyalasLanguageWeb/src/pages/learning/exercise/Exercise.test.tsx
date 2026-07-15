@@ -4,7 +4,9 @@ import { Exercise } from './Exercise';
 import { MemoryRouter, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { createRef } from 'react';
-import { type ExerciseData, type ExtendedExerciseInfo } from '../../../types/Exercise';
+import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+
+
 import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import userEvent from '@testing-library/user-event'; // 1. Import userEvent
@@ -37,11 +39,13 @@ vi.mock('@heyputer/puter.js', () => ({
     },
 }));
 
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
+    getRandomizedSequence: vi.fn((len) => Array.from({ length: len }, (_, i) => i)),
+}));
+
 vi.mock('../../../utils/utils', () => ({
     initializePuter: vi.fn(() => false),
     isSecure: vi.fn(() => true),
-    isTouchDevice: vi.fn(() => false),
-    getRandomizedSequence: vi.fn((len) => Array.from({ length: len }, (_, i) => i)),
 }));
 
 // Mock useMistakesReadd hook

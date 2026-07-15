@@ -51,7 +51,7 @@ export default function LoginPage(): React.ReactElement {
 
         if (response.data.requires2FA) {
           setOn2FA(true);
-          setVerify2FAToken(response.data.verify2FAToken);
+          setVerify2FAToken(response.data.token);
         }
         else {
           completeLogin(response.data.user);

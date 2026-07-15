@@ -3,15 +3,12 @@ import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { FilePenLine, X } from 'lucide-react';
 
-import { PLACEHOLDERS } from '../../constants/learning';
 import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '../../utils/languageUtils';
 import { Exercise } from './exercise/Exercise';
 import type { ExerciseHandle } from '../../types/ui/ComponentHandles';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { EXERCISE_TYPE_LOGIC } from '../../logic/ExerciseTypeLogic';
-import { safeParseData } from '../../logic/ExerciseDataLogic';
-import type { LearningPathInfo } from '../../types/LearningPath';
-import type { ExerciseInfo, ExtendedExerciseInfo } from '../../types/Exercise';
+import { EXERCISE_TYPE_LOGIC, safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import  { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 export function LessonPage() {

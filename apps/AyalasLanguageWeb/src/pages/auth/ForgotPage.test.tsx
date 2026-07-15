@@ -3,7 +3,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { ForgotPage } from './ForgotPage';
 import axios from 'axios';
 import { MemoryRouter } from 'react-router-dom';
-import * as utils from '../../utils/utils';
+import * as utils from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
@@ -12,7 +12,7 @@ vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
 
 // Mock the utils
-vi.mock('../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
     isValidEmail: vi.fn(),
 }));
 

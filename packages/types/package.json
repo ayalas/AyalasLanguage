@@ -8,7 +8,10 @@
     "./exercise": "./src/exercise.ts",
     "./auth": "./src/auth.ts",
     "./error": "./src/error.ts",
+    "./sharedfrontlib/logic": "./src/sharedfrontlib/logic/index.ts",
     "./sharedfrontlib/user": "./src/sharedfrontlib/User.ts",
+    "./sharedfrontlib/learning": "./src/sharedfrontlib/learning/index.ts",
+    "./sharedfrontlib/utils": "./src/sharedfrontlib/utils.ts",
     "./test-utils": "./src/test-utils/disableClientValidation.ts"
   },
   "devDependencies": {

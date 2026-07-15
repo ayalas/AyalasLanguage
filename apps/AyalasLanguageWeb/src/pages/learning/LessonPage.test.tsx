@@ -4,7 +4,7 @@ import axios from 'axios';
 import React from 'react';
 import { MemoryRouter, useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { LessonPage } from './LessonPage';
-import { type ExerciseData, type ExerciseInfo } from '../../types/Exercise';
+import { type ExerciseData, type ExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';

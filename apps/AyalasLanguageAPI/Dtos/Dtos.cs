@@ -4,7 +4,7 @@ using AyalasLanguageAPI.Data;
 namespace AyalasLanguageAPI.DTOs
 {
     // Auth DTOs
-    public record LoginResponseDto(DateTime Expires, UserIdDto? User, bool Requires2FA, string? Verify2FAToken);
+    public record LoginResponseDto(DateTime Expires, UserIdDto? User, bool Requires2FA, string? Token);
 
     public record Verify2FARequest(string Verify2FAToken, string Code);
     public record RegisterDto(string DisplayName, string UserName, string Password);

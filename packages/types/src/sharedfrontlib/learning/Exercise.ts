@@ -1,4 +1,4 @@
-import type { ExerciseType } from "@ayalaslanguage/types/exercise";
+import type { ExerciseType } from "../../exercise";
 
 export interface ExerciseData {
   First?: string;

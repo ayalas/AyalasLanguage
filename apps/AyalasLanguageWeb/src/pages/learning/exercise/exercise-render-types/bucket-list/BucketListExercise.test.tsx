@@ -2,8 +2,8 @@ import React from 'react';
 import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import BucketListExercise from './BucketListExercise';
-import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExerciseData, ExtendedExerciseInfo } from '../../../../../types/Exercise';
+import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import type { ExerciseData, ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
@@ -13,7 +13,7 @@ import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 vi.mock('axios');
 
 // Mock the utils library
-vi.mock('../../../../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
   getRandomizedSequence: vi.fn(),
 }));
 

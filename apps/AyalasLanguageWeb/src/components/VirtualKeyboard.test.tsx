@@ -1,13 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import VirtualKeyboard from './VirtualKeyboard';
-// Mock your utility first
-import * as utils from '../utils/utils';
-
-// 1. Mock the touch device utility to always be false
-vi.mock('../utils/utils', () => ({
-  isTouchDevice: vi.fn(() => false),
-}));
 
 // 2. Mock simple-keyboard
 vi.mock('simple-keyboard', () => {
@@ -54,8 +47,6 @@ vi.mock('simple-keyboard-layouts', () => {
 describe('VirtualKeyboard Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Ensure it's not a touch device before every test
-    vi.mocked(utils.isTouchDevice).mockReturnValue(false);
   });
 
   it('renders and allows toggling visibility', async () => {
@@ -88,15 +79,5 @@ describe('VirtualKeyboard Component', () => {
     
     const keyboard = queryByTestId('keyboard');
     expect(keyboard).not.toBeInTheDocument();
-  });
-  
-  it('returns null if it is a touch device', () => {
-    vi.mocked(utils.isTouchDevice).mockReturnValue(true);
-    
-    const { queryByTestId } = render(
-      <VirtualKeyboard languageCode="en" />
-    );
-    
-    expect(queryByTestId('keyboard')).not.toBeInTheDocument();
   });
 });

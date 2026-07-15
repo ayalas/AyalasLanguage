@@ -4,7 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { ResetPasswordPage } from './ResetPasswordPage';
-import * as utils from '../../utils/utils';
+import * as utils from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
 // ---------------------------------------------------------------------------
@@ -32,7 +32,7 @@ vi.mock('lucide-react', () => ({
     Save: () => null,
 }));
 
-vi.mock('../../utils/utils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
     checkPasswordStrength: vi.fn(),
     generatePasswordFeedback: vi.fn(),
 }));

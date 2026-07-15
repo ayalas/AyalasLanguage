@@ -1,5 +1,5 @@
-import { EXERCISE_TYPES, type ExerciseType } from "@ayalaslanguage/types/exercise";
-import { PLACEHOLDERS } from "../constants/learning";
+import { EXERCISE_TYPES, type ExerciseType } from "../../exercise";
+import { PLACEHOLDERS } from "../learning/learning";
 
 export interface ExerciseGeneration {
     instruction: string,

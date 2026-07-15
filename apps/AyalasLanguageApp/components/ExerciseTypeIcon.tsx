@@ -1,6 +1,6 @@
 import type { ExerciseType } from "@ayalaslanguage/types/exercise";
 import { EXERCISE_TYPE_LOGIC } from "@ayalaslanguage/types/sharedfrontlib/logic";
-import { PencilSparkles, PenLine, Tally1, Tally2, Tally4 } from "lucide-react";
+import { PencilSparkles, PenLine, Tally1, Tally2, Tally4 } from "lucide-react-native";
 
 export function ExerciseTypeIcon({ exerciseTypeId }: { exerciseTypeId: 0 | ExerciseType }) {
     return (

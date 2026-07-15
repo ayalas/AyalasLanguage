@@ -8,10 +8,9 @@ import { LearningPathAuthoringForm } from '../../../components/content-creator/L
 import { ExerciseLine } from './ExerciseLine';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { safeParseData } from '../../../logic/ExerciseDataLogic';
+import { safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { FormHeader } from '../../../components/FormHeader';
-import type { LearningPathInfo } from '../../../types/LearningPath';
-import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '../../../types/Exercise';
+import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo, LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
 export function LearningPathUpdatePage() {
   const [initialRecord, setInitialRecord] = useState<LearningPathInfo | null>(null);

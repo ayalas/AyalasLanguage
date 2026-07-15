@@ -1,10 +1,10 @@
 import { useEffect, useState, useImperativeHandle } from 'react';
 import { BucketListItem } from './BucketListItem';
-import { getRandomizedSequence } from '../../../../../utils/utils';
-import type { ExtendedExerciseInfo } from '../../../../../types/Exercise';
+import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type { ExerciseHandle } from '../../../../../types/ui/ComponentHandles';
 import { CirclePlay } from 'lucide-react';
-import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '../../../../../logic/ExerciseTypeLogic';
+import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 type Props = {
