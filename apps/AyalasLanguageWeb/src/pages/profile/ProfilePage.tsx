@@ -6,20 +6,13 @@ import { Save } from 'lucide-react';
 import { AuthHeader } from '../../components/auth/AuthHeader';
 import { reloadLanguageSettings } from '../../utils/languageUtils';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
-import type { User, AppLanguageCode } from '@ayalaslanguage/types/sharedfrontlib/user';
+import type { User, Language } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
 import { handleKeyDown } from "../../utils/utils";
 import { DEFAULT_NUM_OF_EXERCISES } from '@ayalaslanguage/types/sharedfrontlib/learning'
 
 import { FormHeader } from '../../components/FormHeader';
-
-type Language = {
-  languageId?: number;
-  englishName?: string;
-  nativeName?: string;
-  code?: AppLanguageCode;
-};
 
 export function ProfilePage() {
   const [allLanguages, setAllLanguages] = useState<Language[]>([]);

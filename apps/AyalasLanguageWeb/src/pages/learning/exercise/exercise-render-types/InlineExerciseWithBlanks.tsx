@@ -5,8 +5,9 @@ import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
 import { type ExtendedExerciseInfo, PLACEHOLDERS } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import type { ExerciseInputHandle, ExerciseHandle } from '../../../../types/ui/ComponentHandles';
+import type { ExerciseInputHandle } from '../../../../components/ExerciseInput';
 import { CirclePlay } from 'lucide-react';
+import type {ExerciseHandle} from '../Exercise';
 
 interface Props {
     exerciseInfo: ExtendedExerciseInfo;

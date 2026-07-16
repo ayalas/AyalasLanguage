@@ -10,10 +10,11 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { type ILearningPath, DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from "@ayalaslanguage/types/sharedfrontlib/learning";
 
-import { ExerciseTypeGroupTitle } from '@/components/ExerciseTypeGroupTitle';
+import { ExerciseTypeGroupTitle } from '@/components/home/ExerciseTypeGroupTitle';
 
 import api from '@/lib/api'; //secured axios instance
 import { useAuth } from "@/lib/AuthContext";
+import SecuredHeader from "@/components/SecuredHeader";
 
 type ExerciseTypeGroupObject = {
   exerciseTypeId: 0 | ExerciseType,
@@ -144,7 +145,7 @@ export default function HomeScreen() {
 
   return (
       <View className="root home-container">
-        <View className="inline-row"><Button title="Logout" onPress={handleLogout} /></View>
+        <SecuredHeader />
         {error !== '' && (
           <View className="form-row">
             <Text className="form-error">{error}</Text>
@@ -196,7 +197,7 @@ export default function HomeScreen() {
                                 );
                               })}
                               <View className="learning-level-creator">
-                                <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`} title="Generate more exercises here"><LayersPlus className="lucide-layers-plus" /></Link>
+                                <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`}><LayersPlus className="lucide-layers-plus" /></Link>
                               </View>
                             </View>
                           </View>

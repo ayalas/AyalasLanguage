@@ -7,8 +7,6 @@ import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTra
 import MatchWordsExercise from './exercise-render-types/match-words/MatchWordsExercise';
 import BucketListExercise from './exercise-render-types/bucket-list/BucketListExercise';
 
-import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
-
 import { puter } from "@heyputer/puter.js";
 import { initializePuter, isSecure } from '../../../utils/utils'
 import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
@@ -18,6 +16,12 @@ import { ActionsMenuComponent, type ActionsMenuItem } from '../../../components/
 import { Toaster } from 'sonner';
 import { useMistakesReadd } from '../../../components/useMistakesReadd';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
+
+export interface ExerciseHandle {
+  setFocus: () => void;
+  checkAnswer: () => boolean;
+  getCurrentAnswer: () => string;
+}
 
 type Props = {
     exerciseInfo: ExtendedExerciseInfo;

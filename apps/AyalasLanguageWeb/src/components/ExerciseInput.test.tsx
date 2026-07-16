@@ -4,7 +4,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { ExerciseInput } from './ExerciseInput'; // Adjust path as needed
 import { useOutletContext } from 'react-router-dom';
 import { replaceCharsForLanguage } from '../utils/languageUtils';
-import type { ExerciseInputHandle } from '../types/ui/ComponentHandles';
+import type { ExerciseInputHandle } from './ExerciseInput';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
 // Mock axios

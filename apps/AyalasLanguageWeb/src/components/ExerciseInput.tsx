@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { replaceCharsForLanguage } from '../utils/languageUtils';
-import type { ExerciseInputHandle } from '../types/ui/ComponentHandles';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
+
+export interface ExerciseInputHandle {
+  getUserAnswer: () => string;
+  setToError: () => void;
+  setFocus: () => void;
+  setValue: (val: string) => void;
+}
 
 interface Props {
   charWidth?: number;

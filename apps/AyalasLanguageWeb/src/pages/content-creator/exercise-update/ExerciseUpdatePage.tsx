@@ -5,8 +5,7 @@ import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
 import { ArrowBigLeft, Save } from "lucide-react";
 import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import { AlternativeLine } from "./AlternativeLine";
-import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
+import { AlternativeLine, type AlternativeHandle } from "./AlternativeLine";
 import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { FormHeader } from "../../../components/FormHeader";
 

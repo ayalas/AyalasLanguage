@@ -1,13 +1,11 @@
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Exercise } from './Exercise';
+import { Exercise, type ExerciseHandle } from './Exercise';
 import { MemoryRouter, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { createRef } from 'react';
 import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
-
-import type { ExerciseHandle } from '../../../types/ui/ComponentHandles';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import userEvent from '@testing-library/user-event'; // 1. Import userEvent
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';

@@ -1,6 +1,10 @@
 import type { AuthorAccess } from "../../auth";
 import type { ContentStatus } from "../../exercise";
 
+export interface NextChapterResponse {
+  chapter: number;
+}
+
 export interface LearningPathInfo {
     learningPathId: number;
     level: number;

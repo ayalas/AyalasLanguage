@@ -1,8 +1,9 @@
 import { ArchiveRestore, Trash2 } from "lucide-react";
 import { useImperativeHandle, useState } from "react";
-import type { AlternativeHandle } from "../../../types/ui/ComponentHandles";
 
-
+export interface AlternativeHandle {
+  exists: () => boolean;
+}
 
 export function AlternativeLine({ alternative, ref }: { alternative: string, ref: React.Ref<AlternativeHandle> }) {
     const [exists, setExists] = useState(true);

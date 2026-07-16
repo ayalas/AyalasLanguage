@@ -15,7 +15,7 @@ import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import type { NextChapterResponse } from '../../types/Creator';
+import type { NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { useMistakesReadd } from '../useMistakesReadd';
 import { Toaster } from 'sonner';
 import { NumberSelector } from '../number-selector/NumberSelector';
