@@ -278,7 +278,6 @@ input:required:invalid {
   margin-left: 10px;
   margin-right: 10px;
   max-width: 80vw;
-  font-size: var(--exrsize);
 }
 
 .content-line-part,
@@ -767,6 +766,7 @@ input:required:invalid {
   overflow-wrap: anywhere;
   border-radius: 999px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: var(--exrsize);
 }
 
 .match-word-item-button:hover {
@@ -836,6 +836,7 @@ input:required:invalid {
   border-radius: 8px;
   margin-top: 10px;
   border: 1px solid var(--border);
+  font-size: var(--exrsize);
 }
 
 .keyboard-container {
