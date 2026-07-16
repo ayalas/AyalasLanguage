@@ -39,6 +39,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const loadData = async function () {
       try {
+        setIsLoading(true);
         if (user?.languageSettings?.targetLanguageId != null && user.languageSettings.knownLanguageId != null) {
           setHasLanguage(true);
         } else {
