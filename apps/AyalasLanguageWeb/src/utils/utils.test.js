@@ -1,5 +1,5 @@
 import { it, expect, describe } from 'vitest';
-import { isValidEmail, removeLastCharIfMatch, getRandomizedSequence, checkPasswordStrength } from './utils';
+import { isValidEmail, removeLastCharIfMatch, getRandomizedSequence, checkPasswordStrength } from '@ayalaslanguage/types/sharedfrontlib/utils';
 
 describe('removeLastCharIfMatch function', () => {
     it('removes last ;', () => {
