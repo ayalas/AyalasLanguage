@@ -25,6 +25,7 @@
   --heading: 'Tajawal', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --mono: ui-monospace, Consolas, monospace;
   --fontsize: 22px;
+  --exrsize: 22px;
   --fontsize-lg: 26px;
 
   font: var(--fontsize)/1.55 var(--sans);
@@ -136,10 +137,9 @@ textarea {
 }
 
 @media (max-width: 768px) {
-  /*:root {
-    --fontsize: 16px;
-    --fontsize-lg: 20px;
-  }*/
+  :root {
+    --fontsize: 18px;
+  }
 
   #root {
     width: min(100%, calc(100% - 16px));

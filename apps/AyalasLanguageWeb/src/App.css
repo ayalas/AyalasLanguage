@@ -278,6 +278,7 @@ input:required:invalid {
   margin-left: 10px;
   margin-right: 10px;
   max-width: 80vw;
+  font-size: var(--exrsize);
 }
 
 .content-line-part,
