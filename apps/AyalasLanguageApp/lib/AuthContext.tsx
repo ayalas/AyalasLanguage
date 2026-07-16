@@ -37,8 +37,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [user]);
 
   const login = async (userData: User | null, token?: string) => {
-    if (userData != null && token != null) {
+    if (token != null) {
       await saveToken(token);
+    }
+    if (userData != null) {
       setUser(userData);
     }
   };

@@ -86,7 +86,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                 <DropdownMenu.Trigger className='menu-button'>
                     <SquareMenu />
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content  className="menu-container shadow-lg">
+                <DropdownMenu.Content  className="menu-container">
                     <DropdownMenu.Item className='menu-item' key="profile" onSelect={() => router.push('/profile')}>
                         <DropdownMenu.ItemTitle className="text">Profile settings</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>

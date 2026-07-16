@@ -89,7 +89,7 @@
   min-height: 100vh;
   background: linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);
   color: var(--text-h);
-  padding: 24px;
+  padding: 18px;
   margin: 0;
   flex: 1 1 0%;
 }
@@ -120,7 +120,6 @@
 .top-button,
 .link-button,
 .actions-menu-link-button,
-.menu-button,
 .bucket-list-item-button {
   font-family: inherit;
   font-size: inherit;
@@ -141,7 +140,6 @@
 .top-button:hover,
 .link-button:hover,
 .actions-menu-link-button:hover,
-.menu-button:hover,
 .bucket-list-item-button:hover {
   transform: translateY(-1px);
   box-shadow: var(--shadow-card);
@@ -563,6 +561,8 @@
   width: 100%;
   padding: 10px 0;
   flex-wrap: wrap;
+  flex-direction: row;
+  flex-shrink: 0;
 }
 
 .header-title {
@@ -781,14 +781,16 @@
   display: inline-flex;
   width: 190px;
   height: 55px;
-  background-size: cover;
 }
 
 .menu-button {
   padding: 10px 16px;
   border: 0;
-  background: var(--bg);
+  /* background: var(--bg); */
   flex-direction: row;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: 0 0 0 0;
 }
 
 .menu-container {
@@ -1075,9 +1077,7 @@
   }
 
   .header-row {
-    gap: 10px;
-    flex-direction: row;
-    flex-shrink: 0;
+    gap: 0px;
   }
 
   .match-words-row {
