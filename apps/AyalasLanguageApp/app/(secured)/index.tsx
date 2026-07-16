@@ -1,6 +1,6 @@
 import { useEffect, useState, Fragment, useRef } from "react";
-import { Button, findNodeHandle, ScrollView, Text, View, Platform } from "react-native";
-import { Link, useRouter } from 'expo-router';
+import { findNodeHandle, ScrollView, Text, View, Platform } from "react-native";
+import { Link } from 'expo-router';
 
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react-native';
 import dayjs from 'dayjs';
@@ -14,7 +14,7 @@ import { ExerciseTypeGroupTitle } from '@/components/home/ExerciseTypeGroupTitle
 
 import api from '@/lib/api'; //secured axios instance
 import { useAuth } from "@/lib/AuthContext";
-import SecuredHeader from "@/components/SecuredHeader";
+import SecuredHeader, { LANGUAGE_INDICATOR_ENUM } from "@/components/SecuredHeader";
 
 type ExerciseTypeGroupObject = {
   exerciseTypeId: 0 | ExerciseType,
@@ -32,8 +32,7 @@ export default function HomeScreen() {
   const [latestLesson, setLatestLesson] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [hasLanguage, setHasLanguage] = useState(false);
-  const { user, logout } = useAuth();
-  const router = useRouter();
+  const { user } = useAuth();
   const scrollViewRef = useRef<ScrollView>(null);
   const latestLessonRef = useRef<View>(null);
 
@@ -140,7 +139,7 @@ export default function HomeScreen() {
 
   return (
       <View className="root">
-        <SecuredHeader />
+        <SecuredHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SWITCH} />
         {error !== '' && (
           <View className="form-row">
             <Text className="form-error">{error}</Text>
