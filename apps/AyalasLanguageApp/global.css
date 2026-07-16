@@ -372,6 +372,12 @@
   line-height: 1.4;
 }
 
+.home-header-row {
+  padding: 8px 0;
+  line-height: 1.4;
+  flex-direction: row;
+}
+
 .language-line {
   padding: 8px 0;
   line-height: 1.4;
@@ -1111,6 +1117,10 @@
   }
 
   .form-row {
+    width: 100%;
+  }
+
+  .home-header-row {
     width: 100%;
   }
 
