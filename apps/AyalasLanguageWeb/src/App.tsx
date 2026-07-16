@@ -38,7 +38,7 @@ function App() {
         <Routes>
           {/* Public Routes that redirect to an authenticated page if logged in */}
           <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>}/>
-          <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/contactus" element={ <PublicRoute authPath='/usernote'><ContactUsPublicPage/></PublicRoute>}/>
           {/* Public Routes */}
           <Route path="/register" element={<RegisterPage />} />

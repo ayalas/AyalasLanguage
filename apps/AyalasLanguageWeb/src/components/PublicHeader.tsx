@@ -45,6 +45,7 @@ export function PublicHeader() {
                         {...getFloatingProps()}
                     >
                         <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                            <li className="menu-line"><Link to='/home' className="menu-item">To the app</Link></li>
                             <li className="menu-line"><Link to='/login' className="menu-item">Log-in</Link></li>
                             <li className="menu-line"><Link to='/register' className="menu-item">Register new account</Link></li>
                             <li className="menu-line"><Link to='/contactus' className="menu-item"><Mail />&nbsp;Contact Us</Link></li>
