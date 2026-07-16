@@ -25,7 +25,7 @@ vi.mock('react-router-dom', async () => {
 });
 
 // Mock Language Utils
-vi.mock('../../utils/languageUtils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
   replaceCharsForLanguage: vi.fn((_lang, text) => text),
   getMissingParts: vi.fn(() => []),
   setLanguageSettings: vi.fn(),

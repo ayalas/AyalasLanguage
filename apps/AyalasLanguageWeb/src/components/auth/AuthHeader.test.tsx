@@ -3,7 +3,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from './AuthHeader'; // Adjust path as needed
 import { MemoryRouter, useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { switchLanguage } from '../../utils/languageUtils';
+import { switchLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
 
@@ -22,7 +22,7 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../../utils/languageUtils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
   switchLanguage: vi.fn(),
 }));
 

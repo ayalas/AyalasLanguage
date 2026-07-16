@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { replaceCharsForLanguage, getMissingParts, splitAndKeep } from './languageUtils'; // Adjust this path to your actual file
+import { replaceCharsForLanguage, getMissingParts, splitAndKeep } from '@ayalaslanguage/types/sharedfrontlib/utils'; // Adjust this path to your actual file
 
 describe('replaceCharsForLanguage', () => {
     

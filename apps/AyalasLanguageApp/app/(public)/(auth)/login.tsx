@@ -34,7 +34,7 @@ const LogInScreen = () => {
         }
         return;
       }
- 
+
       if (from != null && typeof from == 'string') {
         router.replace(from as Href);
       }
@@ -71,70 +71,68 @@ const LogInScreen = () => {
 
   return (
     <SafeAreaView className="root">
-      <View className='root-container'>
-        <View className='form-container'>
-          <Text className="h1">Login</Text>
-          {error !== "" && (
-            <View className="form-row">
-              <Text className="form-error">{error}</Text>
+      <View className='form-container'>
+        <Text className="h1">Login</Text>
+        {error !== "" && (
+          <View className="form-row">
+            <Text className="form-error">{error}</Text>
+          </View>
+        )}
+        {on2FA && (
+          <View className="form-row">
+            <View className="form-label-cell">
+              <Text className="form-label">Two Factor Authentication Code</Text>
             </View>
+            <View className="form-input-cell">
+              <TextInput maxLength={TWO_FACTOR_CODE_LENGTH} value={code}
+                keyboardType="number-pad"
+                className="form-input"
+                onChangeText={setCode} />
+            </View>
+            <View className="form-cell-footer"><Text className='text'>Fill the 6-digit code that has been sent to you by email</Text></View>
+          </View>
+        ) || (
+            <>
+              <View className="form-row">
+                <View className="form-label-cell">
+                  <Text className="form-label">Email</Text>
+                </View>
+                <View className="form-input-cell">
+                  <TextInput
+                    data-testid="email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    className="input form-input"
+                  />
+                </View>
+              </View>
+              <View className="form-row">
+                <View className="form-label-cell">
+                  <Text className="form-label">Password</Text>
+                </View>
+                <View className="form-input-cell">
+                  <TextInput
+                    data-testid="password"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={true}
+                    className="input form-input"
+                  />
+                </View>
+              </View>
+              <View className="form-row">
+                <View className="form-label-cell"><Link href="/forgot"><Text className='text text-dimmed underline'>Forgot your password?</Text></Link></View>
+              </View>
+            </>
           )}
-          {on2FA && (
-            <View className="form-row">
-              <View className="form-label-cell">
-                <Text className="form-label">Two Factor Authentication Code</Text>
-              </View>
-              <View className="form-input-cell">
-                <TextInput maxLength={TWO_FACTOR_CODE_LENGTH} value={code}
-                  keyboardType="number-pad"
-                  className="form-input"
-                  onChangeText={setCode} />
-              </View>
-              <View className="form-cell-footer"><Text className='text'>Fill the 6-digit code that has been sent to you by email</Text></View>
-            </View>
-          ) || (
-              <>
-                <View className="form-row">
-                  <View className="form-label-cell">
-                    <Text className="form-label">Email</Text>
-                  </View>
-                  <View className="form-input-cell">
-                    <TextInput
-                      data-testid="email"
-                      value={email}
-                      onChangeText={setEmail}
-                      keyboardType="email-address"
-                      className="input form-input"
-                    />
-                  </View>
-                </View>
-                <View className="form-row">
-                  <View className="form-label-cell">
-                    <Text className="form-label">Password</Text>
-                  </View>
-                  <View className="form-input-cell">
-                    <TextInput
-                      data-testid="password"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry={true}
-                      className="input form-input"
-                    />
-                  </View>
-                </View>
-                <View className="form-row">
-                  <View className="form-label-cell"><Link href="/forgot"><Text className='text text-dimmed underline'>Forgot your password?</Text></Link></View>
-                </View>
-              </>
-            )}
-          <View className="buttons-container">
-            <View className="form-input-row">
-              <TouchableOpacity data-testid="submit" className="form-button login-button" onPress={submitAction}>
-                <LogIn className="inline-row" /><Text className='text'> Log In</Text>
-              </TouchableOpacity>
-            </View>
+        <View className="buttons-container">
+          <View className="form-input-row">
+            <TouchableOpacity data-testid="submit" className="form-button login-button" onPress={submitAction}>
+              <LogIn className="inline-row" /><Text className='text'>{" "}Log In</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

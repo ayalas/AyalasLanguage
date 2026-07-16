@@ -111,11 +111,6 @@ export default function HomeScreen() {
     loadData();
   }, [user]);
 
-  const handleLogout = () => {
-    logout();
-    router.push('/login');
-  }
-
   //scroll into view logic
 
   useEffect(() => {
@@ -144,7 +139,7 @@ export default function HomeScreen() {
   }, [isLoading, latestLessonRef]);
 
   return (
-      <View className="root home-container">
+      <View className="root">
         <SecuredHeader />
         {error !== '' && (
           <View className="form-row">

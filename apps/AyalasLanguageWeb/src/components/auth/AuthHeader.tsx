@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext, Link, useNavigate } from 'react-router-dom';
 import { Mail, SquareMenu, Volleyball } from 'lucide-react';
 import axios from 'axios';
-import { switchLanguage } from '../../utils/languageUtils';
+import { switchLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import {
   useFloating,
   offset,

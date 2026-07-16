@@ -4,7 +4,7 @@ import { useOutletContext, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { Save } from 'lucide-react';
 import { AuthHeader } from '../../components/auth/AuthHeader';
-import { reloadLanguageSettings } from '../../utils/languageUtils';
+import { reloadLanguageSettings } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { LanguageLineForDelete } from './LanguageLineForDelete';
 import type { User, Language } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { errorHandler } from '@ayalaslanguage/types/error';

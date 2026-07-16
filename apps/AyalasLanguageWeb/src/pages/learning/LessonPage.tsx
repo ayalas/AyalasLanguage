@@ -3,9 +3,8 @@ import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { FilePenLine, X } from 'lucide-react';
 
-import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '../../utils/languageUtils';
-import { Exercise } from './exercise/Exercise';
-import type { ExerciseHandle } from '../../types/ui/ComponentHandles';
+import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import { Exercise, type ExerciseHandle } from './exercise/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { EXERCISE_TYPE_LOGIC, safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import  { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';

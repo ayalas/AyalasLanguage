@@ -6,7 +6,7 @@ import  { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/
 import type {ExerciseHandle} from '../Exercise';
 import type { ExerciseInputHandle } from '../../../../components/ExerciseInput';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
+import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { CirclePlay } from 'lucide-react';
 
 type Props = {

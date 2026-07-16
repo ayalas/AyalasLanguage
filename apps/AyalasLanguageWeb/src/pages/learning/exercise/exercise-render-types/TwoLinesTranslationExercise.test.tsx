@@ -12,7 +12,7 @@ import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 vi.mock('axios');
 
 // Mock external utilities
-vi.mock('../../../../utils/languageUtils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
   replaceCharsForLanguage: vi.fn((_lang: string, text: string) => text),
 }));
 

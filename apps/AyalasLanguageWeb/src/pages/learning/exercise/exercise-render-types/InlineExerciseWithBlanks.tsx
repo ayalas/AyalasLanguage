@@ -1,7 +1,7 @@
 import { Fragment, useRef, useState, useImperativeHandle, useCallback, useEffect } from 'react';
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
-import { replaceCharsForLanguage } from '../../../../utils/languageUtils';
+import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { type ExtendedExerciseInfo, PLACEHOLDERS } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';

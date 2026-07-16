@@ -20,7 +20,7 @@ vi.mock('react-router-dom', () => ({
 }));
 
 // Mock external utilities
-vi.mock('../../utils/languageUtils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
   reloadLanguageSettings: vi.fn(),
 }));
 

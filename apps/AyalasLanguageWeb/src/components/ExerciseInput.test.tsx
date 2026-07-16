@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { ExerciseInput } from './ExerciseInput'; // Adjust path as needed
 import { useOutletContext } from 'react-router-dom';
-import { replaceCharsForLanguage } from '../utils/languageUtils';
+import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { ExerciseInputHandle } from './ExerciseInput';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
@@ -24,7 +24,7 @@ vi.mock('react-router-dom', () => ({
 }));
 
 // Mock language utils
-vi.mock('../utils/languageUtils', () => ({
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
     replaceCharsForLanguage: vi.fn((_lang, val) => val),
 }));
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { replaceCharsForLanguage } from '../utils/languageUtils';
+import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 export interface ExerciseInputHandle {
