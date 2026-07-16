@@ -39,7 +39,21 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-font",
+          {
+            "fonts": [
+              "./assets/fonts/Tajawal-Black.ttf",
+              "./assets/fonts/Tajawal-Bold.ttf",
+              "./assets/fonts/Tajawal-ExtraBold.ttf",
+              "./assets/fonts/Tajawal-ExtraLight.ttf",
+              "./assets/fonts/Tajawal-Light.ttf",
+              "./assets/fonts/Tajawal-Medium.ttf",
+              "./assets/fonts/Tajawal-Regular.ttf"
+            ]
+          }
+        ]
     ],
     "experiments": {
       "typedRoutes": true,
