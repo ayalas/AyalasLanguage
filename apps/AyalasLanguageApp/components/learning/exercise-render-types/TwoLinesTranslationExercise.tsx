@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import  ExerciseInput from '@/components/learning/ExerciseInput';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import  { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
@@ -6,8 +6,8 @@ import type {ExerciseHandle} from '../Exercise';
 import type { ExerciseInputHandle } from '@/components/learning/ExerciseInput';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
-import { CirclePlay, View } from 'lucide-react-native';
-import { TouchableOpacity, Text } from 'react-native';
+import { CirclePlay } from 'lucide-react-native';
+import { TouchableOpacity, Text, View } from 'react-native';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -96,7 +96,7 @@ export default function TwoLinesTranslationExercise ({ exerciseInfo, setError, m
         <View className="exercise-inner-element">
           <View className="form-row-play">
             <View className="form-play-container"><Text className='exercise-text'>{first}</Text>{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
-              <View className="playButtonContainer"><TouchableOpacity data-testid="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay /></TouchableOpacity></View>
+              <View className="playButtonContainer"><TouchableOpacity data-testid="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay className='lucide-circle-play' /></TouchableOpacity></View>
             )}</View>
           </View>
           <View className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
@@ -115,7 +115,7 @@ export default function TwoLinesTranslationExercise ({ exerciseInfo, setError, m
         <View className="form-row-play">
           <View className="form-play-container"><Text className='text'>{second}</Text>
             {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
-              <TouchableOpacity data-testid="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay /></TouchableOpacity>
+              <TouchableOpacity data-testid="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='lucide-circle-play' /></TouchableOpacity>
             )}</View>
           {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
             <Text className="text form-content-row">{translation}</Text>

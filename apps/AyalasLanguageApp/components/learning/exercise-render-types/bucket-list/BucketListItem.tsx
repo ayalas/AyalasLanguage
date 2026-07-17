@@ -7,14 +7,14 @@ type Props = {
   itemClicked: (val: string, pos: number) => void;
 };
 
-export default function BucketListItem({ itemValue, position, itemClicked }:Props) {
+export default function BucketListItem({ itemValue, position, itemClicked }: Props) {
   function clickButton() {
     itemClicked(itemValue, position);
   }
 
   return (
     <View className="bucket-list-item-cell">
-      <TouchableOpacity data-testid="click-button" className="bucket-list-item-button" onPress={clickButton}><Text className='text font-semibold'>{itemValue}</Text></TouchableOpacity>
+      <TouchableOpacity data-testid="click-button" className="bucket-list-item-button" onPress={clickButton}><Text className='exercise-text'>{itemValue}</Text></TouchableOpacity>
     </View>
   );
 };

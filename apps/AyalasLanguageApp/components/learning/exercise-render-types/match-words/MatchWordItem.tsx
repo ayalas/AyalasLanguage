@@ -43,17 +43,18 @@ export default function MatchWordItem ({ itemValue, matchingValue, setSelected, 
     setIsSelected(tempIsSelected);
   }
 
-  const className = `match-word-item-button${isDone ? ' match-words-item-done' : errorState ? ' match-words-item-error' : isSelected ? ' match-words-item-selected' : ''}`;
+  const classColor = isDone ? ' match-words-item-done' : errorState ? ' match-words-item-error' : isSelected ? ' match-words-item-selected' : '';
+  const className = `match-word-item-button${classColor}`;
 
   return (
     <View className="match-word-item-cell">
       <TouchableOpacity data-testid="click-button" className={className} onPress={clickButton}>
         {!isSpoken && (
-          <Text className='exercise-text'>
+          <Text className={`exercise-text${classColor}`}>
           {itemValue}
           </Text>
         ) || (
-          <CirclePlay />
+          <CirclePlay className='lucide-circle-play' />
         )}
       </TouchableOpacity>
     </View>

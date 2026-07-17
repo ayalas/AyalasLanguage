@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { useEffect, useState, useRef } from 'react';
 import { useLocalSearchParams, Link, useRouter } from 'expo-router';
 import api from '@/lib/api';
@@ -228,7 +228,7 @@ export default function LessonScreen() {
 
   return (
     <View className="lesson-outer-container">
-      <View className="lesson-inner-container">
+      <ScrollView className="lesson-inner-container" showsVerticalScrollIndicator={false}>
 
         {error !== '' && (
           <View className="form-row">
@@ -265,7 +265,7 @@ export default function LessonScreen() {
               addMistake={addMistake} />
           </>
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 }

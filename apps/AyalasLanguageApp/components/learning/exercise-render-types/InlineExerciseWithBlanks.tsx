@@ -48,6 +48,10 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
         }
     };
 
+     const onChangeFromInput = useCallback((value: string, key?: string) => {
+        if (key) currentInputKey.current = key;
+    }, []);
+
     useImperativeHandle(ref, () => ({
         setFocus() {
             const firstInputIndex = exerciseInfo.answers?.findIndex(a => a != PLACEHOLDERS.BLANKS);
@@ -140,6 +144,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
                                             charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
                                             checkAnswer={checkAnswerOrMoveToNextInput}
                                             customKey={`${exerciseInfo.exerciseId}-${i}`}
+                                            onChange={onChangeFromInput}
                                         />
                                     ) || (
                                             <>
@@ -160,7 +165,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
                 <View className="form-row-play">
                     <View className="form-play-container"><Text className='text'>{second}</Text>
                         {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
-                            <TouchableOpacity data-testid="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay /></TouchableOpacity>
+                            <TouchableOpacity data-testid="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='lucide-circle-play' /></TouchableOpacity>
                         )}</View>
                     { EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
                         <Text className="text form-content-row">{translation}</Text>

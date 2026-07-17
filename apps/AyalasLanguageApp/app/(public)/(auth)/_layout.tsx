@@ -1,8 +1,8 @@
+import { BG_DARK, BG_LIGHT } from '@/constants';
 import { useAuth } from '@/lib/AuthContext';
-import { useRouter, Tabs, usePathname } from 'expo-router'
+import { Tabs } from 'expo-router'
 import { LogInIcon, UserIcon } from 'lucide-react-native';
-import { useEffect } from 'react';
-import { ActivityIndicator, View, Text } from 'react-native';
+import { ActivityIndicator, View, Text, useColorScheme } from 'react-native';
 
 const TabIcon = ({
     focused,
@@ -25,15 +25,8 @@ const TabIcon = ({
 );
 
 export default function PublicAuthLayout() {
-    const { user, loading } = useAuth();
-    const router = useRouter();
-    const pathname = usePathname();
-
-    /* useEffect(() => {
-        if (!loading && pathname === "/login" && user != null) {
-            router.replace({ pathname: "/" });
-        }
-    }, [user, loading]); */
+    const { loading } = useAuth();
+    const colorScheme = useColorScheme();
 
     if (loading) {
         return (
@@ -43,13 +36,15 @@ export default function PublicAuthLayout() {
         );
     }
 
+    const isDark = colorScheme === 'dark';
+
     return (
         <Tabs screenOptions={{
             tabBarShowLabel: false,
             headerShown: false,
             tabBarStyle: {
-                backgroundColor: "white",
-                borderTopColor: "#0061FF1A",
+                backgroundColor: isDark ? BG_DARK: BG_LIGHT,
+                borderTopColor: "#dfe4ec",
                 position: 'absolute',
                 borderRadius: 20,
                 borderTopWidth: 1,

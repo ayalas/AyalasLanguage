@@ -1,12 +1,12 @@
 import { useEffect, useState, useImperativeHandle } from 'react';
-import { BucketListItem } from './BucketListItem';
+import BucketListItem from './BucketListItem';
 import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type {ExerciseHandle} from '../../Exercise';
 import { CirclePlay } from 'lucide-react-native';
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, Text } from 'react-native';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -142,15 +142,15 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       <View className="exercise-outer-element">
         <View className="exercise-inner-element">
           <View className="form-row-play">
-            <View className="form-play-container">{first}{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
-              <View className="playButtonContainer"><TouchableOpacity data-testid="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay /></TouchableOpacity></View>
+            <View className="form-play-container"><Text className='exercise-text'>{first}</Text>{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
+              <View className="playButtonContainer"><TouchableOpacity data-testid="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay className='lucide-circle-play' /></TouchableOpacity></View>
             )}</View>
           </View>
           {answerList && (
             <View className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
               user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
               user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-            ) ? "form-row rtlanswer" : "form-row answer"}>
+            ) ? "line-container-wrap rtlanswer" : "line-container-wrap answer"}>
               {answerList.map((item, i) => (
                 <BucketListItem key={`answer-${i}`} itemValue={item} position={i} itemClicked={answerListItemClicked} />
               ))}
@@ -160,7 +160,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
             <View className="menu-delimiter"></View>
           )}
           {bucketList && (
-            <View className="form-row bucket">
+            <View className="line-container-wrap bucket">
               {bucketList.map((item, i) => (
                 <BucketListItem key={`bucket-${i}`} itemValue={item} position={i} itemClicked={bucketListItemClicked} />
               ))}
@@ -172,7 +172,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         <View className="form-row-play">
           <View className="form-play-container">{second}
             {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
-            <TouchableOpacity data-testid="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay /></TouchableOpacity>
+            <TouchableOpacity data-testid="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='lucide-circle-play' /></TouchableOpacity>
             )}
           </View>
           {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (

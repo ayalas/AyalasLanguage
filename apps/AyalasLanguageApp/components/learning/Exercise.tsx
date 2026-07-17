@@ -16,7 +16,7 @@ import { ActionsMenuComponent, type ActionsMenuItem } from '@/components/Actions
 /* import { Toaster } from 'sonner'; */
 import { useMistakesReadd } from '@/lib/useMistakesReadd';
 import { useAuth } from '@/lib/AuthContext';
-import { TouchableOpacity, Text, View, ScrollView } from 'react-native';
+import { TouchableOpacity, Text, View } from 'react-native';
 
 export interface ExerciseHandle {
   setFocus: () => void;
@@ -188,7 +188,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
             {/* <Toaster position="top-center" richColors /> */}
             
-            <ScrollView className="exercise-body-container" showsVerticalScrollIndicator={false}>
+            <View className="exercise-body-container">
                 <View className="form-row">
                     <label className="form-label-row">{ExerciseTypeInstruction()}</label>
                 </View>
@@ -217,13 +217,13 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                             moveNext={moveNext} displayAnswer={displayAnswer}
                             parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
                     ))}
-            </ScrollView>
+            </View>
             
             <View className="buttons-container">
                 <ActionsMenuComponent items={[
                     {
                         dataTestId: "restart-lesson",
-                        children: <><RotateCcw />&nbsp;Restart Lesson</>,
+                        children: <><RotateCcw className='lucide-rotate-ccw' /><Text className='text lucide-rotate-ccw'>&nbsp;Restart Lesson</Text></>,
                         onClick: restartLesson,
                     },
                     {
@@ -242,7 +242,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                         dataTestId: "add-alternative-answer",
                         children: <><TicketPlus />&nbsp;Add alternative answer</>,
                         onClick: addAlternativeAnswer,
-                        isVisible: displayAnswer && error != "" && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers,
+                        isVisible: displayAnswer && error !== "" && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers,
                     },
                     {
                         dataTestId: "edit-lesson",
@@ -259,7 +259,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
                         <View className="form-button-cell">
-                            <TouchableOpacity data-testid="reveal-answer" onPress={toggleAnswer} className="top-button lesson-button-reveal"><Eye /><Text className='text'>{" "}{displayAnswer && "Hide" || "Reveal"}</Text></TouchableOpacity>
+                            <TouchableOpacity data-testid="reveal-answer" onPress={toggleAnswer} className="top-button lesson-button-reveal"><Eye className='lucide-eye' /><Text className='text lucide-eye'>{" "}{displayAnswer && "Hide" || "Reveal"}</Text></TouchableOpacity>
                         </View>
                     )
                 }
@@ -268,13 +268,13 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
 
                 {(exerciseInfo.index ?? 0) > 0 && (
                     <View className="exercise-footer-back">
-                        <TouchableOpacity data-testid="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft /><Text className='text'>{" "}Prev</Text></TouchableOpacity>
+                        <TouchableOpacity data-testid="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='lucide-arrow-big-left' /><Text className='text lucide-arrow-big-left'>{" "}Prev</Text></TouchableOpacity>
                     </View>
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && (
                         <View className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"}`}>
-                            <TouchableOpacity data-testid="check-my-answers" onPress={checkAnswer} className="form-button check-answer-button" ><ListChecks /><Text className='text'>{" "}Check</Text></TouchableOpacity>
+                            <TouchableOpacity data-testid="check-my-answers" onPress={checkAnswer} className="form-button check-answer-button" ><ListChecks /><Text className='text check-answer-button-text'>{" "}Check</Text></TouchableOpacity>
                         </View>
                     )
                 }
