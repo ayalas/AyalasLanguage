@@ -1,12 +1,76 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity, TextInput } from 'react-native'
+import api from '@/lib/api';
+import { useLocalSearchParams } from 'expo-router';
+import React, { useState } from 'react';
+import { errorHandler } from '@ayalaslanguage/types/error';
+import { isValidEmail } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import { Send } from 'lucide-react-native';
+import { FormHeader } from '@/components/FormHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const ForgotScreen = () => {
+export default function ForgotScreen() {
+  const [error, setError] = useState("");
+  const { user: userFromSearch } = useLocalSearchParams<{ user: string }>();
+  const [email, setEmail] = useState(userFromSearch);
+  const [success, setSuccess] = useState(false);
+
+  async function submitAction() {
+    try {
+      if (!isValidEmail(email)) {
+        setError("Please enter a valid email address");
+        return;
+      }
+
+      await api.post('/api/auth/forgot', { username: email });
+
+      setSuccess(true);
+
+    } catch (err: unknown) {
+      errorHandler(err, setError);
+    }
+  }
+
   return (
-    <View>
-      <Text>Forgot</Text>
-    </View>
+    <SafeAreaView>
+      <View className='root'>
+        <View className="form-container">
+          <FormHeader title='Password Reset' />
+          {error !== "" && (
+            <View className="form-row">
+              <Text className="form-error">{error}</Text>
+            </View>
+          )}
+          {success && (
+            <>
+              <View className="form-row">
+                <Text className='h2'>Email sent successfully.</Text>
+              </View>
+              <View className="form-row">
+                <Text className="form-content-row">An email address with a link to reset your password has been sent to &apos;{email}&apos;.</Text>
+              </View>
+            </>
+          ) || (
+              <>
+                <View className="form-row">
+                  <View className="form-label-cell">
+                    <Text className="form-label">Email</Text>
+                  </View>
+                  <View className="form-input-cell">
+                    <TextInput data-testid="email" maxLength={128} keyboardType="email-address" value={email} className="form-input"
+                      onChangeText={setEmail} />
+                  </View>
+                </View>
+              </>
+            )}
+          {!success && (
+            <View className="buttons-container">
+              <View className="form-input-row">
+                <TouchableOpacity onPress={submitAction} data-testid="complete-registration" className="form-button"><Send /><Text className='text'>{" "}Send Reset Password Email</Text></TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </View>
+      </View>
+    </SafeAreaView>
   )
 }
-
-export default ForgotScreen;

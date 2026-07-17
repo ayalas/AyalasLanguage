@@ -61,7 +61,8 @@ const SignUpScreen = () => {
   }
 
   return (
-    <SafeAreaView className="root">
+    <SafeAreaView>
+    <View className="root">
       <View className='form-container'>
         <Text className="h1">Sign Up</Text>
         {error !== "" && (
@@ -156,6 +157,7 @@ const SignUpScreen = () => {
             </>
           )}
       </View>
+    </View>
     </SafeAreaView>
   )
 }
