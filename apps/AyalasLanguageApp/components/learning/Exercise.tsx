@@ -13,7 +13,6 @@ import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic'
 import { type ExtendedExerciseInfo, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
 import { ActionsMenuComponent, type ActionsMenuItem } from '@/components/ActionsMenuComponent';
-/* import { Toaster } from 'sonner'; */
 import { useMistakesReadd } from '@/lib/useMistakesReadd';
 import { useAuth } from '@/lib/AuthContext';
 import { TouchableOpacity, Text, View } from 'react-native';
@@ -185,9 +184,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
         return;
 
     return (
-        <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
-            {/* <Toaster position="top-center" richColors /> */}
-            
+        <Fragment key={`ex${exerciseInfo.exerciseId}row`}>           
             <View className="exercise-body-container">
                 <View className="form-row">
                     <label className="form-label-row">{ExerciseTypeInstruction()}</label>
