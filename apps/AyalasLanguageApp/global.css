@@ -1064,7 +1064,25 @@
 
 @media (max-width: 768px) {
   .lesson-inner-container {
-    padding: 14px 12px 18px;
+    padding: 14px 12px 0;
+  }
+
+  .lesson-outer-container {
+    padding: 8px 0 0;
+  }
+
+  .exercise-body-container {
+    padding-bottom: 0;
+  }
+
+  .buttons-container {
+    padding-top: 8px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-button-cell {
+    padding-right: 0;
   }
 
   .form-container {
@@ -1100,12 +1118,6 @@
 
   .match-word-item-cell {
     justify-content: flex-start;
-  }
-
-  .buttons-container {
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
   }
 
   .form-button,
