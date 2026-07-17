@@ -173,7 +173,9 @@
   border-radius: calc(var(--radius) - 2px);
   padding: 10px 12px;
   background: var(--surface-strong);
+  font-size: var(--fontsize);
   color: var(--text-h);
+  font-family: var(--suns);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
 }
 
@@ -262,11 +264,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   border-radius: var(--radius);
   padding: 10px 14px;
   border: 1px solid var(--border);
-  margin-right: 10px;
   flex-shrink: 0; 
 }
 
@@ -313,6 +313,7 @@
   color: var(--text-h);
   line-height: 1.4;
   padding: 0 10px;
+  font-size: var(--fontsize);
 }
 
 .form-label-row {
@@ -378,10 +379,11 @@
   flex-direction: row;
 }
 
-.language-line {
+.line-container {
   padding: 8px 0;
   line-height: 1.4;
   display: flex;
+  gap: 8px;
   flex-direction: row;
   align-items: center; 
 }
@@ -1092,12 +1094,12 @@
 
   .form-label-cell {
     min-width: 100%;
-    padding: 0 0 4px;
+    padding: 0 0 0;
   }
 
   .form-input-cell {
     min-width: 100%;
-    padding: 6px 0 0;
+    padding: 4px 0 0;
   }
 
   .header-row {
@@ -1130,6 +1132,7 @@
 
   .form-row {
     width: 100%;
+    padding: 4px 0;
   }
 
   .home-header-row {

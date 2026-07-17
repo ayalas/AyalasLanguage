@@ -207,7 +207,7 @@ export function AccountPage() {
                 </div>
                 <div className="form-row">
                   <div className="form-input-cell">
-                    <input ref={newEmailAddressRef} data-testid="new-email-address" maxLength={128} type="text" className="form-input" value={newUserName} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={e => setNewUserName(e.target.value)} />
+                    <input ref={newEmailAddressRef} data-testid="new-email-address" maxLength={128} type="email" className="form-input" value={newUserName} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={e => setNewUserName(e.target.value)} />
                   </div>
                   <div className="form-cell-footer">Fill only to change your email address and click Save Changes.</div>
                 </div>

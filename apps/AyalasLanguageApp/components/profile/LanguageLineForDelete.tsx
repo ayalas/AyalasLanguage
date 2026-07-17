@@ -22,7 +22,7 @@ export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguag
   return (
     <>
       {exists && (
-        <View className="language-line">
+        <View className="line-container">
             <TouchableOpacity data-testid="delete-item"
                 className="button-delete-item" 
                 onPress={onButtonClick}>
