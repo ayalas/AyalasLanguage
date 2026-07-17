@@ -1,13 +1,271 @@
 import { View, Text } from 'react-native'
-import React from 'react'
-import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useState, useRef } from 'react';
+import { useLocalSearchParams, Link, useRouter } from 'expo-router';
+import api from '@/lib/api';
+import { FilePenLine } from 'lucide-react-native';
+
+import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAndKeep } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import Exercise, { type ExerciseHandle } from '@/components/learning/Exercise';
+import { errorHandler } from '@ayalaslanguage/types/error';
+import { EXERCISE_TYPE_LOGIC, safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
+import { useAuth } from '@/lib/AuthContext';
+import { FormHeader } from '@/components/FormHeader';
 
 export default function LessonScreen() {
-    const { id } = useLocalSearchParams<{ id?: string }>();
+  const { id: learningPathId } = useLocalSearchParams<{ id?: string }>();
+  const router = useRouter();
+  const [exercises, setExercises] = useState<ExerciseInfo[]>([]);
+  const [scoreToAdd, setScoreToAdd] = useState(0);
+  const [learningPathData, setLearningPathData] = useState<LearningPathInfo | null>(null);
+  const [currentExercise, setCurrentExercise] = useState<ExtendedExerciseInfo | null>(null);
+  const [practiseMistakesInThisPath, setPractiseMistakesInThisPath] = useState(false);
+  const [error, setError] = useState('');
+  const exerciseRefs = useRef<Map<number, ExerciseHandle | undefined>>(new Map());
+  const { user, login } = useAuth();
+
+  const changeCurrentExercise = function (arrExercises: ExerciseInfo[], index: number) {
+    const curItem = arrExercises[index];
+
+    // Defensive: ensure curItem and curItem.data are present
+    const raw = curItem?.data;
+    const dataObj = safeParseData(raw);
+    if (dataObj == null) return;
+
+    const targetLang = user?.languageSettings?.targetLanguage || '';
+    const firstData = replaceCharsForLanguage(targetLang, dataObj?.First || '') || '';
+    const secondData = replaceCharsForLanguage(targetLang, dataObj?.Second || '') || '';
+
+    if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].UsesInlineExerciseWithBlanks) {
+      const sentenceElements = splitAndKeep((firstData || ''), PLACEHOLDERS.BLANKS).map((s) => s.trim()).filter(s => s !== '');
+      const tempElements = (firstData || '').split(PLACEHOLDERS.BLANKS).map((s) => s.trim()).filter(s => s !== '');
+      let answersTemp = getMissingParts(secondData || '', tempElements);
+      //flat the result of getMissingParts - it return answers of more than one word as one element
+      //but the inline exercise needs each word to have its own input
+      answersTemp = answersTemp.flatMap(item => item.split(' ').map((s) => s.trim()).filter(s => s !== ''));
+      let iAnswers = 0;
+      const answers = sentenceElements.map((s) => {
+        if (s == PLACEHOLDERS.BLANKS) {
+          iAnswers++;
+          return answersTemp[iAnswers - 1];
+        }
+        else {
+          return PLACEHOLDERS.BLANKS;
+        }
+      });
+      setCurrentExercise({
+        ...curItem,
+        exerciseObject: dataObj,
+        sentenceElements,
+        answers,
+        index
+      });
+    } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].HasExtraOptions) {
+      const separator = EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].ExtraOptionsSeparator;
+      let tempAnswers: string[];
+      const secondAsStr = (secondData || '').trim();
+      if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].HasSingleBucketAnswer) {
+        tempAnswers = [secondAsStr];
+      }
+      else {
+        tempAnswers = secondAsStr.split(separator);
+      }
+      setCurrentExercise({
+        ...curItem,
+        exerciseObject: dataObj,
+        sentenceElements: [firstData],
+        answers: tempAnswers,
+        extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(separator),
+        index
+      });
+    } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].IsMatchingType) {
+      const sentenceElements = (firstData || '').split(',');
+      const answers = (secondData || '').split(',');
+
+      setCurrentExercise({
+        ...curItem,
+        exerciseObject: dataObj,
+        sentenceElements,
+        answers,
+        index
+      });
+    }
+    else { //all other types
+      setCurrentExercise({
+        ...curItem,
+        exerciseObject: dataObj,
+        sentenceElements: [firstData],
+        answers: [secondData],
+        index
+      });
+    }
+
+    if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].FocusOnLoad) {
+      const refItem = exerciseRefs.current.get(curItem.exerciseId);
+      refItem?.setFocus();
+    }
+  };
+
+  const childLoaded = function (exerciseId: number) {
+    if (exerciseId === currentExercise?.exerciseId) {
+      if (EXERCISE_TYPE_LOGIC[currentExercise.exerciseTypeId].FocusOnLoad) {
+        const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
+        refItem?.setFocus();
+      }
+    }
+  };
+
+  const addMistake = async function (exerciseId: number) {
+    try {
+      await api.post('/api/learning/mistake', { exerciseId });
+    } catch (err: unknown) {
+      errorHandler(err, setError);
+    }
+  };
+
+  const setRef = (el: unknown) => {
+    // el is expected to be the ExerciseHandle forwarded by the child. Associate it with the current exercise id.
+    const handle = el as ExerciseHandle | null | undefined;
+    if (currentExercise) {
+      exerciseRefs.current.set(currentExercise.exerciseId, handle ?? undefined);
+    }
+  };
+
+  const setScore = async function (newScore: number) {
+    //add profile score
+    const res = await api.post('/api/profile/score', { scoreToAdd: newScore });
+    setScoreToAdd(0);
+    setLanguageSettings(res.data, user as User, login);
+  };
+
+  const moveNext = async function () {
+    if (!currentExercise) return;
+
+    const newScore = scoreToAdd + 1;
+
+    if ((currentExercise.index ?? 0) < exercises.length - 1) {
+      setScoreToAdd(newScore);
+      changeCurrentExercise(exercises, (currentExercise.index ?? 0) + 1);
+    } else {
+      try {
+        await setScore(newScore);
+        //set path as done
+        await api.post('/api/learning/progress', { learningPathId });
+        router.replace('/');
+      } catch (err: unknown) {
+        errorHandler(err, setError);
+      }
+    }
+  };
+
+  const movePrev = function () {
+    if (currentExercise == null) return;
+    if ((currentExercise.index ?? 0) > 0) {
+      changeCurrentExercise(exercises, (currentExercise.index ?? 0) - 1);
+    }
+  }
+
+  const saveProgress = async function () {
+    try {
+      if (!currentExercise) return;
+
+      const exCurInd = exercises.findIndex((e) => e.exerciseId == currentExercise.exerciseId);
+      let exerId = null as number | null;
+      if (exCurInd > 0) {
+        exerId = currentExercise.exerciseId;
+      }
+      if (scoreToAdd > 0) {
+        await setScore(scoreToAdd);
+      }
+
+      if (exerId == null) {
+        await api.delete(`/api/learning/progress/${learningPathId}`);
+      } else {
+        await api.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
+      }
+
+      router.replace('/');
+    } catch (err: unknown) {
+      errorHandler(err, setError);
+    }
+  };
+
+  const restartLesson = async function () {
+    changeCurrentExercise(exercises, 0);
+  };
+
+  useEffect(() => {
+    async function getData() {
+      try {
+        const response = await api.get<LearningPathInfo>(`/api/learning/path/${learningPathId}`);
+        const learningPathTemp = response.data;
+        setLearningPathData(learningPathTemp);
+        setPractiseMistakesInThisPath(learningPathTemp.practiseMistakesInThisPath);
+        const res = await api.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+
+        if (res && res.data && res.data.length > 0) {
+
+          const exercisesTemp = [...res.data];
+
+          setExercises(exercisesTemp);
+          let exCurInd = 0;
+          if (learningPathTemp.exerciseId != null) {
+            exCurInd = exercisesTemp.findIndex((e) => e.exerciseId == learningPathTemp.exerciseId);
+            if (exCurInd < 0) {
+              exCurInd = 0;
+            }
+          }
+          changeCurrentExercise(exercisesTemp, exCurInd);
+        }
+      } catch (err: unknown) {
+        errorHandler(err, setError);
+      }
+    }
+    getData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [learningPathId]);
 
   return (
-    <View>
-      <Text>{id}</Text>
+    <View className="lesson-outer-container">
+      <View className="lesson-inner-container">
+
+        {error !== '' && (
+          <View className="form-row">
+            <Text className="form-error">{error}</Text>
+          </View>
+        )}
+        {learningPathData && (
+          <>
+            <FormHeader title={`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`} />
+            {!currentExercise && (
+              <View className="form-row">
+                <View className="form-button-cell">
+                  <Link href={`/author/path/${learningPathId}`} className="link-button"><FilePenLine /></Link>
+                </View>
+              </View>
+            )}
+          </>
+        )}
+        {currentExercise && (
+          <>
+            <View className="form-row">
+              <Text className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</Text>
+            </View>
+
+            <Exercise key={currentExercise.exerciseId}
+              ref={setRef}
+              exerciseInfo={currentExercise}
+              moveNext={moveNext}
+              movePrev={movePrev}
+              childLoaded={childLoaded}
+              saveProgress={saveProgress}
+              restartLesson={restartLesson}
+              practiseMistakesInitialValue={practiseMistakesInThisPath}
+              addMistake={addMistake} />
+          </>
+        )}
+      </View>
     </View>
-  )
+  );
 }

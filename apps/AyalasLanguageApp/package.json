@@ -19,6 +19,7 @@
   "dependencies": {
     "@ayalaslanguage/types": "workspace:*",
     "@expo/vector-icons": "^15.0.3",
+    "@heyputer/puter.js": "^2.5.4",
     "@miblanchard/react-native-slider": "^2.6.0",
     "@react-native-picker/picker": "2.11.1",
     "@react-navigation/bottom-tabs": "^7.4.0",

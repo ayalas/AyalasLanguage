@@ -1,12 +1,12 @@
 import { Fragment, useRef, useState, useImperativeHandle, useCallback, useEffect } from 'react';
-import { ExerciseInput, type ExerciseInputHandle } from '../../../../components/ExerciseInput';
-import VirtualKeyboard from '../../../../components/VirtualKeyboard';
+import ExerciseInput, { type ExerciseInputHandle } from '@/components/learning/ExerciseInput';
 import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { type ExtendedExerciseInfo, PLACEHOLDERS } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import { CirclePlay } from 'lucide-react';
+import { CirclePlay } from 'lucide-react-native';
 import type {ExerciseHandle} from '../Exercise';
+import { TouchableOpacity, Text, View } from 'react-native';
 
 interface Props {
     exerciseInfo: ExtendedExerciseInfo;
@@ -19,16 +19,15 @@ interface Props {
     ref: React.Ref<ExerciseHandle>;
 }
 
-export const InlineExerciseWithBlanks = function (props: Props) {
-    const { exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText, ref } = props;
+export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, 
+        playTargetText, ref }: Props) {
     const questionsRefMap = useRef<Map<string, ExerciseInputHandle | undefined>>(new Map());
-    const [valueFromKeyboard, setValueFromKeyboard] = useState("");
     const currentInputKey = useRef("");
     const [second, setSecond] = useState('');
     const [translation, setTranslation] = useState('');
 
     const checkAnswerOrMoveToNextInput = function () {
-        if (currentInputKey.current != "") {
+        if (currentInputKey.current !== "") {
             const lastChar = Number(currentInputKey.current.at(-1));
 
             if (exerciseInfo.answers != null && exerciseInfo.answers.length - 1 > lastChar) {
@@ -48,19 +47,6 @@ export const InlineExerciseWithBlanks = function (props: Props) {
             parentCheckAnswer();
         }
     };
-
-    const onChangeFromKeyboard = useCallback((input: string) => {
-        if (currentInputKey.current !== "") {
-            setValueFromKeyboard(input);
-            const entry = questionsRefMap.current.get(currentInputKey.current);
-            entry?.setValue(input);
-        }
-    }, []);
-
-    const onChangeFromInput = useCallback((value: string, key?: string) => {
-        setValueFromKeyboard(value);
-        if (key) currentInputKey.current = key;
-    }, []);
 
     useImperativeHandle(ref, () => ({
         setFocus() {
@@ -132,8 +118,8 @@ export const InlineExerciseWithBlanks = function (props: Props) {
 
     return (
         <>
-            <div className="exercise-outer-element">
-                <div className={`exercise-inner-element fill-in-inner-element ${isRightToLeftInput(exerciseInfo.exerciseTypeId,
+            <View className="exercise-outer-element">
+                <View className={`exercise-inner-element fill-in-inner-element ${isRightToLeftInput(exerciseInfo.exerciseTypeId,
                     user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
                     user?.languageSettings?.knownLanguageIsRightToLeft ?? false
                 ) ? "rtlanswer" : "answer"}`}>
@@ -148,46 +134,39 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                             const words = part.split(' ');
                             return (
                                 <Fragment key={`ex${exerciseInfo.exerciseId}input-container${i}`}>
-                                    {part == PLACEHOLDERS.BLANKS && (
+                                    {part === PLACEHOLDERS.BLANKS && (
                                         <ExerciseInput key={`ex${exerciseInfo.exerciseId}input${i}`}
                                             ref={setRef}
                                             charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
                                             checkAnswer={checkAnswerOrMoveToNextInput}
                                             customKey={`${exerciseInfo.exerciseId}-${i}`}
-                                            onChange={onChangeFromInput}
                                         />
                                     ) || (
                                             <>
                                                 {
-                                                    words.map((word, index) => (<div 
+                                                    words.map((word, index) => (<Text 
                                                         key={`ex-word-${exerciseInfo.exerciseId}input-container${i}-${index}`} 
                                                         className="inline-content-line-part">{word}
-                                                    </div>))
+                                                    </Text>))
                                                 }
                                             </>)
                                     }
                                 </Fragment>
                             );
                         })
-                    }</div>
-            </div>
+                    }</View>
+            </View>
             {displayAnswer && (
-                <div className="form-row-play">
-                    <div className="form-play-container">{second}
+                <View className="form-row-play">
+                    <View className="form-play-container"><Text className='text'>{second}</Text>
                         {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
-                            <button data-testid="play-answer" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
-                        )}</div>
+                            <TouchableOpacity data-testid="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay /></TouchableOpacity>
+                        )}</View>
                     { EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
-                        <div className="form-content-row">{translation}</div>
+                        <Text className="text form-content-row">{translation}</Text>
                     )}
-                </div>
+                </View>
             )}
-            <VirtualKeyboard languageCode={user?.languageSettings?.targetLanguageEnglishName?.toLowerCase() || ''} isRightToLeft={true}
-                onChange={onChangeFromKeyboard}
-                value={valueFromKeyboard}
-            />
         </>
     );
 };
-
-export default InlineExerciseWithBlanks;

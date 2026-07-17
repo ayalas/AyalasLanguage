@@ -1,0 +1,20 @@
+import React from 'react';
+import { TouchableOpacity, View, Text } from 'react-native';
+
+type Props = {
+  itemValue: string;
+  position: number;
+  itemClicked: (val: string, pos: number) => void;
+};
+
+export default function BucketListItem({ itemValue, position, itemClicked }:Props) {
+  function clickButton() {
+    itemClicked(itemValue, position);
+  }
+
+  return (
+    <View className="bucket-list-item-cell">
+      <TouchableOpacity data-testid="click-button" className="bucket-list-item-button" onPress={clickButton}><Text className='text font-semibold'>{itemValue}</Text></TouchableOpacity>
+    </View>
+  );
+};

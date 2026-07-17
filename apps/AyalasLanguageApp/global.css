@@ -442,6 +442,7 @@
   margin-right: 10px;
   max-width: 80vw;
   font-size: var(--exrsize);
+  font-family: var(--suns);
 }
 
 .content-line-part,
@@ -452,6 +453,10 @@
   margin: 0;
   white-space: normal;
   overflow-wrap: anywhere;
+
+  font-size: var(--exrsize);
+  color: var(--text-h);
+  font-family: var(--suns);
 }
 
 .inline-content-line-part {
@@ -503,9 +508,8 @@
 
 .exercise-inner-element {
   text-align: start;
-  color: var(--text-h);
+ 
   align-content: center;
-  font-size: var(--fontsize-lg);
 }
 
 .exercise-inner-element-left {
@@ -515,6 +519,15 @@
 
 .exercise-inner-element .input-text {
   font-size: var(--fontsize-lg);
+}
+
+.exercise-text {
+  font-size: var(--fontsize-lg);
+  color: var(--text-h);
+  font-family: var(--suns);
+  display: inline-flex;
+  flex-direction: row;
+  font-weight: 600;
 }
 
 .exercise-outer-element {
