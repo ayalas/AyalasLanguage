@@ -7,6 +7,7 @@ import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { CirclePlay } from 'lucide-react-native';
 import type {ExerciseHandle} from '../Exercise';
 import { TouchableOpacity, Text, View } from 'react-native';
+import useTextStyles from '@/lib/useTextStyles';
 
 interface Props {
     exerciseInfo: ExtendedExerciseInfo;
@@ -25,6 +26,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
     const currentInputKey = useRef("");
     const [second, setSecond] = useState('');
     const [translation, setTranslation] = useState('');
+    const styles = useTextStyles();
 
     const checkAnswerOrMoveToNextInput = function () {
         if (currentInputKey.current !== "") {
@@ -151,7 +153,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
                                                 {
                                                     words.map((word, index) => (<Text 
                                                         key={`ex-word-${exerciseInfo.exerciseId}input-container${i}-${index}`} 
-                                                        className="inline-content-line-part">{word}
+                                                        style={styles.inlineExercise}>{word}
                                                     </Text>))
                                                 }
                                             </>)
@@ -163,12 +165,12 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
             </View>
             {displayAnswer && (
                 <View className="form-row-play">
-                    <View className="form-play-container"><Text className='text'>{second}</Text>
+                    <View className="form-play-container"><Text style={styles.text}>{second}</Text>
                         {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
                             <TouchableOpacity testID="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='color-brand-play' /></TouchableOpacity>
                         )}</View>
                     { EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
-                        <Text className="text form-content-row">{translation}</Text>
+                        <Text style={styles.text}>{translation}</Text>
                     )}
                 </View>
             )}

@@ -7,6 +7,7 @@ import { CirclePlay } from 'lucide-react-native';
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { TouchableOpacity, View, Text } from 'react-native';
+import useTextStyles from '@/lib/useTextStyles';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -24,6 +25,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
   const [translation, setTranslation] = useState('');
+  const styles = useTextStyles();
 
   function checkAnswerInternal(userAnswers: (string)[] = []) {
     let canMoveNext = true;
@@ -142,7 +144,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       <View className="exercise-outer-element">
         <View className="exercise-inner-element">
           <View className="form-row-play">
-            <View className="form-play-container"><Text className='exercise-text'>{first}</Text>{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
+            <View className="form-play-container"><Text style={styles.exerciseText}>{first}</Text>{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
               <View className="playButtonContainer"><TouchableOpacity testID="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay className='color-brand-play' /></TouchableOpacity></View>
             )}</View>
           </View>
@@ -176,7 +178,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
             )}
           </View>
           {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
-            <View className="form-content-row">{translation}</View>
+            <View style={styles.text}>{translation}</View>
           )}
         </View>
       )}

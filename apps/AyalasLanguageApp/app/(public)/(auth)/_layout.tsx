@@ -1,32 +1,35 @@
 import { BG_DARK, BG_LIGHT } from '@/constants';
 import { useAuth } from '@/lib/AuthContext';
+import useTextStyles from '@/lib/useTextStyles';
 import { Tabs } from 'expo-router'
 import { LogInIcon, UserIcon } from 'lucide-react-native';
 import { ActivityIndicator, View, Text, useColorScheme } from 'react-native';
 
-const TabIcon = ({
-    focused,
-    title,
-}: {
-    focused: boolean;
-    title: string;
-}) => (
-    <View className="flex-1 flex flex-row items-center mt-4">
-        {title === "Log In" && (
-            <LogInIcon className={focused ? "color-brand-primary": "color-brand-dimmed"} />
-        ) || (
-                <UserIcon className={focused ? "color-brand-primary": "color-brand-dimmed"} />
-            )}
-        <Text
-            className={`text text-nowrap ${focused ? "" : "color-brand-dimmed" }`}>
-            &nbsp;{title}
-        </Text>
-    </View>
-);
+
 
 export default function PublicAuthLayout() {
     const { loading } = useAuth();
     const colorScheme = useColorScheme();
+    const styles = useTextStyles();
+
+    const TabIcon = ({
+        focused,
+        title,
+    }: {
+        focused: boolean;
+        title: string;
+    }) => (
+        <View className="flex-1 flex flex-row items-center mt-4">
+            {title === "Log In" && (
+                <LogInIcon className={focused ? "color-brand-primary" : "color-brand-dimmed"} />
+            ) || (
+                    <UserIcon className={focused ? "color-brand-primary" : "color-brand-dimmed"} />
+                )}
+            <Text style={[focused? styles.text : styles.textDimmed, {flexWrap: 'nowrap'}]}>
+                &nbsp;{title}
+            </Text>
+        </View>
+    );
 
     if (loading) {
         return (
@@ -43,7 +46,7 @@ export default function PublicAuthLayout() {
             tabBarShowLabel: false,
             headerShown: false,
             tabBarStyle: {
-                backgroundColor: isDark ? BG_DARK: BG_LIGHT,
+                backgroundColor: isDark ? BG_DARK : BG_LIGHT,
                 borderTopColor: "#dfe4ec",
                 position: 'absolute',
                 borderRadius: 20,

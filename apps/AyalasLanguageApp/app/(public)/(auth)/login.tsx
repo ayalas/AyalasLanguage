@@ -8,6 +8,7 @@ import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Ver
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/lib/AuthContext';
+import useTextStyles from '@/lib/useTextStyles';
 
 const LogInScreen = () => {
   const [error, setError] = useState('');
@@ -18,6 +19,7 @@ const LogInScreen = () => {
   const [verify2FAToken, setVerify2FAToken] = useState('');
   const [code, setCode] = useState('');
   const { login } = useAuth();
+  const styles = useTextStyles();
 
   function completeLogin(tmpUser: User, token: string) {
     try {
@@ -71,18 +73,18 @@ const LogInScreen = () => {
 
   return (
     <SafeAreaView>
-      <View className="root">
+    <View className="root">
         <View className='form-container'>
-          <Text className="h1">Login</Text>
+          <Text style={styles.h1}>Login</Text>
           {error !== "" && (
             <View className="form-row">
-              <Text className="form-error">{error}</Text>
+              <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
           {on2FA && (
             <View className="form-row">
               <View className="form-label-cell">
-                <Text className="form-label">Two Factor Authentication Code</Text>
+                <Text style={styles.label}>Two Factor Authentication Code</Text>
               </View>
               <View className="form-input-cell">
                 <TextInput maxLength={TWO_FACTOR_CODE_LENGTH} value={code}
@@ -90,13 +92,13 @@ const LogInScreen = () => {
                   className="form-input"
                   onChangeText={setCode} />
               </View>
-              <View className="form-cell-footer"><Text className='text'>Fill the 6-digit code that has been sent to you by email</Text></View>
+              <View style={styles.text}><Text style={styles.text}>Fill the 6-digit code that has been sent to you by email</Text></View>
             </View>
           ) || (
               <>
                 <View className="form-row">
                   <View className="form-label-cell">
-                    <Text className="form-label">Email</Text>
+                    <Text style={styles.label}>Email</Text>
                   </View>
                   <View className="form-input-cell">
                     <TextInput
@@ -110,7 +112,7 @@ const LogInScreen = () => {
                 </View>
                 <View className="form-row">
                   <View className="form-label-cell">
-                    <Text className="form-label">Password</Text>
+                    <Text style={styles.label}>Password</Text>
                   </View>
                   <View className="form-input-cell">
                     <TextInput
@@ -127,7 +129,7 @@ const LogInScreen = () => {
                 <View className="form-row">
                   <View className="form-label-cell"><Link href="/forgot" asChild>
                     <TouchableOpacity>
-                      <Text className='text color-brand-dimmed underline'>Forgot your password?</Text>
+                      <Text style={[styles.dimmedText, styles.underline]}>Forgot your password?</Text>
                     </TouchableOpacity>
                   </Link></View>
                 </View>
@@ -136,14 +138,16 @@ const LogInScreen = () => {
           <View className="buttons-container">
             <View className="form-input-row">
               <TouchableOpacity testID="submit" className="form-button login-button" onPress={submitAction}>
-                <LogIn /><Text className='text'> Log In</Text>
+                <LogIn /><Text style={styles.text}> Log In</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
-      </View>
+    </View>
     </SafeAreaView>
   )
 }
+
+
 
 export default LogInScreen

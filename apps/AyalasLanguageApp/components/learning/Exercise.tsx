@@ -16,6 +16,8 @@ import { ActionsMenuComponent, type ActionsMenuItem } from '@/components/Actions
 import { useMistakesReadd } from '@/lib/useMistakesReadd';
 import { useAuth } from '@/lib/AuthContext';
 import { TouchableOpacity, Text, View } from 'react-native';
+import useTextStyles from '@/lib/useTextStyles';
+import { COLOR_PLAY } from '@/constants';
 
 export interface ExerciseHandle {
   setFocus: () => void;
@@ -43,7 +45,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useAuth();
     const [puterSignedIn, setPuterSignedIn] = useState(false);
-
+    const styles = useTextStyles();
     const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: exerciseInfo.learningPathId , 
         exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue});
 
@@ -187,11 +189,11 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
         <Fragment key={`ex${exerciseInfo.exerciseId}row`}>           
             <View className="exercise-body-container">
                 <View className="form-row">
-                    <label className="form-label-row">{ExerciseTypeInstruction()}</label>
+                    <Text style={styles.text}>{ExerciseTypeInstruction()}</Text>
                 </View>
                 {error !== "" && (
                     <View className="form-row">
-                        <label className="form-error">{error}</label>
+                        <Text style={styles.errorText}>{error}</Text>
                     </View>
                 )}
 
@@ -220,7 +222,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                 <ActionsMenuComponent items={[
                     {
                         dataTestId: "restart-lesson",
-                        children: <><RotateCcw className='color-brand-play' /><Text className='text color-brand-play'>&nbsp;Restart Lesson</Text></>,
+                        children: <><RotateCcw className='color-brand-play' /><Text style={[styles.text, {color: COLOR_PLAY}]}>&nbsp;Restart Lesson</Text></>,
                         onClick: restartLesson,
                     },
                     {
@@ -256,7 +258,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
                         <View className="form-button-cell">
-                            <TouchableOpacity testID="reveal-answer" onPress={toggleAnswer} className="top-button lesson-button-reveal"><Eye className='color-brand-accent' /><Text className='text color-brand-accent'> {displayAnswer && "Hide" || "Reveal"}</Text></TouchableOpacity>
+                            <TouchableOpacity testID="reveal-answer" onPress={toggleAnswer} className="top-button lesson-button-reveal"><Eye className='color-brand-accent' /><Text style={[styles.text, styles.colorAccent]}> {displayAnswer && "Hide" || "Reveal"}</Text></TouchableOpacity>
                         </View>
                     )
                 }
@@ -265,13 +267,13 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
 
                 {(exerciseInfo.index ?? 0) > 0 && (
                     <View className="exercise-footer-back">
-                        <TouchableOpacity testID="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='color-brand-play' stroke-width="4" /><Text className='text text-brand-play'> Prev</Text></TouchableOpacity>
+                        <TouchableOpacity testID="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='color-brand-play' stroke-width="4" /><Text style={[styles.text, {color: COLOR_PLAY}]}> Prev</Text></TouchableOpacity>
                     </View>
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && (
                         <View className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"}`}>
-                            <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="form-button" ><ListChecks /><Text className='text bg-brand-play color-white'> Check</Text></TouchableOpacity>
+                            <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="form-button" ><ListChecks /><Text style={[styles.text, {color: COLOR_PLAY, backgroundColor: 'white'}]}> Check</Text></TouchableOpacity>
                         </View>
                     )
                 }

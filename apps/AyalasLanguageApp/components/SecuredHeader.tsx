@@ -12,6 +12,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 
 import imgLogo from "@/assets/images/logo.png";
 import imgLogoDark from "@/assets/images/logo-dark.png"; //todo
+import useTextStyles from '@/lib/useTextStyles';
 
 export const LANGUAGE_INDICATOR_ENUM = {
     NONE: 0,
@@ -32,6 +33,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     const [error, setError] = useState('');
     const router = useRouter();
     const colorScheme = useColorScheme();
+    const styles = useTextStyles();
 
     useEffect(() => {
         const loadLanguage = async function () {
@@ -78,8 +80,8 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
 
                 <View className="header-profile-container">
                     <View className="header-profile-name">
-                        <Text className='text'>{user?.displayName}</Text>
-                        <View className="header-score"><Volleyball /><Text className='text'> {user?.languageSettings?.score}</Text></View>
+                        <Text style={styles.text}>{user?.displayName}</Text>
+                        <View className="header-score"><Volleyball /><Text style={styles.text}> {user?.languageSettings?.score}</Text></View>
                     </View>
                 </View>
                 <DropdownMenu.Root>
@@ -88,17 +90,17 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content  className="menu-container">
                     <DropdownMenu.Item className='menu-item' key="profile" onSelect={() => router.push('/profile')}>
-                        <DropdownMenu.ItemTitle className="text">Profile settings</DropdownMenu.ItemTitle>
+                        <DropdownMenu.ItemTitle style={styles.text}>Profile settings</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                     <DropdownMenu.Item className='menu-item' key="account" onSelect={() => router.push('/account')}>
-                        <DropdownMenu.ItemTitle className="text">Manage account</DropdownMenu.ItemTitle>
+                        <DropdownMenu.ItemTitle style={styles.text}>Manage account</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                     <DropdownMenu.Item className='menu-item' key="usernote" onSelect={() => router.push('/usernote')}>
-                        <DropdownMenu.ItemTitle className="text"><Mail />&nbsp;Contact Us</DropdownMenu.ItemTitle>
+                        <DropdownMenu.ItemTitle style={styles.text}><Mail />&nbsp;Contact Us</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator className="menu-delimiter" />
                     <DropdownMenu.Item className='menu-item' key="logout" onSelect={logoutAction}>
-                        <DropdownMenu.ItemTitle className="text">Logout</DropdownMenu.ItemTitle>
+                        <DropdownMenu.ItemTitle style={styles.text}>Logout</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>
                 </DropdownMenu.Root>
@@ -124,7 +126,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                     ))}
                                 </Picker>
                             ) || (
-                                    <Text className='text'>
+                                    <Text style={styles.text}>
                                         {selectedLanguage}
                                     </Text>
                                 )}
@@ -136,7 +138,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
             {
                 error !== '' && (
                     <View className="form-row">
-                        <Text className="form-error">{error}</Text>
+                        <Text style={styles.errorText}>{error}</Text>
                     </View>
                 )
             }

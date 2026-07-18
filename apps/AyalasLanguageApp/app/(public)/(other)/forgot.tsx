@@ -7,12 +7,14 @@ import { isValidEmail } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { Send } from 'lucide-react-native';
 import { FormHeader } from '@/components/FormHeader';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import useTextStyles from '@/lib/useTextStyles';
 
 export default function ForgotScreen() {
   const [error, setError] = useState("");
   const { user: userFromSearch } = useLocalSearchParams<{ user: string }>();
   const [email, setEmail] = useState(userFromSearch);
   const [success, setSuccess] = useState(false);
+  const styles = useTextStyles();
 
   async function submitAction() {
     try {
@@ -37,23 +39,23 @@ export default function ForgotScreen() {
           <FormHeader title='Password Reset' />
           {error !== "" && (
             <View className="form-row">
-              <Text className="form-error">{error}</Text>
+              <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
           {success && (
             <>
               <View className="form-row">
-                <Text className='h2'>Email sent successfully.</Text>
+                <Text style={styles.h2}>Email sent successfully.</Text>
               </View>
               <View className="form-row">
-                <Text className="form-content-row">An email address with a link to reset your password has been sent to &apos;{email}&apos;.</Text>
+                <Text style={styles.text}>An email address with a link to reset your password has been sent to &apos;{email}&apos;.</Text>
               </View>
             </>
           ) || (
               <>
                 <View className="form-row">
                   <View className="form-label-cell">
-                    <Text className="form-label">Email</Text>
+                    <Text style={styles.label}>Email</Text>
                   </View>
                   <View className="form-input-cell">
                     <TextInput testID="email" maxLength={128} keyboardType="email-address" value={email} className="form-input"
@@ -65,7 +67,7 @@ export default function ForgotScreen() {
           {!success && (
             <View className="buttons-container">
               <View className="form-input-row">
-                <TouchableOpacity onPress={submitAction} testID="complete-registration" className="form-button"><Send /><Text className='text'> Send Reset Password Email</Text></TouchableOpacity>
+                <TouchableOpacity onPress={submitAction} testID="complete-registration" className="form-button"><Send /><Text style={styles.text}> Send Reset Password Email</Text></TouchableOpacity>
               </View>
             </View>
           )}

@@ -14,6 +14,7 @@ import { Slider } from '@miblanchard/react-native-slider';
 import { Picker } from '@react-native-picker/picker';
 import api from '@/lib/api'; //secured axios instance
 import { Checkbox } from 'expo-checkbox';
+import useTextStyles from '@/lib/useTextStyles';
 
 export default function ProfileScreen() {
   const [allLanguages, setAllLanguages] = useState<Language[]>([]);
@@ -24,6 +25,7 @@ export default function ProfileScreen() {
   const [disablePuter, setDisablePuter] = useState(false);
   const router = useRouter();
   const { user, login } = useAuth();
+  const styles = useTextStyles();
 
   useEffect(() => {
     async function loadData() {
@@ -107,12 +109,12 @@ export default function ProfileScreen() {
           <FormHeader title="Profile" />
           {error !== '' && (
             <View className="form-row">
-              <Text className="form-error">{error}</Text>
+              <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
           <View className="form-row">
             <View className="form-label-cell">
-              <Text className="form-label">Language to Learn</Text>
+              <Text style={styles.label}>Language to Learn</Text>
             </View>
             <View className="form-input-cell">
               <Picker className="form-select" testID="target-language"
@@ -132,7 +134,7 @@ export default function ProfileScreen() {
           </View>
           <View className="form-row">
             <View className="form-label-cell">
-              <Text className="form-label">Language I Know</Text>
+              <Text style={styles.label}>Language I Know</Text>
             </View>
             <View className="form-input-cell">
               <Picker className="form-select" testID="known-language"
@@ -153,7 +155,7 @@ export default function ProfileScreen() {
 
           <View className="form-row">
             <View className="form-label-cell">
-              <Text className="form-label">Disable Puter use in AI and Sounds</Text>
+              <Text style={styles.label}>Disable Puter use in AI and Sounds</Text>
             </View>
             <View className="form-input-cell">
               <Checkbox value={disablePuter} testID="disablePuter" onValueChange={setDisablePuter} />
@@ -162,7 +164,7 @@ export default function ProfileScreen() {
 
           <View className="form-row">
             <View className="form-label-cell">
-              <Text className="form-label-wrap">No. of Exercises for AI Generation: {numOfExercises}</Text>
+              <Text style={styles.labelWrap}>No. of Exercises for AI Generation: {numOfExercises}</Text>
             </View>
             <Slider
                 minimumValue={0}
@@ -180,15 +182,15 @@ export default function ProfileScreen() {
           <View className="buttons-container">
             <View className="form-input-row">
               <TouchableOpacity testID="save" className="form-button" onPress={submitAction}>
-                <Save /><Text className="text"> Save</Text>
+                <Save /><Text style={styles.text}> Save</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {user?.languageSettings?.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
             <View className="form-row">
-              <View className="form-content-row">
-                <Text className='h2'>Other languages</Text>
+              <View style={styles.text}>
+                <Text style={styles.h2}>Other languages</Text>
               </View>
               {user.languageSettings.otherUserLanguages.map((lang) => (
                 <LanguageLineForDelete key={lang.languageId} languageInfo={lang} user={user} login={login} reloadLanguageSettings={reloadLanguageSettings} />

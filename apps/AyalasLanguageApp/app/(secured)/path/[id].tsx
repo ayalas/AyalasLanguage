@@ -12,6 +12,7 @@ import { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type Learni
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { useAuth } from '@/lib/AuthContext';
 import { FormHeader } from '@/components/FormHeader';
+import useTextStyles from '@/lib/useTextStyles';
 
 export default function LessonScreen() {
   const { id: learningPathId } = useLocalSearchParams<{ id?: string }>();
@@ -24,6 +25,7 @@ export default function LessonScreen() {
   const [error, setError] = useState('');
   const exerciseRefs = useRef<Map<number, ExerciseHandle | undefined>>(new Map());
   const { user, login } = useAuth();
+  const styles = useTextStyles();
 
   const changeCurrentExercise = function (arrExercises: ExerciseInfo[], index: number) {
     const curItem = arrExercises[index];
@@ -232,7 +234,7 @@ export default function LessonScreen() {
 
         {error !== '' && (
           <View className="form-row">
-            <Text className="form-error">{error}</Text>
+            <Text style={styles.errorText}>{error}</Text>
           </View>
         )}
         {learningPathData && (
@@ -250,7 +252,7 @@ export default function LessonScreen() {
         {currentExercise && (
           <>
             <View className="form-row">
-              <Text className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</Text>
+              <Text style={styles.text}>{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</Text>
             </View>
 
             <Exercise key={currentExercise.exerciseId}

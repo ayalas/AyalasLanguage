@@ -7,11 +7,13 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import api from "@/lib/api";
 import SecuredHeader from "@/components/SecuredHeader";
 import { FormHeader } from "@/components/FormHeader";
+import useTextStyles from '@/lib/useTextStyles';
 
 export default function ContactUsScreen() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
+  const styles = useTextStyles();
 
   async function submitAction() {
     try {
@@ -32,16 +34,16 @@ export default function ContactUsScreen() {
           <FormHeader title="Contact Us" />
           {error !== "" && (
             <View className="form-row">
-              <Text className="form-error">{error}</Text>
+              <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
           {success && (
             <View className="form-row">
-              <Text className='h2'>Message sent successfully.</Text>
+              <Text style={styles.h2}>Message sent successfully.</Text>
             </View>
           ) || (
               <>
-                <Text className="form-label">Message</Text>
+                <Text style={styles.label}>Message</Text>
                 <View className="form-row">
                   <View className="form-input-row">
                     <TextInput
@@ -56,7 +58,7 @@ export default function ContactUsScreen() {
           {!success && (
             <View className="buttons-container">
               <View className="form-button-cell">
-                <TouchableOpacity testID="save" onPress={submitAction} className="form-button login-button"><Send /><Text className='text'> Send</Text></TouchableOpacity>
+                <TouchableOpacity testID="save" onPress={submitAction} className="form-button login-button"><Send /><Text style={styles.text}> Send</Text></TouchableOpacity>
               </View>
             </View>
           )}

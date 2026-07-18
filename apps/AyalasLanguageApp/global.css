@@ -86,7 +86,7 @@
   flex-direction: column;
   box-sizing: border-box;
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);
+  background: var(--bg); /*linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);*/
   color: var(--text-h);
   padding: 18px;
   margin: 0;

@@ -9,6 +9,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/lib/AuthContext';
 import { checkPasswordStrength, generatePasswordFeedback, isValidEmail } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import useTextStyles from '@/lib/useTextStyles';
 
 const SignUpScreen = () => {
   const [displayName, setDisplayName] = useState('');
@@ -17,6 +18,7 @@ const SignUpScreen = () => {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const styles = useTextStyles();
 
 
   async function submitAction() {
@@ -64,24 +66,24 @@ const SignUpScreen = () => {
     <SafeAreaView>
     <View className="root">
       <View className='form-container'>
-        <Text className="h1">Sign Up</Text>
+        <Text style={styles.h1}>Sign Up</Text>
         {error !== "" && (
           <View className="form-row">
-            <Text className="form-error">{error}</Text>
+            <Text style={styles.errorText}>{error}</Text>
           </View>
         )}
         {success && (
           <>
             <View className="form-row">
-              <Text className="h2">Account created successfully.</Text>
+              <Text style={styles.h2}>Account created successfully.</Text>
             </View>
             <View className="form-row">
-              <Text className="form-content-row">
+              <Text style={styles.text}>
                 An email address confirmation request has been sent to &apos;{email}&apos;.
                 Please confirm your email, so you&apos;ll be able to generate exercise
                 content and recover your account, in case you forget your password.
                 You can do this now, or later on, after you <Link href={`/login?user=${email}`}>
-                  <Text className="color-brand-dimmed underline">log in</Text>
+                  <Text style={[styles.dimmedText, styles.underline]}>log in</Text>
                 </Link> and experience with the app.
               </Text>
             </View>
@@ -90,7 +92,7 @@ const SignUpScreen = () => {
             <>
               <View className="form-row">
                 <View className="form-label-cell">
-                  <Text className="form-label">Display Name</Text>
+                  <Text style={styles.label}>Display Name</Text>
                 </View>
                 <View className="form-input-cell">
                   <TextInput testID="display-name" keyboardType="default"
@@ -101,7 +103,7 @@ const SignUpScreen = () => {
               </View>
               <View className="form-row">
                 <View className="form-label-cell">
-                  <Text className="form-label">Email</Text>
+                  <Text style={styles.label}>Email</Text>
                 </View>
                 <View className="form-input-cell">
                   <TextInput
@@ -115,7 +117,7 @@ const SignUpScreen = () => {
               </View>
               <View className="form-row">
                 <View className="form-label-cell">
-                  <Text className="form-label">Password</Text>
+                  <Text style={styles.label}>Password</Text>
                 </View>
                 <View className="form-input-cell">
                   <TextInput
@@ -131,7 +133,7 @@ const SignUpScreen = () => {
               </View>
               <View className="form-row">
                 <View className="form-label-cell">
-                  <Text className="form-label">Confirm Password</Text>
+                  <Text style={styles.label}>Confirm Password</Text>
                 </View>
                 <View className="form-input-cell">
                   <TextInput
@@ -148,7 +150,7 @@ const SignUpScreen = () => {
               <View className="buttons-container">
                 <View className="form-input-row">
                   <TouchableOpacity testID="submit" className="form-button login-button" onPress={submitAction}>
-                    <UserIcon /><Text className='text'> Sign Up</Text>
+                    <UserIcon /><Text style={styles.text}> Sign Up</Text>
                   </TouchableOpacity>
                 </View>
               </View>

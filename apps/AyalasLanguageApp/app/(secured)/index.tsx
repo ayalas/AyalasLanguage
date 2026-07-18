@@ -15,6 +15,7 @@ import { ExerciseTypeGroupTitle } from '@/components/home/ExerciseTypeGroupTitle
 import api from '@/lib/api'; //secured axios instance
 import { useAuth } from "@/lib/AuthContext";
 import SecuredHeader, { LANGUAGE_INDICATOR_ENUM } from "@/components/SecuredHeader";
+import useTextStyles from '@/lib/useTextStyles';
 
 type ExerciseTypeGroupObject = {
   exerciseTypeId: 0 | ExerciseType,
@@ -35,6 +36,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const scrollViewRef = useRef<ScrollView>(null);
   const latestLessonRef = useRef<View>(null);
+  const styles = useTextStyles();
 
   useEffect(() => {
     const loadData = async function () {
@@ -142,11 +144,11 @@ export default function HomeScreen() {
         <SecuredHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SWITCH} />
         {error !== '' && (
           <View className="form-row">
-            <Text className="form-error">{error}</Text>
+            <Text style={styles.errorText}>{error}</Text>
           </View>
         )}
         {isLoading && (
-          <Text className="text color-brand-dimmed learning=path-empty">
+          <Text style={styles.dimmedText}>
             Loading...
           </Text>
         ) || ((learningPath && learningPath.length > 0) && (
@@ -154,7 +156,7 @@ export default function HomeScreen() {
             {learningPath.map((level) => {
               return (
                 <View className="learning-level-container" key={`level-${level.level}`}>
-                  <Text className="h1">Level {level.level}</Text>
+                  <Text style={styles.h1}>Level {level.level}</Text>
                   {level.exerciseTypes.sort(
                     (a: ExerciseTypeGroupObject, b: ExerciseTypeGroupObject) => EXERCISE_TYPE_LOGIC[a.exerciseTypeId].SortByEaseRank - EXERCISE_TYPE_LOGIC[b.exerciseTypeId].SortByEaseRank
                   ).map((exerciseTypeObject: ExerciseTypeGroupObject) => {
@@ -186,7 +188,7 @@ export default function HomeScreen() {
                                     {path.practiseMistakesInThisPath && (
                                       <History />
                                     )}
-                                    <View className="content-line-part"><Text className="color-brand-dimmed">{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
+                                    <View className="content-line-part"><Text style={styles.dimmedText}>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
                                   </View>
                                 );
                               })}
@@ -206,14 +208,14 @@ export default function HomeScreen() {
             })}
           </ScrollView>
         ) || (hasLanguage && (
-          <Text className="form-content-row">
+          <Text style={styles.text}>
             It looks like there are not yet any lessons in this language.{"\n"}
             But you can <Link href="/author/create">add ones yourself!</Link>
           </Text>
         )) || (
-            <Text className="form-content-row">
+            <Text style={styles.text}>
               You have not selected which language to learn.{"\n"}
-              Go to <Link className="color-brand-dimmed underline" href="/profile">the profile page</Link> to choose one!
+              Go to <Link style={[styles.dimmedText, styles.underline]} href="/profile">the profile page</Link> to choose one!
             </Text>
           ))}
       </View>

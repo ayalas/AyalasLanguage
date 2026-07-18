@@ -9,6 +9,7 @@ import { checkPasswordStrength, generatePasswordFeedback } from '@ayalaslanguage
 import { FormHeader } from '@/components/FormHeader';
 import { useAuth } from '@/lib/AuthContext';
 import Checkbox from 'expo-checkbox';
+import useTextStyles from '@/lib/useTextStyles';
 
 export default function AccountScreen() {
   const [displayName, setDisplayName] = useState('');
@@ -22,6 +23,7 @@ export default function AccountScreen() {
   const [newUserName, setNewUserName] = useState("");
   const { user, login } = useAuth();
   const router = useRouter();
+  const styles = useTextStyles();
 
   const confirmEmail = async () => {
     try {
@@ -102,15 +104,15 @@ export default function AccountScreen() {
 
         {accountChanged ? (
           <View className="form-row">
-            <Text className='h2'>Account details changed successfully.</Text>
+            <Text style={styles.h2}>Account details changed successfully.</Text>
           </View>
         ) : emailConfirmationSent ? (
           <>
             <View className="form-row">
-              <Text className='h2'>Email address confirmation sent successfully.</Text>
+              <Text style={styles.h2}>Email address confirmation sent successfully.</Text>
             </View>
             <View className="form-row">
-              <Text className="form-content-row">An email address confirmation request has been sent to '{user?.userName}'. Please confirm your email, so you'll be able to recover your account, in case you forget your password. </Text>
+              <Text style={styles.text}>An email address confirmation request has been sent to '{user?.userName}'. Please confirm your email, so you'll be able to recover your account, in case you forget your password. </Text>
             </View>
           </>
         ) : (
@@ -118,12 +120,12 @@ export default function AccountScreen() {
             <FormHeader title="Account Details" />
             {error !== "" && (
               <View className="form-row">
-                <Text className="form-error">{error}</Text>
+                <Text style={styles.errorText}>{error}</Text>
               </View>
             )}
             <View className="form-row">
               <View className="form-label-cell">
-                <Text className="form-label">First Name</Text>
+                <Text style={styles.label}>First Name</Text>
               </View>
             </View>
             <View className="form-row">
@@ -133,9 +135,9 @@ export default function AccountScreen() {
             </View>
             <View className="form-row">
               <View className="form-label-cell">
-                <Text className="form-label">Email Address: {user?.userName}</Text>
+                <Text style={styles.label}>Email Address: {user?.userName}</Text>
               </View>
-              <Text className="form-cell-footer">{user?.emailConfirmed && (
+              <Text style={styles.text}>{user?.emailConfirmed && (
                 <>Confirmed (cannot be changed)</>
               ) || (
                   <> Please confirm your email address by clicking Confirm Email Address above.</>
@@ -145,15 +147,15 @@ export default function AccountScreen() {
               <>
                 <View className="form-row">
                   <View className="line-container">
-                    <Checkbox className='inline-row' testID="use-2fa" value={use2FALogin} onValueChange={setUse2FALogin} /><Text className="text font-medium">Use Two Factor Authentication</Text>
+                    <Checkbox className='inline-row' testID="use-2fa" value={use2FALogin} onValueChange={setUse2FALogin} /><Text style={styles.label}>Use Two Factor Authentication</Text>
                   </View>
-                  <Text className="form-cell-footer">Protect your account on login with an extra code sent by email</Text>
+                  <Text style={styles.text}>Protect your account on login with an extra code sent by email</Text>
                 </View>
               </>
             )}
             <View className="form-row">
               <View className="form-label-cell">
-                <Text className="form-label">Current Password</Text>
+                <Text style={styles.label}>Current Password</Text>
               </View>
             </View>
             <View className="form-row">
@@ -164,7 +166,7 @@ export default function AccountScreen() {
 
             <View className="form-row">
               <View className="form-label-cell">
-                <Text className="form-label">New Password</Text>
+                <Text style={styles.label}>New Password</Text>
               </View>
 
             </View>
@@ -172,11 +174,11 @@ export default function AccountScreen() {
               <View className="form-input-cell">
                 <TextInput testID="new-password" secureTextEntry={true} keyboardType="default" maxLength={32} className="form-input" value={newPassword} onChangeText={setNewPassword} />
               </View>
-              <Text className="form-cell-footer">Fill only to change your password and click Save Changes</Text>
+              <Text style={styles.text}>Fill only to change your password and click Save Changes</Text>
             </View>
             <View className="form-row">
               <View className="form-label-cell">
-                <Text className="form-label">Confirm New Password</Text>
+                <Text style={styles.label}>Confirm New Password</Text>
               </View>
             </View>
             <View className="form-row">
@@ -189,24 +191,24 @@ export default function AccountScreen() {
               <>
                 <View className="form-row">
                   <View className="form-label-cell">
-                    <Text className="form-label">New Email Address</Text>
+                    <Text style={styles.label}>New Email Address</Text>
                   </View>
                 </View>
                 <View className="form-row">
                   <View className="form-input-cell">
                     <TextInput testID="new-email-address" maxLength={128} keyboardType="email-address" className="form-input" value={newUserName} onChangeText={setNewUserName} />
                   </View>
-                  <Text className="form-cell-footer">Fill only to change your email address and click Save Changes.</Text>
+                  <Text style={styles.text}>Fill only to change your email address and click Save Changes.</Text>
                 </View>
               </>
             )}
             <View className="buttons-container">
               <View className="form-button-cell">
-                <TouchableOpacity testID="save" onPress={handleSubmit} className="form-button"><Save /><Text className='text'> Save Changes</Text></TouchableOpacity>
+                <TouchableOpacity testID="save" onPress={handleSubmit} className="form-button"><Save /><Text style={styles.text}> Save Changes</Text></TouchableOpacity>
               </View>
               {!user?.emailConfirmed && (
                 <View className="form-button-cell">
-                  <TouchableOpacity testID="send" className="form-button" onPress={confirmEmail}><Send /><Text className='text'> Confirm Email Address</Text></TouchableOpacity>
+                  <TouchableOpacity testID="send" className="form-button" onPress={confirmEmail}><Send /><Text style={styles.text}> Confirm Email Address</Text></TouchableOpacity>
                 </View>
               )}
             </View>

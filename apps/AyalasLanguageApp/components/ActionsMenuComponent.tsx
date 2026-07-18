@@ -3,6 +3,7 @@ import { Fragment } from 'react';
 import { RelativePathString, useRouter } from 'expo-router';
 import { Text } from 'react-native';
 import * as DropdownMenu from 'zeego/dropdown-menu';
+import useTextStyles from '@/lib/useTextStyles';
 
 export interface ActionsMenuItem {
     isVisible?: boolean;
@@ -16,6 +17,7 @@ export interface ActionsMenuItem {
 
 export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMenuItem[], anchorTitle: string }) {
     const router = useRouter();
+    const styles = useTextStyles();
 
     let countShown = 0;
 
@@ -31,7 +33,7 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
     return (
         <DropdownMenu.Root>
             <DropdownMenu.Trigger className='actions-menu-link-button'>
-                <Text className="text">{anchorTitle}&nbsp;</Text><ChevronDown />
+                <Text style={styles.text}>{anchorTitle}&nbsp;</Text><ChevronDown />
             </DropdownMenu.Trigger>
 
             <DropdownMenu.Content className="menu-container">

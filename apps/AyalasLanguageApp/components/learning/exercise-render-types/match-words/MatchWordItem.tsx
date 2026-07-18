@@ -1,3 +1,4 @@
+import useTextStyles from '@/lib/useTextStyles';
 import { CirclePlay } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { TouchableOpacity, Text, View } from 'react-native';
@@ -21,6 +22,7 @@ export default function MatchWordItem ({ itemValue, matchingValue, setSelected, 
   const [isSelected, setIsSelected] = useState(false);
   const [errorState, setErrorState] = useState(false);
   const [isDone, setIsDone] = useState(false);
+  const styles = useTextStyles();
 
   function setToDone() {
     setIsDone(true);
@@ -50,7 +52,7 @@ export default function MatchWordItem ({ itemValue, matchingValue, setSelected, 
     <View className="match-word-item-cell">
       <TouchableOpacity testID="click-button" className={className} onPress={clickButton}>
         {!isSpoken && (
-          <Text className={`exercise-text${classColor}`}>
+          <Text style={[styles.exerciseText, isDone? styles.doneCell : errorState? styles.errorCell : isSelected? styles.selectedCell : styles.exerciseText ]}>
           {itemValue}
           </Text>
         ) || (

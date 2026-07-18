@@ -4,11 +4,13 @@ import { Trash2 } from 'lucide-react-native';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import api from '@/lib/api'; //secured axios instance
+import useTextStyles from '@/lib/useTextStyles';
 
 export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguageSettings }:
   { languageInfo: any; user: User | null; login: (u: User) => void; reloadLanguageSettings: (a: any, u: any, l: any) => void }) {
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
+  const styles = useTextStyles();
 
   async function onButtonClick() {
     try {
@@ -28,12 +30,12 @@ export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguag
                 onPress={onButtonClick}>
               <Trash2 width="18" height="18" />
             </TouchableOpacity>
-            <Text className="profile-language-names">{languageInfo.nativeName} ({languageInfo.englishName})</Text>
+            <Text style={styles.text}>{languageInfo.nativeName} ({languageInfo.englishName})</Text>
         </View>
       )}
       {error !== '' && (
         <View className="form-row">
-          <Text className="form-error">{error}</Text>
+          <Text style={styles.errorText}>{error}</Text>
         </View>
       )}
     </>
