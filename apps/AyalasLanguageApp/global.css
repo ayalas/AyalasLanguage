@@ -33,7 +33,6 @@
   --exrsize: 22px;
   --fontsize-lg: 26px;
 
-  font: var(--fontsize)/1.55 var(--sans);
   letter-spacing: 0.01em;
   color-scheme: light dark;
   color: var(--text);
@@ -103,12 +102,12 @@
 }
 
 .h1 {
-  font-size: clamp(26px, 3vw, 34px);
+  font-size: 26px;
   margin: 24px 0 14px;
 }
 
 .h2 {
-  font-size: clamp(20px, 2.3vw, 24px);
+  font-size: 24px;
   line-height: 1.25;
   margin: 0 0 8px;
 }
@@ -131,8 +130,6 @@
   font-size: var(--fontsize);
   padding: 10px 14px;
   border-radius: var(--radius);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .button:hover,
@@ -141,8 +138,6 @@
 .link-button:hover,
 .actions-menu-link-button:hover,
 .bucket-list-item-button:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-card);
   border-color: var(--accent-border);
 }
 
@@ -176,14 +171,13 @@
   font-size: var(--fontsize);
   color: var(--text-h);
   font-family: var(--suns);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
 }
 
 .center,
 .lesson-outer-container {
   display: flex;
   flex-direction: column;
-  gap: clamp(16px, 2vw, 24px);
+  gap: 16px;
   place-content: flex-start;
   place-items: center;
   flex-grow: 1;
@@ -230,17 +224,14 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   font-size: var(--fontsize);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .lesson-inner-container {
-  width: min(920px, 95%);
+  width: 95%;
   padding: 12px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(8px);
   margin: 10px 10px auto;
   flex-grow: 0;
 }
@@ -289,14 +280,12 @@
 
 .exercise-type-select {
   width: calc(100% - 40px);
-  ;
   min-height: 42px;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) - 2px);
   padding: 10px 12px;
   background: var(--surface-strong);
   color: var(--text-h);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
 }
 
 .exercise-type-difficulty {
@@ -304,7 +293,7 @@
   display: inline-flex;
   padding: 0 5px;
   margin-left: auto;
-  white-space: no-wrap;
+  white-space: nowrap;
   overflow-wrap: anywhere;
 }
 
@@ -451,11 +440,6 @@
   flex-direction: row;
 }
 
-.input:required:invalid {
-  border-color: var(--error);
-  box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
-}
-
 .input-text-placeholder {
   margin-left: 10px;
   margin-right: 10px;
@@ -523,11 +507,10 @@
 .form-container {
   margin-top: 10px;
   padding: 16px;
-  max-width: min(90vw, 920px);
+  max-width: 90vw;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
   flex-grow: 0;
 }
 
@@ -847,16 +830,14 @@
   flex-direction: row;
   -webkit-appearance: none;
   appearance: none;
-  box-shadow: 0 0 0 0;
 }
 
 .menu-container {
   background: var(--surface-strong);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
   border-radius: var(--radius);
   padding: 6px 0;
-  min-width: min(220px, 92vw);
+  min-width: 220px;
   z-index: 999;
   flex-direction: row;
 }
@@ -955,7 +936,7 @@
 .match-words-row {
   display: flex;
   flex-direction: row;
-  flex-wrap: no-wrap;
+  flex-wrap: nowrap;
   gap: 16px;
   justify-content: center;
   width: 100%;
@@ -1003,12 +984,10 @@
   padding: 10px 12px;
   overflow-wrap: anywhere;
   border-radius: 999px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .match-word-item-button:hover {
   transform: translateY(-1px);
-  box-shadow: var(--shadow-card);
 }
 
 .match-words-item-done {
@@ -1101,15 +1080,12 @@
   align-items: center;
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
 }
 
 .loading-box {
   background: var(--surface-strong);
   padding: 1rem;
   border-radius: 0.75rem;
-  box-shadow: var(--shadow);
 }
 
 .rtlanswer {
