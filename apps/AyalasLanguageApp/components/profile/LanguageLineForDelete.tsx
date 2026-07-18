@@ -23,10 +23,10 @@ export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguag
     <>
       {exists && (
         <View className="line-container">
-            <TouchableOpacity data-testid="delete-item"
+            <TouchableOpacity testID="delete-item"
                 className="button-delete-item" 
                 onPress={onButtonClick}>
-              <Trash2 className="small-icon" />
+              <Trash2 width="18" height="18" />
             </TouchableOpacity>
             <Text className="profile-language-names">{languageInfo.nativeName} ({languageInfo.englishName})</Text>
         </View>

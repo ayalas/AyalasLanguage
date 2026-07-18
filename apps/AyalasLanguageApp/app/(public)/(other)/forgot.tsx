@@ -56,7 +56,7 @@ export default function ForgotScreen() {
                     <Text className="form-label">Email</Text>
                   </View>
                   <View className="form-input-cell">
-                    <TextInput data-testid="email" maxLength={128} keyboardType="email-address" value={email} className="form-input"
+                    <TextInput testID="email" maxLength={128} keyboardType="email-address" value={email} className="form-input"
                       onChangeText={setEmail} />
                   </View>
                 </View>
@@ -65,7 +65,7 @@ export default function ForgotScreen() {
           {!success && (
             <View className="buttons-container">
               <View className="form-input-row">
-                <TouchableOpacity onPress={submitAction} data-testid="complete-registration" className="form-button"><Send /><Text className='text'>{" "}Send Reset Password Email</Text></TouchableOpacity>
+                <TouchableOpacity onPress={submitAction} testID="complete-registration" className="form-button"><Send /><Text className='text'> Send Reset Password Email</Text></TouchableOpacity>
               </View>
             </View>
           )}

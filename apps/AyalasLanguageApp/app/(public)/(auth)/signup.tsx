@@ -80,11 +80,9 @@ const SignUpScreen = () => {
                 An email address confirmation request has been sent to &apos;{email}&apos;.
                 Please confirm your email, so you&apos;ll be able to generate exercise
                 content and recover your account, in case you forget your password.
-                You can do this now, or later on, after you{" "}
-                <Link href={`/login?user=${email}`}>
-                  <Text className="text-dimmed underline">log in</Text>
-                </Link>
-                {" "}and experience with the app.
+                You can do this now, or later on, after you <Link href={`/login?user=${email}`}>
+                  <Text className="color-brand-dimmed underline">log in</Text>
+                </Link> and experience with the app.
               </Text>
             </View>
           </>
@@ -95,7 +93,7 @@ const SignUpScreen = () => {
                   <Text className="form-label">Display Name</Text>
                 </View>
                 <View className="form-input-cell">
-                  <TextInput data-testid="display-name" keyboardType="default"
+                  <TextInput testID="display-name" keyboardType="default"
                     maxLength={128}
                     value={displayName} className="input form-input"
                     onChangeText={setDisplayName} />
@@ -107,7 +105,7 @@ const SignUpScreen = () => {
                 </View>
                 <View className="form-input-cell">
                   <TextInput
-                    data-testid="email"
+                    testID="email"
                     value={email}
                     onChangeText={setEmail}
                     keyboardType="email-address"
@@ -121,7 +119,7 @@ const SignUpScreen = () => {
                 </View>
                 <View className="form-input-cell">
                   <TextInput
-                    data-testid="password"
+                    testID="password"
                     autoCapitalize="none"
                     autoCorrect={false}
                     value={password}
@@ -137,7 +135,7 @@ const SignUpScreen = () => {
                 </View>
                 <View className="form-input-cell">
                   <TextInput
-                    data-testid="confirm-password"
+                    testID="confirm-password"
                     autoCapitalize="none"
                     autoCorrect={false}
                     value={passwordConfirm}
@@ -149,8 +147,8 @@ const SignUpScreen = () => {
               </View>
               <View className="buttons-container">
                 <View className="form-input-row">
-                  <TouchableOpacity data-testid="submit" className="form-button login-button" onPress={submitAction}>
-                    <UserIcon className="inline-row" /><Text className='text'>{" "}Sign Up</Text>
+                  <TouchableOpacity testID="submit" className="form-button login-button" onPress={submitAction}>
+                    <UserIcon /><Text className='text'> Sign Up</Text>
                   </TouchableOpacity>
                 </View>
               </View>

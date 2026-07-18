@@ -153,10 +153,6 @@
   white-space: nowrap;
 }
 
-.text-dimmed {
-  color: var(--text);
-}
-
 .textarea,
 .form-select,
 .form-input,
@@ -847,54 +843,6 @@
   border-top: 1px solid var(--border);
   margin: 4px 0;
 }
-
-.lucide-arrow-big-left {
-  color: rgb(55, 194, 20);
-  stroke-width: 4px;
-}
-
-.lucide-square-menu {
-  width: 36px;
-  height: 36px;
-}
-
-.lucide-layers-plus {
-  color: var(--layers);
-}
-
-.lucide-circle-dot-dashed {
-  color: rgb(255, 200, 1);
-}
-
-.lucide-eye {
-  color: var(--accent);
-}
-
-.lucide-rotate-ccw {
-  color: rgb(55, 194, 20);
-}
-
-.lucide-circle-play {
-  color: rgb(55, 194, 20);
-  display: block;
-}
-
-.check-answer-button {
-  background-color: rgb(55, 194, 20);
-  color: white;
-}
-
-.check-answer-button-text {
-  background-color: rgb(55, 194, 20);
-  color: white;
-}
-
-.learning-progress-img {
-  width: var(--fontsize);
-  height: var(--fontsize);
-  margin-left: 5px;
-}
-
 .play-button {
   background-color: var(--surface-strong);
   cursor: pointer;
@@ -1189,10 +1137,6 @@
   }
 
   .exercise-footer-next-noback {
-    width: 100%;
-  }
-
-  .check-answer-button {
     width: 100%;
   }
 

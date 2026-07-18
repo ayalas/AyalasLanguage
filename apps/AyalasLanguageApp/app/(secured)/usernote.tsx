@@ -46,7 +46,7 @@ export default function ContactUsScreen() {
                   <View className="form-input-row">
                     <TextInput
                       multiline={true}
-                      numberOfLines={8} data-testid="message" maxLength={4000}
+                      numberOfLines={8} testID="message" maxLength={4000}
                       className="text-area-wide" value={message}
                       onChangeText={setMessage} />
                   </View>
@@ -56,7 +56,7 @@ export default function ContactUsScreen() {
           {!success && (
             <View className="buttons-container">
               <View className="form-button-cell">
-                <TouchableOpacity data-testid="save" onPress={submitAction} className="form-button login-button"><Send /><Text className='text'>{" "}Send</Text></TouchableOpacity>
+                <TouchableOpacity testID="save" onPress={submitAction} className="form-button login-button"><Send /><Text className='text'> Send</Text></TouchableOpacity>
               </View>
             </View>
           )}

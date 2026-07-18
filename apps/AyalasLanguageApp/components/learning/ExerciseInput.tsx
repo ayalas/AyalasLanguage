@@ -75,7 +75,7 @@ export default function ExerciseInput ({ charWidth = 20, checkAnswer, value, onC
     
 
   return (
-    <TextInput data-testid="input-element"
+    <TextInput testID="input-element"
       ref={inputRef}
       keyboardType="default"
       value={internalData}

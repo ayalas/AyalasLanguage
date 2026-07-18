@@ -220,7 +220,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                 <ActionsMenuComponent items={[
                     {
                         dataTestId: "restart-lesson",
-                        children: <><RotateCcw className='lucide-rotate-ccw' /><Text className='text lucide-rotate-ccw'>&nbsp;Restart Lesson</Text></>,
+                        children: <><RotateCcw className='color-brand-play' /><Text className='text color-brand-play'>&nbsp;Restart Lesson</Text></>,
                         onClick: restartLesson,
                     },
                     {
@@ -248,7 +248,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                     },
                     {
                         dataTestId: "save-progress",
-                        children: <><CircleDotDashed />&nbsp;Save & Exit</>,
+                        children: <><CircleDotDashed className='color-brand-dashed' />&nbsp;Save & Exit</>,
                         onClick: saveProgress,
                         className: "lesson-button-save",
                     }
@@ -256,7 +256,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
                         <View className="form-button-cell">
-                            <TouchableOpacity data-testid="reveal-answer" onPress={toggleAnswer} className="top-button lesson-button-reveal"><Eye className='lucide-eye' /><Text className='text lucide-eye'>{" "}{displayAnswer && "Hide" || "Reveal"}</Text></TouchableOpacity>
+                            <TouchableOpacity testID="reveal-answer" onPress={toggleAnswer} className="top-button lesson-button-reveal"><Eye className='color-brand-accent' /><Text className='text color-brand-accent'> {displayAnswer && "Hide" || "Reveal"}</Text></TouchableOpacity>
                         </View>
                     )
                 }
@@ -265,13 +265,13 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
 
                 {(exerciseInfo.index ?? 0) > 0 && (
                     <View className="exercise-footer-back">
-                        <TouchableOpacity data-testid="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='lucide-arrow-big-left' /><Text className='text lucide-arrow-big-left'>{" "}Prev</Text></TouchableOpacity>
+                        <TouchableOpacity testID="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='color-brand-play' stroke-width="4" /><Text className='text text-brand-play'> Prev</Text></TouchableOpacity>
                     </View>
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && (
                         <View className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"}`}>
-                            <TouchableOpacity data-testid="check-my-answers" onPress={checkAnswer} className="form-button check-answer-button" ><ListChecks /><Text className='text check-answer-button-text'>{" "}Check</Text></TouchableOpacity>
+                            <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="form-button" ><ListChecks /><Text className='text bg-brand-play color-white'> Check</Text></TouchableOpacity>
                         </View>
                     )
                 }

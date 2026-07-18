@@ -143,7 +143,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         <View className="exercise-inner-element">
           <View className="form-row-play">
             <View className="form-play-container"><Text className='exercise-text'>{first}</Text>{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
-              <View className="playButtonContainer"><TouchableOpacity data-testid="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay className='lucide-circle-play' /></TouchableOpacity></View>
+              <View className="playButtonContainer"><TouchableOpacity testID="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay className='color-brand-play' /></TouchableOpacity></View>
             )}</View>
           </View>
           {answerList && (
@@ -172,7 +172,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         <View className="form-row-play">
           <View className="form-play-container">{second}
             {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
-            <TouchableOpacity data-testid="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='lucide-circle-play' /></TouchableOpacity>
+            <TouchableOpacity testID="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='color-brand-play' /></TouchableOpacity>
             )}
           </View>
           {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (

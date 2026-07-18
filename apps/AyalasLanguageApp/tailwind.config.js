@@ -4,7 +4,18 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
-
+      colors: {
+        brand: {
+          dimmed: "var(--text)",
+          primary: "var(--text-h)",
+          bg: "var(--bg)",
+          border: "var(--border)",
+          accent: "var(--accent)",
+          layers: "var(--layers)",
+          play: "rgb(55, 194, 20)",
+          dashed: "rgb(255, 200, 1)"
+        },
+      },
       fontFamily: {
         Tajawal: 
         ["Tajawal-Regular", "sans-serif"],

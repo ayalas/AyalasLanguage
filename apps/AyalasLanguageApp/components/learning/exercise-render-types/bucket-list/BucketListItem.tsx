@@ -14,7 +14,7 @@ export default function BucketListItem({ itemValue, position, itemClicked }: Pro
 
   return (
     <View className="bucket-list-item-cell">
-      <TouchableOpacity data-testid="click-button" className="bucket-list-item-button" onPress={clickButton}><Text className='exercise-text'>{itemValue}</Text></TouchableOpacity>
+      <TouchableOpacity testID="click-button" className="bucket-list-item-button" onPress={clickButton}><Text className='exercise-text'>{itemValue}</Text></TouchableOpacity>
     </View>
   );
 };

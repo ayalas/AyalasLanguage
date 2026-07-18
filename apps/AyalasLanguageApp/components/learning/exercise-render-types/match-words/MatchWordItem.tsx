@@ -48,13 +48,13 @@ export default function MatchWordItem ({ itemValue, matchingValue, setSelected, 
 
   return (
     <View className="match-word-item-cell">
-      <TouchableOpacity data-testid="click-button" className={className} onPress={clickButton}>
+      <TouchableOpacity testID="click-button" className={className} onPress={clickButton}>
         {!isSpoken && (
           <Text className={`exercise-text${classColor}`}>
           {itemValue}
           </Text>
         ) || (
-          <CirclePlay className='lucide-circle-play' />
+          <CirclePlay className='color-brand-play' />
         )}
       </TouchableOpacity>
     </View>

@@ -128,7 +128,7 @@ export default function AccountScreen() {
             </View>
             <View className="form-row">
               <View className="form-input-cell">
-                <TextInput data-testid="display-name" keyboardType="default" maxLength={128} className="form-input" value={displayName} onChangeText={setDisplayName} />
+                <TextInput testID="display-name" keyboardType="default" maxLength={128} className="form-input" value={displayName} onChangeText={setDisplayName} />
               </View>
             </View>
             <View className="form-row">
@@ -145,7 +145,7 @@ export default function AccountScreen() {
               <>
                 <View className="form-row">
                   <View className="line-container">
-                    <Checkbox className='inline-row' data-testid="use-2fa" value={use2FALogin} onValueChange={setUse2FALogin} /><Text className="text font-medium">Use Two Factor Authentication</Text>
+                    <Checkbox className='inline-row' testID="use-2fa" value={use2FALogin} onValueChange={setUse2FALogin} /><Text className="text font-medium">Use Two Factor Authentication</Text>
                   </View>
                   <Text className="form-cell-footer">Protect your account on login with an extra code sent by email</Text>
                 </View>
@@ -158,7 +158,7 @@ export default function AccountScreen() {
             </View>
             <View className="form-row">
               <View className="form-input-cell">
-                <TextInput data-testid="current-password" secureTextEntry={true} keyboardType="default" maxLength={32} className="form-input" value={oldPassword} onChangeText={setOldPassword} />
+                <TextInput testID="current-password" secureTextEntry={true} keyboardType="default" maxLength={32} className="form-input" value={oldPassword} onChangeText={setOldPassword} />
               </View>
             </View>
 
@@ -170,7 +170,7 @@ export default function AccountScreen() {
             </View>
             <View className="form-row">
               <View className="form-input-cell">
-                <TextInput data-testid="new-password" secureTextEntry={true} keyboardType="default" maxLength={32} className="form-input" value={newPassword} onChangeText={setNewPassword} />
+                <TextInput testID="new-password" secureTextEntry={true} keyboardType="default" maxLength={32} className="form-input" value={newPassword} onChangeText={setNewPassword} />
               </View>
               <Text className="form-cell-footer">Fill only to change your password and click Save Changes</Text>
             </View>
@@ -181,7 +181,7 @@ export default function AccountScreen() {
             </View>
             <View className="form-row">
               <View className="form-input-cell">
-                <TextInput data-testid="confirm-new-password" maxLength={32} secureTextEntry={true} keyboardType="default" className="form-input" value={newPasswordConfirm} onChangeText={setNewPasswordConfirm} />
+                <TextInput testID="confirm-new-password" maxLength={32} secureTextEntry={true} keyboardType="default" className="form-input" value={newPasswordConfirm} onChangeText={setNewPasswordConfirm} />
               </View>
             </View>
 
@@ -194,7 +194,7 @@ export default function AccountScreen() {
                 </View>
                 <View className="form-row">
                   <View className="form-input-cell">
-                    <TextInput data-testid="new-email-address" maxLength={128} keyboardType="email-address" className="form-input" value={newUserName} onChangeText={setNewUserName} />
+                    <TextInput testID="new-email-address" maxLength={128} keyboardType="email-address" className="form-input" value={newUserName} onChangeText={setNewUserName} />
                   </View>
                   <Text className="form-cell-footer">Fill only to change your email address and click Save Changes.</Text>
                 </View>
@@ -202,11 +202,11 @@ export default function AccountScreen() {
             )}
             <View className="buttons-container">
               <View className="form-button-cell">
-                <TouchableOpacity data-testid="save" onPress={handleSubmit} className="form-button"><Save /><Text className='text'>{" "}Save Changes</Text></TouchableOpacity>
+                <TouchableOpacity testID="save" onPress={handleSubmit} className="form-button"><Save /><Text className='text'> Save Changes</Text></TouchableOpacity>
               </View>
               {!user?.emailConfirmed && (
                 <View className="form-button-cell">
-                  <TouchableOpacity data-testid="send" className="form-button" onPress={confirmEmail}><Send /><Text className='text'>{" "}Confirm Email Address</Text></TouchableOpacity>
+                  <TouchableOpacity testID="send" className="form-button" onPress={confirmEmail}><Send /><Text className='text'> Confirm Email Address</Text></TouchableOpacity>
                 </View>
               )}
             </View>

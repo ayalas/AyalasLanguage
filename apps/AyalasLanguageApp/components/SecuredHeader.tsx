@@ -79,7 +79,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                 <View className="header-profile-container">
                     <View className="header-profile-name">
                         <Text className='text'>{user?.displayName}</Text>
-                        <View className="header-score"><Volleyball className='inline-row' /><Text className='text'>{" "}{user?.languageSettings?.score}</Text></View>
+                        <View className="header-score"><Volleyball /><Text className='text'> {user?.languageSettings?.score}</Text></View>
                     </View>
                 </View>
                 <DropdownMenu.Root>
@@ -108,7 +108,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                     {(user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
                         <View className="header-input-cell">
                             {languageIndicator === LANGUAGE_INDICATOR_ENUM.SWITCH && (
-                                <Picker className="header-select" data-testid="language-picker"
+                                <Picker className="header-select" testID="language-picker"
                                     selectedValue={selectedLanguageId}
                                     onValueChange={(itemValue) => onChangeLanguage(itemValue)}
                                     mode="dropdown" // Android only: 'dropdown' or 'dialog'

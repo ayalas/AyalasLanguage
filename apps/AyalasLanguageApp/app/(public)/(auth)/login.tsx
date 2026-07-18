@@ -100,7 +100,7 @@ const LogInScreen = () => {
                   </View>
                   <View className="form-input-cell">
                     <TextInput
-                      data-testid="email"
+                      testID="email"
                       value={email}
                       onChangeText={setEmail}
                       keyboardType="email-address"
@@ -114,7 +114,7 @@ const LogInScreen = () => {
                   </View>
                   <View className="form-input-cell">
                     <TextInput
-                      data-testid="password"
+                      testID="password"
                       autoCapitalize="none"
                       autoCorrect={false}
                       value={password}
@@ -125,14 +125,18 @@ const LogInScreen = () => {
                   </View>
                 </View>
                 <View className="form-row">
-                  <View className="form-label-cell"><Link href="/forgot"><Text className='text text-dimmed underline'>Forgot your password?</Text></Link></View>
+                  <View className="form-label-cell"><Link href="/forgot" asChild>
+                    <TouchableOpacity>
+                      <Text className='text color-brand-dimmed underline'>Forgot your password?</Text>
+                    </TouchableOpacity>
+                  </Link></View>
                 </View>
               </>
             )}
           <View className="buttons-container">
             <View className="form-input-row">
-              <TouchableOpacity data-testid="submit" className="form-button login-button" onPress={submitAction}>
-                <LogIn className="inline-row" /><Text className='text'>{" "}Log In</Text>
+              <TouchableOpacity testID="submit" className="form-button login-button" onPress={submitAction}>
+                <LogIn /><Text className='text'> Log In</Text>
               </TouchableOpacity>
             </View>
           </View>

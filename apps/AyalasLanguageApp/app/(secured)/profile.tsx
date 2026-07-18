@@ -115,7 +115,7 @@ export default function ProfileScreen() {
               <Text className="form-label">Language to Learn</Text>
             </View>
             <View className="form-input-cell">
-              <Picker className="form-select" data-testid="target-language"
+              <Picker className="form-select" testID="target-language"
                 selectedValue={targetLanguage}
                 onValueChange={(itemValue) => changeTargetLanguage(itemValue)}
                 mode="dropdown" // Android only: 'dropdown' or 'dialog'
@@ -135,7 +135,7 @@ export default function ProfileScreen() {
               <Text className="form-label">Language I Know</Text>
             </View>
             <View className="form-input-cell">
-              <Picker className="form-select" data-testid="known-language"
+              <Picker className="form-select" testID="known-language"
                 selectedValue={knownLanguage}
                 onValueChange={(itemValue) => changeKnownLanguage(itemValue)}
                 mode="dropdown" // Android only: 'dropdown' or 'dialog'
@@ -156,7 +156,7 @@ export default function ProfileScreen() {
               <Text className="form-label">Disable Puter use in AI and Sounds</Text>
             </View>
             <View className="form-input-cell">
-              <Checkbox value={disablePuter} data-testid="disablePuter" onValueChange={setDisablePuter} />
+              <Checkbox value={disablePuter} testID="disablePuter" onValueChange={setDisablePuter} />
             </View>
           </View>
 
@@ -179,8 +179,8 @@ export default function ProfileScreen() {
           </View>
           <View className="buttons-container">
             <View className="form-input-row">
-              <TouchableOpacity data-testid="save" className="form-button" onPress={submitAction}>
-                <Save /><Text className="text">{" "}Save</Text>
+              <TouchableOpacity testID="save" className="form-button" onPress={submitAction}>
+                <Save /><Text className="text"> Save</Text>
               </TouchableOpacity>
             </View>
           </View>

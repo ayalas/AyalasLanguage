@@ -146,7 +146,7 @@ export default function HomeScreen() {
           </View>
         )}
         {isLoading && (
-          <Text className="text text-dimmed learning=path-empty">
+          <Text className="text color-brand-dimmed learning=path-empty">
             Loading...
           </Text>
         ) || ((learningPath && learningPath.length > 0) && (
@@ -178,20 +178,20 @@ export default function HomeScreen() {
                                   >
                                     <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} href={exerciseTypeObject.exerciseTypeId == 0 ? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}>{path.name}</Link>
                                     {isDone && (
-                                      <Text><Check className="learning-progress-img" /></Text>
+                                      <Check />
                                     )}
                                     {isInProgress && (
-                                      <Text><CircleDotDashed className="lucide-circle-dot-dashed learning-progress-img" /></Text>
+                                      <CircleDotDashed className="color-brand-dashed" />
                                     )}
                                     {path.practiseMistakesInThisPath && (
-                                      <Text><History className="learning-progress-img" /></Text>
+                                      <History />
                                     )}
-                                    <View className="content-line-part"><Text className="text-dimmed">{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
+                                    <View className="content-line-part"><Text className="color-brand-dimmed">{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
                                   </View>
                                 );
                               })}
                               <View className="learning-level-creator">
-                                <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`}><LayersPlus className="lucide-layers-plus" /></Link>
+                                <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`}><LayersPlus className="color-brand-layers" /></Link>
                               </View>
                             </View>
                           </View>
@@ -213,7 +213,7 @@ export default function HomeScreen() {
         )) || (
             <Text className="form-content-row">
               You have not selected which language to learn.{"\n"}
-              Go to <Link className="text-dimmed underline" href="/profile">the profile page</Link> to choose one!
+              Go to <Link className="color-brand-dimmed underline" href="/profile">the profile page</Link> to choose one!
             </Text>
           ))}
       </View>

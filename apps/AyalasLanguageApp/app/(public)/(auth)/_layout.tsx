@@ -13,12 +13,12 @@ const TabIcon = ({
 }) => (
     <View className="flex-1 flex flex-row items-center mt-4">
         {title === "Log In" && (
-            <LogInIcon className={`text ${focused ? "" : "text-dimmed" }`} />
+            <LogInIcon className={focused ? "color-brand-primary": "color-brand-dimmed"} />
         ) || (
-                <UserIcon className={`text ${focused ? "" : "text-dimmed" }`} />
+                <UserIcon className={focused ? "color-brand-primary": "color-brand-dimmed"} />
             )}
         <Text
-            className={`text text-nowrap ${focused ? "" : "text-dimmed" }`}>
+            className={`text text-nowrap ${focused ? "" : "color-brand-dimmed" }`}>
             &nbsp;{title}
         </Text>
     </View>
