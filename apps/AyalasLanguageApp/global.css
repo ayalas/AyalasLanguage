@@ -36,7 +36,7 @@
   letter-spacing: 0.01em;
   color-scheme: light dark;
   color: var(--text);
-  background: var(--bg);
+/*   background: var(--bg); */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -86,7 +86,8 @@
   flex-direction: column;
   box-sizing: border-box;
   min-height: 100vh;
-  background: var(--bg); /*linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);*/
+  /*background: var(--bg); linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);*/
+  background-color: var(--bg);
   color: var(--text-h);
   padding: 18px;
   margin: 0;
@@ -125,7 +126,7 @@
   -webkit-appearance: none;
   appearance: none;
   color: var(--text-h);
-  background: var(--surface-strong);
+  background-color: var(--surface-strong);
   border: 1px solid var(--border);
   font-size: var(--fontsize);
   padding: 10px 14px;
@@ -163,7 +164,7 @@
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) - 2px);
   padding: 10px 12px;
-  background: var(--surface-strong);
+  background-color: var(--surface-strong);
   font-size: var(--fontsize);
   color: var(--text-h);
   font-family: var(--suns);
@@ -183,7 +184,8 @@
   text-align: start;
   box-sizing: border-box;
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%);
+  /* background: linear-gradient(180deg, var(--bg) 0%, var(--alter-bg) 100%); */
+  background-color: var(--bg);
   flex: 1 1 0%;
 }
 
@@ -194,7 +196,7 @@
   width: 100%;
   padding: 10px 16px;
   text-align: start;
-  background: none;
+  /* background: none; */
   border: none;
   cursor: pointer;
   color: inherit;
@@ -205,7 +207,7 @@
 
 .actions-menu-item:hover,
 .menu-item:hover {
-  background: var(--alter-bg);
+  background-color: var(--alter-bg);
 }
 
 .actions-menu-link-button {
@@ -225,7 +227,7 @@
 .lesson-inner-container {
   width: 95%;
   padding: 12px;
-  background: var(--surface);
+  background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   margin: 10px 10px auto;
@@ -280,7 +282,7 @@
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) - 2px);
   padding: 10px 12px;
-  background: var(--surface-strong);
+  background-color: var(--surface-strong);
   color: var(--text-h);
 }
 
@@ -504,7 +506,7 @@
   margin-top: 10px;
   padding: 16px;
   max-width: 90vw;
-  background: var(--surface);
+  background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   flex-grow: 0;
@@ -546,7 +548,8 @@
   flex-wrap: wrap;
   width: 100%;
   border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.04) 100%);
+  /* background: linear-gradient(180deg, transparent 0%, rgba(124, 58, 237, 0.04) 100%); */
+  background-color: var(--bg);
 }
 
 .exercise-outer-element-left {
@@ -629,7 +632,7 @@
   border: 0;
   display: inline-flex;
   min-height: 30px;
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--text-h);
   font-family: var(--suns);
 }
@@ -754,7 +757,7 @@
 .lesson-button-back {
   color: #238a3d;
   border: 1px solid #2bbf4e;
-  background: rgba(43, 191, 78, 0.12);
+  background-color: rgba(43, 191, 78, 0.12);
   display: inline-flex;
   flex-direction: row;
 }
@@ -762,13 +765,13 @@
 .lesson-button-save {
   color: #b27a00;
   border: 1px solid #d59d00;
-  background: rgba(213, 157, 0, 0.14);
+  background-color: rgba(213, 157, 0, 0.14);
 }
 
 .lesson-button-reveal {
   color: var(--accent);
   border: 1px solid var(--accent);
-  background: var(--accent-bg);
+  background-color: var(--accent-bg);
   display: inline-flex;
   flex-direction: row;
 }
@@ -829,7 +832,7 @@
 }
 
 .menu-container {
-  background: var(--surface-strong);
+  background-color: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 6px 0;
@@ -926,7 +929,7 @@
 }
 
 .match-word-item-button {
-  background: var(--surface-strong);
+  background-color: var(--surface-strong);
   border: 1px solid var(--border);
   cursor: pointer;
   padding: 10px 12px;
@@ -1031,7 +1034,7 @@
 }
 
 .loading-box {
-  background: var(--surface-strong);
+  background-color: var(--surface-strong);
   padding: 1rem;
   border-radius: 0.75rem;
 }
