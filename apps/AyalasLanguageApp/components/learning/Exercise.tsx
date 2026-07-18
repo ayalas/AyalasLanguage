@@ -45,7 +45,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useAuth();
     const [puterSignedIn, setPuterSignedIn] = useState(false);
-    const styles = useTextStyles();
+    const { styles } = useTextStyles();
     const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: exerciseInfo.learningPathId , 
         exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue});
 
@@ -222,8 +222,9 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                 <ActionsMenuComponent items={[
                     {
                         dataTestId: "restart-lesson",
-                        children: <><RotateCcw className='color-brand-play' /><Text style={[styles.text, {color: COLOR_PLAY}]}>&nbsp;Restart Lesson</Text></>,
+                        children: <><RotateCcw className='color-brand-play' />&nbsp;Restart Lesson</>,
                         onClick: restartLesson,
+                        className: "text color-brand-play",
                     },
                     {
                         dataTestId: "cancel-readding",

@@ -26,7 +26,7 @@ export default function TwoLinesTranslationExercise ({ exerciseInfo, setError, m
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
   const [translation, setTranslation] = useState('');
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   function compareToAnswer(userAnswer: string, correctAnswer: string) {
     const target = (replaceCharsForLanguage(user?.languageSettings?.targetLanguage ?? '', correctAnswer) ?? '').trim().toLowerCase();

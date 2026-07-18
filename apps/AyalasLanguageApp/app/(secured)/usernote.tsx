@@ -13,7 +13,7 @@ export default function ContactUsScreen() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   async function submitAction() {
     try {

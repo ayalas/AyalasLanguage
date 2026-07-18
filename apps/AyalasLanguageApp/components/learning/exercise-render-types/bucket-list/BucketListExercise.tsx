@@ -25,7 +25,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
   const [translation, setTranslation] = useState('');
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   function checkAnswerInternal(userAnswers: (string)[] = []) {
     let canMoveNext = true;

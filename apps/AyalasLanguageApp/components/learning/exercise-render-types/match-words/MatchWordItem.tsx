@@ -22,7 +22,7 @@ export default function MatchWordItem ({ itemValue, matchingValue, setSelected, 
   const [isSelected, setIsSelected] = useState(false);
   const [errorState, setErrorState] = useState(false);
   const [isDone, setIsDone] = useState(false);
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   function setToDone() {
     setIsDone(true);

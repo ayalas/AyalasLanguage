@@ -23,7 +23,7 @@ export default function AccountScreen() {
   const [newUserName, setNewUserName] = useState("");
   const { user, login } = useAuth();
   const router = useRouter();
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   const confirmEmail = async () => {
     try {

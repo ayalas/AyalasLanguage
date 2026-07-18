@@ -3,14 +3,13 @@ import { useAuth } from '@/lib/AuthContext';
 import useTextStyles from '@/lib/useTextStyles';
 import { Tabs } from 'expo-router'
 import { LogInIcon, UserIcon } from 'lucide-react-native';
-import { ActivityIndicator, View, Text, useColorScheme } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
 
 
 
 export default function PublicAuthLayout() {
     const { loading } = useAuth();
-    const colorScheme = useColorScheme();
-    const styles = useTextStyles();
+    const { styles, isDark } = useTextStyles();
 
     const TabIcon = ({
         focused,
@@ -19,14 +18,20 @@ export default function PublicAuthLayout() {
         focused: boolean;
         title: string;
     }) => (
-        <View className="flex-1 flex flex-row items-center mt-4">
+        <View style={{ 
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            alignItems: 'center', 
+            justifyContent: 'center',
+            width: '100%'
+        }}>
             {title === "Log In" && (
-                <LogInIcon className={focused ? "color-brand-primary" : "color-brand-dimmed"} />
+                <LogInIcon size={16} className={focused ? "color-brand-primary" : "color-brand-dimmed"} />
             ) || (
-                    <UserIcon className={focused ? "color-brand-primary" : "color-brand-dimmed"} />
+                    <UserIcon size={16} className={focused ? "color-brand-primary" : "color-brand-dimmed"} />
                 )}
-            <Text style={[focused? styles.text : styles.textDimmed, {flexWrap: 'nowrap'}]}>
-                &nbsp;{title}
+            <Text style={[focused? styles.text : styles.dimmedText, { marginLeft: 8 ,fontSize: 16, textAlign: 'center'}]}>
+                {title}
             </Text>
         </View>
     );
@@ -39,8 +44,6 @@ export default function PublicAuthLayout() {
         );
     }
 
-    const isDark = colorScheme === 'dark';
-
     return (
         <Tabs screenOptions={{
             tabBarShowLabel: false,
@@ -52,10 +55,13 @@ export default function PublicAuthLayout() {
                 borderRadius: 20,
                 borderTopWidth: 1,
                 minHeight: 70,
-                marginHorizontal: 24,
+                marginHorizontal: 5,
                 marginBottom: 10,
-                maxWidth: 350,
-            }
+                alignSelf: 'center',
+                display: 'flex',
+            },
+            tabBarItemStyle: {width: 'auto', paddingHorizontal: 15},
+            tabBarIconStyle: {  width: 200, height: 60 }
         }}>
             <Tabs.Screen name="login"
                 options={{

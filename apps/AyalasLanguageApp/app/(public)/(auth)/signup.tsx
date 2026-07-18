@@ -18,7 +18,7 @@ const SignUpScreen = () => {
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
 
   async function submitAction() {
@@ -150,7 +150,7 @@ const SignUpScreen = () => {
               <View className="buttons-container">
                 <View className="form-input-row">
                   <TouchableOpacity testID="submit" className="form-button login-button" onPress={submitAction}>
-                    <UserIcon /><Text style={styles.text}> Sign Up</Text>
+                    <UserIcon className="color-brand-primary" /><Text style={styles.text}> Sign Up</Text>
                   </TouchableOpacity>
                 </View>
               </View>

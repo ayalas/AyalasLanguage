@@ -26,7 +26,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
     const currentInputKey = useRef("");
     const [second, setSecond] = useState('');
     const [translation, setTranslation] = useState('');
-    const styles = useTextStyles();
+    const { styles } = useTextStyles();
 
     const checkAnswerOrMoveToNextInput = function () {
         if (currentInputKey.current !== "") {

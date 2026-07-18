@@ -1,3 +1,4 @@
+import { ACCENT_DARK, ACCENT_LIGHT } from '@/constants';
 import { StyleSheet, useColorScheme } from 'react-native'
 
 export default function useTextStyles() {
@@ -7,8 +8,6 @@ export default function useTextStyles() {
     const DIMMED_DARK = '#b8bfcc';
     const ERROR_LIGHT = '#b91c1c';
     const ERROR_DARK = '#ff6b6b';
-    const ACCENT_LIGHT = '#7c3aed';
-    const ACCENT_DARK = '#c084fc';
 
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
@@ -18,6 +17,7 @@ export default function useTextStyles() {
             fontFamily: fontFamily,
             fontSize: 26, fontWeight: '600',
             marginTop: 24,
+            color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
             marginHorizontal: 0,
             marginBottom: 14
         },
@@ -25,6 +25,7 @@ export default function useTextStyles() {
             fontFamily: fontFamily,
             fontSize: 24, 
             fontWeight: '600',
+            color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
             marginTop: 0,
             marginHorizontal: 0,
             marginBottom: 8
@@ -34,14 +35,18 @@ export default function useTextStyles() {
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
             fontSize: 18,
             alignContent: 'center',
-            textAlign: 'left'
+            textAlign: 'left',
+            flexDirection: 'row',
+            alignSelf: 'flex-start'
         },
         exerciseText: {
             fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
             fontSize: 22,
             alignContent: 'center',
-            fontWeight: '400'
+            fontWeight: '400',
+            flexDirection: 'row',
+            alignSelf: 'flex-start'
         },
         inlineExercise: {
             fontFamily: fontFamily,
@@ -49,6 +54,8 @@ export default function useTextStyles() {
             fontSize: 22,
             alignContent: 'center',
             paddingHorizontal: 5,
+            flexDirection: 'row',
+            alignSelf: 'flex-start'
         },
         italicHeading: {
             fontFamily: fontFamily,
@@ -56,14 +63,18 @@ export default function useTextStyles() {
             fontSize: 18,
             alignContent: 'center',
             fontStyle: 'italic',
-            textAlign: 'left'
+            textAlign: 'left',
+            flexDirection: 'row',
+            alignSelf: 'flex-start'
         },
         dimmedText: {
             fontFamily: fontFamily,
             color: isDark ? DIMMED_DARK : DIMMED_LIGHT,
             fontSize: 18,
             alignContent: 'center',
-            textAlign: 'left'
+            textAlign: 'left',
+            flexDirection: 'row',
+            alignSelf: 'flex-start'
         },
         label: {
             fontFamily: fontFamily,
@@ -72,7 +83,10 @@ export default function useTextStyles() {
             flexWrap: 'nowrap',
             alignContent: 'center',
             fontWeight: '500',
-            textAlign: 'left'
+            textAlign: 'left',
+            paddingBottom: 4,
+            flexDirection: 'row',
+            alignSelf: 'flex-start'
         },
         labelWrap: {
             fontFamily: fontFamily,
@@ -81,7 +95,9 @@ export default function useTextStyles() {
             flexWrap: 'wrap',
             alignContent: 'center',
             fontWeight: '500',
-            textAlign: 'left'
+            textAlign: 'left',
+            flexDirection: 'row',
+            alignSelf: 'flex-start',
         },
         errorText: {
             fontFamily: fontFamily,
@@ -105,5 +121,5 @@ export default function useTextStyles() {
         },
         underline: { textDecorationLine: 'underline' }
     });
-    return styles;
+    return { styles, isDark };
 }

@@ -25,7 +25,7 @@ export default function ProfileScreen() {
   const [disablePuter, setDisablePuter] = useState(false);
   const router = useRouter();
   const { user, login } = useAuth();
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   useEffect(() => {
     async function loadData() {

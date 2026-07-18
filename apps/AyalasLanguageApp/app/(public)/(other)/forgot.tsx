@@ -14,7 +14,7 @@ export default function ForgotScreen() {
   const { user: userFromSearch } = useLocalSearchParams<{ user: string }>();
   const [email, setEmail] = useState(userFromSearch);
   const [success, setSuccess] = useState(false);
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   async function submitAction() {
     try {

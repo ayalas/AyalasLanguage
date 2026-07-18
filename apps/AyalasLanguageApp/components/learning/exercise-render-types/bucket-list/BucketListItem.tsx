@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function BucketListItem({ itemValue, position, itemClicked }: Props) {
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
   
   function clickButton() {
     itemClicked(itemValue, position);

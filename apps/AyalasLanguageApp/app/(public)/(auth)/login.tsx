@@ -1,7 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Link, router, useLocalSearchParams, Href } from 'expo-router';
-import { LogIn } from 'lucide-react-native';
+import { LogInIcon } from 'lucide-react-native';
 import axios from 'axios';
 import { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Verify2FARequest } from '@ayalaslanguage/types/auth';
@@ -19,7 +19,7 @@ const LogInScreen = () => {
   const [verify2FAToken, setVerify2FAToken] = useState('');
   const [code, setCode] = useState('');
   const { login } = useAuth();
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   function completeLogin(tmpUser: User, token: string) {
     try {
@@ -138,7 +138,7 @@ const LogInScreen = () => {
           <View className="buttons-container">
             <View className="form-input-row">
               <TouchableOpacity testID="submit" className="form-button login-button" onPress={submitAction}>
-                <LogIn /><Text style={styles.text}> Log In</Text>
+                <LogInIcon className='color-brand-primary' /><Text style={styles.text}> Log In</Text>
               </TouchableOpacity>
             </View>
           </View>

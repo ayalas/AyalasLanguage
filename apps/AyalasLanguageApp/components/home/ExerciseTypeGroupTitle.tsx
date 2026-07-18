@@ -5,7 +5,7 @@ import { View, Text } from "react-native";
 import useTextStyles from "@/lib/useTextStyles";
 
 export function ExerciseTypeGroupTitle({ exerciseTypeId }: { exerciseTypeId: 0 | ExerciseType }) {
-    const styles = useTextStyles();
+    const { styles } = useTextStyles();
     
     return (
         <View className="home-header-row">

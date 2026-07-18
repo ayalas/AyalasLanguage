@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Image, Text, useColorScheme } from 'react-native'
+import { View, Image, Text } from 'react-native'
 import { useAuth } from '@/lib/AuthContext';
 import { Link, useRouter } from 'expo-router';
 import { Mail, SquareMenu, Volleyball } from 'lucide-react-native';
@@ -32,8 +32,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     const [selectedLanguage, setSelectedLanguage] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
-    const colorScheme = useColorScheme();
-    const styles = useTextStyles();
+    const { styles, isDark } = useTextStyles();
 
     useEffect(() => {
         const loadLanguage = async function () {
@@ -75,7 +74,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
         <>
             <View className="header-row">
                 <View className="header-title">
-                    <Link className="header-app-link" href="/"><Image className="logo" source={colorScheme === 'dark'? imgLogoDark : imgLogo} /></Link>
+                    <Link className="header-app-link" href="/"><Image className="logo" source={isDark? imgLogoDark : imgLogo} /></Link>
                 </View>
 
                 <View className="header-profile-container">
@@ -89,18 +88,18 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                     <SquareMenu />
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content  className="menu-container">
-                    <DropdownMenu.Item className='menu-item' key="profile" onSelect={() => router.push('/profile')}>
-                        <DropdownMenu.ItemTitle style={styles.text}>Profile settings</DropdownMenu.ItemTitle>
+                    <DropdownMenu.Item key="profile" onSelect={() => router.push('/profile')}>
+                        <DropdownMenu.ItemTitle className='text menu-item'>Profile settings</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
-                    <DropdownMenu.Item className='menu-item' key="account" onSelect={() => router.push('/account')}>
-                        <DropdownMenu.ItemTitle style={styles.text}>Manage account</DropdownMenu.ItemTitle>
+                    <DropdownMenu.Item key="account" onSelect={() => router.push('/account')}>
+                        <DropdownMenu.ItemTitle className='text menu-item'>Manage account</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
-                    <DropdownMenu.Item className='menu-item' key="usernote" onSelect={() => router.push('/usernote')}>
-                        <DropdownMenu.ItemTitle style={styles.text}><Mail />&nbsp;Contact Us</DropdownMenu.ItemTitle>
+                    <DropdownMenu.Item key="usernote" onSelect={() => router.push('/usernote')}>
+                        <DropdownMenu.ItemTitle className='text menu-item'><Mail />&nbsp;Contact Us</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                     <DropdownMenu.Separator className="menu-delimiter" />
-                    <DropdownMenu.Item className='menu-item' key="logout" onSelect={logoutAction}>
-                        <DropdownMenu.ItemTitle style={styles.text}>Logout</DropdownMenu.ItemTitle>
+                    <DropdownMenu.Item key="logout" onSelect={logoutAction}>
+                        <DropdownMenu.ItemTitle className='text menu-item'>Logout</DropdownMenu.ItemTitle>
                     </DropdownMenu.Item>
                 </DropdownMenu.Content>
                 </DropdownMenu.Root>

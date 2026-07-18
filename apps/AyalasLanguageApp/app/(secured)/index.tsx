@@ -36,7 +36,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const scrollViewRef = useRef<ScrollView>(null);
   const latestLessonRef = useRef<View>(null);
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   useEffect(() => {
     const loadData = async function () {

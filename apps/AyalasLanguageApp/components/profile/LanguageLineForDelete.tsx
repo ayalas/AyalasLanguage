@@ -10,7 +10,7 @@ export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguag
   { languageInfo: any; user: User | null; login: (u: User) => void; reloadLanguageSettings: (a: any, u: any, l: any) => void }) {
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   async function onButtonClick() {
     try {

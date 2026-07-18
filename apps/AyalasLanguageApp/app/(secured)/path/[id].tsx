@@ -25,7 +25,7 @@ export default function LessonScreen() {
   const [error, setError] = useState('');
   const exerciseRefs = useRef<Map<number, ExerciseHandle | undefined>>(new Map());
   const { user, login } = useAuth();
-  const styles = useTextStyles();
+  const { styles } = useTextStyles();
 
   const changeCurrentExercise = function (arrExercises: ExerciseInfo[], index: number) {
     const curItem = arrExercises[index];

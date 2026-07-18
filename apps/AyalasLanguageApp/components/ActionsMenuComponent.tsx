@@ -17,7 +17,7 @@ export interface ActionsMenuItem {
 
 export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMenuItem[], anchorTitle: string }) {
     const router = useRouter();
-    const styles = useTextStyles();
+    const { styles } = useTextStyles();
 
     let countShown = 0;
 
@@ -46,7 +46,7 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                             {countShown > 1 && (
                                 <DropdownMenu.Separator className="menu-delimiter" />
                             )}
-                            <DropdownMenu.Item key={`actions-menu-item-${item.dataTestId}-${index}`} className="menu-line"
+                            <DropdownMenu.Item key={`actions-menu-item-${item.dataTestId}-${index}`}
                                 onSelect={() => itemSelect(item)}>
                                 <DropdownMenu.ItemTitle className={item.className != null ? `actions-menu-item ${item.className}` : "actions-menu-item"}>{item.children}</DropdownMenu.ItemTitle>
                             </DropdownMenu.Item>
