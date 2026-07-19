@@ -14,7 +14,7 @@ export function FormHeader ({title} :FormHeaderProps) {
     
     return (
         <View className="form-header">
-            <Text style={styles.h1}>{title}</Text>
+            <Link href="/"><Text style={styles.h1}>{title}</Text></Link>
             <Text style={[styles.text, { flexShrink: 0}]}>
                 <Link href="/" className="actions-menu-link-button"><X />&nbsp;Exit</Link>
             </Text>

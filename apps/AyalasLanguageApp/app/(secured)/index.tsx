@@ -43,6 +43,7 @@ export default function HomeScreen() {
     const loadData = async function () {
       try {
         setIsLoading(true);
+        setTargetY(null);
         if (user?.languageSettings?.targetLanguageId != null && user.languageSettings.knownLanguageId != null) {
           setHasLanguage(true);
         } else {
@@ -111,7 +112,7 @@ export default function HomeScreen() {
     };
 
     loadData();
-  }, [user]);
+  }, [user?.languageSettings?.targetLanguageId, user?.userId]);
 
   useEffect(() => {
   if (!isLoading && targetY !== null && scrollViewRef.current) {

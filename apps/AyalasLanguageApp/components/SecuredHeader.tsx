@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Image, Text, Pressable } from 'react-native'
 import { useAuth } from '@/lib/AuthContext';
 import { Link, useRouter } from 'expo-router';
-import { SquareMenu, Volleyball } from 'lucide-react-native';
+import { SquareMenu, TextAlignCenter, Volleyball } from 'lucide-react-native';
 import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
 import * as DropdownMenu from 'zeego/dropdown-menu';
 import api from '@/lib/api'; //secured axios instance
@@ -29,10 +29,19 @@ type SwitchLanguageFunc = (axiosInstance: any, user: User | null | undefined, lo
 export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_ENUM.NONE }: { languageIndicator?: LanguageIndicator }) {
     const { user, logout, login } = useAuth();
     const [selectedLanguageId, setSelectedLanguageId] = useState<string | number>('');
+    const [prevSelectedLanguageId, setPrevSelectedLanguageId] = useState<string | number>('');
     const [selectedLanguage, setSelectedLanguage] = useState('');
     const [selectedLanguageOpen, setSelectedLanguageOpen] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
+
+    const isMounted = useRef(false);
+
+    useEffect(() => {
+        isMounted.current = true;
+    }, []);
+
+
     const { styles, isDark } = useTextStyles();
     const languageItems = useMemo(() => {
         if (user == null || !user.languageSettings || !user.languageSettings.otherUserLanguages) return [];
@@ -40,7 +49,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
             value: language.languageId,
             label: language.englishName,
         } as ItemType<ValueType>)) as ItemType<ValueType>[];
-        }, [user]); // Only re-run if this specific data changes
+    }, [user]); // Only re-run if this specific data changes
 
     useEffect(() => {
         const loadLanguage = async function () {
@@ -48,6 +57,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
 
             const targetId = user.languageSettings.targetLanguageId;
             if (targetId != null) {
+                setPrevSelectedLanguageId(targetId);
                 setSelectedLanguageId(targetId);
                 setSelectedLanguage(user.languageSettings.targetLanguageEnglishName || '');
             }
@@ -67,10 +77,16 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     }
 
     async function onChangeLanguage(value: string | number) {
+
         try {
+            /* console.log('call to onChangeLanguage with ', value, ' while prev is ', prevSelectedLanguageId); */
+            if (!value || Number(value) === Number(prevSelectedLanguageId)) return;
+            /* console.log('valid call to onChangeLanguage with ', value); */
+            setPrevSelectedLanguageId(value);
             const fn = switchLanguage as unknown as SwitchLanguageFunc;
             const newUser = await fn(api, user, login, Number(value), user?.languageSettings?.knownLanguageId);
             setSelectedLanguage(newUser.languageSettings?.targetLanguageEnglishName ?? '');
+            setSelectedLanguageOpen(false);
         } catch (err) {
             console.error('Language switch error:', err);
         }
@@ -91,34 +107,34 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                 </View>
                 <DropdownMenu.Root>
                     <DropdownMenu.Trigger asChild>
-                        <Pressable>
+                        <Pressable className='menu-button'>
                             <SquareMenu />
                         </Pressable>
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content>
-                        <View className="text menu-item">
+                        {/* <View className="text menu-item"> */}
                         <DropdownMenu.Item key="profile" onSelect={() => router.push('/profile')}>
                             <DropdownMenu.ItemTitle>Profile settings</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
-                        </View>
-                        <View className="text menu-item">
+                        {/* </View> */}
+                        {/* <View className="text menu-item"> */}
                         <DropdownMenu.Item key="account" onSelect={() => router.push('/account')}>
                             <DropdownMenu.ItemTitle>Manage account</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
-                        </View>
-                        <View className="text menu-item">
+                        {/* </View>
+                        <View className="text menu-item"> */}
                         <DropdownMenu.Item key="usernote" onSelect={() => router.push('/usernote')}>
                             <DropdownMenu.ItemTitle>Contact Us</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
-                        </View>
-                        <View className="menu-delimiter">
-                        <DropdownMenu.Separator  />
-                        </View>
-                        <View className="text menu-item">
+                        {/* </View>
+                        <View className="menu-delimiter"> */}
+                        <DropdownMenu.Separator />
+                        {/*  </View>
+                        <View className="text menu-item"> */}
                         <DropdownMenu.Item key="logout" onSelect={logoutAction}>
                             <DropdownMenu.ItemTitle>Logout</DropdownMenu.ItemTitle>
                         </DropdownMenu.Item>
-                        </View>
+                        {/*  </View> */}
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>
             </View>
@@ -127,17 +143,44 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                     {(user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
                         <View className="header-input-cell">
                             {languageIndicator === LANGUAGE_INDICATOR_ENUM.SWITCH && (
-                               <DropDownPicker
+                                <DropDownPicker
                                     value={selectedLanguageId}
                                     open={selectedLanguageOpen}
                                     setOpen={setSelectedLanguageOpen}
                                     listMode="SCROLLVIEW"
                                     multiple={false}
+                                    style={{
+                                        width: 'auto',
+                                        maxWidth: 150,
+                                        minHeight: 40,
+                                        borderWidth: 1,
+                                        backgroundColor: 'transparent',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}
+                                    labelStyle={[
+                                        styles.text,
+                                        {
+                                            textAlign: 'center',
+                                            width: '100%', // Ensures the text takes up the space to center itself
+                                            marginRight: -20, // Optional: offsets the arrow so the text is "true" center
+                                        }
+                                    ]}
+                                    textStyle={[styles.text, { textAlign: 'center' }]}
+                                    listItemLabelStyle={{ textAlign: 'center' }}
+                                    dropDownContainerStyle={{
+                                        width: 'auto',
+                                        minWidth: 150,
+                                        borderWidth: 0
+                                    }}
+                                    listItemContainerStyle={[styles.bgAlter, { alignItems: 'center', justifyContent: 'center' }]}
                                     placeholder={selectedLanguage}
                                     setValue={setSelectedLanguageId}
-                                    onChangeValue={(value) => onChangeLanguage(value?.toString() ?? '')}
+                                    onChangeValue={(value) =>
+                                        onChangeLanguage(value?.toString() ?? '')
+                                    }
                                     items={languageItems}
-                                    />
+                                />
                             )}
                             {languageIndicator === LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE && (
                                 <Text style={styles.text}>

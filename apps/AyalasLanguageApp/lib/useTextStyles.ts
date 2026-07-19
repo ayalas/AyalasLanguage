@@ -8,6 +8,8 @@ export default function useTextStyles() {
     const DIMMED_DARK = '#b8bfcc';
     const ERROR_LIGHT = '#b91c1c';
     const ERROR_DARK = '#ff6b6b';
+    const BG_ALTER_DARK = '#1b2029';
+    const BG_ALTER_LIGHT = '#e2d3dd';
 
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
@@ -115,6 +117,9 @@ export default function useTextStyles() {
         selectedCell: {
             color: 'white',
             backgroundColor: 'rgb(127, 222, 127)'
+        },
+        bgAlter: {
+            backgroundColor: isDark ? BG_ALTER_DARK: BG_ALTER_LIGHT
         },
         colorAccent: {
             color: isDark? ACCENT_DARK : ACCENT_LIGHT

@@ -1,7 +1,7 @@
 import { useAuth } from '@/lib/AuthContext';
 import { router, Stack, usePathname } from 'expo-router'
 import { useEffect } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 
 export default function SecuredLayout() {

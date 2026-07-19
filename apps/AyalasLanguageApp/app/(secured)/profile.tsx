@@ -81,10 +81,14 @@ export default function ProfileScreen() {
   };
 
   const changeTargetLanguage = function (text: string | number) {
+    if (!text || Number(text) === Number(targetLanguage)) return; // Prevent redundant calls
     validateForm(true);
+    setTargetLanguageOpen(false);
   };
   const changeKnownLanguage = function (text: string | number) {
+    if (!text || Number(text) === Number(knownLanguage)) return; // Prevent redundant calls
     validateForm(true);
+    setKnownLanguageOpen(false);
   };
 
   async function submitAction() {
