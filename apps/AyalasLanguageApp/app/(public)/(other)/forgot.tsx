@@ -6,7 +6,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { isValidEmail } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { Send } from 'lucide-react-native';
 import { FormHeader } from '@/components/FormHeader';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import useTextStyles from '@/lib/useTextStyles';
 
 export default function ForgotScreen() {
@@ -33,7 +33,6 @@ export default function ForgotScreen() {
   }
 
   return (
-    <SafeAreaView>
       <View className='root'>
         <View className="form-container">
           <FormHeader title='Password Reset' />
@@ -73,6 +72,5 @@ export default function ForgotScreen() {
           )}
         </View>
       </View>
-    </SafeAreaView>
   )
 }

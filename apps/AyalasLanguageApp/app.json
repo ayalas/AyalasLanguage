@@ -21,6 +21,9 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
+    "updates": {
+      "fallbackToCacheTimeout": 180000 
+    },
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"

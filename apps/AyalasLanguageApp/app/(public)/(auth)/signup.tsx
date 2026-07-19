@@ -6,7 +6,7 @@ import axios from 'axios';
 import { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Verify2FARequest } from '@ayalaslanguage/types/auth';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useAuth } from '@/lib/AuthContext';
 import { checkPasswordStrength, generatePasswordFeedback, isValidEmail } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import useTextStyles from '@/lib/useTextStyles';
@@ -63,7 +63,6 @@ const SignUpScreen = () => {
   }
 
   return (
-    <SafeAreaView>
     <View className="root">
       <View className='form-container'>
         <Text style={styles.h1}>Sign Up</Text>
@@ -158,7 +157,6 @@ const SignUpScreen = () => {
           )}
       </View>
     </View>
-    </SafeAreaView>
   )
 }
 

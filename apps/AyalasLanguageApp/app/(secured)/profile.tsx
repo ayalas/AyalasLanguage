@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import { Save } from 'lucide-react-native';
 import SecuredHeader from '@/components/SecuredHeader';
@@ -11,14 +11,17 @@ import { FormHeader } from '@/components/FormHeader';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/AuthContext';
 import { Slider } from '@miblanchard/react-native-slider';
-import { Picker } from '@react-native-picker/picker';
+import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
 import api from '@/lib/api'; //secured axios instance
 import { Checkbox } from 'expo-checkbox';
 import useTextStyles from '@/lib/useTextStyles';
 
 export default function ProfileScreen() {
+  
   const [allLanguages, setAllLanguages] = useState<Language[]>([]);
+  const [targetLanguageOpen, setTargetLanguageOpen] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState<string | number>('');
+  const [knownLanguageOpen, setKnownLanguageOpen] = useState(false);
   const [knownLanguage, setKnownLanguage] = useState<string | number>('');
   const [numOfExercises, setNumOfExercises] = useState<number>(DEFAULT_NUM_OF_EXERCISES);
   const [error, setError] = useState('');
@@ -26,6 +29,14 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, login } = useAuth();
   const { styles } = useTextStyles();
+
+  const languageItems = useMemo(() => {
+        return allLanguages.map((language) => { 
+                    return {
+                      value: language.languageId, 
+                      label: language.englishName !== language.nativeName ? `${language.englishName} ${language.nativeName}` : language.englishName
+                  } as ItemType<ValueType>;}) as ItemType<ValueType>[];
+        }, [allLanguages]); 
 
   useEffect(() => {
     async function loadData() {
@@ -70,11 +81,9 @@ export default function ProfileScreen() {
   };
 
   const changeTargetLanguage = function (text: string | number) {
-    setTargetLanguage(text);
     validateForm(true);
   };
   const changeKnownLanguage = function (text: string | number) {
-    setKnownLanguage(text);
     validateForm(true);
   };
 
@@ -117,19 +126,16 @@ export default function ProfileScreen() {
               <Text style={styles.label}>Language to Learn</Text>
             </View>
             <View className="form-input-cell">
-              <Picker className="form-select" testID="target-language"
-                selectedValue={targetLanguage}
-                onValueChange={(itemValue) => changeTargetLanguage(itemValue)}
-                mode="dropdown" // Android only: 'dropdown' or 'dialog'
-              >
-                <Picker.Item label="-- Please choose an option --" value="" enabled={false} />
-                {allLanguages.map((language) => (
-                  <Picker.Item key={language.languageId}
-                    value={language.languageId}
-                    label={language.englishName !== language.nativeName ? `${language.englishName} ${language.nativeName}` : language.englishName}
-                  />
-                ))}
-              </Picker>
+              <DropDownPicker
+                  value={targetLanguage}
+                  open={targetLanguageOpen}
+                  setOpen={setTargetLanguageOpen}
+                  listMode="SCROLLVIEW"
+                  multiple={false}
+                  setValue={setTargetLanguage}
+                  onChangeValue={(value) => changeTargetLanguage(value?.toString() ?? '')}
+                  items={languageItems}
+                />
             </View>
           </View>
           <View className="form-row">
@@ -137,19 +143,16 @@ export default function ProfileScreen() {
               <Text style={styles.label}>Language I Know</Text>
             </View>
             <View className="form-input-cell">
-              <Picker className="form-select" testID="known-language"
-                selectedValue={knownLanguage}
-                onValueChange={(itemValue) => changeKnownLanguage(itemValue)}
-                mode="dropdown" // Android only: 'dropdown' or 'dialog'
-              >
-                <Picker.Item label="-- Please choose an option --" value="" enabled={false} />
-                {allLanguages.map((language) => (
-                  <Picker.Item key={language.languageId}
-                    value={language.languageId}
-                    label={language.englishName !== language.nativeName ? `${language.englishName} ${language.nativeName}` : language.englishName}
-                  />
-                ))}
-              </Picker>
+              <DropDownPicker
+                  value={knownLanguage}
+                  open={knownLanguageOpen}
+                  setOpen={setKnownLanguageOpen}
+                  listMode="SCROLLVIEW"
+                  multiple={false}
+                  setValue={setKnownLanguage}
+                  onChangeValue={(value) => changeKnownLanguage(value?.toString() ?? '')}
+                  items={languageItems}
+                />
             </View>
           </View>
 

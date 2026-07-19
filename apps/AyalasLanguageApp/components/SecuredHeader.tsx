@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Image, Text } from 'react-native'
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Image, Text, Pressable } from 'react-native'
 import { useAuth } from '@/lib/AuthContext';
 import { Link, useRouter } from 'expo-router';
-import { Mail, SquareMenu, Volleyball } from 'lucide-react-native';
-import { Picker } from '@react-native-picker/picker';
+import { SquareMenu, Volleyball } from 'lucide-react-native';
+import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
 import * as DropdownMenu from 'zeego/dropdown-menu';
 import api from '@/lib/api'; //secured axios instance
 import { switchLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
-import type { Language, User } from '@ayalaslanguage/types/sharedfrontlib/user';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
 import imgLogo from "@/assets/images/logo.png";
@@ -30,9 +30,17 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     const { user, logout, login } = useAuth();
     const [selectedLanguageId, setSelectedLanguageId] = useState<string | number>('');
     const [selectedLanguage, setSelectedLanguage] = useState('');
+    const [selectedLanguageOpen, setSelectedLanguageOpen] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
     const { styles, isDark } = useTextStyles();
+    const languageItems = useMemo(() => {
+        if (user == null || !user.languageSettings || !user.languageSettings.otherUserLanguages) return [];
+        return user.languageSettings.otherUserLanguages.map((language) => ({
+            value: language.languageId,
+            label: language.englishName,
+        } as ItemType<ValueType>)) as ItemType<ValueType>[];
+        }, [user]); // Only re-run if this specific data changes
 
     useEffect(() => {
         const loadLanguage = async function () {
@@ -60,10 +68,8 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
 
     async function onChangeLanguage(value: string | number) {
         try {
-            const val = Number(value);
-            setSelectedLanguageId(val);
             const fn = switchLanguage as unknown as SwitchLanguageFunc;
-            const newUser = await fn(api, user, login, val, user?.languageSettings?.knownLanguageId);
+            const newUser = await fn(api, user, login, Number(value), user?.languageSettings?.knownLanguageId);
             setSelectedLanguage(newUser.languageSettings?.targetLanguageEnglishName ?? '');
         } catch (err) {
             console.error('Language switch error:', err);
@@ -74,7 +80,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
         <>
             <View className="header-row">
                 <View className="header-title">
-                    <Link className="header-app-link" href="/"><Image className="logo" source={isDark? imgLogoDark : imgLogo} /></Link>
+                    <Link className="header-app-link" href="/"><Image className="logo" source={isDark ? imgLogoDark : imgLogo} /></Link>
                 </View>
 
                 <View className="header-profile-container">
@@ -84,24 +90,36 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                     </View>
                 </View>
                 <DropdownMenu.Root>
-                <DropdownMenu.Trigger className='menu-button'>
-                    <SquareMenu />
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content  className="menu-container">
-                    <DropdownMenu.Item key="profile" onSelect={() => router.push('/profile')}>
-                        <DropdownMenu.ItemTitle className='text menu-item'>Profile settings</DropdownMenu.ItemTitle>
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item key="account" onSelect={() => router.push('/account')}>
-                        <DropdownMenu.ItemTitle className='text menu-item'>Manage account</DropdownMenu.ItemTitle>
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item key="usernote" onSelect={() => router.push('/usernote')}>
-                        <DropdownMenu.ItemTitle className='text menu-item'><Mail />&nbsp;Contact Us</DropdownMenu.ItemTitle>
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Separator className="menu-delimiter" />
-                    <DropdownMenu.Item key="logout" onSelect={logoutAction}>
-                        <DropdownMenu.ItemTitle className='text menu-item'>Logout</DropdownMenu.ItemTitle>
-                    </DropdownMenu.Item>
-                </DropdownMenu.Content>
+                    <DropdownMenu.Trigger asChild>
+                        <Pressable>
+                            <SquareMenu />
+                        </Pressable>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                        <View className="text menu-item">
+                        <DropdownMenu.Item key="profile" onSelect={() => router.push('/profile')}>
+                            <DropdownMenu.ItemTitle>Profile settings</DropdownMenu.ItemTitle>
+                        </DropdownMenu.Item>
+                        </View>
+                        <View className="text menu-item">
+                        <DropdownMenu.Item key="account" onSelect={() => router.push('/account')}>
+                            <DropdownMenu.ItemTitle>Manage account</DropdownMenu.ItemTitle>
+                        </DropdownMenu.Item>
+                        </View>
+                        <View className="text menu-item">
+                        <DropdownMenu.Item key="usernote" onSelect={() => router.push('/usernote')}>
+                            <DropdownMenu.ItemTitle>Contact Us</DropdownMenu.ItemTitle>
+                        </DropdownMenu.Item>
+                        </View>
+                        <View className="menu-delimiter">
+                        <DropdownMenu.Separator  />
+                        </View>
+                        <View className="text menu-item">
+                        <DropdownMenu.Item key="logout" onSelect={logoutAction}>
+                            <DropdownMenu.ItemTitle>Logout</DropdownMenu.ItemTitle>
+                        </DropdownMenu.Item>
+                        </View>
+                    </DropdownMenu.Content>
                 </DropdownMenu.Root>
             </View>
             {languageIndicator !== LANGUAGE_INDICATOR_ENUM.NONE && (
@@ -109,29 +127,25 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                     {(user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
                         <View className="header-input-cell">
                             {languageIndicator === LANGUAGE_INDICATOR_ENUM.SWITCH && (
-                                <Picker className="header-select" testID="language-picker"
-                                    selectedValue={selectedLanguageId}
-                                    onValueChange={(itemValue) => onChangeLanguage(itemValue)}
-                                    mode="dropdown" // Android only: 'dropdown' or 'dialog'
-                                >
-                                    <Picker.Item    key={user.languageSettings.targetLanguageId} 
-                                                    label={user.languageSettings.targetLanguageEnglishName} 
-                                                    value={user.languageSettings.targetLanguageId} />
-                                    {user.languageSettings.otherUserLanguages.map((language: Language) => (
-                                        <Picker.Item key={language.languageId}
-                                            value={language.languageId}
-                                            label={language.englishName}
-                                        />
-                                    ))}
-                                </Picker>
-                            ) || (
-                                    <Text style={styles.text}>
-                                        {selectedLanguage}
-                                    </Text>
-                                )}
+                               <DropDownPicker
+                                    value={selectedLanguageId}
+                                    open={selectedLanguageOpen}
+                                    setOpen={setSelectedLanguageOpen}
+                                    listMode="SCROLLVIEW"
+                                    multiple={false}
+                                    placeholder={selectedLanguage}
+                                    setValue={setSelectedLanguageId}
+                                    onChangeValue={(value) => onChangeLanguage(value?.toString() ?? '')}
+                                    items={languageItems}
+                                    />
+                            )}
+                            {languageIndicator === LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE && (
+                                <Text style={styles.text}>
+                                    {selectedLanguage}
+                                </Text>
+                            )}
                         </View>
                     ))}
-
                 </View>
             )}
             {

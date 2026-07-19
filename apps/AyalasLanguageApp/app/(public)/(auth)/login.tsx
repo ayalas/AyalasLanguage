@@ -6,7 +6,7 @@ import axios from 'axios';
 import { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Verify2FARequest } from '@ayalaslanguage/types/auth';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { useAuth } from '@/lib/AuthContext';
 import useTextStyles from '@/lib/useTextStyles';
 
@@ -72,7 +72,6 @@ const LogInScreen = () => {
   }
 
   return (
-    <SafeAreaView>
     <View className="root">
         <View className='form-container'>
           <Text style={styles.h1}>Login</Text>
@@ -144,7 +143,6 @@ const LogInScreen = () => {
           </View>
         </View>
     </View>
-    </SafeAreaView>
   )
 }
 

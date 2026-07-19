@@ -37,6 +37,7 @@ export default function HomeScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const latestLessonRef = useRef<View>(null);
   const { styles } = useTextStyles();
+  const [targetY, setTargetY] = useState<number | null>(null);
 
   useEffect(() => {
     const loadData = async function () {
@@ -112,32 +113,14 @@ export default function HomeScreen() {
     loadData();
   }, [user]);
 
-  //scroll into view logic
-
   useEffect(() => {
-    if (Platform.OS !== 'web') {
-      // 3. Ensure refs exist and loading is finished
-      if (!isLoading && latestLessonRef.current && scrollViewRef.current) {
-
-        // We need to measure the target view relative to the ScrollView
-        latestLessonRef.current.measureLayout(
-          // The first argument is the "ancestor" (the ScrollView node)
-          // findNodeHandle is the most reliable way to get the native ID in TS
-          findNodeHandle(scrollViewRef.current) as number,
-          (x, y, width, height) => {
-            // 4. Perform the scroll
-            scrollViewRef.current?.scrollTo({
-              y: y - 100, // Adjust this offset to center the item
-              animated: true,
-            });
-          },
-          () => {
-            console.error("scroll into view logic failed");
-          }
-        );
-      }
-    }
-  }, [isLoading, latestLessonRef]);
+  if (!isLoading && targetY !== null && scrollViewRef.current) {
+    scrollViewRef.current.scrollTo({
+      y: targetY - 100, // Adjust offset as needed
+      animated: true,
+    });
+  }
+}, [isLoading, targetY]);
 
   return (
       <View className="root">
@@ -151,7 +134,8 @@ export default function HomeScreen() {
           <Text style={styles.dimmedText}>
             Loading...
           </Text>
-        ) || ((learningPath && learningPath.length > 0) && (
+        )}
+        {((learningPath && learningPath.length > 0) && (
           <ScrollView className="learning-container" showsVerticalScrollIndicator={false} ref={scrollViewRef}> 
             {learningPath.map((level) => {
               return (
@@ -177,6 +161,10 @@ export default function HomeScreen() {
                                 return (
                                   <View className="learning-lesson" key={path.learningPathId}
                                     ref={path.learningPathId === latestLesson ? latestLessonRef : null}
+                                    onLayout={path.learningPathId === latestLesson? (event) => {
+                                      const layout = event.nativeEvent.layout;
+                                      setTargetY(layout.y);
+                                  }: () => {}}
                                   >
                                     <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} href={exerciseTypeObject.exerciseTypeId == 0 ? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}>{path.name}</Link>
                                     {isDone && (

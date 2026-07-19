@@ -222,36 +222,36 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                 <ActionsMenuComponent items={[
                     {
                         dataTestId: "restart-lesson",
-                        children: <><RotateCcw className='color-brand-play' />&nbsp;Restart Lesson</>,
+                        itemText: "Restart Lesson",
                         onClick: restartLesson,
                         className: "text color-brand-play",
                     },
                     {
                         dataTestId: "cancel-readding",
-                        children: <><Ban />&nbsp;Stop readding my mistakes</>,
+                        itemText: "Stop readding my mistakes",
                         onClick: cancelMistakesAdd,
                         isVisible: practiseMistakesInThisPath,
                     },
                     {
                         dataTestId: "readd-mistakes",
-                        children: <><History />&nbsp;Readd my mistakes here</>,
+                        itemText: "Readd my mistakes here",
                         onClick: readdMistakes,
                         isVisible: !practiseMistakesInThisPath,
                     },
                     {
                         dataTestId: "add-alternative-answer",
-                        children: <><TicketPlus />&nbsp;Add alternative answer</>,
+                        itemText: "Add alternative answer",
                         onClick: addAlternativeAnswer,
                         isVisible: displayAnswer && error !== "" && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers,
                     },
                     {
                         dataTestId: "edit-lesson",
-                        children: <><FilePenLine />&nbsp;Edit lesson</>,
+                        itemText: "Edit lesson",
                         toPath: `/author/path/${exerciseInfo.learningPathId}`,
                     },
                     {
                         dataTestId: "save-progress",
-                        children: <><CircleDotDashed className='color-brand-dashed' />&nbsp;Save & Exit</>,
+                        itemText: "Save & Exit",
                         onClick: saveProgress,
                         className: "lesson-button-save",
                     }

@@ -12,7 +12,7 @@ export interface ActionsMenuItem {
     onClick?: () => void;
     dataTestId: string;
     className?: string;
-    children: React.ReactNode;
+    itemText: string;
 }
 
 export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMenuItem[], anchorTitle: string }) {
@@ -48,7 +48,7 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                             )}
                             <DropdownMenu.Item key={`actions-menu-item-${item.dataTestId}-${index}`}
                                 onSelect={() => itemSelect(item)}>
-                                <DropdownMenu.ItemTitle className={item.className != null ? `actions-menu-item ${item.className}` : "actions-menu-item"}>{item.children}</DropdownMenu.ItemTitle>
+                                <DropdownMenu.ItemTitle className={item.className != null ? `actions-menu-item ${item.className}` : "actions-menu-item"}>{item.itemText}</DropdownMenu.ItemTitle>
                             </DropdownMenu.Item>
                         </Fragment>
                     );

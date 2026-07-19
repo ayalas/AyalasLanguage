@@ -644,6 +644,7 @@
   background-color: var(--bg);
   color: var(--text-h);
   font-family: var(--suns);
+  font-size: var(--fontsize);
 }
 
 .header-profile-container {
@@ -845,14 +846,12 @@
 
 .menu-button {
   padding: 10px 16px;
-  /* background: var(--bg); */
+  background-color: var(--bg);
   flex-direction: row;
-  -webkit-appearance: none;
-  appearance: none;
 }
 
 .menu-container {
-  background-color: var(--surface-strong);
+  background-color: var(--bg);
   border-color: var(--border);
   border-width: 1px;
   border-style: solid;
@@ -1176,5 +1175,6 @@
   .learning-lesson {
     margin-top: 12px;
     margin-bottom: 12px;
+    gap: 4;
   }
 }

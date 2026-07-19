@@ -2,7 +2,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { router, Stack, usePathname } from 'expo-router'
 import { useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default function SecuredLayout() {
   const pathname = usePathname(); // Gets the current path, e.g., "/profile"
@@ -20,9 +20,9 @@ export default function SecuredLayout() {
 
   if (loading) {
     return (
-      <SafeAreaView className="bg-white h-full flex justify-center items-center">
+      <View className="bg-white h-full flex justify-center items-center">
         <ActivityIndicator className="text-primary-300" size="large" />
-      </SafeAreaView>
+      </View>
     );
   }
 
