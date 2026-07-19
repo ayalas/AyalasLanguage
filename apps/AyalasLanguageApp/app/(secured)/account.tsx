@@ -4,11 +4,10 @@ import { useRouter } from 'expo-router';
 import api from '@/lib/api';
 import { Save, Send } from 'lucide-react-native';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import SecuredHeader from '@/components/SecuredHeader';
 import { checkPasswordStrength, generatePasswordFeedback } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { FormHeader } from '@/components/FormHeader';
 import { useAuth } from '@/lib/AuthContext';
-import Checkbox from 'expo-checkbox';
+import { Checkbox } from 'expo-checkbox';
 import useTextStyles from '@/lib/useTextStyles';
 
 export default function AccountScreen() {
@@ -116,7 +115,7 @@ export default function AccountScreen() {
             </View>
           </>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <>
             <FormHeader title="Account Details" />
             {error !== "" && (
               <View className="form-row">
@@ -212,7 +211,7 @@ export default function AccountScreen() {
                 </View>
               )}
             </View>
-          </form>
+            </>
         )}
       </ScrollView>
     </View>

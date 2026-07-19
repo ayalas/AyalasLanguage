@@ -1,23 +1,23 @@
-import { View, Text } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import React from 'react'
 import { X } from "lucide-react-native";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import useTextStyles from '@/lib/useTextStyles';
 
-interface FormHeaderProps
-{
+interface FormHeaderProps {
     title: string;
 }
 
-export function FormHeader ({title} :FormHeaderProps) {
+export function FormHeader({ title }: FormHeaderProps) {
     const { styles } = useTextStyles();
-    
+    const router = useRouter();
+
     return (
         <View className="form-header">
-            <Link href="/"><Text style={styles.h1}>{title}</Text></Link>
-            <Text style={[styles.text, { flexShrink: 0}]}>
-                <Link href="/" className="actions-menu-link-button"><X />&nbsp;Exit</Link>
-            </Text>
+            <Text style={styles.h1}>{title}</Text>
+            <Pressable className="actions-menu-link-button" onPress={() => router.replace('/')}>
+                <View className='flex-row items-center justify-center'><X /><Text style={styles.text}>&nbsp;Exit</Text></View>
+            </Pressable>
         </View>
     );
 }

@@ -135,8 +135,7 @@ export default function HomeScreen() {
           <Text style={styles.dimmedText}>
             Loading...
           </Text>
-        )}
-        {((learningPath && learningPath.length > 0) && (
+        ) || ((learningPath && learningPath.length > 0) && (
           <ScrollView className="learning-container" showsVerticalScrollIndicator={false} ref={scrollViewRef}> 
             {learningPath.map((level) => {
               return (

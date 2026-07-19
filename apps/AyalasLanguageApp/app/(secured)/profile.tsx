@@ -125,11 +125,11 @@ export default function ProfileScreen() {
               <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
-          <View className="form-row">
+          <View className="form-row" style={{ zIndex: 2000 }}>
             <View className="form-label-cell">
               <Text style={styles.label}>Language to Learn</Text>
             </View>
-            <View className="form-input-cell">
+            <View className="form-input-cell" >
               <DropDownPicker
                   value={targetLanguage}
                   open={targetLanguageOpen}
@@ -139,14 +139,16 @@ export default function ProfileScreen() {
                   setValue={setTargetLanguage}
                   onChangeValue={(value) => changeTargetLanguage(value?.toString() ?? '')}
                   items={languageItems}
+                  textStyle={[styles.text, { paddingTop: 10 }]}
+                  zIndex={2000}
                 />
             </View>
           </View>
-          <View className="form-row">
+          <View className="form-row" style={{ zIndex: 1000 }}>
             <View className="form-label-cell">
               <Text style={styles.label}>Language I Know</Text>
             </View>
-            <View className="form-input-cell">
+            <View className="form-input-cell" >
               <DropDownPicker
                   value={knownLanguage}
                   open={knownLanguageOpen}
@@ -156,6 +158,8 @@ export default function ProfileScreen() {
                   setValue={setKnownLanguage}
                   onChangeValue={(value) => changeKnownLanguage(value?.toString() ?? '')}
                   items={languageItems}
+                  textStyle={[styles.text, { paddingTop: 10 }]}
+                  zIndex={1000}
                 />
             </View>
           </View>

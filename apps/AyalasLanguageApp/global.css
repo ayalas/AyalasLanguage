@@ -114,7 +114,7 @@
 .textarea .form-button,
 .top-button,
 .link-button,
-.actions-menu-link-button,
+
 .bucket-list-item-button {
   font-family: inherit;
   font-size: inherit;
@@ -209,19 +209,13 @@
 }
 
 .actions-menu-link-button {
-  /* display: inline-flex; */
-  align-items: center;
-  justify-content: center;
   background-color: var(--surface-strong);
-  cursor: pointer;
-  color: var(--text-h);
-  text-decoration: none;
   padding: 10px 14px;
   border-color: var(--border);
   border-width: 1px;
   border-style: solid;
   border-radius: var(--radius);
-  font-size: var(--fontsize);
+  flex-shrink: 0;
 }
 
 .lesson-inner-container {
@@ -602,7 +596,7 @@
   text-align: start;
   gap: 14px;
   width: 100%;
-  padding: 10px 0;
+  padding: 25px 0 0 0;
   flex-wrap: wrap;
   flex-direction: row;
   flex-shrink: 0;
@@ -659,7 +653,7 @@
   width: 100%;
   align-items: flex-start;
   justify-content: space-between;
-  flex-direction: row-reverse;
+  flex-direction: row;
   gap: 12px;
   flex-wrap: nowrap;
 }
@@ -1098,7 +1092,6 @@
   }
 
   .buttons-container {
-    padding-top: 4px;
     flex-direction: column;
     align-items: stretch;
   }
@@ -1145,8 +1138,7 @@
 
   .form-button,
   .top-button,
-  .link-button,
-  .actions-menu-link-button {
+  .link-button {
     width: 100%;
     justify-content: center;
   }

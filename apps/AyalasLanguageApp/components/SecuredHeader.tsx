@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Image, Text, Pressable } from 'react-native'
+import React, { useState, useEffect, useMemo } from 'react';
+import { View, Image, Text } from 'react-native'
 import { useAuth } from '@/lib/AuthContext';
 import { Link, useRouter } from 'expo-router';
-import { SquareMenu, TextAlignCenter, Volleyball } from 'lucide-react-native';
+import { SquareMenu, Volleyball } from 'lucide-react-native';
 import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
-import * as DropdownMenu from 'zeego/dropdown-menu';
+import { Menu, Divider, PaperProvider, IconButton } from 'react-native-paper';
 import api from '@/lib/api'; //secured axios instance
 import { switchLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
@@ -34,14 +34,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     const [selectedLanguageOpen, setSelectedLanguageOpen] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
-
-    const isMounted = useRef(false);
-
-    useEffect(() => {
-        isMounted.current = true;
-    }, []);
-
-
+    const [menuVisible, setMenuVisible] = useState(false);
     const { styles, isDark } = useTextStyles();
     const languageItems = useMemo(() => {
         if (user == null || !user.languageSettings || !user.languageSettings.otherUserLanguages) return [];
@@ -50,6 +43,9 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
             label: language.englishName,
         } as ItemType<ValueType>)) as ItemType<ValueType>[];
     }, [user]); // Only re-run if this specific data changes
+
+    const openMenu = () => setMenuVisible(true);
+    const closeMenu = () => setMenuVisible(false);
 
     useEffect(() => {
         const loadLanguage = async function () {
@@ -105,38 +101,24 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                         <View className="header-score"><Volleyball /><Text style={styles.text}> {user?.languageSettings?.score}</Text></View>
                     </View>
                 </View>
-                <DropdownMenu.Root>
-                    <DropdownMenu.Trigger asChild>
-                        <Pressable className='menu-button'>
-                            <SquareMenu />
-                        </Pressable>
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
-                        {/* <View className="text menu-item"> */}
-                        <DropdownMenu.Item key="profile" onSelect={() => router.push('/profile')}>
-                            <DropdownMenu.ItemTitle>Profile settings</DropdownMenu.ItemTitle>
-                        </DropdownMenu.Item>
-                        {/* </View> */}
-                        {/* <View className="text menu-item"> */}
-                        <DropdownMenu.Item key="account" onSelect={() => router.push('/account')}>
-                            <DropdownMenu.ItemTitle>Manage account</DropdownMenu.ItemTitle>
-                        </DropdownMenu.Item>
-                        {/* </View>
-                        <View className="text menu-item"> */}
-                        <DropdownMenu.Item key="usernote" onSelect={() => router.push('/usernote')}>
-                            <DropdownMenu.ItemTitle>Contact Us</DropdownMenu.ItemTitle>
-                        </DropdownMenu.Item>
-                        {/* </View>
-                        <View className="menu-delimiter"> */}
-                        <DropdownMenu.Separator />
-                        {/*  </View>
-                        <View className="text menu-item"> */}
-                        <DropdownMenu.Item key="logout" onSelect={logoutAction}>
-                            <DropdownMenu.ItemTitle>Logout</DropdownMenu.ItemTitle>
-                        </DropdownMenu.Item>
-                        {/*  </View> */}
-                    </DropdownMenu.Content>
-                </DropdownMenu.Root>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                    <Menu
+                        visible={menuVisible}
+                        onDismiss={closeMenu}
+                        anchor={
+                            <IconButton className='menu-button'
+                                icon={() => <SquareMenu />}
+                                onPress={openMenu}
+                            />
+                        }>
+                        <Menu.Item onPress={() => { router.push('/profile'); closeMenu(); }} title="Profile settings" />
+                        <Menu.Item onPress={() => { router.push('/account'); closeMenu(); }} title="Manage account" />
+                        <Menu.Item onPress={() => { router.push('/usernote'); closeMenu(); }} title="Contact Us" />
+                        <Divider />
+                        <Menu.Item onPress={() => { logoutAction(); closeMenu(); }} title="Logout" />
+                    </Menu>
+                </View>
             </View>
             {languageIndicator !== LANGUAGE_INDICATOR_ENUM.NONE && (
                 <View className="switch-container">

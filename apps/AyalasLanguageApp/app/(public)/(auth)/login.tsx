@@ -24,25 +24,28 @@ const LogInScreen = () => {
   function completeLogin(tmpUser: User, token: string) {
     try {
       login(tmpUser, token);
-      if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
+      //let login set the user data
+      setTimeout(() => {
+        if (tmpUser.languageSettings?.knownLanguageId == null || tmpUser.languageSettings?.targetLanguageId == null) {
+          if (from != null && typeof from == 'string') {
+            router.push({
+              pathname: '/profile',
+              params: { from }
+            });
+          }
+          else {
+            router.replace('/profile');
+          }
+          return;
+        }
+
         if (from != null && typeof from == 'string') {
-          router.push({
-            pathname: '/profile',
-            params: { from }
-          });
+          router.replace(from as Href);
         }
         else {
-          router.replace('/profile');
+          router.replace('/');
         }
-        return;
-      }
-
-      if (from != null && typeof from == 'string') {
-        router.replace(from as Href);
-      }
-      else {
-        router.replace('/');
-      }
+      }, 200);
     } catch (err) {
       errorHandler(err, setError);
     }
@@ -73,75 +76,75 @@ const LogInScreen = () => {
 
   return (
     <View className="root">
-        <View className='form-container'>
-          <Text style={styles.h1}>Login</Text>
-          {error !== "" && (
-            <View className="form-row">
-              <Text style={styles.errorText}>{error}</Text>
+      <View className='form-container'>
+        <Text style={styles.h1}>Login</Text>
+        {error !== "" && (
+          <View className="form-row">
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
+        {on2FA && (
+          <View className="form-row">
+            <View className="form-label-cell">
+              <Text style={styles.label}>Two Factor Authentication Code</Text>
             </View>
+            <View className="form-input-cell">
+              <TextInput maxLength={TWO_FACTOR_CODE_LENGTH} value={code}
+                keyboardType="number-pad"
+                className="form-input"
+                onChangeText={setCode} />
+            </View>
+            <View style={styles.text}><Text style={styles.text}>Fill the 6-digit code that has been sent to you by email</Text></View>
+          </View>
+        ) || (
+            <>
+              <View className="form-row">
+                <View className="form-label-cell">
+                  <Text style={styles.label}>Email</Text>
+                </View>
+                <View className="form-input-cell">
+                  <TextInput
+                    testID="email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    className="input form-input"
+                  />
+                </View>
+              </View>
+              <View className="form-row">
+                <View className="form-label-cell">
+                  <Text style={styles.label}>Password</Text>
+                </View>
+                <View className="form-input-cell">
+                  <TextInput
+                    testID="password"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={true}
+                    className="input form-input"
+                  />
+                </View>
+              </View>
+              <View className="form-row">
+                <View className="form-label-cell"><Link href="/forgot" asChild>
+                  <TouchableOpacity>
+                    <Text style={[styles.dimmedText, styles.underline]}>Forgot your password?</Text>
+                  </TouchableOpacity>
+                </Link></View>
+              </View>
+            </>
           )}
-          {on2FA && (
-            <View className="form-row">
-              <View className="form-label-cell">
-                <Text style={styles.label}>Two Factor Authentication Code</Text>
-              </View>
-              <View className="form-input-cell">
-                <TextInput maxLength={TWO_FACTOR_CODE_LENGTH} value={code}
-                  keyboardType="number-pad"
-                  className="form-input"
-                  onChangeText={setCode} />
-              </View>
-              <View style={styles.text}><Text style={styles.text}>Fill the 6-digit code that has been sent to you by email</Text></View>
-            </View>
-          ) || (
-              <>
-                <View className="form-row">
-                  <View className="form-label-cell">
-                    <Text style={styles.label}>Email</Text>
-                  </View>
-                  <View className="form-input-cell">
-                    <TextInput
-                      testID="email"
-                      value={email}
-                      onChangeText={setEmail}
-                      keyboardType="email-address"
-                      className="input form-input"
-                    />
-                  </View>
-                </View>
-                <View className="form-row">
-                  <View className="form-label-cell">
-                    <Text style={styles.label}>Password</Text>
-                  </View>
-                  <View className="form-input-cell">
-                    <TextInput
-                      testID="password"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry={true}
-                      className="input form-input"
-                    />
-                  </View>
-                </View>
-                <View className="form-row">
-                  <View className="form-label-cell"><Link href="/forgot" asChild>
-                    <TouchableOpacity>
-                      <Text style={[styles.dimmedText, styles.underline]}>Forgot your password?</Text>
-                    </TouchableOpacity>
-                  </Link></View>
-                </View>
-              </>
-            )}
-          <View className="buttons-container">
-            <View className="form-input-row">
-              <TouchableOpacity testID="submit" className="form-button login-button" onPress={submitAction}>
-                <LogInIcon className='color-brand-primary' /><Text style={styles.text}> Log In</Text>
-              </TouchableOpacity>
-            </View>
+        <View className="buttons-container">
+          <View className="form-input-row">
+            <TouchableOpacity testID="submit" className="form-button login-button" onPress={submitAction}>
+              <LogInIcon className='color-brand-primary' /><Text style={styles.text}> Log In</Text>
+            </TouchableOpacity>
           </View>
         </View>
+      </View>
     </View>
   )
 }

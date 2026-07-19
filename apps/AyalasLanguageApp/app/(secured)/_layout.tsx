@@ -2,6 +2,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { router, Stack, usePathname } from 'expo-router'
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { PaperProvider } from 'react-native-paper';
 
 
 export default function SecuredLayout() {
@@ -28,7 +29,9 @@ export default function SecuredLayout() {
 
   if (user) {
     return (
-       <Stack screenOptions={{ headerShown: false }} />
+      <PaperProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </PaperProvider>
     )
   }
 }
