@@ -273,8 +273,8 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && (
-                        <View className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"}`}>
-                            <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="form-button" ><ListChecks /><Text style={[styles.text, {color: COLOR_PLAY, backgroundColor: 'white'}]}> Check</Text></TouchableOpacity>
+                        <View className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"} bg-brand-play p-3 border-brand-border border-solid rounded-2xl`}>
+                            <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="flex-row w-full items-center justify-center bg-brand-play " ><View className="flex-row items-center justify-center bg-brand-play"><ListChecks color='white' /><Text style={[styles.text, {color: 'white', backgroundColor: COLOR_PLAY}]}> Check</Text></View></TouchableOpacity>
                         </View>
                     )
                 }

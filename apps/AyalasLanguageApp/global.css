@@ -210,7 +210,8 @@
 
 .actions-menu-link-button {
   background-color: var(--surface-strong);
-  padding: 10px 14px;
+  margin-top: 10px;
+  padding: 14px;
   border-color: var(--border);
   border-width: 1px;
   border-style: solid;
