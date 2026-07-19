@@ -158,15 +158,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                         alignItems: 'center',
                                         justifyContent: 'center'
                                     }}
-                                    labelStyle={[
-                                        styles.text,
-                                        {
-                                            textAlign: 'center',
-                                            width: '100%', // Ensures the text takes up the space to center itself
-                                            marginRight: -20, // Optional: offsets the arrow so the text is "true" center
-                                        }
-                                    ]}
-                                    textStyle={[styles.text, { textAlign: 'center' }]}
+                                    textStyle={[styles.text, { textAlign: 'center', marginTop: 5, }]}
                                     listItemLabelStyle={{ textAlign: 'center' }}
                                     dropDownContainerStyle={{
                                         width: 'auto',
