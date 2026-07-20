@@ -30,6 +30,7 @@ const FormDropDown = ({
 }: FormDropDownProps) => {
     const [open, setOpen] = useState(false);
     const { styles, isDark } = useTextStyles();
+    const [prevValue, setPrevValue] = useState(value);
 
     // Internal Icon Components to keep the main file clean
     const IconUp = ({ style }: { style: StyleProp<ViewStyle> }) => (
@@ -54,6 +55,15 @@ const FormDropDown = ({
         </View>
     );
 
+    const onChangeValueInternal = (value: ValueType | null) => {
+            //protect against unnecessary calls
+            if (!value || String(value) === String(prevValue)) return;
+            setPrevValue(value);
+            if (onChangeValue != null) {
+                onChangeValue(value);
+            } 
+    };
+
     return (
         <DropDownPicker
             open={open}
@@ -61,7 +71,7 @@ const FormDropDown = ({
             items={items}
             setOpen={setOpen}
             setValue={setValue}
-            onChangeValue={onChangeValue}
+            onChangeValue={onChangeValueInternal}
             placeholder={placeholder}
             listMode="SCROLLVIEW"
             multiple={false}

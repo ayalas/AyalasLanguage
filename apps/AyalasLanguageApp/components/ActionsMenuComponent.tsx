@@ -5,6 +5,7 @@ import { Pressable, StyleProp, Text, TextStyle, View } from 'react-native';
 import { Menu, Divider } from 'react-native-paper';
 import useTextStyles from '@/lib/useTextStyles';
 import { SURFACE_STRONG_DARK, SURFACE_STRONG_LIGHT, PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
+import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
 
 export interface ActionsMenuItem {
     isVisible?: boolean;
@@ -14,6 +15,7 @@ export interface ActionsMenuItem {
     dataTestId: string;
     className?: string;
     itemText: string;
+    leadingIcon?: IconSource;
     titleStyle?: StyleProp<TextStyle>
 }
 
@@ -81,7 +83,7 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                                     closeMenu();
                                 }}
                                 title={item.itemText}
-                                
+                                leadingIcon={item.leadingIcon}
                                 titleStyle={[styles.text, item.titleStyle]}
                             />
                         </View>

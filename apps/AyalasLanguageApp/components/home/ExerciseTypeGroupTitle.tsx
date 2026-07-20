@@ -1,5 +1,5 @@
 import type { ExerciseType } from "@ayalaslanguage/types/exercise";
-import { ExerciseTypeIcon } from "./ExerciseTypeIcon";
+import { ExerciseTypeIcon } from "../ExerciseTypeIcon";
 import { EXERCISE_TYPE_LOGIC } from "@ayalaslanguage/types/sharedfrontlib/logic";
 import { View, Text } from "react-native";
 import useTextStyles from "@/lib/useTextStyles";

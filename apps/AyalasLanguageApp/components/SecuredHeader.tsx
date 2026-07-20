@@ -93,9 +93,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     async function onChangeLanguage(value: string | number) {
 
         try {
-            /* console.log('call to onChangeLanguage with ', value, ' while prev is ', prevSelectedLanguageId); */
             if (!value || Number(value) === Number(prevSelectedLanguageId)) return;
-            /* console.log('valid call to onChangeLanguage with ', value); */
             setPrevSelectedLanguageId(value);
             const fn = switchLanguage as unknown as SwitchLanguageFunc;
             const newUser = await fn(api, user, login, Number(value), user?.languageSettings?.knownLanguageId);

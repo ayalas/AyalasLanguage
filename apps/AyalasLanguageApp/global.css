@@ -322,14 +322,6 @@
   text-decoration: none;
   color: inherit;
 }
-
-.form-content-row {
-  text-align: left; /* Use 'left' instead of 'start' for better RN compatibility */
-  font-size: var(--fontsize);
-  color: var(--text-h);
-  font-family: var(--suns);
-}
-
 .form-label {
   width: 100%;
   text-align: start;

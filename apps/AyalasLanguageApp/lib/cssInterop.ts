@@ -1,5 +1,5 @@
 import { cssInterop } from "nativewind";
-import { Save, Send, ArrowBigLeft, History, CircleDotDashed, X, CirclePlay, Eye, LayersPlus, LogInIcon, RotateCcw, UserIcon, SquareMenu, Check } from "lucide-react-native";
+import { Save, Send, ArrowBigLeft, History, CircleDotDashed, X, CirclePlay, Eye, LayersPlus, LogInIcon, RotateCcw, UserIcon, SquareMenu, Check, SquarePen, Trash, UserPen, Workflow, Ban } from "lucide-react-native";
 
 cssInterop(LayersPlus, {
   className: {
@@ -126,4 +126,59 @@ cssInterop(Save, {
     },
   },
 });
+
+cssInterop(SquarePen, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(Trash, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(UserPen, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(Workflow, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(Ban, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+
+
+
+
+
+
+
+
+
 

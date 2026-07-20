@@ -16,7 +16,6 @@ import api from '@/lib/api'; //secured axios instance
 import { Checkbox } from 'expo-checkbox';
 import useTextStyles from '@/lib/useTextStyles';
 import FormDropDown from '@/components/FormDropDown';
-import { PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
 
 export default function ProfileScreen() {
   
