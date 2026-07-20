@@ -10,3 +10,4 @@ export const LAYERS_DARK = '#c084fc';
 export const COLOR_DASHED = "rgb(255, 200, 1)";
 export const ACCENT_LIGHT = '#7c3aed';
 export const ACCENT_DARK = '#c084fc';
+export const COLOR_SAVE = '#b27a00';

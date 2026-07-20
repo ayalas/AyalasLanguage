@@ -1,8 +1,8 @@
 import { ChevronDown } from 'lucide-react-native';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { RelativePathString, useRouter } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
-import { Menu, Divider, PaperProvider, IconButton } from 'react-native-paper';
+import { Pressable, StyleProp, Text, TextStyle, View } from 'react-native';
+import { Menu, Divider } from 'react-native-paper';
 import useTextStyles from '@/lib/useTextStyles';
 
 export interface ActionsMenuItem {
@@ -13,6 +13,7 @@ export interface ActionsMenuItem {
     dataTestId: string;
     className?: string;
     itemText: string;
+    titleStyle?: StyleProp<TextStyle>
 }
 
 export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMenuItem[], anchorTitle: string }) {
@@ -35,17 +36,20 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
     }
 
     return (
-        <View>
+        <View className='bg-brand-bgSurface w-full'>
             <Menu
                 visible={menuVisible}
                 onDismiss={closeMenu}
+                /* style={{ width: '100%' }} */
+                /* contentStyle={{  }} */
                 anchor={
                     <Pressable
                         onPress={openMenu}
-                        style={{ flexDirection: 'row', alignItems: 'center' }}
-                    >
-                        <Text style={styles.text}>{anchorTitle} </Text>
-                        <ChevronDown size={20} color="black" />
+                        className="actions-menu-link-button">
+                        <View className='flex-row items-center justify-center'>
+                            <Text style={styles.text}>{anchorTitle} </Text>
+                            <ChevronDown size={20} color="black" />
+                        </View>
                     </Pressable>
                 }
             >
@@ -56,7 +60,7 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                     countShown++;
 
                     return (
-                        <Fragment key={`menu-item-${index}`}>
+                        <View key={`menu-item-${index}`} className={`${item.className} bg-brand-bgSurface`}>
                             {/* Logic: Show separator before every item EXCEPT the first visible one */}
                             {countShown > 1 && <Divider />}
 
@@ -66,10 +70,10 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                                     closeMenu();
                                 }}
                                 title={item.itemText}
-                                // Convert your className logic to titleStyle or contentStyle
-                                titleStyle={{ color: item.className?.includes('danger') ? 'red' : 'black' }}
+                                style={{ width: '100%' }} 
+                                titleStyle={[styles.text, item.titleStyle]}
                             />
-                        </Fragment>
+                        </View>
                     );
                 })}
             </Menu>

@@ -102,12 +102,12 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                     </View>
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                <View style={{ flexDirection: 'row', alignSelf: 'flex-start', width: 36, justifyContent: 'center' }}>
                     <Menu
                         visible={menuVisible}
                         onDismiss={closeMenu}
                         anchor={
-                            <IconButton className='menu-button'
+                            <IconButton style={{ paddingHorizontal: 16, width:'100%', paddingVertical: 10}}
                                 icon={() => <SquareMenu />}
                                 onPress={openMenu}
                             />

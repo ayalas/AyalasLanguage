@@ -10,6 +10,8 @@ export default function useTextStyles() {
     const ERROR_DARK = '#ff6b6b';
     const BG_ALTER_DARK = '#1b2029';
     const BG_ALTER_LIGHT = '#e2d3dd';
+ /*    const SURFACE_STRONG_DARK = '#171b24';
+    const SURFACE_STRONG_LIGHT = '#ffffff'; */
 
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';
@@ -121,9 +123,15 @@ export default function useTextStyles() {
         bgAlter: {
             backgroundColor: isDark ? BG_ALTER_DARK: BG_ALTER_LIGHT
         },
+       /*  surfaceStrong: {
+            backgroundColor: isDark ? SURFACE_STRONG_DARK: SURFACE_STRONG_LIGHT
+        }, */
         colorAccent: {
             color: isDark? ACCENT_DARK : ACCENT_LIGHT
         },
+        /* borderColor: {
+            borderColor: isDark? BORDER_DARK : BORDER_WHITE
+        }, */
         underline: { textDecorationLine: 'underline' }
     });
     return { styles, isDark };

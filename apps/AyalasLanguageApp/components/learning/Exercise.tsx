@@ -17,7 +17,7 @@ import { useMistakesReadd } from '@/lib/useMistakesReadd';
 import { useAuth } from '@/lib/AuthContext';
 import { TouchableOpacity, Text, View } from 'react-native';
 import useTextStyles from '@/lib/useTextStyles';
-import { COLOR_PLAY } from '@/constants';
+import { COLOR_PLAY, COLOR_SAVE } from '@/constants';
 
 export interface ExerciseHandle {
   setFocus: () => void;
@@ -254,6 +254,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                         itemText: "Save & Exit",
                         onClick: saveProgress,
                         className: "lesson-button-save",
+                        titleStyle: { color: COLOR_SAVE }
                     }
                 ] as ActionsMenuItem[]} anchorTitle="More" />
                 {
