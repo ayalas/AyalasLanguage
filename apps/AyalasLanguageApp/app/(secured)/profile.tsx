@@ -183,7 +183,7 @@ export default function ProfileScreen() {
           <View className="buttons-container">
             <View className="form-input-row">
               <TouchableOpacity testID="save" className="form-button" onPress={submitAction}>
-                <Save color={isDark? PRIMARY_DARK : PRIMARY_LIGHT} /><Text style={styles.text}> Save</Text>
+                <Save className="color-brand-primary" /><Text style={styles.text}> Save</Text>
               </TouchableOpacity>
             </View>
           </View>

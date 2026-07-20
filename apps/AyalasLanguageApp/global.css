@@ -174,7 +174,7 @@
   place-items: center;
   flex-grow: 1;
   flex-wrap: wrap;
-  padding: 8px 0 24px;
+  padding: 26px 0 24px;
   width: 100vw;
   text-align: start;
   min-height: 100vh;
@@ -216,7 +216,7 @@
 
 .lesson-inner-container {
   width: 95%;
-  padding: 12px;
+  padding: 16px;
   background-color: var(--surface);
   border-color: var(--border);
   border-width: 1px;
@@ -391,10 +391,6 @@
   overflow-wrap: anywhere;
 }
 
-.inform-header {
-  padding-top: 20px;
-}
-
 .form-row-play {
   padding-top: 10px;
   padding-bottom: 5px;
@@ -500,8 +496,8 @@
 }
 
 .form-container {
-  margin-top: 10px;
-  padding: 16px;
+  margin-top: 20px;
+  padding: 6px 16px 16px;
   max-width: 90vw;
   background-color: var(--surface);
   border-color: var(--border);
@@ -651,6 +647,8 @@
   flex-direction: row;
   gap: 12px;
   flex-wrap: nowrap;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .form-name {
@@ -1068,13 +1066,6 @@
 }
 
 @media (max-width: 768px) {
-  .lesson-inner-container {
-    padding: 8px;
-  }
-
-  .lesson-outer-container {
-    padding: 0;
-  }
 
   .exercise-body-container {
     padding-bottom: 0;

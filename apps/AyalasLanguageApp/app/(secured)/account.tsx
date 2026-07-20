@@ -203,11 +203,11 @@ export default function AccountScreen() {
             )}
             <View className="buttons-container">
               <View className="form-button-cell">
-                <TouchableOpacity testID="save" onPress={handleSubmit} className="form-button"><Save /><Text style={styles.text}> Save Changes</Text></TouchableOpacity>
+                <TouchableOpacity testID="save" onPress={handleSubmit} className="form-button"><Save className="color-brand-primary" /><Text style={styles.text}> Save Changes</Text></TouchableOpacity>
               </View>
               {!user?.emailConfirmed && (
                 <View className="form-button-cell">
-                  <TouchableOpacity testID="send" className="form-button" onPress={confirmEmail}><Send /><Text style={styles.text}> Confirm Email Address</Text></TouchableOpacity>
+                  <TouchableOpacity testID="send" className="form-button" onPress={confirmEmail}><Send className="color-brand-primary" /><Text style={styles.text}> Confirm Email Address</Text></TouchableOpacity>
                 </View>
               )}
             </View>

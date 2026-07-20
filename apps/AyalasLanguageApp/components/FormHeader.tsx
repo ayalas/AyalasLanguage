@@ -14,7 +14,7 @@ export function FormHeader({ title }: FormHeaderProps) {
 
     return (
         <View className="form-header">
-            <Text style={[styles.h1, {flexWrap: 'wrap', maxWidth: 250}]}>{title}</Text>
+            <Text style={[styles.h1, {flexWrap: 'wrap', maxWidth: 230}]}>{title}</Text>
             <Pressable className="actions-menu-link-button" onPress={() => router.replace('/')}>
                 <View className='flex-row items-center justify-center'><X className="color-brand-primary" /><Text style={styles.text}>&nbsp;Exit</Text></View>
             </Pressable>

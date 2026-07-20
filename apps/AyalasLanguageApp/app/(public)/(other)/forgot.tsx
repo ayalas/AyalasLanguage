@@ -66,7 +66,7 @@ export default function ForgotScreen() {
           {!success && (
             <View className="buttons-container">
               <View className="form-input-row">
-                <TouchableOpacity onPress={submitAction} testID="complete-registration" className="form-button"><Send /><Text style={styles.text}> Send Reset Password Email</Text></TouchableOpacity>
+                <TouchableOpacity onPress={submitAction} testID="complete-registration" className="form-button"><Send className="color-brand-primary" /><Text style={styles.text}> Send Reset Password Email</Text></TouchableOpacity>
               </View>
             </View>
           )}
