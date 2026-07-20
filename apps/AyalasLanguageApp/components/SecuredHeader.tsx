@@ -49,7 +49,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     const IconUp = ({style}: {style: StyleProp<ViewStyle>}) => {
         return (
             <View style={style}>
-                <Text style={{ color: isDark ? BORDER_DARK : BORDER_LIGHT }}>▲</Text> 
+                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▲</Text> 
             </View>
         );
     };
@@ -57,7 +57,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     const IconDown = ({style}: {style: StyleProp<ViewStyle>}) => {
         return (
             <View style={style}>
-                <Text style={{ color: isDark ? BORDER_DARK : BORDER_LIGHT }}>▼</Text> 
+                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▼</Text> 
             </View>
         );
     };
@@ -158,7 +158,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                         minHeight: 40,
                                         borderWidth: 1,
                                         borderStyle: 'solid',
-                                        borderColor: isDark? BORDER_DARK : BORDER_LIGHT,
+                                        borderColor: isDark? PRIMARY_DARK : PRIMARY_LIGHT,
                                         backgroundColor: 'transparent',
                                         alignItems: 'center',
                                         justifyContent: 'center'

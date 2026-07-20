@@ -4,11 +4,13 @@ import axios from "axios";
 import { AuthProvider } from "@/lib/AuthContext";
 import { useFonts } from 'expo-font';
 import { useEffect } from "react";
+import { StatusBar, useColorScheme } from "react-native";
+import { PRIMARY_DARK, PRIMARY_LIGHT } from "@/constants";
 
 axios.defaults.baseURL = process.env.EXPO_PUBLIC_BACKEND_BASE_URL;
 
 export default function RootLayout() {
-
+  const colorScheme = useColorScheme();
   const [fontsLoaded, error] = useFonts({
     "Tajawal-Black": require('../assets/fonts/Tajawal-Black.ttf'),
     "Tajawal-Bold": require('../assets/fonts/Tajawal-Bold.ttf'),
@@ -27,8 +29,11 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <AuthProvider>
-      <Stack screenOptions={{ headerShown: false }} />
-    </AuthProvider>
+    <>
+      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
+      <AuthProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </AuthProvider>
+    </>
   )
 }

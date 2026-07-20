@@ -157,7 +157,7 @@
   border-color: var(--border);
   border-width: 1px;
   border-style: solid;
-  border-radius: calc(var(--radius) - 2px);
+  border-radius: var(--radius);
   padding: 10px 12px;
   background-color: var(--surface-strong);
   font-size: var(--fontsize);
@@ -278,7 +278,7 @@
   border-color: var(--border);
   border-width: 1px;
   border-style: solid;
-  border-radius: calc(var(--radius) - 2px);
+  border-radius: var(--radius);
   padding: 10px 12px;
   background-color: var(--surface-strong);
   color: var(--text-h);
@@ -567,8 +567,8 @@
 }
 
 .exercise-footer-back {
-  /* display: inline-flex; */
   flex-direction: row;
+  width: 115px;
 }
 
 .exercise-footer-next {
@@ -1137,10 +1137,6 @@
 
   .form-container {
     width: 100%;
-  }
-
-  .exercise-footer-next {
-    width: calc(100% - 115px);
   }
 
   .exercise-footer-next-noback {
