@@ -221,7 +221,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     {
                         dataTestId: "restart-lesson",
                         children: <><RotateCcw />&nbsp;Restart Lesson</>,
-                        onClick: restartLesson,
+                        onClick: () => { setError(""); restartLesson(); },
                     },
                     {
                         dataTestId: "cancel-readding",

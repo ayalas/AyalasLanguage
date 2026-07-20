@@ -226,7 +226,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                         {
                             dataTestId: "restart-lesson",
                             itemText: "Restart Lesson",
-                            onClick: restartLesson,
+                            onClick: () => { setError(""); restartLesson(); },
                             className: "text color-brand-play",
                         },
                         {

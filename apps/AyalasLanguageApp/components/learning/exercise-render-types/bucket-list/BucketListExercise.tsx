@@ -172,7 +172,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       </View>
       {displayAnswer && (
         <View className="form-row-play">
-          <View className="form-play-container">{second}
+          <View className="form-play-container"><Text style={styles.text}>{second}</Text>
             {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
             <TouchableOpacity testID="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='color-brand-play' /></TouchableOpacity>
             )}

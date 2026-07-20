@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleProp, ViewStyle } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import { Save } from 'lucide-react-native';
 import SecuredHeader from '@/components/SecuredHeader';
 import { reloadLanguageSettings } from '@ayalaslanguage/types/sharedfrontlib/utils';
@@ -11,19 +11,17 @@ import { FormHeader } from '@/components/FormHeader';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/lib/AuthContext';
 import { Slider } from '@miblanchard/react-native-slider';
-import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
+import { ItemType, ValueType } from 'react-native-dropdown-picker';
 import api from '@/lib/api'; //secured axios instance
 import { Checkbox } from 'expo-checkbox';
 import useTextStyles from '@/lib/useTextStyles';
 import FormDropDown from '@/components/FormDropDown';
-import { ACCENT_DARK, ACCENT_LIGHT, BORDER_DARK, BORDER_LIGHT, PRIMARY_DARK, PRIMARY_LIGHT, SURFACE_STRONG_DARK, SURFACE_STRONG_LIGHT } from '@/constants';
+import { PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
 
 export default function ProfileScreen() {
   
   const [allLanguages, setAllLanguages] = useState<Language[]>([]);
-  const [targetLanguageOpen, setTargetLanguageOpen] = useState(false);
   const [targetLanguage, setTargetLanguage] = useState<string | number>('');
-  const [knownLanguageOpen, setKnownLanguageOpen] = useState(false);
   const [knownLanguage, setKnownLanguage] = useState<string | number>('');
   const [numOfExercises, setNumOfExercises] = useState<number>(DEFAULT_NUM_OF_EXERCISES);
   const [error, setError] = useState('');
@@ -31,34 +29,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const { user, login } = useAuth();
   const { styles, isDark } = useTextStyles();
-  const IconUp = ({style}: {style: StyleProp<ViewStyle>}) => {
-        return (
-            <View style={style}>
-                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▲</Text> 
-            </View>
-        );
-    };
-
-    const IconDown = ({style}: {style: StyleProp<ViewStyle>}) => {
-        return (
-            <View style={style}>
-                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▼</Text> 
-            </View>
-        );
-    };
-
-    const IconTick = ({style}: {style: StyleProp<ViewStyle>}) => {
-      return (
-          <View style={style}>
-              <Text style={{ 
-                  color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT, 
-                  fontWeight: 'bold',
-                  fontSize: 18 
-              }}>✓</Text> 
-          </View>
-      );
-  };
-
+  
   const languageItems = useMemo(() => {
         return allLanguages.map((language) => { 
                     return {
@@ -112,12 +83,12 @@ export default function ProfileScreen() {
   const changeTargetLanguage = function (text: string | number) {
     if (!text || Number(text) === Number(targetLanguage)) return; // Prevent redundant calls
     validateForm(true);
-    setTargetLanguageOpen(false);
+    /* setTargetLanguageOpen(false); */
   };
   const changeKnownLanguage = function (text: string | number) {
     if (!text || Number(text) === Number(knownLanguage)) return; // Prevent redundant calls
     validateForm(true);
-    setKnownLanguageOpen(false);
+    /* setKnownLanguageOpen(false); */
   };
 
   async function submitAction() {
@@ -159,28 +130,13 @@ export default function ProfileScreen() {
               <Text style={styles.label}>Language to Learn</Text>
             </View>
             <View className="form-input-cell" >
-              <DropDownPicker
-                  value={targetLanguage}
-                  open={targetLanguageOpen}
-                  setOpen={setTargetLanguageOpen}
-                  listMode="SCROLLVIEW"
-                  multiple={false}
-                  setValue={setTargetLanguage}
-                  onChangeValue={(value) => changeTargetLanguage(value?.toString() ?? '')}
-                  items={languageItems}
-                  ArrowUpIconComponent={IconUp}
-                  ArrowDownIconComponent={IconDown}
-                  TickIconComponent={IconTick}
-                  textStyle={[styles.text, { paddingTop: 10 }]}
-                  style={{
-                      borderWidth: 1,
-                      borderStyle: 'solid',
-                      borderColor: isDark? BORDER_DARK : BORDER_LIGHT,
-                      backgroundColor: 'transparent'
-                  }}
-                  listItemContainerStyle={{ backgroundColor: isDark? SURFACE_STRONG_DARK : SURFACE_STRONG_LIGHT }}
-                  zIndex={2000}
-                />
+              <FormDropDown
+                value={targetLanguage}
+                setValue={setTargetLanguage}
+                items={languageItems}
+                onChangeValue={(val) => changeTargetLanguage(val?.toString() ?? '')}
+                zIndex={2000}
+              />
             </View>
           </View>
           <View className="form-row" style={{ zIndex: 1000 }}>
@@ -188,28 +144,13 @@ export default function ProfileScreen() {
               <Text style={styles.label}>Language I Know</Text>
             </View>
             <View className="form-input-cell" >
-              <DropDownPicker
-                  value={knownLanguage}
-                  open={knownLanguageOpen}
-                  setOpen={setKnownLanguageOpen}
-                  listMode="SCROLLVIEW"
-                  multiple={false}
-                  setValue={setKnownLanguage}
-                  onChangeValue={(value) => changeKnownLanguage(value?.toString() ?? '')}
-                  items={languageItems}
-                  ArrowUpIconComponent={IconUp}
-                  ArrowDownIconComponent={IconDown}
-                  TickIconComponent={IconTick}
-                  style={{
-                      borderWidth: 1,
-                      borderStyle: 'solid',
-                      borderColor: isDark? BORDER_DARK : BORDER_LIGHT,
-                      backgroundColor: 'transparent'
-                  }}
-                  textStyle={[styles.text, { paddingTop: 10 }]}
-                  listItemContainerStyle={{ backgroundColor: isDark? SURFACE_STRONG_DARK : SURFACE_STRONG_LIGHT }}
-                  zIndex={1000}
-                />
+              <FormDropDown
+                value={knownLanguage}
+                setValue={setKnownLanguage}
+                items={languageItems}
+                onChangeValue={(val) => changeKnownLanguage(val?.toString() ?? '')}
+                zIndex={1000}
+              />
             </View>
           </View>
 
