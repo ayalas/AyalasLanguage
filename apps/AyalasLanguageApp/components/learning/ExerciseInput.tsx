@@ -2,7 +2,7 @@ import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { useAuth } from '@/lib/AuthContext';
 import { TextInput, TextInputKeyPressEvent, useColorScheme } from 'react-native';
-import { BG_DARK, BG_LIGHT, BORDER_ACCENT, BORDER_ACCENT_DARK } from '@/constants';
+import { BG_DARK, BG_LIGHT, BORDER_ACCENT_DARK, BORDER_ACCENT_LIGHT } from '@/constants';
 
 export interface ExerciseInputHandle {
   getUserAnswer: () => string;
@@ -66,7 +66,7 @@ export default function ExerciseInput ({ charWidth = 20, checkAnswer, value, onC
   };
 
   let bgColor = BG_LIGHT;
-  let borderColor = BORDER_ACCENT;
+  let borderColor = BORDER_ACCENT_LIGHT;
   
   if (colorScheme === 'dark') {
     bgColor = BG_DARK;

@@ -178,7 +178,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
             )}
           </View>
           {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
-            <View style={styles.text}>{translation}</View>
+            <Text style={styles.text}>{translation}</Text>
           )}
         </View>
       )}

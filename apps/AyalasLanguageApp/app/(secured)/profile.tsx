@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, StyleProp, ViewStyle } from 'react-native'
 import { Save } from 'lucide-react-native';
 import SecuredHeader from '@/components/SecuredHeader';
 import { reloadLanguageSettings } from '@ayalaslanguage/types/sharedfrontlib/utils';
@@ -15,6 +15,8 @@ import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picke
 import api from '@/lib/api'; //secured axios instance
 import { Checkbox } from 'expo-checkbox';
 import useTextStyles from '@/lib/useTextStyles';
+import FormDropDown from '@/components/FormDropDown';
+import { ACCENT_DARK, ACCENT_LIGHT, BORDER_DARK, BORDER_LIGHT, PRIMARY_DARK, PRIMARY_LIGHT, SURFACE_STRONG_DARK, SURFACE_STRONG_LIGHT } from '@/constants';
 
 export default function ProfileScreen() {
   
@@ -28,7 +30,34 @@ export default function ProfileScreen() {
   const [disablePuter, setDisablePuter] = useState(false);
   const router = useRouter();
   const { user, login } = useAuth();
-  const { styles } = useTextStyles();
+  const { styles, isDark } = useTextStyles();
+  const IconUp = ({style}: {style: StyleProp<ViewStyle>}) => {
+        return (
+            <View style={style}>
+                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▲</Text> 
+            </View>
+        );
+    };
+
+    const IconDown = ({style}: {style: StyleProp<ViewStyle>}) => {
+        return (
+            <View style={style}>
+                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▼</Text> 
+            </View>
+        );
+    };
+
+    const IconTick = ({style}: {style: StyleProp<ViewStyle>}) => {
+      return (
+          <View style={style}>
+              <Text style={{ 
+                  color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT, 
+                  fontWeight: 'bold',
+                  fontSize: 18 
+              }}>✓</Text> 
+          </View>
+      );
+  };
 
   const languageItems = useMemo(() => {
         return allLanguages.map((language) => { 
@@ -139,7 +168,17 @@ export default function ProfileScreen() {
                   setValue={setTargetLanguage}
                   onChangeValue={(value) => changeTargetLanguage(value?.toString() ?? '')}
                   items={languageItems}
+                  ArrowUpIconComponent={IconUp}
+                  ArrowDownIconComponent={IconDown}
+                  TickIconComponent={IconTick}
                   textStyle={[styles.text, { paddingTop: 10 }]}
+                  style={{
+                      borderWidth: 1,
+                      borderStyle: 'solid',
+                      borderColor: isDark? BORDER_DARK : BORDER_LIGHT,
+                      backgroundColor: 'transparent'
+                  }}
+                  listItemContainerStyle={{ backgroundColor: isDark? SURFACE_STRONG_DARK : SURFACE_STRONG_LIGHT }}
                   zIndex={2000}
                 />
             </View>
@@ -158,7 +197,17 @@ export default function ProfileScreen() {
                   setValue={setKnownLanguage}
                   onChangeValue={(value) => changeKnownLanguage(value?.toString() ?? '')}
                   items={languageItems}
+                  ArrowUpIconComponent={IconUp}
+                  ArrowDownIconComponent={IconDown}
+                  TickIconComponent={IconTick}
+                  style={{
+                      borderWidth: 1,
+                      borderStyle: 'solid',
+                      borderColor: isDark? BORDER_DARK : BORDER_LIGHT,
+                      backgroundColor: 'transparent'
+                  }}
                   textStyle={[styles.text, { paddingTop: 10 }]}
+                  listItemContainerStyle={{ backgroundColor: isDark? SURFACE_STRONG_DARK : SURFACE_STRONG_LIGHT }}
                   zIndex={1000}
                 />
             </View>
@@ -193,7 +242,7 @@ export default function ProfileScreen() {
           <View className="buttons-container">
             <View className="form-input-row">
               <TouchableOpacity testID="save" className="form-button" onPress={submitAction}>
-                <Save /><Text style={styles.text}> Save</Text>
+                <Save color={isDark? PRIMARY_DARK : PRIMARY_LIGHT} /><Text style={styles.text}> Save</Text>
               </TouchableOpacity>
             </View>
           </View>

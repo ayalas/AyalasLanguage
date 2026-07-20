@@ -168,13 +168,13 @@ export default function HomeScreen() {
                                   >
                                     <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} href={exerciseTypeObject.exerciseTypeId == 0 ? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}>{path.name}</Link>
                                     {isDone && (
-                                      <Check />
+                                      <Check className="color-brand-primary" />
                                     )}
                                     {isInProgress && (
                                       <CircleDotDashed className="color-brand-dashed" />
                                     )}
                                     {path.practiseMistakesInThisPath && (
-                                      <History />
+                                      <History className="color-brand-primary" />
                                     )}
                                     <View className="content-line-part"><Text style={styles.dimmedText}>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
                                   </View>

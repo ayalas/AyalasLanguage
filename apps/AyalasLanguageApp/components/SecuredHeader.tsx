@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Image, Text } from 'react-native'
+import { View, Image, Text, StyleProp, ViewStyle } from 'react-native'
 import { useAuth } from '@/lib/AuthContext';
 import { Link, useRouter } from 'expo-router';
 import { SquareMenu, Volleyball } from 'lucide-react-native';
 import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
-import { Menu, Divider, PaperProvider, IconButton } from 'react-native-paper';
+import { Menu, Divider, IconButton } from 'react-native-paper';
 import api from '@/lib/api'; //secured axios instance
 import { switchLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
@@ -13,6 +13,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import imgLogo from "@/assets/images/logo.png";
 import imgLogoDark from "@/assets/images/logo-dark.png"; //todo
 import useTextStyles from '@/lib/useTextStyles';
+import { BORDER_DARK, BORDER_LIGHT, PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
 
 export const LANGUAGE_INDICATOR_ENUM = {
     NONE: 0,
@@ -24,6 +25,7 @@ export const LANGUAGE_INDICATOR_ENUM = {
 export type LanguageIndicator = typeof LANGUAGE_INDICATOR_ENUM[keyof typeof LANGUAGE_INDICATOR_ENUM];
 
 type SwitchLanguageFunc = (axiosInstance: any, user: User | null | undefined, loginFn: ((u: User) => void) | undefined, targetLanguageId: number, knownLanguageId?: number) => Promise<User>;
+
 
 
 export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_ENUM.NONE }: { languageIndicator?: LanguageIndicator }) {
@@ -43,6 +45,22 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
             label: language.englishName,
         } as ItemType<ValueType>)) as ItemType<ValueType>[];
     }, [user]); // Only re-run if this specific data changes
+
+    const IconUp = ({style}: {style: StyleProp<ViewStyle>}) => {
+        return (
+            <View style={style}>
+                <Text style={{ color: isDark ? BORDER_DARK : BORDER_LIGHT }}>▲</Text> 
+            </View>
+        );
+    };
+
+    const IconDown = ({style}: {style: StyleProp<ViewStyle>}) => {
+        return (
+            <View style={style}>
+                <Text style={{ color: isDark ? BORDER_DARK : BORDER_LIGHT }}>▼</Text> 
+            </View>
+        );
+    };
 
     const openMenu = () => setMenuVisible(true);
     const closeMenu = () => setMenuVisible(false);
@@ -108,7 +126,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                         onDismiss={closeMenu}
                         anchor={
                             <IconButton style={{ paddingHorizontal: 16, width:'100%', paddingVertical: 10}}
-                                icon={() => <SquareMenu />}
+                                icon={() => <SquareMenu className="color-brand-primary" />}
                                 onPress={openMenu}
                             />
                         }>
@@ -131,11 +149,16 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                     setOpen={setSelectedLanguageOpen}
                                     listMode="SCROLLVIEW"
                                     multiple={false}
+
+                                    ArrowUpIconComponent={IconUp}
+                                    ArrowDownIconComponent={IconDown}
                                     style={{
                                         width: 'auto',
                                         maxWidth: 150,
                                         minHeight: 40,
                                         borderWidth: 1,
+                                        borderStyle: 'solid',
+                                        borderColor: isDark? BORDER_DARK : BORDER_LIGHT,
                                         backgroundColor: 'transparent',
                                         alignItems: 'center',
                                         justifyContent: 'center'

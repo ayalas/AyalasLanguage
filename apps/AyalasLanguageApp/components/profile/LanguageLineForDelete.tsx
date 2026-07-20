@@ -5,12 +5,13 @@ import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import api from '@/lib/api'; //secured axios instance
 import useTextStyles from '@/lib/useTextStyles';
+import { PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
 
 export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguageSettings }:
   { languageInfo: any; user: User | null; login: (u: User) => void; reloadLanguageSettings: (a: any, u: any, l: any) => void }) {
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
-  const { styles } = useTextStyles();
+  const { styles, isDark } = useTextStyles();
 
   async function onButtonClick() {
     try {
@@ -28,7 +29,7 @@ export function LanguageLineForDelete({ languageInfo, user, login, reloadLanguag
             <TouchableOpacity testID="delete-item"
                 className="button-delete-item" 
                 onPress={onButtonClick}>
-              <Trash2 width="18" height="18" />
+              <Trash2 width="18" height="18" color={isDark? PRIMARY_DARK : PRIMARY_LIGHT} />
             </TouchableOpacity>
             <Text style={styles.text}>{languageInfo.nativeName} ({languageInfo.englishName})</Text>
         </View>

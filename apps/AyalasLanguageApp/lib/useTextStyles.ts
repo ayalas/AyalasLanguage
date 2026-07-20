@@ -1,17 +1,15 @@
-import { ACCENT_DARK, ACCENT_LIGHT } from '@/constants';
+import { ACCENT_DARK, ACCENT_LIGHT, PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
 import { StyleSheet, useColorScheme } from 'react-native'
 
 export default function useTextStyles() {
-    const PRIMARY_LIGHT = '#1f2937';
-    const PRIMARY_DARK = '#f3f4f6';
+   
     const DIMMED_LIGHT = '#5f6470';
     const DIMMED_DARK = '#b8bfcc';
     const ERROR_LIGHT = '#b91c1c';
     const ERROR_DARK = '#ff6b6b';
     const BG_ALTER_DARK = '#1b2029';
     const BG_ALTER_LIGHT = '#e2d3dd';
- /*    const SURFACE_STRONG_DARK = '#171b24';
-    const SURFACE_STRONG_LIGHT = '#ffffff'; */
+    
 
     const colorScheme = useColorScheme();
     const isDark = colorScheme === 'dark';

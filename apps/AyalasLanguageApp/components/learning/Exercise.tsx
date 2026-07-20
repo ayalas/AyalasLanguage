@@ -1,5 +1,5 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine } 
+import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine }
     from 'lucide-react-native';
 import api from '@/lib/api';
 import InlineExerciseWithBlanks from '@/components/learning/exercise-render-types/InlineExerciseWithBlanks';
@@ -20,9 +20,9 @@ import useTextStyles from '@/lib/useTextStyles';
 import { COLOR_PLAY, COLOR_SAVE } from '@/constants';
 
 export interface ExerciseHandle {
-  setFocus: () => void;
-  checkAnswer: () => boolean;
-  getCurrentAnswer: () => string;
+    setFocus: () => void;
+    checkAnswer: () => boolean;
+    getCurrentAnswer: () => string;
 }
 
 type Props = {
@@ -37,8 +37,8 @@ type Props = {
     ref: React.Ref<ExerciseHandle>;
 };
 
-export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, 
-        restartLesson, practiseMistakesInitialValue, addMistake, ref }: Props) {
+export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress,
+    restartLesson, practiseMistakesInitialValue, addMistake, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -46,8 +46,10 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
     const { user } = useAuth();
     const [puterSignedIn, setPuterSignedIn] = useState(false);
     const { styles } = useTextStyles();
-    const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: exerciseInfo.learningPathId , 
-        exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue});
+    const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({
+        learningPathId: exerciseInfo.learningPathId,
+        exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue
+    });
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
@@ -186,7 +188,7 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
         return;
 
     return (
-        <Fragment key={`ex${exerciseInfo.exerciseId}row`}>           
+        <Fragment key={`ex${exerciseInfo.exerciseId}row`}>
             <View className="exercise-body-container">
                 <View className="form-row">
                     <Text style={styles.text}>{ExerciseTypeInstruction()}</Text>
@@ -217,46 +219,48 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
                             parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
                     ))}
             </View>
-            
+
             <View className="buttons-container">
-                <ActionsMenuComponent items={[
-                    {
-                        dataTestId: "restart-lesson",
-                        itemText: "Restart Lesson",
-                        onClick: restartLesson,
-                        className: "text color-brand-play",
-                    },
-                    {
-                        dataTestId: "cancel-readding",
-                        itemText: "Stop readding my mistakes",
-                        onClick: cancelMistakesAdd,
-                        isVisible: practiseMistakesInThisPath,
-                    },
-                    {
-                        dataTestId: "readd-mistakes",
-                        itemText: "Readd my mistakes here",
-                        onClick: readdMistakes,
-                        isVisible: !practiseMistakesInThisPath,
-                    },
-                    {
-                        dataTestId: "add-alternative-answer",
-                        itemText: "Add alternative answer",
-                        onClick: addAlternativeAnswer,
-                        isVisible: displayAnswer && error !== "" && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers,
-                    },
-                    {
-                        dataTestId: "edit-lesson",
-                        itemText: "Edit lesson",
-                        toPath: `/author/path/${exerciseInfo.learningPathId}`,
-                    },
-                    {
-                        dataTestId: "save-progress",
-                        itemText: "Save & Exit",
-                        onClick: saveProgress,
-                        className: "lesson-button-save",
-                        titleStyle: { color: COLOR_SAVE }
-                    }
-                ] as ActionsMenuItem[]} anchorTitle="More" />
+                <View className="form-button-cell">
+                    <ActionsMenuComponent items={[
+                        {
+                            dataTestId: "restart-lesson",
+                            itemText: "Restart Lesson",
+                            onClick: restartLesson,
+                            className: "text color-brand-play",
+                        },
+                        {
+                            dataTestId: "cancel-readding",
+                            itemText: "Stop readding my mistakes",
+                            onClick: cancelMistakesAdd,
+                            isVisible: practiseMistakesInThisPath,
+                        },
+                        {
+                            dataTestId: "readd-mistakes",
+                            itemText: "Readd my mistakes here",
+                            onClick: readdMistakes,
+                            isVisible: !practiseMistakesInThisPath,
+                        },
+                        {
+                            dataTestId: "add-alternative-answer",
+                            itemText: "Add alternative answer",
+                            onClick: addAlternativeAnswer,
+                            isVisible: displayAnswer && error !== "" && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers,
+                        },
+                        {
+                            dataTestId: "edit-lesson",
+                            itemText: "Edit lesson",
+                            toPath: `/author/path/${exerciseInfo.learningPathId}`,
+                        },
+                        {
+                            dataTestId: "save-progress",
+                            itemText: "Save & Exit",
+                            onClick: saveProgress,
+                            className: "lesson-button-save",
+                            titleStyle: { color: COLOR_SAVE }
+                        }
+                    ] as ActionsMenuItem[]} anchorTitle="More" />
+                </View>
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanRevealAnswers && (
                         <View className="form-button-cell">
@@ -269,13 +273,13 @@ export default function Exercise ({ exerciseInfo, moveNext, movePrev, childLoade
 
                 {(exerciseInfo.index ?? 0) > 0 && (
                     <View className="exercise-footer-back">
-                        <TouchableOpacity testID="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='color-brand-play' stroke-width="4" /><Text style={[styles.text, {color: COLOR_PLAY}]}> Prev</Text></TouchableOpacity>
+                        <TouchableOpacity testID="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='color-brand-play' stroke-width="4" /><Text style={[styles.text, { color: COLOR_PLAY }]}> Prev</Text></TouchableOpacity>
                     </View>
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && (
                         <View className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"} bg-brand-play p-3 border-brand-border border-solid rounded-2xl`}>
-                            <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="flex-row w-full items-center justify-center bg-brand-play " ><View className="flex-row items-center justify-center bg-brand-play"><ListChecks color='white' /><Text style={[styles.text, {color: 'white', backgroundColor: COLOR_PLAY}]}> Check</Text></View></TouchableOpacity>
+                            <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="flex-row w-full items-center justify-center bg-brand-play " ><View className="flex-row items-center justify-center bg-brand-play"><ListChecks color='white' /><Text style={[styles.text, { color: 'white', backgroundColor: COLOR_PLAY }]}> Check</Text></View></TouchableOpacity>
                         </View>
                     )
                 }

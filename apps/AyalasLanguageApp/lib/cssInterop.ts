@@ -1,5 +1,5 @@
 import { cssInterop } from "nativewind";
-import { ArrowBigLeft, CircleDotDashed, CirclePlay, Eye, LayersPlus, LogInIcon, RotateCcw, UserIcon } from "lucide-react-native";
+import { ArrowBigLeft, History, CircleDotDashed, X, CirclePlay, Eye, LayersPlus, LogInIcon, RotateCcw, UserIcon, SquareMenu, Check } from "lucide-react-native";
 
 cssInterop(LayersPlus, {
   className: {
@@ -72,3 +72,40 @@ cssInterop(ArrowBigLeft, {
     },
   },
 });
+
+cssInterop(X, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(SquareMenu, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(Check, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(History, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+

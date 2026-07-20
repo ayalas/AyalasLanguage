@@ -114,12 +114,8 @@
 .textarea .form-button,
 .top-button,
 .link-button,
-
 .bucket-list-item-button {
   font-family: inherit;
-  font-size: inherit;
-  -webkit-appearance: none;
-  appearance: none;
   color: var(--text-h);
   background-color: var(--surface-strong);
   border-color: var(--border);
@@ -196,8 +192,7 @@
   width: 100%;
   padding: 10px 16px;
   text-align: start;
-  /* background: none; */
-  cursor: pointer;
+  background-color: transparent;
   color: inherit;
   text-decoration: none;
   font-size: var(--fontsize);
@@ -235,12 +230,13 @@
   padding-top: 15px;
   display: flex;
   gap: 8px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
 }
 
 .form-button {
   background-color: var(--surface-strong);
-  cursor: pointer;
   /* display: inline-flex; */
   flex-direction: row;
   align-items: center;
@@ -255,7 +251,6 @@
 
 .button-delete-item {
   background-color: var(--surface-strong);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -406,8 +401,7 @@
 }
 
 .form-button-cell {
-  /* display: inline-flex; */
-  flex-direction: row;
+  width: 100%;
   padding-right: 10px;
   padding-top: 10px;
 }
@@ -792,7 +786,6 @@
 
 .lesson-button-left {
   background-color: var(--surface-strong);
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -810,7 +803,6 @@
 
 .link-button {
   background-color: var(--surface-strong);
-  cursor: pointer;
   text-decoration: none;
   color: inherit;
  /*  display: inline-flex; */
@@ -826,7 +818,6 @@
 
 .link-lesson-edit {
   background-color: transparent;
-  cursor: pointer;
   text-decoration: none;
   color: inherit;
   /* display: inline-flex; */
@@ -865,7 +856,6 @@
 }
 .play-button {
   background-color: var(--surface-strong);
-  cursor: pointer;
   /* display: inline-flex; */
   align-items: center;
   justify-content: center;
@@ -890,9 +880,10 @@
 
 .top-button {
   background-color: var(--surface-strong);
-  cursor: pointer;
   display: flex;
+  flex-direction: row;
   align-items: center;
+  width: 100%;
   justify-content: center;
   gap: 4px;
   border-radius: var(--radius);
@@ -951,7 +942,6 @@
   border-color: var(--border);
   border-width: 1px;
   border-style: solid;
-  cursor: pointer;
   padding: 10px 12px;
   overflow-wrap: anywhere;
   border-radius: 999px;
@@ -996,7 +986,6 @@
   justify-content: center;
   padding: 8px;
   border-radius: 6px;
-  cursor: pointer;
 }
 
 .my-action-btn {
@@ -1024,7 +1013,6 @@
 
 .bucket-list-item-button {
   background-color: var(--surface-strong);
-  cursor: pointer;
   padding: 10px 12px;
   border-radius: 8px;
   margin-top: 10px;
@@ -1092,11 +1080,6 @@
     padding-bottom: 0;
   }
 
-  .buttons-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
   .form-button-cell {
     padding-right: 0;
     padding-top: 0;
@@ -1138,7 +1121,6 @@
   }
 
   .form-button,
-  .top-button,
   .link-button {
     width: 100%;
     justify-content: center;
