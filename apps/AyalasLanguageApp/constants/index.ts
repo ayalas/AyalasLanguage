@@ -7,8 +7,8 @@ export const BORDER_ACCENT_DARK = 'rgba(192, 132, 252, 0.4)';
 export const BORDER_LIGHT = '#dfe4ec';
 export const BORDER_DARK = '#2d3440';
 export const COLOR_PLAY = "rgb(55, 194, 20)";
-export const LAYERS_LIGHT = '#7c3aed';
-export const LAYERS_DARK = '#c084fc';
+export const LAYERS_LIGHT = '#166534';
+export const LAYERS_DARK = '#6ee7b7';
 export const COLOR_DASHED = "rgb(255, 200, 1)";
 export const ACCENT_LIGHT = '#7c3aed';
 export const ACCENT_DARK = '#c084fc';
@@ -17,3 +17,6 @@ export const SURFACE_STRONG_DARK = '#171b24';
 export const SURFACE_STRONG_LIGHT = '#ffffff';
 export const PRIMARY_LIGHT = '#1f2937';
 export const PRIMARY_DARK = '#f3f4f6';
+
+//storage
+export const STORAGE_TOKEN_KEY = 'auth_token';

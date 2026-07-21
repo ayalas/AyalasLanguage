@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, ScrollView, KeyboardAvoidingView } from 'react-native'
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import api from '@/lib/api';
@@ -122,6 +122,7 @@ export default function AccountScreen() {
                 <Text style={styles.errorText}>{error}</Text>
               </View>
             )}
+          <KeyboardAvoidingView>
             <View className="form-row">
               <View className="form-label-cell">
                 <Text style={styles.label}>First Name</Text>
@@ -201,6 +202,7 @@ export default function AccountScreen() {
                 </View>
               </>
             )}
+            </KeyboardAvoidingView>
             <View className="buttons-container">
               <View className="form-button-cell">
                 <TouchableOpacity testID="save" onPress={handleSubmit} className="form-button"><Save className="color-brand-primary" /><Text style={styles.text}> Save Changes</Text></TouchableOpacity>

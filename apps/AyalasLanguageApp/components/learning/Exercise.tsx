@@ -228,36 +228,42 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                             itemText: "Restart Lesson",
                             onClick: () => { setError(""); restartLesson(); },
                             className: "text color-brand-play",
+                            leadingIcon: (props) => <RotateCcw {...props} className="color-brand-play" />,
                         },
                         {
                             dataTestId: "cancel-readding",
                             itemText: "Stop readding my mistakes",
                             onClick: cancelMistakesAdd,
                             isVisible: practiseMistakesInThisPath,
+                            leadingIcon: (props) => <Ban {...props} className="color-brand-primary" />,
                         },
                         {
                             dataTestId: "readd-mistakes",
                             itemText: "Readd my mistakes here",
                             onClick: readdMistakes,
                             isVisible: !practiseMistakesInThisPath,
+                            leadingIcon: (props) => <History {...props} className="color-brand-primary" />,
                         },
                         {
                             dataTestId: "add-alternative-answer",
                             itemText: "Add alternative answer",
                             onClick: addAlternativeAnswer,
                             isVisible: displayAnswer && error !== "" && EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].SupportsAlternativeAnswers,
+                            leadingIcon: (props) => <TicketPlus {...props} className="color-brand-primary" />,
                         },
                         {
                             dataTestId: "edit-lesson",
                             itemText: "Edit lesson",
                             toPath: `/author/path/${exerciseInfo.learningPathId}`,
+                            leadingIcon: (props) => <FilePenLine {...props} className="color-brand-primary" />,
                         },
                         {
                             dataTestId: "save-progress",
                             itemText: "Save & Exit",
                             onClick: saveProgress,
                             className: "lesson-button-save",
-                            titleStyle: { color: COLOR_SAVE }
+                            titleStyle: { color: COLOR_SAVE },
+                            leadingIcon: (props) => <CircleDotDashed {...props} className="color-brand-dashed" />,
                         }
                     ] as ActionsMenuItem[]} anchorTitle="More" />
                 </View>
@@ -273,7 +279,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
 
                 {(exerciseInfo.index ?? 0) > 0 && (
                     <View className="exercise-footer-back">
-                        <TouchableOpacity testID="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='color-brand-play' stroke-width="4" /><Text style={[styles.text, { color: COLOR_PLAY }]}> Prev</Text></TouchableOpacity>
+                        <TouchableOpacity testID="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='color-brand-play' strokeWidth="4" /><Text style={[styles.text, { color: COLOR_PLAY }]}> Prev</Text></TouchableOpacity>
                     </View>
                 )}
                 {

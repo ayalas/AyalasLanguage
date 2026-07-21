@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter, useLocalSearchParams, Link } from 'expo-router';
-import { LayersPlus, Trash,  Ban, Workflow, UserPen, BookOpenCheck, Save, History } from 'lucide-react-native';
+import { LayersPlus, Trash, Ban, Workflow, UserPen, BookOpenCheck, Save, History } from 'lucide-react-native';
 import { puter, type ChatMessage } from '@heyputer/puter.js';
 import { Slider } from '@miblanchard/react-native-slider';
 
@@ -30,9 +30,11 @@ import { ActionsMenuComponent, type ActionsMenuItem } from '@/components/Actions
 import useTextStyles from '@/lib/useTextStyles';
 import FormDropDown from '../FormDropDown';
 import { ItemType, ValueType } from 'react-native-dropdown-picker';
+import { getFromStorage, saveToStorage } from '@/lib/platformStorage';
+import { FormHeader } from '../FormHeader';
 
-export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloadExercise }:
-  { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: LearningPathInfo; reloadExercise?: () => void }) {
+export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloadExercise, headerTitle }:
+  { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: LearningPathInfo; reloadExercise?: () => void, headerTitle: string }) {
   const [error, setError] = useState('');
   const [level, setLevel] = useState(1);
   const [chapter, setChapter] = useState(1);
@@ -58,38 +60,41 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   const { user } = useAuth();
 
   const exerciseTypes = useMemo(() => {
-      return SORTED_EXERCISE_TYPES.map((exType) => { 
-                  return {
-                    value: exType.Type, 
-                    label: exType.Name
-                } as ItemType<ValueType>;}) as ItemType<ValueType>[];
-      }, []); 
+    return SORTED_EXERCISE_TYPES.map((exType) => {
+      return {
+        value: exType.Type,
+        label: exType.Name
+      } as ItemType<ValueType>;
+    }) as ItemType<ValueType>[];
+  }, []);
 
   const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({
     learningPathId: initialRecord?.learningPathId,
     exerciseId: initialRecord?.exerciseId, setError, initialValue: initialRecord?.practiseMistakesInThisPath ?? false
   });
 
+  const STORAGE_GENERATOR_MATCHES = 'lesson-generator-matches';
+  const STORAGE_GENERATOR_WRONG_OPTIONS = 'lesson-generator-wrong-options';
 
   const loadFromLocalStorage = function () {
-    let tempValue = localStorage.getItem("lesson-generator-matches");
-    if (tempValue != null) {
+    let tempValue = getFromStorage(STORAGE_GENERATOR_MATCHES);
+    if (tempValue != null && !isNaN(Number(tempValue))) {
       setMatches(Number(tempValue))
     }
 
-    tempValue = localStorage.getItem("lesson-generator-wrong-options");
-    if (tempValue != null) {
+    tempValue = getFromStorage(STORAGE_GENERATOR_WRONG_OPTIONS);
+    if (tempValue != null && !isNaN(Number(tempValue))) {
       setExtraOptions(Number(tempValue))
     }
   }
 
   const saveToLocalStorage = function () {
     if (EXERCISE_TYPE_LOGIC[exerciseType].IsMatchingType) {
-      localStorage.setItem("lesson-generator-matches", matches.toString());
+      saveToStorage(STORAGE_GENERATOR_MATCHES, matches.toString());
     }
 
     if (EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions) {
-      localStorage.setItem("lesson-generator-wrong-options", extraOptions.toString());
+      saveToStorage(STORAGE_GENERATOR_WRONG_OPTIONS, extraOptions.toString());
     }
   }
 
@@ -378,8 +383,6 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
             setUsePuterAI(false);
           }
         }
-
-        titleRef.current?.focus();
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
@@ -395,10 +398,11 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     }, 500);
     // This cleans up the OLD timer before starting a NEW one (for key stroke changes in title)
     return () => clearTimeout(timeoutid);
-  }, [exerciseType, title, matches, extraOptions]);
+  }, [exerciseType, title]);
 
   return (
-    <>
+    <View className="form-container">
+      <FormHeader title={headerTitle} />
       {user?.role !== ROLE_TYPE.ADMIN && user?.role !== ROLE_TYPE.CONTENT_CREATOR && (
         <View className="form-row">
           <Text style={styles.text}>An email address confirmation request has been sent to &apos;{user?.userName}&apos;. Please confirm your email, so you&apos;ll be able to generate exercise content on this page and recover your account, in case you forget your password. </Text>
@@ -413,12 +417,13 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
             )}
             {isLoading && (
               <View className="loadingOverlay">
+                <ActivityIndicator size="large" color="#7c3aed" />
                 <Text testID="loadingBox" style={styles.text}>
                   {loadingMessage}
                 </Text>
               </View>
             ) || (
-                <>
+                <KeyboardAvoidingView>
                   <Text style={styles.label}>Level</Text>
                   <View className="form-row">
                     <View className="form-input-row">
@@ -439,7 +444,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                     <Text style={styles.text}>AI will generate exercises on this subject.</Text>
                   </View>
                   <Text style={styles.label}>Exercise Type</Text>
-                  <View className="form-row">
+                  <View className="form-row" style={{ zIndex: 1000 }}>
                     <View className="exercise-type-selector-container">
                       <FormDropDown
                         value={exerciseType}
@@ -447,49 +452,67 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                         items={exerciseTypes}
                         placeholder='-- Please choose an option --'
                         onChangeValue={(val) => onChangeExerciseType(val?.toString() ?? 0)}
+                        maxWidth="90%"
+                        zIndex={2000}
                       />
                       <View className="exercise-type-difficulty">
                         <ExerciseTypeIcon exerciseTypeId={exerciseType} />
                       </View>
                     </View>
-                    <Text style={styles.text}>{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.description ?? ''}</Text>
                   </View>
+                  <View style={{ zIndex: 1 }}><Text style={styles.text}>{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.description ?? ''}</Text></View>
                   {EXERCISE_TYPE_LOGIC[exerciseType].IsMatchingType && (
-                    <>
+                    <View style={{ zIndex: 1 }}>
                       <Text style={styles.label}>Number of Matches: {matches}</Text>
                       <Slider
                         minimumValue={MIN_MATCHES}
                         maximumValue={MAX_MATCHES}
                         step={1}
                         // Note: this library expects value to be an array or a number
-                        value={matches}
+                        value={[matches]}
                         // Note: onValueChange returns an array [number]
-                        onValueChange={(value: number[]) => setMatches(Array.isArray(value) ? value[0] : value)}
+                        onValueChange={(val: number[]) => {
+                          const nextVal = Array.isArray(val) ? val[0] : val;
+                          if (nextVal !== matches && !isNaN(nextVal)) {
+                            setMatches(nextVal)
+                          }
+                        }}
+                        onSlidingComplete={() => {
+                          if (exerciseType !== 0) handleExerciseTypeLogic(exerciseType);
+                        }}
                         minimumTrackTintColor="#1EB1FC"
                         maximumTrackTintColor="#D3D3D3"
                         thumbTintColor="#1EB1FC"
                       />
-                    </>
+                    </View>
                   )}
                   {EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions && (
-                    <>
+                    <View style={{ zIndex: 1 }}>
                       <Text style={styles.label}>Wrong Extra Options: {extraOptions}</Text>
                       <Slider
                         minimumValue={BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS}
                         maximumValue={BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS}
                         step={1}
                         // Note: this library expects value to be an array or a number
-                        value={extraOptions}
+                        value={[extraOptions]}
                         // Note: onValueChange returns an array [number]
-                        onValueChange={(value: number[]) => setExtraOptions(Array.isArray(value) ? value[0] : value)}
+                        onValueChange={(val: number[]) => {
+                          const nextVal = Array.isArray(val) ? val[0] : val;
+                          if (nextVal !== extraOptions && !isNaN(nextVal)) {
+                            setExtraOptions(nextVal)
+                          }
+                        }}
+                        onSlidingComplete={() => {
+                          if (exerciseType !== 0) handleExerciseTypeLogic(exerciseType);
+                        }}
                         minimumTrackTintColor="#1EB1FC"
                         maximumTrackTintColor="#D3D3D3"
                         thumbTintColor="#1EB1FC"
                       />
-                    </>
+                    </View>
                   )}
                   {!usePuterAI && (
-                    <>
+                    <View style={{ zIndex: 1 }}>
                       <Text style={styles.label}>AI instructions</Text>
                       <View className="form-row">
                         <Text style={styles.text}>{aiInstructions}</Text>
@@ -524,8 +547,8 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                           </View>
                         </>
                       )}
-                    </>)}
-                </>
+                    </View>)}
+                </KeyboardAvoidingView>
               )
             }
             <View className="buttons-container">
@@ -535,7 +558,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                   dataTestId: "switch-ai-use",
                   disabled: isLoading || user?.disablePuter,
                   itemText: "Switch to Manual Entry",
-                  leadingIcon: <UserPen className="color-brand-primary" />,
+                  leadingIcon: (props) => <UserPen {...props} className="color-brand-primary" />,
                   onClick: () => { setUsePuterAI(!usePuterAI) }
                 },
                 {
@@ -543,56 +566,56 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                   dataTestId: "switch-ai-use",
                   disabled: isLoading || user?.disablePuter,
                   itemText: "Switch to AI Generation",
-                  leadingIcon: <Workflow className="color-brand-primary" />,
+                  leadingIcon: (props) => <Workflow {...props} className="color-brand-primary" />,
                   onClick: () => { setUsePuterAI(!usePuterAI) }
                 },
                 {
                   dataTestId: "cancel-readding",
                   itemText: "Stop readding my mistakes",
                   onClick: cancelMistakesAdd,
-                  leadingIcon: <Ban className="color-brand-primary" />,
+                  leadingIcon: (props) => <Ban {...props} className="color-brand-primary" />,
                   isVisible: initialRecord != null && practiseMistakesInThisPath,
                 },
                 {
                   dataTestId: "readd-mistakes",
                   itemText: "Readd my mistakes here",
                   onClick: readdMistakes,
-                  leadingIcon: <History className="color-brand-primary" />,
+                  leadingIcon: (props) => <History {...props} className="color-brand-primary" />,
                   isVisible: initialRecord != null && !practiseMistakesInThisPath,
                 },
                 {
-                  isVisible: initialRecord != null && initialRecord.access === AUTHOR_ACCESS.CAN_EDIT 
+                  isVisible: initialRecord != null && initialRecord.access === AUTHOR_ACCESS.CAN_EDIT
                     && initialRecord.exerciseCount === 0,
                   dataTestId: "delete-lesson",
                   disabled: isLoading,
                   onClick: deleteLesson,
                   itemText: "Delete Lesson",
-                  leadingIcon: <Trash className="color-brand-primary" />
+                  leadingIcon: (props) => <Trash {...props} className="color-brand-primary" />
                 },
                 {
                   isVisible: initialRecord != null && !isLoading,
                   dataTestId: "back-to-lesson",
                   itemText: "Back to Lesson",
-                  leadingIcon: <BookOpenCheck className="color-brand-primary" />,
+                  leadingIcon: (props) => <BookOpenCheck {...props} className="color-brand-primary" />,
                   toPath: `/path/${initialRecord?.learningPathId}`
                 }
               ] as ActionsMenuItem[]} />
               {initialRecord && initialRecord.access === AUTHOR_ACCESS.CAN_EDIT && usePuterAI && (
                 <View className="form-button-cell">
                   <TouchableOpacity testID="save-only" className="top-button" onPress={saveOnly}>
-                    <Save /><Text style={styles.text}> Save</Text>
+                    <Save className="color-brand-primary" /><Text style={styles.text}> Save</Text>
                   </TouchableOpacity>
                 </View>
               )}
               <View className="form-button-cell">
                 <TouchableOpacity testID="save"
-                  disabled={isLoading} className="top-button" onPress={onFormSubmit}><LayersPlus />
+                  disabled={isLoading} className="top-button" onPress={onFormSubmit}><LayersPlus className="color-brand-layers" />
                   <Text style={styles.text}> {usePuterAI ? "Generate" : "Save & Generate"}</Text>
                 </TouchableOpacity>
               </View>
             </View>
           </>
         )}
-    </>
+    </View>
   );
 }

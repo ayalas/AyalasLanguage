@@ -1,5 +1,5 @@
 import { useEffect, useState, Fragment, useRef } from "react";
-import { findNodeHandle, ScrollView, Text, View, Platform } from "react-native";
+import { findNodeHandle, ScrollView, Text, View, Platform, ActivityIndicator } from "react-native";
 import { Link } from 'expo-router';
 
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react-native';
@@ -115,97 +115,100 @@ export default function HomeScreen() {
   }, [user?.languageSettings?.targetLanguageId, user?.userId]);
 
   useEffect(() => {
-  if (!isLoading && targetY !== null && scrollViewRef.current) {
-    scrollViewRef.current.scrollTo({
-      y: targetY - 100, // Adjust offset as needed
-      animated: true,
-    });
-  }
-}, [isLoading, targetY]);
+    if (!isLoading && targetY !== null && scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        y: targetY - 100, // Adjust offset as needed
+        animated: true,
+      });
+    }
+  }, [isLoading, targetY]);
 
   return (
-      <View className="root">
-        <SecuredHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SWITCH} />
-        {error !== '' && (
-          <View className="form-row">
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        )}
-        {isLoading && (
+    <View className="root">
+      <SecuredHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SWITCH} />
+      {error !== '' && (
+        <View className="form-row">
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+      {isLoading && (
+        <>
+          <ActivityIndicator size="large" color="#7c3aed" />
           <Text style={styles.dimmedText}>
             Loading...
           </Text>
-        ) || ((learningPath && learningPath.length > 0) && (
-          <ScrollView className="learning-container" showsVerticalScrollIndicator={false} ref={scrollViewRef}> 
-            {learningPath.map((level) => {
-              return (
-                <View className="learning-level-container" key={`level-${level.level}`}>
-                  <Text style={styles.h1}>Level {level.level}</Text>
-                  {level.exerciseTypes.sort(
-                    (a: ExerciseTypeGroupObject, b: ExerciseTypeGroupObject) => EXERCISE_TYPE_LOGIC[a.exerciseTypeId].SortByEaseRank - EXERCISE_TYPE_LOGIC[b.exerciseTypeId].SortByEaseRank
-                  ).map((exerciseTypeObject: ExerciseTypeGroupObject) => {
-                    let lastPathObj = { level: level.level, chapter: 1 }
-                    if (exerciseTypeObject.paths.length > 0) {
-                      lastPathObj.chapter = exerciseTypeObject.paths[exerciseTypeObject.paths.length - 1].chapter;
-                    }
-                    return (
-                      <Fragment key={`level-${level.level}-type-${exerciseTypeObject.exerciseTypeId}`}>
-                        <View className="learning-exercise-type-outer-container">
+        </>
+      ) || ((learningPath && learningPath.length > 0) && (
+        <ScrollView className="learning-container" showsVerticalScrollIndicator={false} ref={scrollViewRef}>
+          {learningPath.map((level) => {
+            return (
+              <View className="learning-level-container" key={`level-${level.level}`}>
+                <Text style={styles.h1}>Level {level.level}</Text>
+                {level.exerciseTypes.sort(
+                  (a: ExerciseTypeGroupObject, b: ExerciseTypeGroupObject) => EXERCISE_TYPE_LOGIC[a.exerciseTypeId].SortByEaseRank - EXERCISE_TYPE_LOGIC[b.exerciseTypeId].SortByEaseRank
+                ).map((exerciseTypeObject: ExerciseTypeGroupObject) => {
+                  let lastPathObj = { level: level.level, chapter: 1 }
+                  if (exerciseTypeObject.paths.length > 0) {
+                    lastPathObj.chapter = exerciseTypeObject.paths[exerciseTypeObject.paths.length - 1].chapter;
+                  }
+                  return (
+                    <Fragment key={`level-${level.level}-type-${exerciseTypeObject.exerciseTypeId}`}>
+                      <View className="learning-exercise-type-outer-container">
 
-                          <View className="learning-exercise-type-inner-container">
-                            <ExerciseTypeGroupTitle exerciseTypeId={exerciseTypeObject.exerciseTypeId} />
-                            <View className="learning-exercise-type-inner-body">
-                              {exerciseTypeObject.paths.map((path: any) => {
-                                const isDone = path.status === LEANRING_STATUS.DONE;
-                                const isInProgress = path.status === LEANRING_STATUS.IN_PROGRESS;
-                                return (
-                                  <View className="learning-lesson" key={path.learningPathId}
-                                    ref={path.learningPathId === latestLesson ? latestLessonRef : null}
-                                    onLayout={path.learningPathId === latestLesson? (event) => {
-                                      const layout = event.nativeEvent.layout;
-                                      setTargetY(layout.y);
-                                  }: () => {}}
-                                  >
-                                    <Link className={`learning-lesson-link${isDone ? ' lesson-done' : ''}`} href={exerciseTypeObject.exerciseTypeId == 0 ? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}>{path.name}</Link>
-                                    {isDone && (
-                                      <Check className="color-brand-primary" />
-                                    )}
-                                    {isInProgress && (
-                                      <CircleDotDashed className="color-brand-dashed" />
-                                    )}
-                                    {path.practiseMistakesInThisPath && (
-                                      <History className="color-brand-primary" />
-                                    )}
-                                    <View className="content-line-part"><Text style={styles.dimmedText}>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
-                                  </View>
-                                );
-                              })}
-                              <View className="learning-level-creator">
-                                <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`}><LayersPlus className="color-brand-layers" /></Link>
-                              </View>
+                        <View className="learning-exercise-type-inner-container">
+                          <ExerciseTypeGroupTitle exerciseTypeId={exerciseTypeObject.exerciseTypeId} />
+                          <View className="learning-exercise-type-inner-body">
+                            {exerciseTypeObject.paths.map((path: any) => {
+                              const isDone = path.status === LEANRING_STATUS.DONE;
+                              const isInProgress = path.status === LEANRING_STATUS.IN_PROGRESS;
+                              return (
+                                <View className="learning-lesson" key={path.learningPathId}
+                                  ref={path.learningPathId === latestLesson ? latestLessonRef : null}
+                                  onLayout={path.learningPathId === latestLesson ? (event) => {
+                                    const layout = event.nativeEvent.layout;
+                                    setTargetY(layout.y);
+                                  } : () => { }}
+                                >
+                                  <Link className="learning-lesson-link" href={exerciseTypeObject.exerciseTypeId === 0 ? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}><Text style={ isDone ? styles.dimmedText : styles.layersText}>{path.name}</Text></Link>
+                                  {isDone && (
+                                    <Check className="color-brand-primary" />
+                                  )}
+                                  {isInProgress && (
+                                    <CircleDotDashed className="color-brand-dashed" />
+                                  )}
+                                  {path.practiseMistakesInThisPath && (
+                                    <History className="color-brand-primary" />
+                                  )}
+                                  <View className="content-line-part"><Text style={styles.dimmedText}>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
+                                </View>
+                              );
+                            })}
+                            <View className="learning-level-creator">
+                              <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`}><LayersPlus className="color-brand-layers" /></Link>
                             </View>
                           </View>
                         </View>
-                      </Fragment>
-                    );
-                  })}
+                      </View>
+                    </Fragment>
+                  );
+                })}
 
 
-                </View>
-              );
-            })}
-          </ScrollView>
-        ) || (hasLanguage && (
+              </View>
+            );
+          })}
+        </ScrollView>
+      ) || (hasLanguage && (
+        <Text style={styles.text}>
+          It looks like there are not yet any lessons in this language.{"\n"}
+          But you can <Link href="/author/create">add ones yourself!</Link>
+        </Text>
+      )) || (
           <Text style={styles.text}>
-            It looks like there are not yet any lessons in this language.{"\n"}
-            But you can <Link href="/author/create">add ones yourself!</Link>
+            You have not selected which language to learn.{"\n"}
+            Go to <Link style={[styles.dimmedText, styles.underline]} href="/profile">the profile page</Link> to choose one!
           </Text>
-        )) || (
-            <Text style={styles.text}>
-              You have not selected which language to learn.{"\n"}
-              Go to <Link style={[styles.dimmedText, styles.underline]} href="/profile">the profile page</Link> to choose one!
-            </Text>
-          ))}
-      </View>
+        ))}
+    </View>
   );
 }

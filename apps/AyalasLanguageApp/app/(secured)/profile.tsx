@@ -171,9 +171,14 @@ export default function ProfileScreen() {
                 maximumValue={50}
                 step={1}
                 // Note: this library expects value to be an array or a number
-                value={numOfExercises} 
+                value={[numOfExercises]} 
                 // Note: onValueChange returns an array [number]
-                onValueChange={(value: number[]) => setNumOfExercises(Array.isArray(value) ? value[0] : value)}
+                onValueChange={(val: number[]) => {
+                        const nextVal = Array.isArray(val) ? val[0] : val;
+                        if (nextVal !== numOfExercises && !isNaN(nextVal)) {
+                          setNumOfExercises(nextVal)
+                        }
+                      }}
                 minimumTrackTintColor="#1EB1FC"
                 maximumTrackTintColor="#D3D3D3"
                 thumbTintColor="#1EB1FC"

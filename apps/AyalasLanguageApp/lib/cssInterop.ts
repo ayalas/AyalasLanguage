@@ -1,5 +1,5 @@
 import { cssInterop } from "nativewind";
-import { Save, Send, ArrowBigLeft, History, CircleDotDashed, X, CirclePlay, Eye, LayersPlus, LogInIcon, RotateCcw, UserIcon, SquareMenu, Check, SquarePen, Trash, UserPen, Workflow, Ban } from "lucide-react-native";
+import { Save, Send, ArrowBigLeft, History, CircleDotDashed, X, CirclePlay, Eye, LayersPlus, LogInIcon, RotateCcw, UserIcon, SquareMenu, Check, SquarePen, Trash, UserPen, Workflow, Ban, Trash2, ArchiveRestore, TicketPlus, FilePenLine, PenLine, PencilSparkles, Tally1, Tally4, Tally2, EyeOff } from "lucide-react-native";
 
 cssInterop(LayersPlus, {
   className: {
@@ -28,6 +28,15 @@ cssInterop(Eye, {
   },
 });
 
+cssInterop(EyeOff, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
 cssInterop(RotateCcw, {
   className: {
     target: "style",
@@ -36,6 +45,25 @@ cssInterop(RotateCcw, {
     },
   },
 });
+
+cssInterop(TicketPlus, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(FilePenLine, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
 
 cssInterop(CirclePlay, {
   className: {
@@ -145,6 +173,26 @@ cssInterop(Trash, {
   },
 });
 
+cssInterop(Trash2, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(ArchiveRestore, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+
+
 cssInterop(UserPen, {
   className: {
     target: "style",
@@ -172,13 +220,48 @@ cssInterop(Ban, {
   },
 });
 
+cssInterop(PenLine, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
 
+cssInterop(Tally2, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
 
+cssInterop(Tally4, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
 
+cssInterop(Tally1, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
 
-
-
-
-
-
+cssInterop(PencilSparkles, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
 

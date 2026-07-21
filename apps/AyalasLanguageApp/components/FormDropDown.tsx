@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleProp, ViewStyle } from 'react-native';
+import { View, Text, StyleProp, ViewStyle, DimensionValue } from 'react-native';
 import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
 import useTextStyles from '@/lib/useTextStyles';
 import { 
@@ -18,6 +18,7 @@ interface FormDropDownProps {
     onChangeValue?: (value: ValueType | null) => void;
     zIndex?: number;
     placeholder?: string;
+    maxWidth?: DimensionValue;
 }
 
 const FormDropDown = ({ 
@@ -26,7 +27,8 @@ const FormDropDown = ({
     items, 
     onChangeValue, 
     zIndex, 
-    placeholder 
+    placeholder,
+    maxWidth
 }: FormDropDownProps) => {
     const [open, setOpen] = useState(false);
     const { styles, isDark } = useTextStyles();
@@ -83,20 +85,25 @@ const FormDropDown = ({
             TickIconComponent={IconTick}
 
             // Styles
+            containerStyle={{
+                flex: 1, // This allows the dropdown to expand/shrink to fit the row
+                maxWidth: maxWidth ?? '100%'
+            }}
             style={{
                 borderWidth: 1,
                 borderStyle: 'solid',
                 borderColor: isDark ? BORDER_DARK : BORDER_LIGHT,
                 backgroundColor: 'transparent',
                 minHeight: 50,
+                width: '100%'
             }}
             textStyle={[styles.text, { paddingTop: 10 }]}
             dropDownContainerStyle={{
                 backgroundColor: isDark ? SURFACE_STRONG_DARK : SURFACE_STRONG_LIGHT,
-                borderColor: isDark ? BORDER_DARK : BORDER_LIGHT,
+                borderColor: isDark ? BORDER_DARK : BORDER_LIGHT
             }}
             listItemContainerStyle={{ 
-                backgroundColor: isDark ? SURFACE_STRONG_DARK : SURFACE_STRONG_LIGHT 
+                backgroundColor: isDark ? SURFACE_STRONG_DARK : SURFACE_STRONG_LIGHT
             }}
         />
     );

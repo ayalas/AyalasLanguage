@@ -1,4 +1,4 @@
-import { ACCENT_DARK, ACCENT_LIGHT, PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
+import { ACCENT_DARK, ACCENT_LIGHT, LAYERS_DARK, LAYERS_LIGHT, PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
 import { StyleSheet, useColorScheme } from 'react-native'
 
 export default function useTextStyles() {
@@ -60,7 +60,6 @@ export default function useTextStyles() {
             alignSelf: 'flex-start'
         },
         italicHeading: {
-            fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
             fontSize: 18,
             alignContent: 'center',
@@ -72,6 +71,15 @@ export default function useTextStyles() {
         dimmedText: {
             fontFamily: fontFamily,
             color: isDark ? DIMMED_DARK : DIMMED_LIGHT,
+            fontSize: 18,
+            alignContent: 'center',
+            textAlign: 'left',
+            flexDirection: 'row',
+            alignSelf: 'flex-start'
+        },
+        layersText: {
+            fontFamily: fontFamily,
+            color: isDark ? LAYERS_DARK :LAYERS_LIGHT,
             fontSize: 18,
             alignContent: 'center',
             textAlign: 'left',

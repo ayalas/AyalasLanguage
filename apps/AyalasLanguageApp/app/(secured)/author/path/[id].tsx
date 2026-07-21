@@ -1,8 +1,7 @@
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import api from '@/lib/api';
-import SecuredHeader, { LANGUAGE_INDICATOR_ENUM } from '@/components/SecuredHeader';
 import ExerciseLine from '@/components/creator/ExerciseLine';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -79,28 +78,26 @@ export default function LessonUpdateScreen() {
 
   return (
     <>
-      <SecuredHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE} />
       {updateFormError !== '' && (
         <View className="form-row">
           <Text style={styles.errorText}>{updateFormError}</Text>
         </View>
       )}
-      <View className="form-container">
-        <FormHeader title="Lesson editor" />
+      <View className="lesson-outer-container">
         {initialRecord != null && (
-          <>
-            <LessonAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <LessonAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} headerTitle="Lesson editor" />
             {existingExercises && existingExercises.length > 0 && (
-              <>
+              <View style={{ paddingTop: 10 }}>
                 <View className="inform-header">
                   <Text style={styles.h2}>Existing exercises</Text>
                 </View>
                 {existingExercises.map((existing) => (
                   <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
                 ))}
-              </>
+              </View>
             )}
-          </>
+          </ScrollView>
         )}
       </View>
     </>

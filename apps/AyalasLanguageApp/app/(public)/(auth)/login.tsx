@@ -1,7 +1,7 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import { Link, router, useLocalSearchParams, Href } from 'expo-router';
-import { LogInIcon } from 'lucide-react-native';
+import { Eye, EyeOff, LogInIcon } from 'lucide-react-native';
 import axios from 'axios';
 import { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { TWO_FACTOR_CODE_LENGTH, type LoginRequest, type LoginResponse, type Verify2FARequest } from '@ayalaslanguage/types/auth';
@@ -15,11 +15,16 @@ const LogInScreen = () => {
   const { from, user: userFromSearch } = useLocalSearchParams<{ from: string; user: string }>();
   const [email, setEmail] = useState(userFromSearch);
   const [password, setPassword] = useState('');
+  const [isPasswordSecure, setIsPasswordSecure] = useState(true);
   const [on2FA, setOn2FA] = useState(false);
   const [verify2FAToken, setVerify2FAToken] = useState('');
   const [code, setCode] = useState('');
   const { login } = useAuth();
   const { styles } = useTextStyles();
+
+  function togglePassword() {
+    setIsPasswordSecure(prev => !prev);
+  }
 
   function completeLogin(tmpUser: User, token: string) {
     try {
@@ -115,6 +120,13 @@ const LogInScreen = () => {
               <View className="form-row">
                 <View className="form-label-cell">
                   <Text style={styles.label}>Password</Text>
+                  <Pressable onPress={togglePassword}>
+                    {isPasswordSecure ? (
+                      <Eye className='color-brand-accent' />
+                    ) : (
+                      <EyeOff className='color-brand-accent' />
+                    )}
+                  </Pressable>
                 </View>
                 <View className="form-input-cell">
                   <TextInput
@@ -123,7 +135,7 @@ const LogInScreen = () => {
                     autoCorrect={false}
                     value={password}
                     onChangeText={setPassword}
-                    secureTextEntry={true}
+                    secureTextEntry={isPasswordSecure}
                     className="input form-input"
                   />
                 </View>

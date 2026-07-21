@@ -6,16 +6,16 @@ export function ExerciseTypeIcon({ exerciseTypeId }: { exerciseTypeId: 0 | Exerc
     return (
         <>
             {EXERCISE_TYPE_LOGIC[exerciseTypeId].IsWritingExercise && (
-                <PenLine />
+                <PenLine className="color-brand-primary" />
             ) ||
                 EXERCISE_TYPE_LOGIC[exerciseTypeId].IsMatchingType && (
-                    <Tally2 />
+                    <Tally2 className="color-brand-primary" />
                 ) || EXERCISE_TYPE_LOGIC[exerciseTypeId].HasMultiBucketAnswers && (
-                    <Tally4 />
+                    <Tally4 className="color-brand-primary" />
                 ) || EXERCISE_TYPE_LOGIC[exerciseTypeId].HasSingleBucketAnswer && (
-                    <Tally1 />
+                    <Tally1 className="color-brand-primary" />
                 ) || EXERCISE_TYPE_LOGIC[exerciseTypeId].UsesInlineExerciseWithBlanks && (
-                    <PencilSparkles />
+                    <PencilSparkles className="color-brand-primary" />
                 )}
         </>
     );

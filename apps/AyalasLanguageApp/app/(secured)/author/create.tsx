@@ -1,10 +1,9 @@
 import { useRouter } from 'expo-router';
-import SecuredHeader, { LANGUAGE_INDICATOR_ENUM } from '@/components/SecuredHeader';
 import LessonAuthoringForm from '@/components/creator/LessonAuthoringForm';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { FormHeader } from '@/components/FormHeader';
 import api from '@/lib/api';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 export default function LessonCreateScreen() {
   const router = useRouter();
@@ -32,12 +31,10 @@ export default function LessonCreateScreen() {
   };
 
   return (
-    <>
-      <SecuredHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE} />
-      <View className="form-container">
-        <FormHeader title="Generate Lesson" />
-        <LessonAuthoringForm handleSubmit={handleSubmit} />
+      <View className="lesson-outer-container">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <LessonAuthoringForm handleSubmit={handleSubmit} headerTitle="Generate Lesson" />
+        </ScrollView>
       </View>
-    </>
   );
 }

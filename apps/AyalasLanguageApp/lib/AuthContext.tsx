@@ -3,7 +3,8 @@ import type { ReactNode } from 'react';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import type { AuthContextType } from '@ayalaslanguage/types/auth';
 import api from './api'; // Use the custom axios instance
-import { getToken, saveToken, deleteToken } from './authStorage';
+import { getFromStorage, saveToStorage, removeFromStorage } from './platformStorage';
+import { STORAGE_TOKEN_KEY } from '@/constants';
 
 const AuthContext = createContext<AuthContextType<User> | undefined>(undefined);
 
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        const token = await getToken();
+        const token = await getFromStorage(STORAGE_TOKEN_KEY);
 
         if (token && user == null) {
           // Verify token by calling /me
@@ -27,7 +28,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
       } catch (error) {
         console.error("Session expired or invalid", error);
-        await deleteToken();
+        await removeFromStorage(STORAGE_TOKEN_KEY);
       } finally {
         setLoading(false);
       }
@@ -38,7 +39,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (userData: User | null, token?: string) => {
     if (token != null) {
-      await saveToken(token);
+      await saveToStorage(STORAGE_TOKEN_KEY, token);
     }
     if (userData != null) {
       setUser(userData);
@@ -46,7 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const logout = async () => {
-    await deleteToken();
+    await removeFromStorage(STORAGE_TOKEN_KEY);
     setUser(null);
   };
 

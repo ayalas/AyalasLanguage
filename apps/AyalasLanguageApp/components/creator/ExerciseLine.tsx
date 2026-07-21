@@ -30,20 +30,18 @@ export default function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedE
   return (
     <>
       {exists && (
-        <View className="form-row">
-          <View className="content-line-part">
-            {exerciseInfo.access === AUTHOR_ACCESS.CAN_EDIT && (
-              <View className="form-button-cell">
-                <TouchableOpacity testID="delete-item" className="form-button button-delete-item" onPress={onDeleteClick}>
-                  <Trash2 width="18" height="18" className="color-brand-primary" />
-                </TouchableOpacity>
-                <TouchableOpacity testID="edit-item" className="form-button button-edit-item" onPress={onEditClick}>
-                  <SquarePen width="18" height="18" className="color-brand-primary" />
-                </TouchableOpacity>
-              </View>
-            )}
-            <Text style={styles.text}>{exerciseInfo.exerciseObject?.First}</Text>
-          </View>
+        <View className="line-container">
+          {exerciseInfo.access === AUTHOR_ACCESS.CAN_EDIT && (
+            <>
+              <TouchableOpacity testID="delete-item" className="button-item" onPress={onDeleteClick}>
+                <Trash2 width="18" height="18" className="color-brand-primary" />
+              </TouchableOpacity>
+              <TouchableOpacity testID="edit-item" className="button-item" onPress={onEditClick}>
+                <SquarePen width="18" height="18" className="color-brand-primary" />
+              </TouchableOpacity>
+            </>
+          )}
+          <Text numberOfLines={1} style={[styles.text, { flexShrink: 1, marginLeft: 10 }]}>{exerciseInfo.exerciseObject?.First}</Text>
         </View>
       )}
       {error !== '' && (
