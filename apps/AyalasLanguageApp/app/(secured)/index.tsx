@@ -179,7 +179,7 @@ export default function HomeScreen() {
                                   {path.practiseMistakesInThisPath && (
                                     <History className="color-brand-primary" />
                                   )}
-                                  <View className="content-line-part"><Text style={styles.dimmedText}>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text></View>
+                                  <Text style={styles.dimmedText}>{path.exerciseCount > DEFAULT_NUM_OF_EXERCISES ? `[${path.exerciseCount}]` : ""}</Text>
                                 </View>
                               );
                             })}

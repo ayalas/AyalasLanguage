@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text, ScrollView, Pressable } from 'react-native'
 import { useEffect, useState, useRef } from 'react';
 import { useLocalSearchParams, Link, useRouter } from 'expo-router';
 import api from '@/lib/api';
@@ -243,7 +243,7 @@ export default function LessonScreen() {
             {!currentExercise && (
               <View className="form-row">
                 <View className="form-button-cell">
-                  <Link href={`/author/path/${learningPathId}`} className="link-button"><FilePenLine /></Link>
+                  <Pressable onPress={() => router.replace(`/author/path/${learningPathId}`)}><FilePenLine /></Pressable>
                 </View>
               </View>
             )}

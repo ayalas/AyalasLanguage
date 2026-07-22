@@ -89,9 +89,7 @@ export default function LessonUpdateScreen() {
             <LessonAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} headerTitle="Lesson editor" />
             {existingExercises && existingExercises.length > 0 && (
               <View style={{ paddingTop: 10 }}>
-                <View className="inform-header">
                   <Text style={styles.h2}>Existing exercises</Text>
-                </View>
                 {existingExercises.map((existing) => (
                   <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
                 ))}

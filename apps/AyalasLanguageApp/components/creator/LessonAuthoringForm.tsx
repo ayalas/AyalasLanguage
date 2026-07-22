@@ -439,7 +439,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                   <Text style={styles.label}>Subject</Text>
                   <View className="form-row">
                     <View className="form-input-row">
-                      <TextInput className="form-input form-input-long" testID="title" editable={access === AUTHOR_ACCESS.CAN_EDIT} value={title} onChangeText={setTitle} />
+                      <TextInput className="form-input w-full" testID="title" editable={access === AUTHOR_ACCESS.CAN_EDIT} value={title} onChangeText={setTitle} />
                     </View>
                     <Text style={styles.text}>AI will generate exercises on this subject.</Text>
                   </View>
