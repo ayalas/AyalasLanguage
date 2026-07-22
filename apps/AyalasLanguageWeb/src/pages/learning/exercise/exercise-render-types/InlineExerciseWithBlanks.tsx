@@ -29,11 +29,11 @@ export const InlineExerciseWithBlanks = function (props: Props) {
 
     const checkAnswerOrMoveToNextInput = function () {
         if (currentInputKey.current != "") {
-            const lastChar = Number(currentInputKey.current.at(-1));
+            const currentInputIndex = Number(currentInputKey.current.split('-').at(-1));
 
-            if (exerciseInfo.answers != null && exerciseInfo.answers.length - 1 > lastChar) {
+            if (exerciseInfo.answers != null && exerciseInfo.answers.length - 1 > currentInputIndex) {
                 //get the next input by the answer with no placeholders
-                const nextIndex = exerciseInfo.answers.findIndex((element, index) => index > lastChar && element != PLACEHOLDERS.BLANKS);
+                const nextIndex = exerciseInfo.answers.findIndex((element, index) => index > currentInputIndex && element != PLACEHOLDERS.BLANKS);
                 if (nextIndex > 0) {
                     const tryRef = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-${nextIndex}`);
                     if (tryRef != null) {

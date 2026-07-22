@@ -17,6 +17,8 @@ import useTextStyles from '@/lib/useTextStyles';
 export default function LessonScreen() {
   const { id: learningPathId } = useLocalSearchParams<{ id?: string }>();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+  const [isChildMounted, setIsChildMounted] = useState(false);
   const [exercises, setExercises] = useState<ExerciseInfo[]>([]);
   const [scoreToAdd, setScoreToAdd] = useState(0);
   const [learningPathData, setLearningPathData] = useState<LearningPathInfo | null>(null);
@@ -28,6 +30,7 @@ export default function LessonScreen() {
   const { styles } = useTextStyles();
 
   const changeCurrentExercise = function (arrExercises: ExerciseInfo[], index: number) {
+    setIsChildMounted(false);
     const curItem = arrExercises[index];
 
     // Defensive: ensure curItem and curItem.data are present
@@ -102,20 +105,10 @@ export default function LessonScreen() {
         index
       });
     }
-
-    if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].FocusOnLoad) {
-      const refItem = exerciseRefs.current.get(curItem.exerciseId);
-      refItem?.setFocus();
-    }
   };
 
   const childLoaded = function (exerciseId: number) {
-    if (exerciseId === currentExercise?.exerciseId) {
-      if (EXERCISE_TYPE_LOGIC[currentExercise.exerciseTypeId].FocusOnLoad) {
-        const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
-        refItem?.setFocus();
-      }
-    }
+    setIsChildMounted(true);
   };
 
   const addMistake = async function (exerciseId: number) {
@@ -200,6 +193,7 @@ export default function LessonScreen() {
   useEffect(() => {
     async function getData() {
       try {
+        setIsMounted(false);
         const response = await api.get<LearningPathInfo>(`/api/learning/path/${learningPathId}`);
         const learningPathTemp = response.data;
         setLearningPathData(learningPathTemp);
@@ -219,6 +213,8 @@ export default function LessonScreen() {
             }
           }
           changeCurrentExercise(exercisesTemp, exCurInd);
+
+          setIsMounted(true);
         }
       } catch (err: unknown) {
         errorHandler(err, setError);
@@ -227,6 +223,19 @@ export default function LessonScreen() {
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [learningPathId]);
+
+  //set focus when everything is mounted
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (currentExercise != null && isMounted && isChildMounted) {
+        if (EXERCISE_TYPE_LOGIC[currentExercise.exerciseTypeId].FocusOnLoad) {
+          const refItem = exerciseRefs.current.get(currentExercise.exerciseId);
+          refItem?.setFocus();
+        }
+      }
+    }, 300);
+    return () => clearTimeout(timeoutId); 
+  }, [isMounted, isChildMounted, currentExercise, currentExercise?.exerciseId])
 
   return (
     <View className="lesson-outer-container">

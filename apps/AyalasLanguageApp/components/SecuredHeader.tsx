@@ -106,7 +106,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
 
     return (
         <>
-            <View className="header-row">
+            <View className="header-row" style={{zIndex: 1000}}>
                 <View className="header-title">
                     <Link className="header-app-link" href="/"><Image className="logo" source={isDark ? imgLogoDark : imgLogo} /></Link>
                 </View>
@@ -137,7 +137,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                 </View>
             </View>
             {languageIndicator !== LANGUAGE_INDICATOR_ENUM.NONE && (
-                <View className="switch-container">
+                <View className="switch-container" style={{zIndex: 1000}}>
                     {(user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
                         <View className="header-input-cell">
                             {languageIndicator === LANGUAGE_INDICATOR_ENUM.SWITCH && (
@@ -175,6 +175,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                         onChangeLanguage(value?.toString() ?? '')
                                     }
                                     items={languageItems}
+                                    zIndex={2000}
                                 />
                             )}
                             {languageIndicator === LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE && (

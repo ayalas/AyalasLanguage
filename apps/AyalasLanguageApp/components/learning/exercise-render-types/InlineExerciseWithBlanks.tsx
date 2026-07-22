@@ -30,11 +30,11 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
 
     const checkAnswerOrMoveToNextInput = function () {
         if (currentInputKey.current !== "") {
-            const lastChar = Number(currentInputKey.current.at(-1));
-
-            if (exerciseInfo.answers != null && exerciseInfo.answers.length - 1 > lastChar) {
+            //get the last part of the current key, after the - sign, representing the index (i) of the current input
+            const currentInputIndex = Number(currentInputKey.current.split('-').at(-1));
+            if (exerciseInfo.answers != null && exerciseInfo.answers.length - 1 > currentInputIndex) {
                 //get the next input by the answer with no placeholders
-                const nextIndex = exerciseInfo.answers.findIndex((element, index) => index > lastChar && element != PLACEHOLDERS.BLANKS);
+                const nextIndex = exerciseInfo.answers.findIndex((element, index) => index > currentInputIndex && element !== PLACEHOLDERS.BLANKS);
                 if (nextIndex > 0) {
                     const tryRef = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-${nextIndex}`);
                     if (tryRef != null) {
@@ -56,7 +56,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
 
     useImperativeHandle(ref, () => ({
         setFocus() {
-            const firstInputIndex = exerciseInfo.answers?.findIndex(a => a != PLACEHOLDERS.BLANKS);
+            const firstInputIndex = exerciseInfo.answers?.findIndex(a => a !== PLACEHOLDERS.BLANKS);
             const firstInput = questionsRefMap.current.get(`${exerciseInfo.exerciseId}-${firstInputIndex}`);
             if (firstInput) {
                 firstInput.setFocus();
@@ -68,7 +68,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
             );
 
             const realAnswers = exerciseInfo.answers?.filter((s) => s != PLACEHOLDERS.BLANKS);
-            if (realAnswers == undefined) {
+            if (realAnswers === undefined) {
                 return false;
             }
             if (thisQuestionRefs.size < realAnswers.length) {
@@ -147,6 +147,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
                                             checkAnswer={checkAnswerOrMoveToNextInput}
                                             customKey={`${exerciseInfo.exerciseId}-${i}`}
                                             onChange={onChangeFromInput}
+                                            onFocus={(key) => { if(key) currentInputKey.current = key; }}
                                         />
                                     ) || (
                                             <>

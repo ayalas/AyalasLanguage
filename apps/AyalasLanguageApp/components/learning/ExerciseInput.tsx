@@ -17,10 +17,12 @@ interface Props {
   value?: string;
   onChange?: (value: string, customKey?: string) => void;
   customKey?: string;
+  onFocus?: (customKey?:string) => void;
   ref?: React.Ref<ExerciseInputHandle | null>;
 }
 
-export default function ExerciseInput ({ charWidth = 20, checkAnswer, value, onChange = () => { }, customKey, ref }: Props) {
+export default function ExerciseInput ({ charWidth = 20, checkAnswer, value, 
+    onChange = () => { }, customKey, onFocus, ref }: Props) {
   const [internalData, setInternalData] = useState<string>('');
   const [errorState, setErrorState] = useState<boolean>(false);
   const inputRef = useRef<TextInput | null>(null);
@@ -81,6 +83,8 @@ export default function ExerciseInput ({ charWidth = 20, checkAnswer, value, onC
       value={internalData}
       onChangeText={onInputChange}
       onKeyPress={handleKeyDown}
+      onSubmitEditing={checkAnswer}
+      onFocus={() => onFocus?.(customKey)}
       className="input-text-placeholder"
       style={{
         width: charWidth * 10,

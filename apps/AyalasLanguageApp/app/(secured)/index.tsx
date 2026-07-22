@@ -1,5 +1,5 @@
 import { useEffect, useState, Fragment, useRef } from "react";
-import { findNodeHandle, ScrollView, Text, View, Platform, ActivityIndicator } from "react-native";
+import { ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { Link } from 'expo-router';
 
 import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react-native';
@@ -117,7 +117,7 @@ export default function HomeScreen() {
   useEffect(() => {
     if (!isLoading && targetY !== null && scrollViewRef.current) {
       scrollViewRef.current.scrollTo({
-        y: targetY - 100, // Adjust offset as needed
+        y: targetY,
         animated: true,
       });
     }
@@ -139,7 +139,7 @@ export default function HomeScreen() {
           </Text>
         </>
       ) || ((learningPath && learningPath.length > 0) && (
-        <ScrollView className="learning-container" showsVerticalScrollIndicator={false} ref={scrollViewRef}>
+        <ScrollView className="learning-container" style={{zIndex: 1}} showsVerticalScrollIndicator={false} ref={scrollViewRef}>
           {learningPath.map((level) => {
             return (
               <View className="learning-level-container" key={`level-${level.level}`}>
@@ -165,11 +165,19 @@ export default function HomeScreen() {
                                 <View className="learning-lesson" key={path.learningPathId}
                                   ref={path.learningPathId === latestLesson ? latestLessonRef : null}
                                   onLayout={path.learningPathId === latestLesson ? (event) => {
-                                    const layout = event.nativeEvent.layout;
-                                    setTargetY(layout.y);
-                                  } : () => { }}
+                                    // We measure the position relative to the ScrollView
+                                    if (latestLessonRef.current && scrollViewRef.current) {
+                                      latestLessonRef.current.measureLayout(
+                                        scrollViewRef.current as any, // The ancestor
+                                        (_x, y) => {
+                                          setTargetY(y); // This 'y' is now relative to the ScrollView top
+                                        },
+                                        () => console.log('MeasureLayout failed')
+                                      );
+                                    }
+                                  } : undefined}
                                 >
-                                  <Link className="learning-lesson-link" href={exerciseTypeObject.exerciseTypeId === 0 ? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}><Text style={ isDone ? styles.dimmedText : styles.layersText}>{path.name}</Text></Link>
+                                  <Link className="learning-lesson-link" href={exerciseTypeObject.exerciseTypeId === 0 ? `/author/path/${path.learningPathId}` : `/path/${path.learningPathId}`}><Text style={isDone ? styles.dimmedText : styles.layersText}>{path.name}</Text></Link>
                                   {isDone && (
                                     <Check className="color-brand-primary" />
                                   )}

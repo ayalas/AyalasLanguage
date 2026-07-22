@@ -38,7 +38,7 @@ export type ExcerciseTypeLogic = {
 
 const BASE_LOGIC: Omit<ExcerciseTypeLogic, 'GenerationInfo'> = {
     Type: 0,
-    Name: '',
+    Name: 'Empty',
     SortByEaseRank: 0,
     SupportsAlternativeAnswers: false,
     ShowsCheckAnswers: false,

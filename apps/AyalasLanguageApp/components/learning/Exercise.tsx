@@ -166,8 +166,8 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
     }));
 
     useEffect(() => {
-        childLoaded(exerciseInfo.exerciseId);
         async function runAsync() {
+            childLoaded(exerciseInfo.exerciseId);
             if (!user?.disablePuter) {
                 if (isSecure() && !puter.auth.isSignedIn()) {
                     setError("The app is attempting to use the Puter library to facilitate sounds and automatic AI exercise generation. If that does not work out for you, you can disable Puter in the Profile settings page.");

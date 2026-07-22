@@ -401,7 +401,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   }, [exerciseType, title]);
 
   return (
-    <View className="form-container">
+    <View className="lesson-inner-container">
       <FormHeader title={headerTitle} />
       {user?.role !== ROLE_TYPE.ADMIN && user?.role !== ROLE_TYPE.CONTENT_CREATOR && (
         <View className="form-row">
