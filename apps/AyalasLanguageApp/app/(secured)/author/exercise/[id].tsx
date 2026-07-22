@@ -164,6 +164,7 @@ export default function ExerciseScreen() {
             <>
               <Text style={styles.label}>Alternatives</Text>
               <FlatList
+                keyExtractor={(item) => item}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
                 data={initialRecord.exerciseObject.Alternatives}
@@ -176,7 +177,7 @@ export default function ExerciseScreen() {
                     }
                   };
                   return (
-                    <AlternativeLine ref={setRef} key={item} alternative={item} />
+                    <AlternativeLine ref={setRef} alternative={item} />
                   );
                 }}
               />
