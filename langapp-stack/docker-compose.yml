@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:8.0
+    container_name: langapp_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: langapp
+      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_USER: langapp
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+    ports:
+      - "127.0.0.1:3306:3306"  # Loopback only: isolates your DB from public internet scanning
+    volumes:
+      - ./db_data:/var/lib/mysql
+      - ./mysql-limits.cnf:/etc/mysql/conf.d/limits.cnf:ro
+
+  api_app:
+    image: langapp-language-api:latest
+    container_name: langapp_backend
+    restart: always
+    ports:
+      - "127.0.0.1:5000:5000"  # Intercepted securely by Caddy reverse-proxy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - EmailConfirmation__ClientAddress=https://langapp.xyz
+      # Injected runtime string pointing securely to your companion container
+      - ConnectionStrings__DefaultConnection=Server=localhost;Port=3306;Database=langapp;Uid=langapp;Pwd=MYSQL_PASSWORD;
+    depends_on:
+      - database
