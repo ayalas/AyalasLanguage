@@ -18,6 +18,7 @@ RUN pnpm turbo build
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS backend-publish
 WORKDIR /src
 COPY apps/AyalasLanguageAPI/ ./apps/AyalasLanguageAPI/
+COPY dotnet-libs/ ./dotnet-libs/
 WORKDIR /src/apps/AyalasLanguageAPI
 RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false

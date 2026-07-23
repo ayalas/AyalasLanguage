@@ -25,7 +25,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - EmailConfirmation__ClientAddress=https://langapp.xyz
-      # Injected runtime string pointing securely to your companion container
+      - EmailSettings__APIKey=RESEND_API_KEY
       - ConnectionStrings__DefaultConnection=Server=localhost;Port=3306;Database=langapp;Uid=langapp;Pwd=MYSQL_PASSWORD;
     depends_on:
       - database
