@@ -3,13 +3,17 @@
 # ==========================================
 FROM node:22-alpine AS frontend-env
 WORKDIR /src
+
 RUN npm install -g pnpm turbo
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/AyalasLanguageWeb/package.json ./apps/AyalasLanguageWeb/
 COPY apps/AyalasLanguageWebAdmin/package.json ./apps/AyalasLanguageWebAdmin/
+
+ENV CI=true
+
 RUN pnpm install --frozen-lockfile
 COPY . .
-RUN turbo test
+RUN pnpm turbo test
 RUN pnpm turbo build
 
 # ==========================================
