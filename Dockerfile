@@ -1,8 +1,8 @@
 # ==========================================
 # STAGE 1: Full Monorepo Build & Test Environment
 # ==========================================
-# We start with the .NET 9 SDK image so the dotnet CLI is natively available
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
+# FIX: Switched to the Alpine tag so apk commands are native
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
 WORKDIR /src
 
 ENV NODE_OPTIONS="--max-old-space-size=1024"
@@ -24,7 +24,7 @@ COPY apps/AyalasLanguageAPI/*.csproj ./apps/AyalasLanguageAPI/
 # Run safe installation with single-thread fallback to protect RAM
 RUN pnpm install --frozen-lockfile --child-concurrency=1
 
-# Copy the remaining project source code
+# Copy the remaining project source code (This copies everything in one clean step)
 COPY . .
 
 # 1. Execute Turbo Test (Now both Node and Dotnet are present to handle all projects)
