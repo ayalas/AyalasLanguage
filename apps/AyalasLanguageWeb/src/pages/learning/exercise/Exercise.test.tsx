@@ -39,6 +39,7 @@ vi.mock('@heyputer/puter.js', () => ({
 
 vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
     getRandomizedSequence: vi.fn((len) => Array.from({ length: len }, (_, i) => i)),
+    replaceCharsForLanguage: vi.fn((_lang, val) => val)
 }));
 
 vi.mock('../../../utils/utils', () => ({
