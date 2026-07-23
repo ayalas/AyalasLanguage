@@ -21,7 +21,7 @@ $localTarPath  = Join-Path $env:TEMP $tarName
 Write-Host "Compressing local Monorepo workspace into Temp folder..." -ForegroundColor Cyan
 
 # Tar compression (excludes heavy local caches and artifacts)
-tar --exclude="node_modules" --exclude=".turbo" --exclude="bin" --exclude="obj" --exclude=".sln" --exclude=".ps1" --exclude=".bat" --exclude=".git" --exclude="langapp-stack" --exclude="extras" --exclude="dist" --exclude="admin" -czf $localTarPath .
+tar --exclude="node_modules" --exclude=".turbo" --exclude="bin" --exclude="obj" --exclude=".sln" --exclude=".ps1" --exclude=".bat" --exclude=".git" --exclude="ayalaslanguageapp" --exclude="langapp-stack" --exclude="extras" --exclude="dist" --exclude="admin" -czf $localTarPath .
 
 # =========================================================================
 # STEP 2: SYNCHRONIZE FILES OVER IPV6
