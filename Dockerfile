@@ -1,51 +1,34 @@
 # ==========================================
-# STAGE 1: Full Monorepo Build & Test Environment
+# STAGE 1: Build the Frontend (Local Context)
 # ==========================================
-# FIX: Switched to the Alpine tag so apk commands are native
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
+FROM node:22-alpine AS frontend-env
 WORKDIR /src
-
-ENV NODE_OPTIONS="--max-old-space-size=1024"
-ENV TURBO_TELEMETRY_DISABLED=1
-ENV CI=true
-
-# Install Node.js, npm, and build prerequisites directly into the Alpine image
-RUN apk add --no-cache nodejs npm
-
-# Install pnpm and turbo globally
 RUN npm install -g pnpm turbo
-
-# Copy workspace dependency trees to optimize layer caching
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/AyalasLanguageWeb/package.json ./apps/AyalasLanguageWeb/
 COPY apps/AyalasLanguageWebAdmin/package.json ./apps/AyalasLanguageWebAdmin/
-COPY apps/AyalasLanguageAPI/*.csproj ./apps/AyalasLanguageAPI/
-
-# Run safe installation with single-thread fallback to protect RAM
-RUN pnpm install --frozen-lockfile --child-concurrency=1
-
-# Copy the remaining project source code (This copies everything in one clean step)
+RUN pnpm install --frozen-lockfile
 COPY . .
+RUN turbo test
+RUN pnpm turbo build
 
-# 1. Execute Turbo Test (Now both Node and Dotnet are present to handle all projects)
-RUN turbo test --concurrency=1
-
-# 2. Execute Turbo Build to compile everything (React frontends + .NET API)
-RUN pnpm turbo build --concurrency=1
-
-# 3. Publish the .NET Backend directly using the built-in assets
+# ==========================================
+# STAGE 2: Build and Publish .NET 9 Backend
+# ==========================================
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS backend-publish
+WORKDIR /src
+COPY apps/AyalasLanguageAPI/ ./apps/AyalasLanguageAPI/
 WORKDIR /src/apps/AyalasLanguageAPI
+RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 # ==========================================
-# STAGE 2: Final Production Image Assembly
+# STAGE 3: Final Production Image Assembly
 # ==========================================
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 WORKDIR /app
-
 ARG BUILD_ENV
 ARG CLIENT_CONFIRM_URL
-
 ENV ASPNETCORE_ENVIRONMENT=$BUILD_ENV
 ENV EmailConfirmation:ClientAddress=$CLIENT_CONFIRM_URL
 ENV ASPNETCORE_URLS=http://+:5000
@@ -54,14 +37,9 @@ USER root
 RUN mkdir -p /app/data && chown -R $APP_UID:$APP_UID /app/data
 USER $APP_UID
 
-# 1. Pull the compiled .NET binaries
-COPY --from=build-env /app/publish .
-
-# 2. Map the User Web Front-End Static assets into the server delivery footprint
-COPY --from=build-env /src/apps/AyalasLanguageWeb/dist ./dist
-
-# 3. Map the Admin Portal Web static assets into the server delivery footprint
-COPY --from=build-env /src/apps/AyalasLanguageWebAdmin/admin ./admin
+COPY --from=backend-publish /app/publish .
+COPY --from=frontend-env /src/apps/AyalasLanguageWeb/dist ./dist
+COPY --from=frontend-env /src/apps/AyalasLanguageWebAdmin/admin ./admin
 
 EXPOSE 5000
 ENTRYPOINT [ "dotnet", "AyalasLanguageAPI.dll" ]
