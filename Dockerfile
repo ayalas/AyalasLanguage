@@ -1,13 +1,16 @@
 # ==========================================
-# STAGE 1: Monorepo Frontend & Test Runner
+# STAGE 1: Full Monorepo Build & Test Environment
 # ==========================================
-FROM node:22-alpine AS frontend-env
+# We start with the .NET 9 SDK image so the dotnet CLI is natively available
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /src
 
-# Set strict global low-memory resource tracking configurations
 ENV NODE_OPTIONS="--max-old-space-size=1024"
 ENV TURBO_TELEMETRY_DISABLED=1
 ENV CI=true
+
+# Install Node.js, npm, and build prerequisites directly into the Alpine image
+RUN apk add --no-cache nodejs npm
 
 # Install pnpm and turbo globally
 RUN npm install -g pnpm turbo
@@ -24,27 +27,18 @@ RUN pnpm install --frozen-lockfile --child-concurrency=1
 # Copy the remaining project source code
 COPY . .
 
-# CRITICAL RAM PROTECTION: Restrict Turbo to exactly 1 concurrent worker thread.
-# This prevents Node threads from fighting over the 2GB server limit.
+# 1. Execute Turbo Test (Now both Node and Dotnet are present to handle all projects)
 RUN turbo test --concurrency=1
 
-# Compile production apps with strict single-thread constraints
+# 2. Execute Turbo Build to compile everything (React frontends + .NET API)
 RUN pnpm turbo build --concurrency=1
 
-# ==========================================
-# STAGE 2: Build and Publish .NET 9 Backend
-# ==========================================
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS backend-publish
-WORKDIR /src
-
-COPY apps/AyalasLanguageAPI/ ./apps/AyalasLanguageAPI/
+# 3. Publish the .NET Backend directly using the built-in assets
 WORKDIR /src/apps/AyalasLanguageAPI
-
-RUN dotnet restore
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 # ==========================================
-# STAGE 3: Final Production Image Assembly
+# STAGE 2: Final Production Image Assembly
 # ==========================================
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine AS final
 WORKDIR /app
@@ -60,9 +54,14 @@ USER root
 RUN mkdir -p /app/data && chown -R $APP_UID:$APP_UID /app/data
 USER $APP_UID
 
-COPY --from=backend-publish /app/publish .
-COPY --from=frontend-env /src/apps/AyalasLanguageWeb/dist ./dist
-COPY --from=frontend-env /src/apps/AyalasLanguageWebAdmin/admin ./admin
+# 1. Pull the compiled .NET binaries
+COPY --from=build-env /app/publish .
+
+# 2. Map the User Web Front-End Static assets into the server delivery footprint
+COPY --from=build-env /src/apps/AyalasLanguageWeb/dist ./dist
+
+# 3. Map the Admin Portal Web static assets into the server delivery footprint
+COPY --from=build-env /src/apps/AyalasLanguageWebAdmin/admin ./admin
 
 EXPOSE 5000
 ENTRYPOINT [ "dotnet", "AyalasLanguageAPI.dll" ]
