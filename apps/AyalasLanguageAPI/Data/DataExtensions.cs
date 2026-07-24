@@ -66,16 +66,7 @@ public static class DataExtensions
         if (isRDS || connectionString.Contains("Server=", StringComparison.OrdinalIgnoreCase))
         {
             ServerVersion serverVersion;
-            if (builder.Environment.IsDevelopment())
-            {
-                // Hardcode your production target version for ef migrations
-                serverVersion = new MySqlServerVersion(new Version(8, 4, 8));
-            }
-            else
-            {
-                // On production / AWS, use AutoDetect safely
-                serverVersion = ServerVersion.AutoDetect(connectionString);
-            }
+            serverVersion = new MySqlServerVersion(new Version(8, 4, 8));
 
             //use predefined my sql connection
             builder.Services.AddDbContext<AyalasLanguageDbContext>(options =>
