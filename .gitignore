@@ -13,6 +13,6 @@ cert/
 apps/ayalaslanguagewebadmin/admin/
 apps/ayalaslanguageweb/dist/
 node_modules/
-local_db_data/
+db_data/
 .env
 .env.local
