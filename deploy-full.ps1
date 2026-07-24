@@ -33,6 +33,8 @@ docker save -o $localTarPath ${imageName}:latest
 # =========================================================================
 Write-Host "Uploading pre-built image to Webdock server over IPv6..." -ForegroundColor Cyan
 scp -i $sshKeyPath $localTarPath admin@${serverIP}:${targetDir}/${imageName}.tar
+scp -i $sshKeyPath ./docker-compose.yml admin@${serverIP}:${targetDir}/docker-compose.yml
+scp -i $sshKeyPath ./mysql-limits.cnf admin@${serverIP}:${targetDir}/mysql-limits.cnf
 
 # Clean up local temp tar file
 Remove-Item $localTarPath -Force
