@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   database:
     image: mysql:9.0
@@ -15,6 +13,12 @@ services:
     volumes:
       - ./db_data:/var/lib/mysql
       - ./mysql-limits.cnf:/etc/mysql/conf.d/limits.cnf:ro
+    # CRITICAL ADDITION: Forces Docker to periodically verify MySQL is actively running
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${DB_USER}", "-p${DB_USER_PWD}"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
 
   api_app:
     image: langapp-language-api:latest
@@ -29,4 +33,5 @@ services:
       - ConnectionStrings__DefaultConnection=Server=database;Port=3306;Database=${DB_NAME};Uid=${DB_USER};Pwd=${DB_USER_PWD};
       - AllowedHosts=${ALLOWED_HOSTS}
     depends_on:
-      - database
+      database:
+        condition: service_healthy # Instructs your API container to wait until the healthcheck returns green
