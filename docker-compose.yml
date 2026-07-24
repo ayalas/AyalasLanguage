@@ -12,22 +12,23 @@ services:
       - "127.0.0.1:3306:3306"
     volumes:
       - ./db_data:/var/lib/mysql
-      - ./mysql-limits.cnf:/etc/mysql/conf.d/limits.cnf:ro
     command: --innodb_buffer_pool_size=256M --innodb_log_buffer_size=8M --max_connections=40 --key_buffer_size=16M
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 2s
       retries: 5
+      start_period: 60s
 
   api_app:
     image: langapp-language-api:latest
     container_name: langapp_backend_instance
     restart: always
     ports:
-      - "8080:5000"
+      - "${HOST_BIND_IP}:8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=${STACK_ENV}
+      - ASPNETCORE_HTTP_PORTS=8080
       - EmailConfirmation__ClientAddress=${CLIENT_ADDRESS}
       - EmailSettings__APIKey=${EMAIL_API_KEY}
       - ConnectionStrings__DefaultConnection=Server=database;Port=3306;Database=${DB_NAME};Uid=${DB_USER};Pwd=${DB_USER_PWD};
