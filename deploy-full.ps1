@@ -34,7 +34,6 @@ docker save -o $localTarPath ${imageName}:latest
 Write-Host "Uploading pre-built image, blueprints, and production secrets to Webdock..." -ForegroundColor Cyan
 scp -i $sshKeyPath $localTarPath admin@${serverIP}:${targetDir}/${imageName}.tar
 scp -i $sshKeyPath ./docker-compose.yml admin@${serverIP}:${targetDir}/docker-compose.yml
-scp -i $sshKeyPath ./mysql-limits.cnf admin@${serverIP}:${targetDir}/mysql-limits.cnf
 
 # CRITICAL UPLOAD: Sends your production environment file directly onto the host
 scp -i $sshKeyPath ./.env admin@${serverIP}:${targetDir}/.env
@@ -50,7 +49,6 @@ Write-Host "Loading image into Webdock Docker engine and refreshing production s
 # The path logic tweak updates the host storage mapping path inside your docker-compose file on the server
 $remoteCommands = "cd $targetDir && " +
                   "sed -i 's|\./db_data|/langapp-stack/db_data|g' docker-compose.yml && " +
-                  "sed -i 's|\./mysql-limits.cnf|/langapp-stack/mysql-limits.cnf|g' docker-compose.yml && " +
                   "docker load -i ${imageName}.tar && " +
                   "rm ${imageName}.tar && " +
                   "docker compose up -d"
