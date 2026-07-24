@@ -3,29 +3,29 @@ version: '3.8'
 services:
   database:
     image: mysql:8.0
-    container_name: langapp_mysql
+    container_name: langapp_mysql_instance
     restart: always
     environment:
-      MYSQL_DATABASE: langapp
-      MYSQL_ROOT_PASSWORD: ROOT_SQL_PASS
-      MYSQL_USER: langapp
-      MYSQL_PASSWORD: SQL_PASS
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PWD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_USER_PWD}
     ports:
-      - "127.0.0.1:3306:3306"  # Loopback only: isolates your DB from public internet scanning
+      - "127.0.0.1:3306:3306"
     volumes:
       - ./db_data:/var/lib/mysql
       - ./mysql-limits.cnf:/etc/mysql/conf.d/limits.cnf:ro
 
   api_app:
     image: langapp-language-api:latest
-    container_name: langapp_backend
+    container_name: langapp_backend_instance
     restart: always
     ports:
-      - "127.0.0.1:5000:5000"  # Intercepted securely by Caddy reverse-proxy
+      - "8080:5000"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - EmailConfirmation__ClientAddress=https://langapp.xyz
-      - EmailSettings__APIKey=EMAIL_API_KEY
-      - ConnectionStrings__DefaultConnection=Server=database;Port=3306;Database=langapp;Uid=langapp;Pwd=SQL_PASS;
+      - ASPNETCORE_ENVIRONMENT=${STACK_ENV}
+      - EmailConfirmation__ClientAddress=${CLIENT_ADDRESS}
+      - EmailSettings__APIKey=${EMAIL_API_KEY}
+      - ConnectionStrings__DefaultConnection=Server=database;Port=3306;Database=${DB_NAME};Uid=${DB_USER};Pwd=${DB_USER_PWD};
     depends_on:
       - database

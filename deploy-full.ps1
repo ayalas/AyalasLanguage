@@ -36,6 +36,9 @@ scp -i $sshKeyPath $localTarPath admin@${serverIP}:${targetDir}/${imageName}.tar
 scp -i $sshKeyPath ./docker-compose.yml admin@${serverIP}:${targetDir}/docker-compose.yml
 scp -i $sshKeyPath ./mysql-limits.cnf admin@${serverIP}:${targetDir}/mysql-limits.cnf
 
+# CRITICAL UPLOAD: Sends your production environment file directly onto the host
+scp -i $sshKeyPath ./.env admin@${serverIP}:${targetDir}/.env
+
 # Clean up local temporary tar archive
 Remove-Item $localTarPath -Force
 
