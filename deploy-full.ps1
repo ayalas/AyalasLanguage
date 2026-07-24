@@ -35,8 +35,10 @@ Write-Host "Uploading pre-built image, blueprints, and production secrets to Web
 scp -i $sshKeyPath $localTarPath admin@${serverIP}:${targetDir}/${imageName}.tar
 scp -i $sshKeyPath ./docker-compose.yml admin@${serverIP}:${targetDir}/docker-compose.yml
 
-# CRITICAL UPLOAD: Sends your production environment file directly onto the host
-scp -i $sshKeyPath ./.env admin@${serverIP}:${targetDir}/.env
+# Upload production-specific Caddy routing maps and live certificates
+scp -i $sshKeyPath ./langapp-stack/.env admin@${serverIP}:${targetDir}/.env
+scp -i $sshKeyPath ./langapp-stack/Caddyfile admin@${serverIP}:${targetDir}/Caddyfile
+scp -i $sshKeyPath -r ./langapp-stack/certs admin@${serverIP}:${targetDir}/certs
 
 # Clean up local temporary tar archive file
 Remove-Item $localTarPath -Force

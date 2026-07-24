@@ -36,3 +36,18 @@ services:
     depends_on:
       database:
         condition: service_healthy # Instructs your API container to wait until the healthcheck returns green
+
+  local_proxy:
+    image: caddy:2-alpine
+    container_name: langapp_staging_proxy
+    restart: always
+    profiles:
+      - staging # 1. CRITICAL: Hides this container from default executions
+    ports:
+      - "${HOST_BIND_IP}:8080:8080"
+    volumes:
+      # Automatically maps runtime directories across both platforms via environment values
+      - ${PROXY_CONFIG_FILE}:/etc/caddy/Caddyfile
+      - ${PROXY_CERTS_DIR}:/certs
+    depends_on:
+      - api_app

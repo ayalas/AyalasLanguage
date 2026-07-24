@@ -8,7 +8,9 @@
 bin/
 obj/
 *.dll
-cert/
+certs/
+local_certs/
+langapp-stack/
 .turbo/
 apps/ayalaslanguagewebadmin/admin/
 apps/ayalaslanguageweb/dist/

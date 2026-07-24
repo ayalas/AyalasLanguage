@@ -19,9 +19,9 @@ In the profile page after registering and logging in choose to learn Danish or A
 To stage this app in the development environment:
 
 Create and authorize locally these files for https://localhost (https is required for Puter ai) with https://mkcert.org/. Generate a pfx file from them by https://www.openssl.org/ (see instructions below under Https support). Place the three files at:
-cert\localhost+2-key.pem
-cert\localhost+2.pem
-cert\langapp_local.pfx
+local_certs\localhost+2-key.pem
+local_certs\localhost+2.pem
+local_certs\langapp_local.pfx
 
 In the root folder, run:
 pnpm install
@@ -56,10 +56,10 @@ First, you must install the mkcert Local Certificate Authority (CA) into your sy
     *This "authorizes" mkcert by adding a root certificate to your machine so your browser and OS trust any certificates mkcert creates.*
 
 2.  **Generate the PEM files:**
-    Create the `cert` directory if it doesn't exist, then generate the certificates for `localhost`:
+    Create the `local_certs` directory if it doesn't exist, then generate the certificates for `localhost`:
     ```powershell
-    mkdir cert
-    mkcert -key-file cert\localhost+2-key.pem -cert-file cert\localhost+2.pem localhost 127.0.0.1 ::1
+    mkdir local_certs
+    mkcert -key-file local_certs\localhost+2-key.pem -cert-file local_certs\localhost+2.pem localhost 127.0.0.1 ::1
     ```
     *Note: The `+2` in the filenames refers to the two additional names (IPs) added to the certificate.*
 
@@ -70,7 +70,7 @@ First, you must install the mkcert Local Certificate Authority (CA) into your sy
 
 1.  **Run the export command:**
     ```powershell
-    openssl pkcs12 -export -out langapp_local.pfx -inkey cert\localhost+2-key.pem -in cert\localhost+2.pem
+    openssl pkcs12 -export -out langapp_local.pfx -inkey local_certs\localhost+2-key.pem -in local_certs\localhost+2.pem
     ```
 2.  **Set a Password:**
     OpenSSL will prompt you for an "Export Password." 

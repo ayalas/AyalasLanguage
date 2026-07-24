@@ -1,0 +1,4 @@
+https://localhost:8080 {
+    tls /certs/localhost+2.pem /certs/localhost+2-key.pem
+    reverse_proxy api_app:8080
+}
