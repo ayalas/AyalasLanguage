@@ -7,9 +7,9 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: langapp
-      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_ROOT_PASSWORD: ROOT_SQL_PASS
       MYSQL_USER: langapp
-      MYSQL_PASSWORD: MYSQL_PASSWORD
+      MYSQL_PASSWORD: SQL_PASS
     ports:
       - "127.0.0.1:3306:3306"  # Loopback only: isolates your DB from public internet scanning
     volumes:
@@ -25,7 +25,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - EmailConfirmation__ClientAddress=https://langapp.xyz
-      - EmailSettings__APIKey=RESEND_API_KEY
-      - ConnectionStrings__DefaultConnection=Server=localhost;Port=3306;Database=langapp;Uid=langapp;Pwd=MYSQL_PASSWORD;
+      - EmailSettings__APIKey=EMAIL_API_KEY
+      - ConnectionStrings__DefaultConnection=Server=database;Port=3306;Database=langapp;Uid=langapp;Pwd=SQL_PASS;
     depends_on:
       - database

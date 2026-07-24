@@ -13,6 +13,6 @@ cert/
 apps/ayalaslanguagewebadmin/admin/
 apps/ayalaslanguageweb/dist/
 node_modules/
-docker-compose.yml
 local_db_data/
-mysql-limits.cnf
+.env
+.env.local
