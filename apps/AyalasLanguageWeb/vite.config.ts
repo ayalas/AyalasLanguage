@@ -28,8 +28,8 @@ export default defineConfig({
     host: '0.0.0.0',
     https: {
       // Read the certificate and key files from your directory
-      key: fs.readFileSync(path.resolve(__dirname, '../../cert/localhost+2-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, '../../cert/localhost+2.pem')),
+      key: fs.readFileSync(path.resolve(__dirname, '../../local_certs/localhost+2-key.pem')),
+      cert: fs.readFileSync(path.resolve(__dirname, '../../local_certs/localhost+2.pem')),
     },
     proxy: {
       '/api/': {

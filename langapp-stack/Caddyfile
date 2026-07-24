@@ -1,9 +1,7 @@
-langapp.xyz, ://langapp.xyz {
-    tls /certs/public.pem /certs/private.pem
-    reverse_proxy api_app:8080
-}
-
-://langapp.xyz {
-    tls /certs/public.pem /certs/private.pem
-    reverse_proxy api_app:8080
+langapp.xyz, www.langapp.xyz {
+    # Points to the absolute host directory where your script uploads the keys
+    tls /langapp-stack/certs/langapp.xyz+2.pem /langapp-stack/certs/langapp.xyz+2-key.pem
+    
+    # Routes your web frontend straight to your backend container port mapping
+    reverse_proxy 127.0.0.1:8080
 }

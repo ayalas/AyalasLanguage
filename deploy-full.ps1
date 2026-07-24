@@ -37,8 +37,12 @@ scp -i $sshKeyPath ./docker-compose.yml admin@${serverIP}:${targetDir}/docker-co
 
 # Upload production-specific Caddy routing maps and live certificates
 scp -i $sshKeyPath ./langapp-stack/.env admin@${serverIP}:${targetDir}/.env
+# notice Caddyfile should be copied manually to /etc/caddy/Caddyfile when needs changing
 scp -i $sshKeyPath ./langapp-stack/Caddyfile admin@${serverIP}:${targetDir}/Caddyfile
-scp -i $sshKeyPath -r ./langapp-stack/certs admin@${serverIP}:${targetDir}/certs
+scp -i $sshKeyPath -r ./langapp-stack/certs admin@${serverIP}:${targetDir}
+
+# first time migration - commented in subsequent runs
+# scp -i $sshKeyPath ./langapp-stack/migration_dump.sql admin@${serverIP}:${targetDir}/migration_dump.sql
 
 # Clean up local temporary tar archive file
 Remove-Item $localTarPath -Force
