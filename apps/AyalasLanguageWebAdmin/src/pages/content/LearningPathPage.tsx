@@ -31,7 +31,7 @@ export function LearningPathPage() {
         <>
             <AuthHeader />
             <div className="form-header">
-                <h1>Lesson {record?.level}-{record?.chapter}: {record?.name}</h1>
+                <h1 data-testid='lesson-header'>Lesson {record?.level}-{record?.chapter}: {record?.name}</h1>
             </div>
             {error !== '' && (
                 <div className="form-row">

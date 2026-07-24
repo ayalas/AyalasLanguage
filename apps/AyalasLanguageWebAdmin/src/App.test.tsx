@@ -246,7 +246,9 @@ describe('Admin Console Tests', () => {
         </AuthProvider>
       );
 
-      expect(await screen.findByRole('heading', { name: /Lesson 1-1: Verbs/i })).toBeInTheDocument();
+      const lessonHeader = await screen.findByTestId('lesson-header');
+      expect(lessonHeader).toBeInTheDocument();
+      expect(lessonHeader).toHaveTextContent(/Lesson 1-1: Verbs/i);
     });
   });
 });
