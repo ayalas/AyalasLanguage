@@ -9,8 +9,8 @@ AyalasLanguageAPI - Backend is implemented with ASP.Net Core Minimal APIs, Entit
 AyalasLanguageWEB - Frontend implemented with React, Vite and TypeScript
 AyalasLanguageWebAdmin - Admin Frontend implemented with React, Vite and TypeScript
 
-## AWS Demo Site (Production)
-Served by AWS Beanstalk with an external MySQL instance in this address:
+## Demo Site (Production)
+Served using Docker with an internal MySQL container in this address:
 https://langapp.xyz/
 
 In the profile page after registering and logging in choose to learn Danish or Arabic.
@@ -106,20 +106,10 @@ dotnet dev-certs https --check
 ```
 If successful, you will see: `A valid HTTPS certificate is already present.` Your .NET applications (ASP.NET Core) will now automatically use `langapp_local.pfx` for HTTPS on `localhost`.
 
-## Docker commands (Staging)
-To build and stage this app using Docker, from the root folder of the solution, run the docker file to build the image (note about env: a non-Development environment means the static files are served from the backend. Also, the path to sqlite changes and maps to the volume setup here):
+## Publish to the new environment using local Docker image building
+run deploy-full.ps1
 
-docker build --build-arg BUILD_ENV=Staging -t ayalas-language-app -f AyalasLanguageAPI/Dockerfile .
-
-then, to start the container with an external volume for the db, run:
-
-docker run -d -p [::1]:8080:8080 -e ASPNETCORE_HTTP_PORTS=8080 --name ayalas-language-app -v ayalas-language-db:/app/data ayalas-language-app:latest
-
-Then, browse to http://localhost:8080
-
-UPDATE: the docker script is out of sync at the moment.
-
-## Publish to an AWS Beanstalk environment, MySQL database enabled, with a powershell script
+## Publish to (the old) AWS Beanstalk environment, MySQL database enabled, with a powershell script
 
 run build.bat from windows explorer, or run the following powershell script in the terminal, from the solution root:
 powershell -NoProfile -ExecutionPolicy Bypass -File ".\build.ps1"

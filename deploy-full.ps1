@@ -48,6 +48,12 @@ $remoteCommands = "cd $targetDir && " +
                   "docker compose up -d"
 
 ssh -i $sshKeyPath admin@$serverIP $remoteCommands
+$exitCode = $LASTEXITCODE
+
+if ($exitCode -ne 0) {
+    Write-Error "Loading image into Webdock Docker engine failed!"
+    exit $exitCode
+}
 
 Write-Host "=========================================================" -ForegroundColor Green
 Write-Host "SUCCESS: Your app image was built locally and is live!" -ForegroundColor Green
