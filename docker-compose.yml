@@ -45,7 +45,7 @@ services:
     profiles:
       - staging # 1. CRITICAL: Hides this container from default executions
     ports:
-      - "${HOST_BIND_IP}:8080:8080"
+      - "${HOST_BIND_IP}:8443:8443"
     volumes:
       # Automatically maps runtime directories across both platforms via environment values
       - ${PROXY_CONFIG_FILE}:/etc/caddy/Caddyfile
