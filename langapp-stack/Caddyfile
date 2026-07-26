@@ -1,6 +1,6 @@
 langapp.xyz, www.langapp.xyz {
     # Points to the absolute host directory where your script uploads the keys
-    tls /langapp-stack/certs/langapp.xyz+2.pem /langapp-stack/certs/langapp.xyz+2-key.pem
+    tls /langapp-stack/certs/domain.cert.pem /langapp-stack/certs/private.key.pem
     
     # Routes your web frontend straight to your backend container port mapping
     reverse_proxy 127.0.0.1:8080
