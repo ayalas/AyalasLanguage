@@ -144,7 +144,7 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
         second_data_instructions: "Words in the language you are learning, separated by semi-colon(;)",
         ai_instruction: `Each exercise consists of a set of ${PLACEHOLDERS.NUM_OF_MATCHES_PLACEHOLDER} words\\expressions in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}, each word\\expression separated by comma, and a matching set of the translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. Do not include punctuations. Keep the order correct, so the first word in the set matches the first word in the translated set, and so on.`,
         ai_manual_format: "Return a list of sets for each language. In each list, separate each set with semi-colon.",
-        ai_json_format: `{First: string, Second: string} where First would be the a set of comma-separated words in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and Second would be the matching set of comma-separated translations of those words in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}.`
+        ai_json_format: `{First: string, Second: string} where First would be the a set of always comma-separated words - always in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} - and Second would be the matching set of always comma-separated translations of those words - always in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}.`
     }, {
         Type: EXERCISE_TYPES.MATCHING,
         Name: "Match words",
