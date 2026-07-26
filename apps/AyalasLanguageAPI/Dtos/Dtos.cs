@@ -17,7 +17,7 @@ namespace AyalasLanguageAPI.DTOs
     public record UserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes, SwitchLanguageDto Current);
     public record EditUserProfileDto(bool DisablePuter, byte? NumOfExercisesToGenerate, int? TargetLanguageId, int? KnownLanguageId);
     public record SwitchLanguageDto(int? TargetLanguageId, int? KnownLanguageId);
-    public record CurrentLanguageResponseDto(int? TargetLanguageId,string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool KnownLanguageIsRightToLeft, bool TargetLanguageIsRightToLeft, string? TargetLanguageEnglishName, string? TargetLanguageCode, int Score);
+    public record CurrentLanguageResponseDto(int? TargetLanguageId, string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool KnownLanguageIsRightToLeft, bool TargetLanguageIsRightToLeft, string? TargetLanguageEnglishName, string? TargetLanguageCode, int Score);
     public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool DisablePuter, byte? NumOfExercisesToGenerate, CurrentLanguageResponseDto languageSettings);
     public record UserLanguageDto(int LanguageId, bool IsLearning);
 
@@ -26,12 +26,12 @@ namespace AyalasLanguageAPI.DTOs
 
     // Static DTOs
     public record LanguageDto(int LanguageId, string? Code, string EnglishName, string? NativeName);
-    
-    // Learning Path & Progress
-    public record LearningPathDto(int LearningPathId, uint Level, decimal Chapter, string? Name, ContentStatusEnum ContentStatus,  int? Status = null,  int ExerciseCount = 0, bool PractiseMistakesInThisPath = false, DateTime? LastModified = null, int? ExerciseTypeId = null);
-    public record LearningPathSingleDto(int LearningPathId, uint Level, decimal Chapter, string? Name,  int? Status = null, int? ExerciseId = null,  int ExerciseCount = 0, byte Access = 0, bool practiseMistakesInThisPath = false);
 
-    
+    // Learning Path & Progress
+    public record LearningPathDto(int LearningPathId, uint Level, decimal Chapter, string? Name, ContentStatusEnum ContentStatus, int? Status = null, int ExerciseCount = 0, bool PractiseMistakesInThisPath = false, DateTime? LastModified = null, int? ExerciseTypeId = null);
+    public record LearningPathSingleDto(int LearningPathId, uint Level, decimal Chapter, string? Name, int? Status = null, int? ExerciseId = null, int ExerciseCount = 0, byte Access = 0, bool practiseMistakesInThisPath = false);
+
+
     public record UpdateProgressDto(int LearningPathId, int? exerciseId, bool? practiseMistakesInThisPath);
 
     public record AddMistakeDto(int ExerciseId);
@@ -48,10 +48,10 @@ namespace AyalasLanguageAPI.DTOs
     );
     public record CreateLearningPathResponseDto(int LearningPathId);
     public record EditLearningPathDto(uint Level, decimal Chapter, string? Name);
-    
+
     public record CreateExerciseDto(
-        int? LearningPathId, 
-        int ExerciseTypeId, 
+        int? LearningPathId,
+        int ExerciseTypeId,
         string Data
     );
     public record CreateExerciseResponseDto(int ExerciseId);
@@ -67,4 +67,22 @@ namespace AyalasLanguageAPI.DTOs
     public record UserContactUsDto(string Message);
 
     public record CreateLogRequestDto(LogTypeEnum LogType, string Description);
+
+   // Puter AI Chat DTOs
+    public record PuterChatMessageDto(string role, string content);
+    
+    public record PuterChatRequestDto(
+        List<PuterChatMessageDto> Messages, 
+        string Model = "gpt-4o"
+    );
+
+    // Puter TTS DTOs
+    public record PuterTtsRequestDto(
+        string Text,
+        string Voice,
+        string? Language,
+        string? Engine,
+        string Provider = "aws-polly",
+        bool Ssml = false
+    );
 }

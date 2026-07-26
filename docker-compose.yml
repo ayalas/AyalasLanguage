@@ -31,6 +31,7 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - EmailConfirmation__ClientAddress=${CLIENT_ADDRESS}
       - EmailSettings__APIKey=${EMAIL_API_KEY}
+      - Puter__APIKey=${PUTER_API_KEY}
       - ConnectionStrings__DefaultConnection=Server=database;Port=3306;Database=${DB_NAME};Uid=${DB_USER};Pwd=${DB_USER_PWD};CharSet=utf8mb4;
       - AllowedHosts=${ALLOWED_HOSTS}
     depends_on:
