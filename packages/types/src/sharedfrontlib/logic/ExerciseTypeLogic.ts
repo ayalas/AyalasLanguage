@@ -1,5 +1,7 @@
 import { EXERCISE_TYPES, type ExerciseType } from "../../exercise";
+import type { ExtendedExerciseInfo, MatchCell, SetColumnType } from "../learning";
 import { PLACEHOLDERS } from "../learning/learning";
+import { getRandomizedSequence } from "../utils";
 
 export interface ExerciseGeneration {
     instruction: string,
@@ -284,3 +286,30 @@ export const isRightToLeftInput = (type: ExerciseType | 0, targetIsRtl: boolean,
             EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET
         ] as (ExerciseType | 0)[]).includes(type) && knownIsRtl);
 };
+
+export const randomizeMatchData = (exerciseInfo: ExtendedExerciseInfo, setColumn1: SetColumnType, setColumn2: SetColumnType) => {
+    if (exerciseInfo && exerciseInfo.sentenceElements && exerciseInfo.answers && exerciseInfo.sentenceElements.length > 0 && exerciseInfo.sentenceElements.length == exerciseInfo.answers.length) {
+        const matchesTemp: MatchCell[] = [];
+
+        const exerciseLegth = exerciseInfo.sentenceElements.length;
+
+        let sequence = getRandomizedSequence(exerciseLegth);
+        for (let i = 0; i < sequence.length; i++) {
+          matchesTemp.push({
+            First: exerciseInfo.sentenceElements[sequence[i]].trim(),
+            Second: exerciseInfo.answers[sequence[i]].trim()
+          });
+        }
+
+        const matchesTemp2: MatchCell[] = [];
+        sequence = getRandomizedSequence(exerciseLegth);
+        for (let i = 0; i < sequence.length; i++) {
+          matchesTemp2.push({
+            First: exerciseInfo.answers[sequence[i]].trim(),
+            Second: exerciseInfo.sentenceElements[sequence[i]].trim()
+          });
+        }
+        setColumn1(matchesTemp);
+        setColumn2(matchesTemp2);
+      }
+}

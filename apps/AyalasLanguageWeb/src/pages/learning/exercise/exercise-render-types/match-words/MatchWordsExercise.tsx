@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import MatchWordItem from './MatchWordItem';
 import type { MatchSelection } from './MatchWordItem';
-import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import {EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import {EXERCISE_TYPE_LOGIC, randomizeMatchData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 
 type Props = {
   exerciseInfo: ExtendedExerciseInfo;
@@ -80,25 +79,7 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
 
   useEffect(() => {
     async function execAsync() {
-      if (exerciseInfo && exerciseInfo.sentenceElements && exerciseInfo.answers && exerciseInfo.sentenceElements.length > 0 && exerciseInfo.sentenceElements.length == exerciseInfo.answers.length) {
-        const matchesTemp: { First: string; Second: string }[] = [];
-        for (let i = 0; i < exerciseInfo.sentenceElements.length; i++) {
-          matchesTemp.push({
-            First: exerciseInfo.sentenceElements[i].trim(),
-            Second: exerciseInfo.answers[i].trim()
-          });
-        }
-        const matchesTemp2: { First: string; Second: string }[] = [];
-        const sequence = getRandomizedSequence(matchesTemp.length);
-        for (let i = 0; i < sequence.length; i++) {
-          matchesTemp2.push({
-            First: exerciseInfo.answers[sequence[i]].trim(),
-            Second: exerciseInfo.sentenceElements[sequence[i]].trim()
-          });
-        }
-        setColumn1(matchesTemp);
-        setColumn2(matchesTemp2);
-      }
+      randomizeMatchData(exerciseInfo, setColumn1, setColumn2);
     }
     execAsync();
   }, [exerciseInfo]);

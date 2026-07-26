@@ -1,8 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../../components/auth/AuthHeader';
-
 import { LearningPathAuthoringForm } from '../../components/content-creator/LearningPathAuthoringForm';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { FormHeader } from '../../components/FormHeader';
@@ -33,12 +31,9 @@ export function LearningPathCreatePage() {
   };
 
   return (
-    <>
-      <AuthHeader languageIndicator={LANGUAGE_INDICATOR_ENUM.SHOW_LANGUAGE} />
-      <div className="form-container">
-        <FormHeader isPublic={false} title="Generate Lesson" />
-        <LearningPathAuthoringForm handleSubmit={handleSubmit} />
-      </div>
-    </>
+    <div className="form-container">
+      <FormHeader isPublic={false} title="Generate Lesson" />
+      <LearningPathAuthoringForm handleSubmit={handleSubmit} />
+    </div>
   );
 }

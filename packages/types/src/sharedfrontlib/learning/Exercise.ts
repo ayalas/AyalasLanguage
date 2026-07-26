@@ -23,3 +23,10 @@ export type ExtendedExerciseInfo = ExerciseInfo & {
   sentenceElements?: string[];
   extraItems?: string[];
 };
+
+export type MatchCell = { 
+  First: string; 
+  Second: string 
+}
+
+export type SetColumnType = (arr: MatchCell[]) => void;

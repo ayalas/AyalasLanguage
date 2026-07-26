@@ -20,15 +20,6 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-// Mock child components to isolate page logic
-vi.mock('../../../components/auth/AuthHeader', async () => {
-  const actual = await vi.importActual('../../../components/auth/AuthHeader');
-  return {
-    ...actual,
-    AuthHeader: () => <div data-testid="auth-header" />,
-  };
-});
-
 vi.mock('./ExerciseLine', () => ({
   ExerciseLine: ({ exerciseInfo }: any) => (
     <div data-testid="exercise-line">{exerciseInfo.exerciseId}</div>
@@ -91,7 +82,6 @@ describe('LearningPathUpdatePage', () => {
     );
 
     // Verify initial data fetching
-    expect(await screen.findByTestId('auth-header')).toBeInTheDocument();
     expect(await screen.findByText('Path Name')).toBeInTheDocument();
     
     // Verify existing exercises rendered

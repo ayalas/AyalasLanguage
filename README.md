@@ -5,12 +5,12 @@ Students choose their known and target language, and go through exercises contri
 This project is designed to demonstrate both backend and frontend capabilies.
 
 AyalasLanguageAPI - Backend is implemented with ASP.Net Core Minimal APIs, Entity Framework and SQLite\MySQL.
-
 AyalasLanguageWEB - Frontend implemented with React, Vite and TypeScript
 AyalasLanguageWebAdmin - Admin Frontend implemented with React, Vite and TypeScript
+AyalasLanguageApp - React Native mobile app, sharing logic with AyalasLanguageWEB through the packages\types project.
 
 ## Demo Site (Production)
-Served using Docker with an internal MySQL container in this address:
+Served using Docker and Caddy with an internal MySQL container in this address:
 https://langapp.xyz/
 
 In the profile page after registering and logging in choose to learn Danish or Arabic.
