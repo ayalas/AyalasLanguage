@@ -41,9 +41,10 @@ scp -i $sshKeyPath $localTarPath admin@${serverIP}:${targetDir}/${imageName}.tar
 scp -i $sshKeyPath ./docker-compose.yml admin@${serverIP}:${targetDir}/docker-compose.yml
 scp -i $sshKeyPath ./langapp-stack/.env admin@${serverIP}:${targetDir}/.env
 scp -i $sshKeyPath ./langapp-stack/Caddyfile admin@${serverIP}:${targetDir}/Caddyfile
-if (Test-Path ./langapp-stack/certs) {
-    scp -i $sshKeyPath -r ./langapp-stack/certs admin@${serverIP}:${targetDir}
-}
+# gets permission denied - moved to a separate script replace-certs.ps1
+# if (Test-Path ./langapp-stack/certs) {
+#   scp -i $sshKeyPath -r ./langapp-stack/certs admin@${serverIP}:${targetDir}
+#}
 
 # Clean up local tar
 Remove-Item $localTarPath -Force

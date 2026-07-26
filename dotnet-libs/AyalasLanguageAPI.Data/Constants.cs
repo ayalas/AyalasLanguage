@@ -61,7 +61,8 @@ public enum LogTypeEnum
 {
     AutoAIFailure = 1,
     ExerciseDataValidationFailed = 2,
-    UsersProgressUpdateOnExerciseCreateJobRunFailed = 3
+    UsersProgressUpdateOnExerciseCreateJobRunFailed = 3,
+    UnhandledException = 100
 }
 
 public enum AppIdEnum

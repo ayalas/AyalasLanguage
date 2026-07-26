@@ -6,6 +6,7 @@ export const LOG_TYPE_MAPPING = {
   [LOG_TYPE.AUTO_AI_FAILURE]: "Auto AI Failure",
   [LOG_TYPE.EXERCISE_DATA_VALIDATION_FAILED]: "Exercise Validation Failure",
   [LOG_TYPE.USERS_PROGRESS_UPDATE_ON_EXERCISE_CREATE_JOB_RUN_FAILED]: "User Progress Job Failure",
+  [LOG_TYPE.UNHANDLED_EXCEPTION]: "Unhandled Exception"
 } as const;
 
 export const JOB_TYPE_MAPPING = {
