@@ -309,6 +309,15 @@
   overflow-wrap: anywhere;
 }
 
+.bucket {
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex-direction: column;
+  overflow: hidden;
+  align-items: start;
+}
+
 .form-row-play {
   padding-top: 10px;
   padding-bottom: 5px;
@@ -347,12 +356,13 @@
 .input-text-placeholder {
   margin-left: 10px;
   margin-right: 10px;
-  max-width: 80vw;
+  max-width: 80%;
   font-size: var(--exrsize);
   font-family: var(--suns);
   flex-direction: row;
   color: var(--text-h);
   padding: 4px;
+  justify-content: flex-start;
 }
 
 .fill-in-inner-element {
@@ -641,6 +651,7 @@
   flex-direction: row;
   gap: 5px;
   width: 100%;
+  overflow: hidden;
 }
 
 .match-words-column {
@@ -663,7 +674,7 @@
   justify-content: flex-start;
   align-items: flex-start;
   text-align: left;
-  margin-right: auto;
+  /* margin-right: auto; */
   padding-left: 5px;
   padding-right: 20px;
 }
@@ -686,11 +697,13 @@
   border-width: 1px;
   border-style: solid;
   padding: 10px 12px;
-  overflow-wrap: normal;
+  overflow-wrap: anywhere;
   border-radius: 999px;
   align-self: flex-start; 
   max-width: 100%; 
   flex-shrink: 1;
+  overflow: hidden;
+  flex-wrap: wrap;
 }
 
 .match-words-column .match-word-item-button {
@@ -718,7 +731,8 @@
 
 .bucket-list-item-cell {
   flex-direction: row;
-  padding-right: 10px;
+  padding-right: 5px;
+  padding-top: 5px;
   flex-wrap: wrap;
 }
 
@@ -731,6 +745,8 @@
   border-width: 1px;
   border-style: solid;
   flex-direction: row;
+  flex-wrap: wrap;
+  flex: 1;
 }
 
 .rtlanswer {

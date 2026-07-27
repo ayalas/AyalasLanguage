@@ -52,8 +52,8 @@ export default function MatchWordItem ({ itemValue, matchingValue, setSelected, 
     <View className="match-word-item-cell">
       <TouchableOpacity testID="click-button" className={className} onPress={clickButton}>
         {!isSpoken && (
-          <Text style={[styles.exerciseText, isDone? styles.doneCell : errorState? styles.errorCell : 
-            isSelected? styles.selectedCell : styles.exerciseText, { textAlign: 'center', flexShrink: 1 } ]}>
+          <Text textBreakStrategy="simple" style={[styles.exerciseText, isDone? styles.doneCell : errorState? styles.errorCell : 
+            isSelected? styles.selectedCell : styles.exerciseText, { textAlign: 'center', flexShrink: 1, flexWrap: 'wrap' } ]}>
           {itemValue}
           </Text>
         ) || (
