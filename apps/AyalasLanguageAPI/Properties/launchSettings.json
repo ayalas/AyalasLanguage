@@ -8,15 +8,13 @@
       "applicationUrl": "https://langapp.xyz:7010;https://localhost:7010",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "Kestrel__Endpoints__HttpsIp__Url": "https://localhost:7010",
-      "Kestrel__Endpoints__HttpsIp__Certificate__Path": "../../local_certs/langapp_local.pfx"
+      }
     },
     "http": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5097",
+      "applicationUrl": "http://10.0.0.8:5097",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -25,12 +23,10 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5097",
+      "applicationUrl": "https://10.0.0.8:5098",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "Kestrel__Endpoints__HttpsIp__Url": "https://10.0.0.8:5097",
-      "Kestrel__Endpoints__HttpsIp__Certificate__Path": "../../local_certs/10.0.0.8.pfx"
+      }
     }
   }
 }
