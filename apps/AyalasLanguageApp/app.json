@@ -63,7 +63,8 @@
             "./assets/fonts/Tajawal-Regular.ttf"
           ]
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,

@@ -1,6 +1,9 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine }
     from 'lucide-react-native';
+import { AudioStatus, createAudioPlayer } from 'expo-audio';
+import { Buffer } from 'buffer';
+
 import api from '@/lib/api';
 import InlineExerciseWithBlanks from '@/components/learning/exercise-render-types/InlineExerciseWithBlanks';
 import TwoLinesTranslationExercise from '@/components/learning/exercise-render-types/TwoLinesTranslationExercise';
@@ -60,28 +63,34 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
 
                         textToPlay = textToPlay != null ? textToPlay : exerciseInfo.exerciseObject.Second;
                         if (textToPlay != null && textToPlay !== "") {
-                            const options:PuterTtsRequestDto = {
+                            const options: PuterTtsRequestDto = {
                                 text: textToPlay,
                                 voice: pollyObject.voice,
                                 engine: pollyObject.engine,
                                 language: pollyObject.language
                             };
 
-                            const result = await api.post('/api/puter/tts', options,{
-                                responseType: 'blob' 
+                            const result = await api.post('/api/puter/tts', options, {
+                                responseType: 'arraybuffer'
                             });
-                            const audioBlob = result.data;
-                            const audioUrl = URL.createObjectURL(audioBlob);
 
-                            // 3. Create an Audio object and play it
-                            const audio = new Audio(audioUrl);
-                            
-                            // Optional: Clean up memory after the audio finishes playing
-                            audio.onended = () => {
-                                URL.revokeObjectURL(audioUrl);
-                            };
+                            const base64Audio = Buffer.from(result.data, 'binary').toString('base64');
+                            const audioUri = `data:audio/mp3;base64,${base64Audio}`;
 
-                            await audio.play();
+                            // 1. Create the player
+                            // In expo-audio, createAudioPlayer initializes and can start loading immediately
+                            const player = createAudioPlayer(audioUri);
+
+                            const subscription = player.addListener('playbackStatusUpdate', (status: AudioStatus) => {
+                                if (status.didJustFinish) {
+                                    // 3. Cleanup: Remove listener and release the player from memory
+                                    subscription.remove();
+                                    player.release();
+                                }
+                            });
+
+                            // 2. Play the audio
+                            player.play();
                         }
                     }
                 }
