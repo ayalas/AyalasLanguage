@@ -87,7 +87,8 @@ const FormDropDown = ({
             // Styles
             containerStyle={{
                 flex: 1, // This allows the dropdown to expand/shrink to fit the row
-                maxWidth: maxWidth ?? '100%'
+                maxWidth: maxWidth ?? '100%',
+                zIndex: zIndex
             }}
             style={{
                 borderWidth: 1,

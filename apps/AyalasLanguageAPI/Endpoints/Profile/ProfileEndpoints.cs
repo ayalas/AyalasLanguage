@@ -45,7 +45,10 @@ namespace AyalasLanguageAPI.Endpoints.Profile
                 return Results.BadRequest("User must have both target and known languages set to switch.");
             }
 
-            user.DisablePuter = dto.DisablePuter;
+            if (dto.DisablePuter != null)
+            {
+                user.DisablePuter = dto.DisablePuter.Value;
+            }
             user.NumOfExercisesToGenerate = dto.NumOfExercisesToGenerate;
 
             await AddLanguageToUser(userId, dto.TargetLanguageId.Value, true, db);

@@ -13,7 +13,6 @@ import { useAuth } from '@/lib/AuthContext';
 import { Slider } from '@miblanchard/react-native-slider';
 import { ItemType, ValueType } from 'react-native-dropdown-picker';
 import api from '@/lib/api'; //secured axios instance
-import { Checkbox } from 'expo-checkbox';
 import useTextStyles from '@/lib/useTextStyles';
 import FormDropDown from '@/components/FormDropDown';
 
@@ -24,10 +23,9 @@ export default function ProfileScreen() {
   const [knownLanguage, setKnownLanguage] = useState<string | number>('');
   const [numOfExercises, setNumOfExercises] = useState<number>(DEFAULT_NUM_OF_EXERCISES);
   const [error, setError] = useState('');
-  const [disablePuter, setDisablePuter] = useState(false);
   const router = useRouter();
   const { user, login } = useAuth();
-  const { styles, isDark } = useTextStyles();
+  const { styles } = useTextStyles();
   
   const languageItems = useMemo(() => {
         return allLanguages.map((language) => { 
@@ -45,10 +43,6 @@ export default function ProfileScreen() {
 
       //load data from user context
       if (user != null) {
-        if (user.disablePuter) {
-          setDisablePuter(true);
-        }
-
         if (user.languageSettings) {
           if (user.languageSettings.targetLanguageId && user.languageSettings.targetLanguageId > 0) {
             setTargetLanguage(user.languageSettings.targetLanguageId as number);
@@ -98,7 +92,7 @@ export default function ProfileScreen() {
       if (!user) throw new Error('User must be logged in to change language');
 
       const res = await api.post('/api/profile/', {
-        disablePuter,
+        disablePuter: null,
         numOfExercisesToGenerate: numOfExercises,
         TargetLanguageId: Number(targetLanguage),
         KnownLanguageId: Number(knownLanguage)
@@ -150,15 +144,6 @@ export default function ProfileScreen() {
                 onChangeValue={(val) => changeKnownLanguage(val?.toString() ?? '')}
                 zIndex={1000}
               />
-            </View>
-          </View>
-
-          <View className="form-row">
-            <View className="form-label-cell">
-              <Text style={styles.label}>Disable Puter use in AI and Sounds</Text>
-            </View>
-            <View className="form-input-cell">
-              <Checkbox value={disablePuter} testID="disablePuter" onValueChange={setDisablePuter} />
             </View>
           </View>
 

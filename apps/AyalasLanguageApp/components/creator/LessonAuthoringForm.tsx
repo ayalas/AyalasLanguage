@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter, useLocalSearchParams, Link } from 'expo-router';
 import { LayersPlus, Trash, Ban, Workflow, UserPen, BookOpenCheck, Save, History } from 'lucide-react-native';
-import { puter, type ChatMessage } from '@heyputer/puter.js';
+
 import { Slider } from '@miblanchard/react-native-slider';
 
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -23,7 +23,6 @@ import type { NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/l
 import { useMistakesReadd } from '@/lib/useMistakesReadd';
 import { useAuth } from '@/lib/AuthContext';
 import api from '@/lib/api';
-import { initializePuter } from '@/lib/puter';
 
 import { ExerciseTypeIcon } from '@/components/ExerciseTypeIcon';
 import { ActionsMenuComponent, type ActionsMenuItem } from '@/components/ActionsMenuComponent';
@@ -32,6 +31,7 @@ import FormDropDown from '../FormDropDown';
 import { ItemType, ValueType } from 'react-native-dropdown-picker';
 import { getFromStorage, saveToStorage } from '@/lib/platformStorage';
 import { FormHeader } from '../FormHeader';
+import { PuterChatRequestDto } from '@/lib/puter';
 
 export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloadExercise, headerTitle }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: LearningPathInfo; reloadExercise?: () => void, headerTitle: string }) {
@@ -52,7 +52,6 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   const [aiInstructions, setAIInstructions] = useState('');
   const { level: initLevel, chapter: initChapter } = useLocalSearchParams<{ level?: string, chapter?: string }>();
   const router = useRouter();
-  const [puterSignedIn, setPuterSignedIn] = useState(false);
   const [usePuterAI, setUsePuterAI] = useState(true);
 
   const { styles } = useTextStyles();
@@ -153,28 +152,30 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
         return null;
       }
 
-      let tempPuterSignin = puterSignedIn;
-      if (!tempPuterSignin) {
-        tempPuterSignin = (await initializePuter() == true);
-        setPuterSignedIn(tempPuterSignin);
-      }
-
-      if (!tempPuterSignin) {
-        setError('Sign-in to the AI engine failed. Switch to manual use of AI or try again.');
-        return null;
-      }
-
       //set auto AI instructions to have the latest subject
       const aiAutoDescNew = handleExerciseTypeLogic(exerciseType);
 
-      if (!aiAutoDescNew || aiAutoDescNew.length == 0) {
+      if (!aiAutoDescNew || aiAutoDescNew.length === 0) {
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
-      const response = await puter.ai.chat(aiAutoDescNew as ChatMessage[]);
-      if (response !== undefined && response.message !== undefined) {
+      const response = await api.post('/api/puter/chat', { messages: aiAutoDescNew } as PuterChatRequestDto);
+
+      if (response.data !== undefined && response.data !== null) {
         // Extract the raw string response
-        const rawText = response.message.content.toString();
+        const objData = response.data;
+
+        if (objData.result === undefined || objData.result.message === undefined || !objData.success) {
+          setError('Automated generation did not return a result. Switch to manual use of AI or try again.');
+          writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
+            Title: "/api/puter/chat failed",
+            Instruction: aiAutoDescNew.map(it => it.content).join(' '),
+            Result: 'no result'
+          } as LogAutoAIFailure);
+          return null;
+        }
+        // Extract the raw string response
+        const rawText = objData.result.message.content.toString();
 
         // Parse the string into a JSON object
         let jsonOutput: unknown;
@@ -372,17 +373,6 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
           setChapter(res.data.chapter);
         }
         setIsLoading(false);
-        if (user?.disablePuter) {
-          setUsePuterAI(false);
-        }
-        else {
-          const tempPuterSignin = (await initializePuter() == true);
-          setPuterSignedIn(tempPuterSignin);
-          if (!tempPuterSignin) {
-            //default to manual use of AI if could not sign in
-            setUsePuterAI(false);
-          }
-        }
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
@@ -423,7 +413,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                 </Text>
               </View>
             ) || (
-                <KeyboardAvoidingView>
+                <KeyboardAvoidingView style={{ zIndex: 10, elevation: 10 }}>
                   <Text style={styles.label}>Level</Text>
                   <View className="form-row">
                     <View className="form-input-row">
@@ -444,7 +434,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                     <Text style={styles.text}>AI will generate exercises on this subject.</Text>
                   </View>
                   <Text style={styles.label}>Exercise Type</Text>
-                  <View className="form-row" style={{ zIndex: 1000 }}>
+                  <View className="form-row" style={{ zIndex: 2000 }}>
                     <View className="exercise-type-selector-container">
                       <FormDropDown
                         value={exerciseType}
@@ -453,7 +443,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                         placeholder='-- Please choose an option --'
                         onChangeValue={(val) => onChangeExerciseType(val?.toString() ?? 0)}
                         maxWidth="90%"
-                        zIndex={2000}
+                        zIndex={3000}
                       />
                       <View className="exercise-type-difficulty">
                         <ExerciseTypeIcon exerciseTypeId={exerciseType} />
@@ -551,12 +541,12 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                 </KeyboardAvoidingView>
               )
             }
-            <View className="buttons-container">
+            <View className="buttons-container" style={{ zIndex: 1, elevation: 1 }}>
               <ActionsMenuComponent anchorTitle="More" items={[
                 {
                   isVisible: usePuterAI,
                   dataTestId: "switch-ai-use",
-                  disabled: isLoading || user?.disablePuter,
+                  disabled: isLoading,
                   itemText: "Switch to Manual Entry",
                   leadingIcon: (props) => <UserPen {...props} className="color-brand-primary" />,
                   onClick: () => { setUsePuterAI(!usePuterAI) }
@@ -564,7 +554,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                 {
                   isVisible: !usePuterAI,
                   dataTestId: "switch-ai-use",
-                  disabled: isLoading || user?.disablePuter,
+                  disabled: isLoading,
                   itemText: "Switch to AI Generation",
                   leadingIcon: (props) => <Workflow {...props} className="color-brand-primary" />,
                   onClick: () => { setUsePuterAI(!usePuterAI) }

@@ -49,6 +49,7 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
     return (
         <View 
             className='w-full' 
+            style={{ zIndex: 1 }}
             onLayout={onLayout} // Measure the available width
         >
             <Menu
@@ -60,7 +61,7 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                     <Pressable
                         onPress={openMenu}
                         // Ensure the pressable fills the container
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', zIndex: 1 }}
                         className="actions-menu-link-button">
                         <View className='flex-row items-center justify-center'>
                             <Text style={styles.text}>{anchorTitle} </Text>
@@ -75,7 +76,7 @@ export function ActionsMenuComponent({ items, anchorTitle }: { items: ActionsMen
                     countShown++;
 
                     return (
-                        <View key={`menu-item-${index}`} className={`${item.className} bg-brand-bgSurface`}>
+                        <View key={`menu-item-${index}`} style={{ zIndex: 1 }} className={`${item.className} bg-brand-bgSurface`}>
                             {countShown > 1 && <Divider />}
                             <Menu.Item
                                 onPress={() => {

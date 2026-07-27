@@ -1,18 +1,14 @@
-import { puter } from "@heyputer/puter.js";
+// Puter AI Backend wrapper Chat DTOs
+import { IChatMessage } from "@ayalaslanguage/types/sharedfrontlib/logic";
 
-export const isSecure = () => false; //todo: handle https
+export interface PuterChatRequestDto {
+    messages: IChatMessage[];
+}
 
-export async function initializePuter() {
-  if (isSecure()) {
-    if (!puter.auth.isSignedIn()) {
-      // Note: browser popups usually require a direct user click event, 
-      // but you can check status or trigger it here if allowed by your flow.
-      const res = await puter.auth.signIn();
-      return res.success;
-    }
-    else {
-      return true;
-    }
-  }
-  return false;
+// Puter AI Backend wrapper TTS DTO
+export interface PuterTtsRequestDto {
+    text: string;
+    voice: string;
+    language?: string;
+    engine?: string;
 }

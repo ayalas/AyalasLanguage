@@ -59,9 +59,8 @@ First, you must install the mkcert Local Certificate Authority (CA) into your sy
     Create the `local_certs` directory if it doesn't exist, then generate the certificates for `localhost`:
     ```powershell
     mkdir local_certs
-    mkcert -key-file local_certs\localhost+2-key.pem -cert-file local_certs\localhost+2.pem localhost 127.0.0.1 ::1
+    mkcert -key-file local_certs\localhost+2-key.pem -cert-file local_certs\localhost+2.pem localhost 127.0.0.1 ::1 [your external ip - for the native app]
     ```
-    *Note: The `+2` in the filenames refers to the two additional names (IPs) added to the certificate.*
 
 ---
 
@@ -79,37 +78,14 @@ First, you must install the mkcert Local Certificate Authority (CA) into your sy
 ---
 
 ### Step 3: Authorize the PFX File with dotnet
-To make the .NET runtime (Kestrel) recognize this specific certificate as its "Developer Certificate," you use the `dotnet dev-certs` tool.
+To make the .NET runtime (Kestrel) recognize this specific certificate as its "Developer Certificate," store the secrets using the secret manager:
 
-1.  **Clean existing dev certs (Optional but Recommended):**
-    If you have old developer certificates causing conflicts, clear them first:
-    ```powershell
-    dotnet dev-certs https --clean
-    ```
-
-2.  **Import the PFX file:**
-    Use the password you created in Step 2:
-    ```powershell
-    dotnet dev-certs https --import langapp_local.pfx -p <YOUR_PASSWORD>
-    ```
-
-3.  **Apply Trust:**
-    Finally, ensure the .NET tool acknowledges the trust status:
-    ```powershell
-    dotnet dev-certs https --trust
-    ```
-
-### Verification
-You can verify the certificate is correctly installed in the store by running:
-```powershell
-dotnet dev-certs https --check
-```
-If successful, you will see: `A valid HTTPS certificate is already present.` Your .NET applications (ASP.NET Core) will now automatically use `langapp_local.pfx` for HTTPS on `localhost`.
+dotnet user-secrets set "Kestrel:Endpoints:httpsDefault:Certificate:Password" "password set with openssl"
 
 ## Publish to the new environment using local Docker image building
-run deploy-full.ps1
+run ./deploy-full.ps1
 
-## Publish to (the old) AWS Beanstalk environment, MySQL database enabled, with a powershell script
+## Publish to (the old) AWS Beanstalk environment-like, MySQL database enabled, with a powershell script
 
 run build.bat from windows explorer, or run the following powershell script in the terminal, from the solution root:
 powershell -NoProfile -ExecutionPolicy Bypass -File ".\build.ps1"

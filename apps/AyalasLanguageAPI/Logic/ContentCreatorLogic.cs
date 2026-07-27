@@ -246,21 +246,5 @@ internal static class ContentCreatorLogic
             return input - increment;
     }
 
-    private static async Task CreateLogInternal<T>(this AyalasLanguageDbContext db, int userId, LogTypeEnum logType, T obj)
-    {
-        var baseLog = obj as LoggingBase;
-
-        if (baseLog != null && baseLog.CallStack == string.Empty)
-        {
-            baseLog.CallStack = Environment.StackTrace;
-        }
-        Log rec = new()
-        {
-            UserId = userId,
-            LogType = (int)logType,
-            Description = System.Text.Json.JsonSerializer.Serialize<T>(obj)
-        };
-        db.Logs.Add(rec);
-        await db.SaveChangesAsync();
-    }
+    
 }

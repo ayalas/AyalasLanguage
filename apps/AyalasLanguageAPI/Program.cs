@@ -14,6 +14,8 @@ builder.AddAyalasLanguageDb();
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddHttpClient(); 
+
 builder.AddAuthenticationSchemes();
 
 builder.Services.AddAuthorization();

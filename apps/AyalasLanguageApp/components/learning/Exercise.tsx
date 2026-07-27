@@ -7,8 +7,6 @@ import TwoLinesTranslationExercise from '@/components/learning/exercise-render-t
 import MatchWordsExercise from '@/components/learning/exercise-render-types/match-words/MatchWordsExercise';
 import BucketListExercise from '@/components/learning/exercise-render-types/bucket-list/BucketListExercise';
 
-import { puter } from "@heyputer/puter.js";
-import { initializePuter, isSecure } from '@/lib/puter';
 import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { type ExtendedExerciseInfo, LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
@@ -18,6 +16,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { TouchableOpacity, Text, View } from 'react-native';
 import useTextStyles from '@/lib/useTextStyles';
 import { COLOR_PLAY, COLOR_SAVE } from '@/constants';
+import { PuterTtsRequestDto } from '@/lib/puter';
 
 export interface ExerciseHandle {
     setFocus: () => void;
@@ -44,7 +43,6 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
     const [displayAnswer, setDisplayAnswer] = useState(false);
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useAuth();
-    const [puterSignedIn, setPuterSignedIn] = useState(false);
     const { styles } = useTextStyles();
     const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({
         learningPathId: exerciseInfo.learningPathId,
@@ -54,35 +52,36 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
 
-            if (isSecure() && exerciseInfo.exerciseObject != null && !user?.disablePuter) {
+            if (exerciseInfo.exerciseObject != null) {
                 const langCode = user?.languageSettings?.targetLanguageCode;
-                if (langCode != undefined) {
+                if (langCode !== undefined) {
                     const pollyObject = LANGUAGE_TO_POLLY_MAP[langCode]
                     if (pollyObject != null) {
 
-                        let tempPuterSignin = puterSignedIn;
-                        if (!tempPuterSignin) {
-                            tempPuterSignin = (await initializePuter() == true);
-                            setPuterSignedIn(tempPuterSignin);
-                        }
-
-                        if (!tempPuterSignin) {
-                            return;
-                        }
-
                         textToPlay = textToPlay != null ? textToPlay : exerciseInfo.exerciseObject.Second;
                         if (textToPlay != null && textToPlay !== "") {
-                            const options = {
-                                provider: 'aws-polly',
+                            const options:PuterTtsRequestDto = {
+                                text: textToPlay,
                                 voice: pollyObject.voice,
-                                test_mode: false,
                                 engine: pollyObject.engine,
-                                language: pollyObject.language,
-                                ssml: false
+                                language: pollyObject.language
                             };
 
-                            const result = await puter.ai.txt2speech(textToPlay, options) as HTMLAudioElement;
-                            await result.play();
+                            const result = await api.post('/api/puter/tts', options,{
+                                responseType: 'blob' 
+                            });
+                            const audioBlob = result.data;
+                            const audioUrl = URL.createObjectURL(audioBlob);
+
+                            // 3. Create an Audio object and play it
+                            const audio = new Audio(audioUrl);
+                            
+                            // Optional: Clean up memory after the audio finishes playing
+                            audio.onended = () => {
+                                URL.revokeObjectURL(audioUrl);
+                            };
+
+                            await audio.play();
                         }
                     }
                 }
@@ -168,13 +167,6 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
     useEffect(() => {
         async function runAsync() {
             childLoaded(exerciseInfo.exerciseId);
-            if (!user?.disablePuter) {
-                if (isSecure() && !puter.auth.isSignedIn()) {
-                    setError("The app is attempting to use the Puter library to facilitate sounds and automatic AI exercise generation. If that does not work out for you, you can disable Puter in the Profile settings page.");
-                }
-                const tempSignIn = (await initializePuter() == true);
-                setPuterSignedIn(tempSignIn);
-            }
         }
         runAsync();
     }, [exerciseInfo, childLoaded, user]);
