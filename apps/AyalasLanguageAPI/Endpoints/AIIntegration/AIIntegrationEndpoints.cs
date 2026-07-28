@@ -280,7 +280,7 @@ public static class AIIntegrationEndpoints
         HttpClient httpClient, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger, Func<AITtsRequestDto, string, TResponse> getPayloadCallback)
     {
         var userId = claim.GetUserId();
-        var endpoint = config["AI:TextToSpeechEndpoint"];
+        var endpoint = config["AI:TTSEndpoint"];
         var apiKey = config["AI:TTSAPIKey"];
         if (string.IsNullOrEmpty(apiKey)) return Results.Problem("AI TTS API Key not configured.");
 
