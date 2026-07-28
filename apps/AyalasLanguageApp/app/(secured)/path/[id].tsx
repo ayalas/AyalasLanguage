@@ -86,7 +86,13 @@ export default function LessonScreen() {
       });
     } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].IsMatchingType) {
       const sentenceElements = (firstData || '').split(',');
-      const answers = (secondData || '').split(',');
+      let answers = (secondData || '').split(',');
+      if (answers.length < sentenceElements.length) {
+        const tmpAnswers = (secondData || '').split(' ');
+        if (tmpAnswers.length === sentenceElements.length) {
+          answers = tmpAnswers;
+        }
+      }
 
       setCurrentExercise({
         ...curItem,

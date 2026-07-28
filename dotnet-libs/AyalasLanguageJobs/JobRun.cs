@@ -39,6 +39,7 @@ namespace AyalasLanguageJobs
 
         private async Task UsersProgressUpdateOnExerciseCreateJob()
         {
+            if (_job == null) return;
             var query = JobsQuery.UsersProgressUpdateOnExerciseCreate(_job.MainRecordId, _db);
 
             List<UserProgress>? list = null;

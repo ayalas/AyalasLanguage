@@ -24,27 +24,9 @@ vi.mock('react-router-dom', async () => {
     };
 });
 
-// Mock Puter and Utils
-vi.mock('@heyputer/puter.js', () => ({
-    puter: {
-        ai: {
-            txt2speech: vi.fn(),
-        },
-        auth: {
-            isSignedIn: vi.fn(() => false),
-            signIn: vi.fn()
-        }
-    },
-}));
-
 vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
     getRandomizedSequence: vi.fn((len) => Array.from({ length: len }, (_, i) => i)),
     replaceCharsForLanguage: vi.fn((_lang, val) => val)
-}));
-
-vi.mock('../../../utils/utils', () => ({
-    initializePuter: vi.fn(() => false),
-    isSecure: vi.fn(() => true),
 }));
 
 // Mock useMistakesReadd hook

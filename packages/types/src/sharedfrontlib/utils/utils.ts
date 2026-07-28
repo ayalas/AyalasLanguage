@@ -117,14 +117,3 @@ export function removeLastCharIfMatch(str: string | undefined, charToRemove: str
   }
   return str;
 }
-
-export function parseLLMResponse(rawString: string) {
-  // Regex looks for ```json [content] ``` or just ``` [content] ```
-  const regex = /```(?:json)?\s*([\s\S]*?)\s*```/;
-  const match = rawString.match(regex);
-
-  // If a match is found, use the captured group, otherwise try the raw string
-  const cleanJson = match ? match[1] : rawString;
-
-  return JSON.parse(cleanJson.trim());
-}

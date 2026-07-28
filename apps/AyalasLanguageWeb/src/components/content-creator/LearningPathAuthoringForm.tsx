@@ -3,14 +3,13 @@ import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-rout
 import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, History } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { initializePuter, handleKeyDown, downloadFile } from '../../utils/utils';
-import { removeLastCharIfMatch, parseLLMResponse, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import { handleKeyDown, downloadFile } from '../../utils/utils';
+import { removeLastCharIfMatch, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES, BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
 
-import puter, { type ChatMessage } from '@heyputer/puter.js';
 import { EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
-import { getAIInstructions, type IChatMessage } from '@ayalaslanguage/types/sharedfrontlib/ai';
+import { getAIInstructions, type AIChatRequestDto, type IChatMessage } from '@ayalaslanguage/types/sharedfrontlib/ai';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
@@ -44,7 +43,6 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const initLevel = searchParams.get('level');
   const initChapter = searchParams.get('chapter');
   const navigate = useNavigate();
-  const [puterSignedIn, setPuterSignedIn] = useState(false);
   const [useAutoAI, setUseAutoAI] = useState(true);
 
   const titleRef = useRef<HTMLInputElement>(null);
@@ -139,17 +137,6 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         return null;
       }
 
-      let tempPuterSignin = puterSignedIn;
-      if (!tempPuterSignin) {
-        tempPuterSignin = (await initializePuter() == true);
-        setPuterSignedIn(tempPuterSignin);
-      }
-
-      if (!tempPuterSignin) {
-        setError('Sign-in to the AI engine failed. Switch to manual use of AI or try again.');
-        return null;
-      }
-
       //set auto AI instructions to have the latest subject
       const aiAutoDescNew = handleExerciseTypeLogic(exerciseType);
 
@@ -157,33 +144,39 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
-      const response = await puter.ai.chat(aiAutoDescNew as ChatMessage[]);
-      if (response != undefined && response.message != undefined) {
+      let response: any;
+      try {
+        response = await axios.post('/api/ai/unclose/chat', { messages: aiAutoDescNew } as AIChatRequestDto);
+      }
+      catch(err: unknown) {
+        errorHandler(err, (errMsg: string) => {
+            setError(`Automated generation failed. Switch to manual use of AI or try again. Error: ${errMsg}`);
+        });
+        return null;
+      }
+
+      if (response.data !== undefined && response.data !== null) {
         // Extract the raw string response
-        const rawText = response.message.content.toString();
+        const objData = response.data;
 
-
-
-        // Parse the string into a JSON object
-        let jsonOutput: unknown;
-        try {
-          jsonOutput = parseLLMResponse(rawText);
-        }
-        catch {
-          setError('Automated generation did not return in the expected result format. Switch to manual use of AI or try again.');
+        if (objData === undefined || objData.content === undefined) {
+          setError('Automated generation did not return a result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(axios, LOG_TYPE.AUTO_AI_FAILURE, {
-            Title: "parsing LLM response failed",
+            Title: "ai chat failed",
             Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-            Result: rawText
+            Result: objData
           } as LogAutoAIFailure);
           return null;
         }
+        // Extract the raw string response
+        const jsonOutput = objData.content;
+
         if (!Array.isArray(jsonOutput)) {
           setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "Result is not an array",
             Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-            Result: rawText
+            Result: objData
           } as LogAutoAIFailure);
           return null;
         }
@@ -194,7 +187,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
               Title: "Result is an empty array",
               Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-              Result: rawText
+              Result: objData
             } as LogAutoAIFailure);
             return null;
           }
@@ -224,7 +217,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
               writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
                 Title: "Result is invalid",
                 Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-                Result: rawText
+                Result: objData
               } as LogAutoAIFailure);
               return null;
             }
@@ -232,7 +225,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             // writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
             //   Title: "TRACE LLM response",
             //   Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-            //   Result: rawText
+            //   Result: objData
             // } as LogAutoAIFailure);
 
             arrObjects = jsonOutput;
@@ -411,14 +404,6 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         setIsLoading(false);
         if (user?.disableAutoAI) {
           setUseAutoAI(false);
-        }
-        else {
-          const tempPuterSignin = (await initializePuter() == true);
-          setPuterSignedIn(tempPuterSignin);
-          if (!tempPuterSignin) {
-            //default to manual use of AI if could not sign in
-            setUseAutoAI(false);
-          }
         }
         
         titleRef.current?.focus();

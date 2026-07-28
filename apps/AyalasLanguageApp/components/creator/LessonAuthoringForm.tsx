@@ -239,7 +239,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
             // writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
             //   Title: "TRACE LLM response",
             //   Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-            //   Result: rawText
+            //   Result: objData
             // } as LogAutoAIFailure);
 
             arrObjects = jsonOutput;

@@ -137,7 +137,6 @@ public static class AIIntegrationEndpoints
             }
         }
 
-        AIEndpointInfo? logInfoData = null;
         string schemaJson = """
             {
             "type": "object",
@@ -178,7 +177,7 @@ public static class AIIntegrationEndpoints
 
             string rawJson = completion.Content[0].Text;
 
-            logInfoData = new AIEndpointInfo
+            /*  var logInfoData = new AIEndpointInfo
             {
                 RequestData = System.Text.Json.JsonSerializer.Serialize(request),
                 Endpoint = endpoint ?? "",
@@ -186,7 +185,7 @@ public static class AIIntegrationEndpoints
                 ResponseData = rawJson
             };
 
-            await db.CreateLogInternal(userId, LogTypeEnum.AIChatInfo, logInfoData);
+            await db.CreateLogInternal(userId, LogTypeEnum.AIChatInfo, logInfoData); */
 
             return Results.Content(rawJson, "application/json");
         }
