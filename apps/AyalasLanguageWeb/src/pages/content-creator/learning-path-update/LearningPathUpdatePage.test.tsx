@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
-import { MemoryRouter, useNavigate, useParams } from 'react-router-dom';
+import { MemoryRouter, useParams } from 'react-router-dom';
 import { LearningPathUpdatePage } from './LearningPathUpdatePage';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
@@ -9,13 +9,17 @@ import disableClientValidation from '@ayalaslanguage/types/test-utils';
 // Mock axios
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
-
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 // Mock react-router-dom
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: vi.fn(),
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
     useParams: vi.fn(),
   };
 });
@@ -52,12 +56,11 @@ vi.mock('../../../components/content-creator/LearningPathAuthoringForm', () => (
 }));
 
 describe('LearningPathUpdatePage', () => {
-  const mockNavigate = vi.fn();
+  
   const mockLearningPathId = 123;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useNavigate as any).mockReturnValue(mockNavigate);
     (useParams as any).mockReturnValue({ learningPathId: mockLearningPathId });
   });
 

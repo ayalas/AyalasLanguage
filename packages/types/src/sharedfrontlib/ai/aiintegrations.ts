@@ -1,4 +1,4 @@
-import { IChatMessage } from './AIInstructionsLogic';
+import { type IChatMessage } from './AIInstructionsLogic';
 
 // AI Backend wrapper Chat DTOs
 export interface AIChatRequestDto {

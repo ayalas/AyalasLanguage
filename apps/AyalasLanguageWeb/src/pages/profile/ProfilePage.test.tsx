@@ -10,12 +10,16 @@ import disableClientValidation from '@ayalaslanguage/types/test-utils';
 // Mock axios
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
-
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 // Mock react-router-dom hooks
 vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
   useLocation: vi.fn(),
-  useNavigate: vi.fn(),
+  useNavigate: vi.fn().mockReturnValue(mockNavigate),
   useOutletContext: vi.fn(),
 }));
 
@@ -56,7 +60,6 @@ vi.mock('./LanguageLineForDelete', () => ({
 }));
 
 describe('ProfilePage', () => {
-  const mockNavigate = vi.fn();
   const mockLogin = vi.fn();
 
   const mockLanguages = [

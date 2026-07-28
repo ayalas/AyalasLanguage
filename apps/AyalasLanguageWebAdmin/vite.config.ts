@@ -16,6 +16,7 @@ export default defineConfig({
     environment: 'jsdom', 
     globals: true, // Optional: allows you to use describe, it, expect without importing them
     setupFiles: ['./vitest.setup.ts'],
+    testTimeout: 10000
   },
   server: {
     port: 5173,

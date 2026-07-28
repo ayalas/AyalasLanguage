@@ -14,12 +14,16 @@ vi.mock('axios');
  const mockedAxios = vi.mocked(axios);
 
 // Mock useNavigate
-const mockNavigate = vi.fn();
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: () => mockNavigate,
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
   };
 });
 

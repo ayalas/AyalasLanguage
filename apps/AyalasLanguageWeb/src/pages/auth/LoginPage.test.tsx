@@ -15,13 +15,17 @@ import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
-
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
   return {
     ...actual,
     useLocation: vi.fn(),
-    useNavigate: vi.fn(),
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
     useSearchParams: vi.fn(),
     Link: ({ to, children }: { to: string; children: React.ReactNode }) => <a href={to}>{children}</a>,
   };
@@ -43,7 +47,6 @@ vi.mock('@ayalaslanguage/types/error', () => ({
 // --- Test Suite ---
 
 describe('LoginPage Component', () => {
-  const mockNavigate = vi.fn();
   const mockLogin = vi.fn();
   const mockGetSearchParams = vi.fn();
 

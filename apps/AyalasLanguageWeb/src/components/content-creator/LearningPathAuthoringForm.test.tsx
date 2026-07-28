@@ -7,7 +7,11 @@ import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
 import { MemoryRouter, useOutletContext } from 'react-router-dom';
 
 // Setup mocks
-const mockNavigate = vi.fn();
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 const mockUser = {
   userName: 'test@example.com',
   role: ROLE_TYPE.CONTENT_CREATOR,
@@ -25,7 +29,7 @@ vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: () => mockNavigate,
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
     useOutletContext: vi.fn(),
     // Return the stable reference here
     useSearchParams: () => [mockSearchParams, vi.fn()],

@@ -2,7 +2,7 @@ import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
 import React from 'react';
-import { MemoryRouter, useParams, useNavigate, useOutletContext } from 'react-router-dom';
+import { MemoryRouter, useParams, useOutletContext } from 'react-router-dom';
 import { LessonPage } from './LessonPage';
 import { type ExerciseData, type ExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
@@ -12,6 +12,11 @@ import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 // Mock axios as requested
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 
 // Mock react-router-dom hooks
 vi.mock('react-router-dom', async () => {
@@ -19,7 +24,7 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useParams: vi.fn(),
-    useNavigate: vi.fn(),
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
     useOutletContext: vi.fn(),
   };
 });
@@ -52,7 +57,7 @@ vi.mock('./exercise/Exercise', () => ({
 
 
 describe('LessonPage', () => {
-  const mockNavigate = vi.fn();
+  
   const mockLogin = vi.fn();
   const mockUser = {
     disableAutoAI: true,
@@ -78,7 +83,6 @@ describe('LessonPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useParams as any).mockReturnValue({ learningPathId: '1' });
-    (useNavigate as any).mockReturnValue(mockNavigate);
     (useOutletContext as any).mockReturnValue({ user: mockUser, login: mockLogin });
 
     mockedAxios.get.mockImplementation((url) => {

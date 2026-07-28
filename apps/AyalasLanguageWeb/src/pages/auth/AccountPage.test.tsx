@@ -2,10 +2,15 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AccountPage } from './AccountPage';
 import axios from 'axios';
-import { useOutletContext } from 'react-router-dom';
+import { MemoryRouter, useOutletContext } from 'react-router-dom';
 import { checkPasswordStrength, generatePasswordFeedback } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 // 1. Mock External Dependencies
 vi.mock('axios');
 vi.mock('react-router-dom', async () => {
@@ -13,7 +18,7 @@ vi.mock('react-router-dom', async () => {
   return {
     ...actual,
     useOutletContext: vi.fn(),
-    useNavigate: vi.fn()
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
   };
 });
 
@@ -72,7 +77,7 @@ describe('AccountPage Component', () => {
     });
 
     it('renders the form elements correctly with initial state', () => {
-        render(<AccountPage />);
+        render(<MemoryRouter><AccountPage /></MemoryRouter>);
 
         expect(screen.getByTestId('auth-header')).toBeInTheDocument();
         expect(screen.getByRole('heading', { name: /account details/i })).toBeInTheDocument();
@@ -88,7 +93,7 @@ describe('AccountPage Component', () => {
             login: mockLogin,
         });
 
-        render(<AccountPage />);
+        render(<MemoryRouter><AccountPage /></MemoryRouter>);
         expect(screen.queryByTestId('new-email-address')).not.toBeInTheDocument();
         expect(screen.getByText(/confirmed \(cannot be changed\)/i)).toBeInTheDocument();
     });
@@ -96,7 +101,7 @@ describe('AccountPage Component', () => {
     it('successfully triggers email confirmation', async () => {
         vi.mocked(axios.post).mockResolvedValueOnce({});
 
-        render(<AccountPage />);
+        render(<MemoryRouter><AccountPage /></MemoryRouter>);
 
         disableClientValidation();
 
@@ -113,7 +118,7 @@ describe('AccountPage Component', () => {
     });
 
     it('validates mismatched passwords before making an API call', async () => {
-        render(<AccountPage />);
+        render(<MemoryRouter><AccountPage /></MemoryRouter>);
 
         disableClientValidation();
 
@@ -143,7 +148,7 @@ describe('AccountPage Component', () => {
             missing: ['length', 'uppercase']
         });
 
-        render(<AccountPage />);
+        render(<MemoryRouter><AccountPage /></MemoryRouter>);
 
         disableClientValidation();
 
@@ -163,7 +168,7 @@ describe('AccountPage Component', () => {
         const updatedUser = { ...mockUser, userName: 'newemail@example.com' };
         vi.mocked(axios.post).mockResolvedValueOnce({ data: updatedUser });
 
-        render(<AccountPage />);
+        render(<MemoryRouter><AccountPage /></MemoryRouter>);
 
         disableClientValidation();
 
@@ -192,7 +197,7 @@ describe('AccountPage Component', () => {
         const apiError = new Error('Invalid old password');
         vi.mocked(axios.post).mockRejectedValueOnce(apiError);
 
-        render(<AccountPage />);
+        render(<MemoryRouter><AccountPage /></MemoryRouter>);
 
         disableClientValidation();
 

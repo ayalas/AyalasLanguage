@@ -1,6 +1,6 @@
 import { PLACEHOLDERS } from "../learning/learning";
 import { encodeXMLElements } from "../utils";
-import { ExerciseGeneration } from "../logic/ExerciseTypeLogic";
+import { type ExerciseGeneration } from "../logic/ExerciseTypeLogic";
 
 export interface IChatMessage {
     role: "system" | "assistant" | "user" | "tool";

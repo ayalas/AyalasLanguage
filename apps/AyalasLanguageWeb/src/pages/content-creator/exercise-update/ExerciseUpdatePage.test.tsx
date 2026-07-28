@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExerciseUpdatePage } from "./ExerciseUpdatePage"; // Adjust path
 import axios from "axios";
-import { MemoryRouter, useNavigate, useParams } from "react-router-dom";
+import { MemoryRouter, useParams } from "react-router-dom";
 import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
@@ -11,13 +11,17 @@ import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 // 1. Mock Axios
 vi.mock("axios");
 const mockedAxios = vi.mocked(axios);
-
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 // 2. Mock React Router Hooks
 vi.mock("react-router-dom", async () => {
     const actual = await vi.importActual("react-router-dom");
     return {
         ...actual,
-        useNavigate: vi.fn(),
+        useNavigate: vi.fn().mockReturnValue(mockNavigate),
         useParams: vi.fn(),
     };
 });
@@ -60,7 +64,6 @@ vi.mock('../../../components/FormHeader', async () => {
 });
 
 describe("ExerciseUpdatePage", () => {
-    const mockNavigate = vi.fn();
     const mockExerciseId = "123";
 
     const objData:ExerciseData = {
@@ -80,7 +83,6 @@ describe("ExerciseUpdatePage", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        (useNavigate as any).mockReturnValue(mockNavigate);
         (useParams as any).mockReturnValue({ exerciseId: mockExerciseId });
     });
 

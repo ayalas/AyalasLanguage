@@ -12,13 +12,18 @@ import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
 
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
   return {
     ...actual,
     useOutletContext: vi.fn(),
-    useNavigate: vi.fn(),
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
   };
 });
 
@@ -77,7 +82,6 @@ const mockUser: User = {
 describe('AuthHeader Component', () => {
   const mockLogout = vi.fn();
   const mockLogin = vi.fn();
-  const mockNavigate = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
