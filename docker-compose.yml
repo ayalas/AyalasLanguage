@@ -41,6 +41,7 @@ services:
       - EmailSettings__APIKey=${EMAIL_API_KEY}
       - AI__ChatAPIKey=${AI_CHAT_API_KEY}
       - AI__TTSAPIKey=${AI_TTS_API_KEY}
+      - AI__TTSEndpoint=http://openai-edge-tts:5050/v1/audio/speech
       - ConnectionStrings__DefaultConnection=Server=database;Port=3306;Database=${DB_NAME};Uid=${DB_USER};Pwd=${DB_USER_PWD};CharSet=utf8mb4;
       - AllowedHosts=${ALLOWED_HOSTS}
     depends_on:
