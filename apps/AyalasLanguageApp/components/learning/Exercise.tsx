@@ -70,7 +70,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                                 language: pollyObject.language
                             };
 
-                            const result = await api.post('/api/ai/puter/tts', options, {
+                            const result = await api.post('/api/ai/unclose/tts', options, {
                                 responseType: 'arraybuffer'
                             });
 

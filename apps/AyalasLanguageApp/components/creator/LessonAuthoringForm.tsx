@@ -159,7 +159,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
-      const response = await api.post('/api/ai/puter/chat', { messages: aiAutoDescNew } as AIChatRequestDto);
+      const response = await api.post('/api/ai/unclose/chat', { messages: aiAutoDescNew } as AIChatRequestDto);
 
       if (response.data !== undefined && response.data !== null) {
         // Extract the raw string response
