@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AyalasLanguageAPI.Data.Logging
 {
-    public class PuterEndpointFailure : LoggingBase
+    public class AIEndpointFailure : LoggingBase
     {
         [Required]
         public string RequestData { get; set; }

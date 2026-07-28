@@ -15,10 +15,10 @@ namespace AyalasLanguageAPI.DTOs
     //profile DTOs
     public record ResetPasswordDto(string UserName, string Password, string Token);
     public record UserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes, SwitchLanguageDto Current);
-    public record EditUserProfileDto(bool? DisablePuter, byte? NumOfExercisesToGenerate, int? TargetLanguageId, int? KnownLanguageId);
+    public record EditUserProfileDto(bool? DisableAutoAI, byte? NumOfExercisesToGenerate, int? TargetLanguageId, int? KnownLanguageId);
     public record SwitchLanguageDto(int? TargetLanguageId, int? KnownLanguageId);
     public record CurrentLanguageResponseDto(int? TargetLanguageId, string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool KnownLanguageIsRightToLeft, bool TargetLanguageIsRightToLeft, string? TargetLanguageEnglishName, string? TargetLanguageCode, int Score);
-    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool DisablePuter, byte? NumOfExercisesToGenerate, CurrentLanguageResponseDto languageSettings);
+    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool DisableAutoAI, byte? NumOfExercisesToGenerate, CurrentLanguageResponseDto languageSettings);
     public record UserLanguageDto(int LanguageId, bool IsLearning);
 
 
@@ -68,15 +68,15 @@ namespace AyalasLanguageAPI.DTOs
 
     public record CreateLogRequestDto(LogTypeEnum LogType, string Description);
 
-   // Puter AI Chat DTOs
-    public record PuterChatMessageDto(string role, string content);
+   // AI Chat DTOs
+    public record AIChatMessageDto(string role, string content);
     
-    public record PuterChatRequestDto(
-        List<PuterChatMessageDto> Messages
+    public record AIChatRequestDto(
+        List<AIChatMessageDto> Messages
     );
 
-    // Puter TTS DTOs
-    public record PuterTtsRequestDto(
+    // AI TTS DTOs
+    public record AITtsRequestDto(
         string Text,
         string Voice,
         string? Language,

@@ -62,8 +62,8 @@ public enum LogTypeEnum
     AutoAIFailure = 1,
     ExerciseDataValidationFailed = 2,
     UsersProgressUpdateOnExerciseCreateJobRunFailed = 3,
-    PuterChatFailure = 4,
-    PuterTTSFailure = 5,
+    AIChatFailure = 4,
+    AITTSFailure = 5,
     UnhandledException = 100
 }
 

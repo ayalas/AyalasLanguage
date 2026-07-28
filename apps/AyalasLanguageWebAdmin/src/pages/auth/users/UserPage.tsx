@@ -80,7 +80,7 @@ export function UserPage() {
                     </div>
                     <div className="form-row">
                         <div className="form-label-cell">
-                            <label className="form-label">Puter is Disabled: <input type="checkbox" disabled={true} checked={record?.disablePuter} /></label>
+                            <label className="form-label">Auto AI is Disabled: <input type="checkbox" disabled={true} checked={record?.disableAutoAI} /></label>
                         </div>
                     </div>
                     <div className="form-row">

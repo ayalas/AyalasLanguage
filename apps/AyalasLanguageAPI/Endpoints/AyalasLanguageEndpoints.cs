@@ -17,7 +17,7 @@ namespace AyalasLanguageAPI.Endpoints
     using AyalasLanguageAPI.Endpoints.Learning;
     using AyalasLanguageAPI.Endpoints.Profile;
     using AyalasLanguageAPI.Endpoints.Static;
-    using AyalasLanguageAPI.Endpoints.Puter;
+    using AyalasLanguageAPI.Endpoints.AIIntegration;
 
     public static class AyalasLanguageEndpoints
     {
@@ -30,7 +30,7 @@ namespace AyalasLanguageAPI.Endpoints
             app.MapLearningEndpoints(); // get learning path, update progress, get exercises
             app.MapContentCreatorEndpoints(); // add exercises and learning paths
             app.MapPublicEndpoints();
-            app.MapPuterEndpoints();
+            app.MapAIIntegrationEndpoints();
             app.MapStaticEndpoints();
 
             //admin endpoints

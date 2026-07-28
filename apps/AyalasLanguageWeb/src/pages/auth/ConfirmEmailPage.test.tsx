@@ -46,7 +46,7 @@ describe('ConfirmEmailPage', () => {
     emailConfirmed: false,
     use2FALogin: false,
     role: ROLE_TYPE.CONTENT_CREATOR,
-    disablePuter: true
+    disableAutoAI: true
   };
 
   beforeEach(() => {

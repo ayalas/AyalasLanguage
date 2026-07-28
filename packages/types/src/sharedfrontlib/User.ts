@@ -33,7 +33,7 @@ export interface User {
   role: number;
   emailConfirmed: boolean;
   use2FALogin: boolean;
-  disablePuter: boolean;
+  disableAutoAI: boolean;
   numOfExercisesToGenerate?: number;
   languageSettings?: LanguageSettings;
 }

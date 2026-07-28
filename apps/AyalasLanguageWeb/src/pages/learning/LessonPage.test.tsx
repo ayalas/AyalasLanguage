@@ -55,7 +55,7 @@ describe('LessonPage', () => {
   const mockNavigate = vi.fn();
   const mockLogin = vi.fn();
   const mockUser = {
-    disablePuter: true,
+    disableAutoAI: true,
     languageSettings: { targetLanguage: 'Spanish' },
   };
 

@@ -18,7 +18,7 @@ In the profile page after registering and logging in choose to learn Danish or A
 ## Dev environment
 To stage this app in the development environment:
 
-Create and authorize locally these files for https://localhost (https is required for Puter ai) with https://mkcert.org/. Generate a pfx file from them by https://www.openssl.org/ (see instructions below under Https support). Place the three files at:
+Create and authorize locally these files for https://localhost (https can be required for some client side integrations) with https://mkcert.org/. Generate a pfx file from them by https://www.openssl.org/ (see instructions below under Https support). Place the three files at:
 local_certs\localhost+2-key.pem
 local_certs\localhost+2.pem
 local_certs\langapp_local.pfx
@@ -32,7 +32,7 @@ turbo run
 Browse to the url provided by vite https://localhost:5174
 
 ## Https support
-As a prerequisite for staging a development environment, there is a need to support HTTPS, since this project uses Puter ai which requires https.
+As a prerequisite for staging a development environment, there is a need to support HTTPS, since this project may use client side integrations which require https.
 
 Here are the instructions how to generate and authorize the necessary certificate files,
 which are not provided with the code:

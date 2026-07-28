@@ -92,7 +92,7 @@ export default function ProfileScreen() {
       if (!user) throw new Error('User must be logged in to change language');
 
       const res = await api.post('/api/profile/', {
-        disablePuter: null,
+        disableAutoAI: null,
         numOfExercisesToGenerate: numOfExercises,
         TargetLanguageId: Number(targetLanguage),
         KnownLanguageId: Number(knownLanguage)

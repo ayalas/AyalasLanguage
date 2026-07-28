@@ -257,7 +257,7 @@ public static class AdminEndpoints
             u.KnownLanguage == null ? null : u.KnownLanguage.EnglishName,
             u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName,
             u.CreatedOn,
-            u.DisablePuter,
+            u.DisableAutoAI,
             u.NumOfExercisesToGenerate,
             u.ForgotEmailSent,
             u.ForgotEmailReceived, 

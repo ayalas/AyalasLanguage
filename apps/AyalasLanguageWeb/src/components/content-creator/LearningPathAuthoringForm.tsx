@@ -9,7 +9,8 @@ import { DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES, BUCKET_LIST_EXTRA_O
 import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
 
 import puter, { type ChatMessage } from '@heyputer/puter.js';
-import { EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES, getAIInstructions, type IChatMessage } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import { EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import { getAIInstructions, type IChatMessage } from '@ayalaslanguage/types/sharedfrontlib/ai';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
@@ -44,7 +45,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const initChapter = searchParams.get('chapter');
   const navigate = useNavigate();
   const [puterSignedIn, setPuterSignedIn] = useState(false);
-  const [usePuterAI, setUsePuterAI] = useState(true);
+  const [useAutoAI, setUseAutoAI] = useState(true);
 
   const titleRef = useRef<HTMLInputElement>(null);
   const exerciseTypeRef = useRef<HTMLSelectElement>(null);
@@ -85,7 +86,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
   const parseForm = async function () {
     let arrObjects: ExerciseData[] = [];
-    if (!usePuterAI) {
+    if (!useAutoAI) {
 
       if (firstSet == '' && secondSet == '') {
         return [];
@@ -408,15 +409,15 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setChapter(res.data.chapter);
         }
         setIsLoading(false);
-        if (user?.disablePuter) {
-          setUsePuterAI(false);
+        if (user?.disableAutoAI) {
+          setUseAutoAI(false);
         }
         else {
           const tempPuterSignin = (await initializePuter() == true);
           setPuterSignedIn(tempPuterSignin);
           if (!tempPuterSignin) {
             //default to manual use of AI if could not sign in
-            setUsePuterAI(false);
+            setUseAutoAI(false);
           }
         }
         
@@ -523,7 +524,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                       <NumberSelector min={BUCKET_LIST_EXTRA_OPTIONS.MIN_WORDS} max={BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS} defaultValue={extraOptions} onChange={setExtraOptions} />
                     </>
                   )}
-                  {!usePuterAI && (
+                  {!useAutoAI && (
                     <>
                       <div className="form-label-row">AI instructions</div>
                       <div className="form-row">
@@ -560,18 +561,18 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             <div className="buttons-container">
               <ActionsMenuComponent anchorTitle="More" items={[
                 {
-                  isVisible: usePuterAI,
+                  isVisible: useAutoAI,
                   dataTestId: "switch-ai-use",
-                  disabled: isLoading || user?.disablePuter,
+                  disabled: isLoading || user?.disableAutoAI,
                   children: <><UserPen />&nbsp;Switch to Manual Entry</>,
-                  onClick: () => { setUsePuterAI(!usePuterAI) }
+                  onClick: () => { setUseAutoAI(!useAutoAI) }
                 },
                 {
-                  isVisible: !usePuterAI,
+                  isVisible: !useAutoAI,
                   dataTestId: "switch-ai-use",
-                  disabled: isLoading || user?.disablePuter,
+                  disabled: isLoading || user?.disableAutoAI,
                   children: <><Workflow />&nbsp;Switch to AI Generation</>,
-                  onClick: () => { setUsePuterAI(!usePuterAI) }
+                  onClick: () => { setUseAutoAI(!useAutoAI) }
                 },
                 {
                   dataTestId: "cancel-readding",
@@ -613,7 +614,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   toPath: `/path/${initialRecord?.learningPathId}`
                 }
               ] as ActionsMenuItem[]} />
-              {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && usePuterAI && (
+              {initialRecord && initialRecord.access == AUTHOR_ACCESS.CAN_EDIT && useAutoAI && (
                 <div className="form-button-cell">
                   <button data-testid="save-only" type="button" className="top-button" title="Save" onClick={saveOnly}>
                     <Save />&nbsp;Save
@@ -621,7 +622,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                 </div>
               )}
               <div className="form-button-cell">
-                <button ref={saveButtonRef} data-testid="save" type="submit" disabled={isLoading} className="top-button"><LayersPlus />&nbsp;{usePuterAI ? "Generate" : "Save & Generate"}</button>
+                <button ref={saveButtonRef} data-testid="save" type="submit" disabled={isLoading} className="top-button"><LayersPlus />&nbsp;{useAutoAI ? "Generate" : "Save & Generate"}</button>
               </div>
             </div>
           </form>

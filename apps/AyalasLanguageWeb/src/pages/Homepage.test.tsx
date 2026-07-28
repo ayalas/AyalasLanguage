@@ -46,7 +46,7 @@ describe('Homepage Component', () => {
   });
 
   const mockUser = {
-    disablePuter: true,
+    disableAutoAI: true,
     languageSettings: {
       targetLanguageId: 1,
       knownLanguageId: 2,

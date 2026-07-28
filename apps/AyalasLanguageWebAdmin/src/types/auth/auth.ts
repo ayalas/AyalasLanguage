@@ -26,7 +26,7 @@ export interface IRowUser {
 }
 
 export interface IUserDetails extends IRowUser {
-    disablePuter :boolean
+    disableAutoAI :boolean
     numOfExercisesToGenerate?: number,
     forgotEmailSent?: string,
     forgotEmailReceived?: string,

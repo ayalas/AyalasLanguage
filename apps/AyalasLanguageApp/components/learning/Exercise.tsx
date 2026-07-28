@@ -19,7 +19,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { TouchableOpacity, Text, View } from 'react-native';
 import useTextStyles from '@/lib/useTextStyles';
 import { COLOR_PLAY, COLOR_SAVE } from '@/constants';
-import { PuterTtsRequestDto } from '@/lib/puter';
+import { AITtsRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
 
 export interface ExerciseHandle {
     setFocus: () => void;
@@ -63,14 +63,14 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
 
                         textToPlay = textToPlay != null ? textToPlay : exerciseInfo.exerciseObject.Second;
                         if (textToPlay != null && textToPlay !== "") {
-                            const options: PuterTtsRequestDto = {
+                            const options: AITtsRequestDto = {
                                 text: textToPlay,
                                 voice: pollyObject.voice,
                                 engine: pollyObject.engine,
                                 language: pollyObject.language
                             };
 
-                            const result = await api.post('/api/puter/tts', options, {
+                            const result = await api.post('/api/ai/puter/tts', options, {
                                 responseType: 'arraybuffer'
                             });
 

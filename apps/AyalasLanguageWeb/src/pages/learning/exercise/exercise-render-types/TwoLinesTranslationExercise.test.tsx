@@ -66,7 +66,7 @@ describe('TwoLinesTranslationExercise', () => {
   };
 
   const mockUser = {
-    disablePuter: true,
+    disableAutoAI: true,
     languageSettings: {
       targetLanguage: 'French',
       targetLanguageEnglishName: 'French'

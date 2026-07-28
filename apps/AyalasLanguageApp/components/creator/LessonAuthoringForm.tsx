@@ -31,7 +31,7 @@ import FormDropDown from '../FormDropDown';
 import { ItemType, ValueType } from 'react-native-dropdown-picker';
 import { getFromStorage, saveToStorage } from '@/lib/platformStorage';
 import { FormHeader } from '../FormHeader';
-import { PuterChatRequestDto } from '@/lib/puter';
+import { AIChatRequestDto } from '@/lib/aiintegrations';
 
 export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloadExercise, headerTitle }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: LearningPathInfo; reloadExercise?: () => void, headerTitle: string }) {
@@ -52,7 +52,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   const [aiInstructions, setAIInstructions] = useState('');
   const { level: initLevel, chapter: initChapter } = useLocalSearchParams<{ level?: string, chapter?: string }>();
   const router = useRouter();
-  const [usePuterAI, setUsePuterAI] = useState(true);
+  const [useAutoAI, setUseAutoAI] = useState(true);
 
   const { styles } = useTextStyles();
 
@@ -99,7 +99,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
 
   const parseForm = async function () {
     let arrObjects: ExerciseData[] = [];
-    if (!usePuterAI) {
+    if (!useAutoAI) {
 
       if (firstSet === '' && secondSet === '') {
         return [];
@@ -159,7 +159,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
-      const response = await api.post('/api/puter/chat', { messages: aiAutoDescNew } as PuterChatRequestDto);
+      const response = await api.post('/api/ai/puter/chat', { messages: aiAutoDescNew } as AIChatRequestDto);
 
       if (response.data !== undefined && response.data !== null) {
         // Extract the raw string response
@@ -168,7 +168,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
         if (objData.result === undefined || objData.result.message === undefined || !objData.success) {
           setError('Automated generation did not return a result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
-            Title: "/api/puter/chat failed",
+            Title: "ai chat failed",
             Instruction: aiAutoDescNew.map(it => it.content).join(' '),
             Result: 'no result'
           } as LogAutoAIFailure);
@@ -501,7 +501,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                       />
                     </View>
                   )}
-                  {!usePuterAI && (
+                  {!useAutoAI && (
                     <View style={{ zIndex: 1 }}>
                       <Text style={styles.label}>AI instructions</Text>
                       <View className="form-row">
@@ -544,20 +544,20 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
             <View className="buttons-container" style={{ zIndex: 1, elevation: 1 }}>
               <ActionsMenuComponent anchorTitle="More" items={[
                 {
-                  isVisible: usePuterAI,
+                  isVisible: useAutoAI,
                   dataTestId: "switch-ai-use",
                   disabled: isLoading,
                   itemText: "Switch to Manual Entry",
                   leadingIcon: (props) => <UserPen {...props} className="color-brand-primary" />,
-                  onClick: () => { setUsePuterAI(!usePuterAI) }
+                  onClick: () => { setUseAutoAI(!useAutoAI) }
                 },
                 {
-                  isVisible: !usePuterAI,
+                  isVisible: !useAutoAI,
                   dataTestId: "switch-ai-use",
                   disabled: isLoading,
                   itemText: "Switch to AI Generation",
                   leadingIcon: (props) => <Workflow {...props} className="color-brand-primary" />,
-                  onClick: () => { setUsePuterAI(!usePuterAI) }
+                  onClick: () => { setUseAutoAI(!useAutoAI) }
                 },
                 {
                   dataTestId: "cancel-readding",
@@ -590,7 +590,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                   toPath: `/path/${initialRecord?.learningPathId}`
                 }
               ] as ActionsMenuItem[]} />
-              {initialRecord && initialRecord.access === AUTHOR_ACCESS.CAN_EDIT && usePuterAI && (
+              {initialRecord && initialRecord.access === AUTHOR_ACCESS.CAN_EDIT && useAutoAI && (
                 <View className="form-button-cell">
                   <TouchableOpacity testID="save-only" className="top-button" onPress={saveOnly}>
                     <Save className="color-brand-primary" /><Text style={styles.text}> Save</Text>
@@ -600,7 +600,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
               <View className="form-button-cell">
                 <TouchableOpacity testID="save"
                   disabled={isLoading} className="top-button" onPress={onFormSubmit}><LayersPlus className="color-brand-layers" />
-                  <Text style={styles.text}> {usePuterAI ? "Generate" : "Save & Generate"}</Text>
+                  <Text style={styles.text}> {useAutoAI ? "Generate" : "Save & Generate"}</Text>
                 </TouchableOpacity>
               </View>
             </View>

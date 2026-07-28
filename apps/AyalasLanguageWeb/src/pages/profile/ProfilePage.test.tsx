@@ -67,7 +67,7 @@ describe('ProfilePage', () => {
   const mockUser = {
     userId: 123,
     username: 'testuser',
-    disablePuter: true,
+    disableAutoAI: true,
     languageSettings: {
       targetLanguageId: 2,
       knownLanguageId: 1,

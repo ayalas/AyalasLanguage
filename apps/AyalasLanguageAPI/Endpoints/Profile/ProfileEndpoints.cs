@@ -45,9 +45,9 @@ namespace AyalasLanguageAPI.Endpoints.Profile
                 return Results.BadRequest("User must have both target and known languages set to switch.");
             }
 
-            if (dto.DisablePuter != null)
+            if (dto.DisableAutoAI != null)
             {
-                user.DisablePuter = dto.DisablePuter.Value;
+                user.DisableAutoAI = dto.DisableAutoAI.Value;
             }
             user.NumOfExercisesToGenerate = dto.NumOfExercisesToGenerate;
 

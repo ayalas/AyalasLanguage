@@ -20,7 +20,7 @@ export function ProfilePage() {
   const [knownLanguage, setKnownLanguage] = useState<string | number>('');
   const [numOfExercises, setNumOfExercises] = useState<number>(DEFAULT_NUM_OF_EXERCISES);
   const [error, setError] = useState('');
-  const [disablePuter, setDisablePuter] = useState(false);
+  const [disableAutoAI, setDisableAutoAI] = useState(false);
   const navigate = useNavigate();
   const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
   const targetLanguageRef = useRef<HTMLSelectElement>(null);
@@ -38,8 +38,8 @@ export function ProfilePage() {
 
       //load data from user context
       if (user != null) {
-        if (user.disablePuter) {
-          setDisablePuter(true);
+        if (user.disableAutoAI) {
+          setDisableAutoAI(true);
         }
 
         if (user.languageSettings) {
@@ -91,7 +91,7 @@ export function ProfilePage() {
       if (!user) throw new Error('User must be logged in to change language');
 
       const res = await axios.post('/api/profile/', {
-        disablePuter,
+        disableAutoAI,
         numOfExercisesToGenerate: numOfExercises,
         TargetLanguageId: Number(targetLanguage),
         KnownLanguageId: Number(knownLanguage)
@@ -167,10 +167,10 @@ export function ProfilePage() {
 
             <div className="form-row">
               <div className="form-label-cell">
-                <label className="form-label">Disable Puter use in AI and Sounds</label>
+                <label className="form-label">Disable automatic use of AI in lesson generation and speech</label>
               </div>
               <div className="form-input-cell">
-                <input type="checkbox" data-testid="disablePuter" checked={disablePuter} onChange={(e) => setDisablePuter(e.target.checked)} />
+                <input type="checkbox" data-testid="disableAutoAI" checked={disableAutoAI} onChange={(e) => setDisableAutoAI(e.target.checked)} />
               </div>
             </div>
 
