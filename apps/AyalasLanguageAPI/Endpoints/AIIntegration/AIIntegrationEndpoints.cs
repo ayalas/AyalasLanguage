@@ -36,6 +36,9 @@ public static class AIIntegrationEndpoints
         var uncloseGroup = aiGroup.MapGroup("/unclose").WithTags("unclose");
         uncloseGroup.MapPost("/tts", UncloseAITextToSpeech);
         uncloseGroup.MapPost("/chat", UncloseAIChat);
+
+        var openAIEgdeTTS = aiGroup.MapGroup("/edge").WithTags("edge");
+        openAIEgdeTTS.MapPost("/tts", OpenAIEdgeTTS);
     }
 
     private static async Task<IResult> UncloseAITextToSpeech(
@@ -205,6 +208,22 @@ public static class AIIntegrationEndpoints
         }
     }
 
+    private static async Task<IResult> OpenAIEdgeTTS(
+        AITtsRequestDto request,
+        IConfiguration config,
+        HttpClient httpClient, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
+    {
+        return await ProxyTextToSpeech(request, config, httpClient, claim, db, logger, (req, apiKey) =>
+        {
+            return new
+            {
+                model = "tts-1",
+                voice = req.Voice,
+                input = req.Text
+            };
+        });
+    }
+
     private static async Task<IResult> PuterTextToSpeech(
         AITtsRequestDto request,
         IConfiguration config,
@@ -271,6 +290,8 @@ public static class AIIntegrationEndpoints
         {
             Content = new StringContent(JsonSerializer.Serialize(aiRequestPayload), Encoding.UTF8, "application/json")
         };
+        httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+
         logger.LogInformation("initiating TTS request to ai endpoint {endpoint}", endpoint);
         var response = await httpClient.SendAsync(httpRequest);
 
