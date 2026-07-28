@@ -19,7 +19,15 @@ services:
       timeout: 2s
       retries: 5
       start_period: 60s
-
+  openai-edge-tts:
+    image: travisvn/openai-edge-tts:latest
+    container_name: langapp_tts_instance
+    restart: always
+    environment:
+      API_KEY: ${AI_TTS_API_KEY}
+      PORT: 5050
+    ports:
+    - "${HOST_BIND_IP}:5050:5050"
   api_app:
     image: langapp-language-api:latest
     container_name: langapp_backend_instance
