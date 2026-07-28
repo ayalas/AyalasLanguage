@@ -89,6 +89,7 @@ namespace AyalasLanguageJobs
         private async Task SetRunning(int leftToProcess)
         {
             //change to Running
+            if (_job == null) return;
             _job.LeftToProcess = leftToProcess;
             _job.JobStatus = (byte)JobStatusEnum.Running;
             _job.ModifiedOn = DateTime.UtcNow;
@@ -97,6 +98,7 @@ namespace AyalasLanguageJobs
 
         private async Task SetAsEmptyAndDone()
         {
+            if (_job == null) return;
             _job.LeftToProcess = 0;
             _job.JobStatus = (byte)JobStatusEnum.Completed;
             _job.ModifiedOn = DateTime.UtcNow;
@@ -105,6 +107,7 @@ namespace AyalasLanguageJobs
 
         private async Task HandleSuccess()
         {
+            if (_job == null) return;
             _job.Completed = _job.Completed + 1;
             _job.LeftToProcess = _job.LeftToProcess - 1;
             _job.ModifiedOn = DateTime.UtcNow;
@@ -113,6 +116,7 @@ namespace AyalasLanguageJobs
 
         private async Task HandleException(LogTypeEnum logType, bool hadErrors, Exception? ex = null)
         {
+            if (_job == null) return;
             _db.ChangeTracker.Clear();
             _job.Errors = _job.Errors + 1;
             _job.ModifiedOn = DateTime.UtcNow;
@@ -151,6 +155,7 @@ namespace AyalasLanguageJobs
 
         private async Task SaveJobStatus(bool hadErrors, bool hadSuccess, bool batchOnly)
         {
+            if (_job == null) return;
             _job.ModifiedOn = DateTime.UtcNow;
             if (hadErrors)
             {

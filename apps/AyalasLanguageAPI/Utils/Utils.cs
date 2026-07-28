@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using Resend;
 
 namespace AyalasLanguageAPI.Utils;

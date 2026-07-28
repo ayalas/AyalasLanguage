@@ -6,16 +6,14 @@ import { LayersPlus, Trash, Ban, Workflow, UserPen, BookOpenCheck, Save, History
 import { Slider } from '@miblanchard/react-native-slider';
 
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { removeLastCharIfMatch, parseLLMResponse, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import { removeLastCharIfMatch, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import {
   DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES,
   BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData
 } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
-import {
-  EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES,
-  getAIInstructions, type IChatMessage
-} from '@ayalaslanguage/types/sharedfrontlib/logic';
+import {EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import { getAIInstructions, type IChatMessage, AIChatRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import type { NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
@@ -31,7 +29,6 @@ import FormDropDown from '../FormDropDown';
 import { ItemType, ValueType } from 'react-native-dropdown-picker';
 import { getFromStorage, saveToStorage } from '@/lib/platformStorage';
 import { FormHeader } from '../FormHeader';
-import { AIChatRequestDto } from '@/lib/aiintegrations';
 
 export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloadExercise, headerTitle }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: LearningPathInfo; reloadExercise?: () => void, headerTitle: string }) {
@@ -155,48 +152,45 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
       //set auto AI instructions to have the latest subject
       const aiAutoDescNew = handleExerciseTypeLogic(exerciseType);
 
+      
       if (!aiAutoDescNew || aiAutoDescNew.length === 0) {
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
-      const response = await api.post('/api/ai/unclose/chat', { messages: aiAutoDescNew } as AIChatRequestDto);
+
+      let response: any;
+      try {
+        response = await api.post('/api/ai/unclose/chat', { messages: aiAutoDescNew } as AIChatRequestDto);
+      }
+      catch(err: unknown) {
+        errorHandler(err, (errMsg: string) => {
+            setError(`Automated generation failed. Switch to manual use of AI or try again. Error: ${errMsg}`);
+        });
+        return null;
+      }
 
       if (response.data !== undefined && response.data !== null) {
         // Extract the raw string response
         const objData = response.data;
 
-        if (objData.result === undefined || objData.result.message === undefined || !objData.success) {
+        if (objData === undefined || objData.content === undefined) {
           setError('Automated generation did not return a result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "ai chat failed",
             Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-            Result: 'no result'
+            Result: objData
           } as LogAutoAIFailure);
           return null;
         }
         // Extract the raw string response
-        const rawText = objData.result.message.content.toString();
+        const jsonOutput = objData.content;
 
-        // Parse the string into a JSON object
-        let jsonOutput: unknown;
-        try {
-          jsonOutput = parseLLMResponse(rawText);
-        }
-        catch {
-          setError('Automated generation did not return in the expected result format. Switch to manual use of AI or try again.');
-          writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
-            Title: "parsing LLM response failed",
-            Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-            Result: rawText
-          } as LogAutoAIFailure);
-          return null;
-        }
         if (!Array.isArray(jsonOutput)) {
           setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "Result is not an array",
             Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-            Result: rawText
+            Result: objData
           } as LogAutoAIFailure);
           return null;
         }
@@ -207,7 +201,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
             writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
               Title: "Result is an empty array",
               Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-              Result: rawText
+              Result: objData
             } as LogAutoAIFailure);
             return null;
           }
@@ -237,7 +231,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
               writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
                 Title: "Result is invalid",
                 Instruction: aiAutoDescNew.map(it => it.content).join(' '),
-                Result: rawText
+                Result: objData
               } as LogAutoAIFailure);
               return null;
             }

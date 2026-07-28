@@ -64,6 +64,7 @@ public enum LogTypeEnum
     UsersProgressUpdateOnExerciseCreateJobRunFailed = 3,
     AIChatFailure = 4,
     AITTSFailure = 5,
+    AIChatInfo = 6,
     UnhandledException = 100
 }
 

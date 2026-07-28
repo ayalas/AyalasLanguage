@@ -13,6 +13,7 @@ using OpenAI.Chat;
 using OpenAI;
 using System.ClientModel;
 using OpenAI.Audio;
+using System.ClientModel.Primitives;
 
 namespace AyalasLanguageAPI.Endpoints.AIIntegration;
 
@@ -42,6 +43,7 @@ public static class AIIntegrationEndpoints
         IConfiguration config,
         HttpClient httpClient, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
+        var userId = claim.GetUserId();
         var endpoint = config["AI:TextToSpeechEndpoint"];
         var apiKey = config["AI:TTSAPIKey"];
         if (string.IsNullOrEmpty(apiKey)) return Results.Problem("AI TTS API Key not configured.");
@@ -76,17 +78,35 @@ public static class AIIntegrationEndpoints
                 break;
         }
 
-        BinaryData speech = await client.GenerateSpeechAsync(
-            request.Text,
-            voice,
-            new SpeechGenerationOptions
-            {
-                ResponseFormat = GeneratedSpeechFormat.Mp3,
-                SpeedRatio = 1.0f
-            }
-        );
+        try
+        {
+            BinaryData speech = await client.GenerateSpeechAsync(
+                request.Text,
+                voice,
+                new SpeechGenerationOptions
+                {
+                    ResponseFormat = GeneratedSpeechFormat.Mp3,
+                    SpeedRatio = 1.0f
+                }
+            );
 
-        return Results.Stream(speech.ToStream(), "audio/mpeg");
+            return Results.Stream(speech.ToStream(), "audio/mpeg");
+        }
+        catch (ClientResultException ex)
+        {
+            PipelineResponse? response = ex.GetRawResponse();
+            string? detailedError = response?.Content?.ToString() ?? ex.Message;
+
+            var logData = new AIEndpointFailure
+            {
+                Error = detailedError,
+                RequestData = System.Text.Json.JsonSerializer.Serialize(request),
+                Endpoint = endpoint ?? ""
+            };
+            logger.LogError(ex, "AI TTS Error: {request}. {endpoint}: {detailedError}", logData.RequestData, endpoint, detailedError);
+            await db.CreateLogInternal(userId, LogTypeEnum.AITTSFailure, logData);
+            return Results.Problem($"AI TTS Error: {detailedError}");
+        }
     }
 
     private static async Task<IResult> UncloseAIChat(
@@ -94,13 +114,15 @@ public static class AIIntegrationEndpoints
         IConfiguration config,
         HttpClient httpClient, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
+        var userId = claim.GetUserId();
         var endpoint = config["AI:ChatEndpoint"];
+        var model = config["AI:ChatModel"];
         var apiKey = config["AI:ChatAPIKey"];
         if (string.IsNullOrEmpty(apiKey)) return Results.Problem("AI Chat API Key not configured.");
         if (string.IsNullOrEmpty(endpoint)) return Results.Problem("AI Chat endpoint not configured.");
 
         var client = new ChatClient(
-            model: "adamo1139/Hermes-3-Llama-3.1-8B-FP8-Dynamic",
+            model: model,
             credential: new ApiKeyCredential(apiKey),
             new OpenAIClientOptions
             {
@@ -118,24 +140,78 @@ public static class AIIntegrationEndpoints
                 case "user":
                     msgList.Add(new UserChatMessage(msg.content));
                     break;
-                case "tool":
-                    msgList.Add(new ToolChatMessage(msg.content));
-                    break;
-                case "assistant":
-                    msgList.Add(new AssistantChatMessage(msg.content));
-                    break;
             }
         }
 
-        ChatCompletion completion = await client.CompleteChatAsync(
-            msgList,
-            new ChatCompletionOptions
+        AIEndpointInfo? logInfoData = null;
+        string schemaJson = """
             {
-                Temperature = 0.5f
+            "type": "object",
+            "properties": {
+                "content": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                    "First": { "type": "string" },
+                    "Second": { "type": "string" },
+                    "Translation": { "type": ["string", "null"] },
+                    "ExtraOptions": { "type": ["string", "null"] }
+                    },
+                    "required": ["First", "Second", "Translation", "ExtraOptions"],
+                    "additionalProperties": false
+                }
+                }
+            },
+            "required": ["content"],
+            "additionalProperties": false
             }
-        );
+            """;
+        try
+        {
+            ChatCompletion completion = await client.CompleteChatAsync(
+                msgList,
+                new ChatCompletionOptions
+                {
+                    Temperature = 0.5f,
+                    ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat(
+                        jsonSchemaFormatName: "translation_list",
+                        jsonSchema: BinaryData.FromString(schemaJson),
+                        jsonSchemaIsStrict: true
+                    )
+                }
+            );
 
-        return Results.Content(completion.Content[0].Text, "application/json");
+            string rawJson = completion.Content[0].Text;
+
+            logInfoData = new AIEndpointInfo
+            {
+                RequestData = System.Text.Json.JsonSerializer.Serialize(request),
+                Endpoint = endpoint ?? "",
+                Model = model ?? "",
+                ResponseData = rawJson
+            };
+
+            await db.CreateLogInternal(userId, LogTypeEnum.AIChatInfo, logInfoData);
+
+            return Results.Content(rawJson, "application/json");
+        }
+        catch (ClientResultException ex)
+        {
+            PipelineResponse? response = ex.GetRawResponse();
+            string? detailedError = response?.Content?.ToString() ?? ex.Message;
+
+            var logData = new AIEndpointFailure
+            {
+                Error = detailedError,
+                RequestData = System.Text.Json.JsonSerializer.Serialize(request),
+                Endpoint = endpoint ?? "",
+                Model = model ?? ""
+            };
+            logger.LogError(ex, "AI Chat Error:{request}. {endpoint}: {detailedError}", logData.RequestData, endpoint, detailedError);
+            await db.CreateLogInternal(userId, LogTypeEnum.AIChatFailure, logData);
+            return Results.Problem($"AI Chat Error: {detailedError}");
+        }
     }
 
     private static async Task<IResult> PuterTextToSpeech(
@@ -265,4 +341,6 @@ public static class AIIntegrationEndpoints
         var jsonResponse = await response.Content.ReadAsStringAsync();
         return Results.Content(jsonResponse, "application/json");
     }
+
+
 }
