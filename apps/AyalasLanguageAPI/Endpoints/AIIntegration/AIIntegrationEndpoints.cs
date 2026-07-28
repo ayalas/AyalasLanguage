@@ -44,13 +44,15 @@ public static class AIIntegrationEndpoints
         HttpClient httpClient, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
-        var endpoint = config["AI:TextToSpeechEndpoint"];
+        var endpoint = config["AI:TTSEndpoint"];
         var apiKey = config["AI:TTSAPIKey"];
+        var model = config["AI:TTSModel"];
         if (string.IsNullOrEmpty(apiKey)) return Results.Problem("AI TTS API Key not configured.");
         if (string.IsNullOrEmpty(endpoint)) return Results.Problem("AI TTS endpoint not configured.");
+        if (string.IsNullOrEmpty(model)) return Results.Problem("AI TTS model not configured.");
 
         var client = new AudioClient(
-            model: "tts-1",
+            model: model,
             credential: new ApiKeyCredential(apiKey),
             new OpenAIClientOptions
             {
@@ -58,31 +60,18 @@ public static class AIIntegrationEndpoints
             }
         );
 
-        GeneratedSpeechVoice voice = GeneratedSpeechVoice.Nova;
-        switch (request.Voice)
-        {
-            case "Echo":
-                voice = GeneratedSpeechVoice.Echo;
-                break;
-            case "Fable":
-                voice = GeneratedSpeechVoice.Fable;
-                break;
-            case "Alloy":
-                voice = GeneratedSpeechVoice.Alloy;
-                break;
-            case "Onyx":
-                voice = GeneratedSpeechVoice.Onyx;
-                break;
-            case "Shimmer":
-                voice = GeneratedSpeechVoice.Shimmer;
-                break;
-        }
+        string[] supportedVoices = [
+            "aria","clara","elena","grace","hazel","iris","luna","maya","ruby","sage","sofia","amber","brooke","cora",
+            "diana","eden","faye","gemma","hope","ivy","atlas","caleb","felix","hugo","jasper","kai","leo","marcus","owen","theo","archer",
+            "blake","cole","dane","ezra","finn","grant","heath","ivan","jude","foxhop"];
+        
+        string voice = supportedVoices.Contains(request.Voice) ? request.Voice : "elena";
 
         try
         {
             BinaryData speech = await client.GenerateSpeechAsync(
                 request.Text,
-                voice,
+                new GeneratedSpeechVoice(voice),
                 new SpeechGenerationOptions
                 {
                     ResponseFormat = GeneratedSpeechFormat.Mp3,
@@ -101,7 +90,8 @@ public static class AIIntegrationEndpoints
             {
                 Error = detailedError,
                 RequestData = System.Text.Json.JsonSerializer.Serialize(request),
-                Endpoint = endpoint ?? ""
+                Endpoint = endpoint ?? "",
+                Model = model
             };
             logger.LogError(ex, "AI TTS Error: {request}. {endpoint}: {detailedError}", logData.RequestData, endpoint, detailedError);
             await db.CreateLogInternal(userId, LogTypeEnum.AITTSFailure, logData);
@@ -120,6 +110,7 @@ public static class AIIntegrationEndpoints
         var apiKey = config["AI:ChatAPIKey"];
         if (string.IsNullOrEmpty(apiKey)) return Results.Problem("AI Chat API Key not configured.");
         if (string.IsNullOrEmpty(endpoint)) return Results.Problem("AI Chat endpoint not configured.");
+        if (string.IsNullOrEmpty(model)) return Results.Problem("AI Chat model not configured.");
 
         var client = new ChatClient(
             model: model,

@@ -65,7 +65,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                         if (textToPlay != null && textToPlay !== "") {
                             const options: AITtsRequestDto = {
                                 text: textToPlay,
-                                voice: pollyObject.voice,
+                                voice: pollyObject.openAIVoice,
                                 engine: pollyObject.engine,
                                 language: pollyObject.language
                             };
