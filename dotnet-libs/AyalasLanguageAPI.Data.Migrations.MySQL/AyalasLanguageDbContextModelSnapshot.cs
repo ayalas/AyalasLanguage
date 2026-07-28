@@ -678,7 +678,7 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<bool>("DisablePuter")
+                    b.Property<bool>("DisableAutoAI")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("DisplayName")
