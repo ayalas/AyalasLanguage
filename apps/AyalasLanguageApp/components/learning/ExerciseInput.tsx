@@ -3,6 +3,8 @@ import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/ut
 import { useAuth } from '@/lib/AuthContext';
 import { TextInput, TextInputKeyPressEvent, useColorScheme } from 'react-native';
 import { BG_DARK, BG_LIGHT, BORDER_ACCENT_DARK, BORDER_ACCENT_LIGHT } from '@/constants';
+import { ExerciseType } from '@ayalaslanguage/types/exercise';
+import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 
 export interface ExerciseInputHandle {
   getUserAnswer: () => string;
@@ -18,11 +20,12 @@ interface Props {
   onChange?: (value: string, customKey?: string) => void;
   customKey?: string;
   onFocus?: (customKey?:string) => void;
+  exerciseType: ExerciseType;
   ref?: React.Ref<ExerciseInputHandle | null>;
 }
 
 export default function ExerciseInput ({ charWidth = 20, checkAnswer, value, 
-    onChange = () => { }, customKey, onFocus, ref }: Props) {
+    onChange = () => { }, customKey, onFocus, exerciseType, ref }: Props) {
   const [internalData, setInternalData] = useState<string>('');
   const [errorState, setErrorState] = useState<boolean>(false);
   const inputRef = useRef<TextInput | null>(null);
@@ -85,7 +88,7 @@ export default function ExerciseInput ({ charWidth = 20, checkAnswer, value,
       onKeyPress={handleKeyDown}
       onSubmitEditing={checkAnswer}
       onFocus={() => onFocus?.(customKey)}
-      className="input-text-placeholder"
+      className= {EXERCISE_TYPE_LOGIC[exerciseType].UsesInlineExerciseWithBlanks ?  "input-text-placeholder" : "input-text-line" }
       style={{
         width: charWidth * 10,
         backgroundColor: errorState ? 'rgb(228, 180, 180)' : bgColor,

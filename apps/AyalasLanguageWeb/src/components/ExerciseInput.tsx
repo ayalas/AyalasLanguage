@@ -2,6 +2,8 @@ import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
+import type { ExerciseType } from '@ayalaslanguage/types/exercise';
+import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 
 export interface ExerciseInputHandle {
   getUserAnswer: () => string;
@@ -16,11 +18,12 @@ interface Props {
   value?: string;
   onChange?: (value: string, customKey?: string) => void;
   customKey?: string;
+  exerciseType: ExerciseType;
   ref?: React.Ref<ExerciseInputHandle | null>;
 }
 
 export const ExerciseInput = function (props: Props) {
-  const { charWidth = 20, checkAnswer, value, onChange = () => { }, customKey, ref } = props;
+  const { charWidth = 20, checkAnswer, value, onChange = () => { }, customKey, exerciseType, ref } = props;
   const [internalData, setInternalData] = useState<string>('');
   const [errorState, setErrorState] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -105,7 +108,7 @@ export const ExerciseInput = function (props: Props) {
       onKeyUp={handleSelect}
       onKeyDown={handleKeyDown}
       onFocus={handleFocus}
-      className="input-text-placeholder"
+      className= {EXERCISE_TYPE_LOGIC[exerciseType].UsesInlineExerciseWithBlanks ?  "input-text-placeholder" : "input-text-line" }
       style={inputStyle}
     />
   );

@@ -128,15 +128,18 @@ export const InlineExerciseWithBlanks = function (props: Props) {
             }
         }
         runAsync();
-    }, [exerciseInfo])
+    }, [exerciseInfo]);
+
+    const isRTL = isRightToLeftInput(
+            exerciseInfo.exerciseTypeId,
+            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+        );
 
     return (
         <>
             <div className="exercise-outer-element">
-                <div className={`exercise-inner-element fill-in-inner-element ${isRightToLeftInput(exerciseInfo.exerciseTypeId,
-                    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-                    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-                ) ? "rtlanswer" : "answer"}`}>
+                <div className={`exercise-inner-element fill-in-inner-element ${isRTL ? "rtlanswer" : "answer"}`}>
                     {
                         exerciseInfo.sentenceElements?.map((part, i) => {
                             const setRef = (el: ExerciseInputHandle | null) => {
@@ -154,6 +157,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                                             charWidth={(2 + (exerciseInfo.answers?.[i]?.length || 0))}
                                             checkAnswer={checkAnswerOrMoveToNextInput}
                                             customKey={`${exerciseInfo.exerciseId}-${i}`}
+                                            exerciseType={exerciseInfo.exerciseTypeId}
                                             onChange={onChangeFromInput}
                                         />
                                     ) || (

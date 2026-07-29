@@ -139,6 +139,12 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
     }
   }
 
+  const isRTL = isRightToLeftInput(
+            exerciseInfo.exerciseTypeId,
+            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+        );
+
   return (
     <>
       <View className="exercise-outer-element">
@@ -149,22 +155,23 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
             )}</View>
           </View>
           {answerList && (
-            <View className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
-              user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-              user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-            ) ? "line-container-wrap rtlanswer" : "line-container-wrap answer"}>
+            <View className={`line-container-wrap ${isRTL ? 
+              "flex-row-reverse justify-end" : "flex-row justify-start"}`}
+              style={{
+                        // Force direction for layout engine (Android/iOS)
+                        direction: isRTL ? 'rtl' : 'ltr' 
+                    }}
+              >
               {answerList.map((item, i) => (
-                <BucketListItem key={`answer-${i}`} itemValue={item} position={i} itemClicked={answerListItemClicked} />
+                <BucketListItem key={`answer-${i}`} itemValue={item} position={i} isRTL={isRTL} itemClicked={answerListItemClicked} />
               ))}
             </View>
           )}
-          {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasMultiBucketAnswers && (
-            <View className="menu-delimiter"></View>
-          )}
+          <View className="menu-delimiter"></View>
           {bucketList && (
             <View className="line-container-wrap bucket">
               {bucketList.map((item, i) => (
-                <BucketListItem key={`bucket-${i}`} itemValue={item} position={i} itemClicked={bucketListItemClicked} />
+                <BucketListItem key={`bucket-${i}`} itemValue={item} position={i} isRTL={isRTL} itemClicked={bucketListItemClicked} />
               ))}
             </View>
           )}

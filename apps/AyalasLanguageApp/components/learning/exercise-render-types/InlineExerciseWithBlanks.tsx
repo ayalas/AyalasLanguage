@@ -122,13 +122,22 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
         runAsync();
     }, [exerciseInfo])
 
+    const isRTL = isRightToLeftInput(
+            exerciseInfo.exerciseTypeId,
+            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+        );
+
     return (
         <>
             <View className="exercise-outer-element">
-                <View className={`exercise-inner-element fill-in-inner-element ${isRightToLeftInput(exerciseInfo.exerciseTypeId,
-                    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-                    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-                ) ? "rtlanswer" : "answer"}`}>
+                <View className={`exercise-inner-element fill-in-inner-element ${isRTL ? 
+                    "flex-row-reverse justify-end" : "flex-row justify-start"}`}
+                    style={{
+                        // Force direction for layout engine (Android/iOS)
+                        direction: isRTL ? 'rtl' : 'ltr' 
+                    }}
+                    >
                     {
                         exerciseInfo.sentenceElements?.map((part, i) => {
                             const setRef = (el: ExerciseInputHandle | null) => {
@@ -147,6 +156,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
                                             checkAnswer={checkAnswerOrMoveToNextInput}
                                             customKey={`${exerciseInfo.exerciseId}-${i}`}
                                             onChange={onChangeFromInput}
+                                            exerciseType={exerciseInfo.exerciseTypeId}
                                             onFocus={(key) => { if(key) currentInputKey.current = key; }}
                                         />
                                     ) || (
@@ -154,7 +164,11 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
                                                 {
                                                     words.map((word, index) => (<Text 
                                                         key={`ex-word-${exerciseInfo.exerciseId}input-container${i}-${index}`} 
-                                                        style={styles.inlineExercise}>{word}
+                                                        style={[styles.inlineExercise,
+                                                            {
+                                                              writingDirection: isRTL ? 'rtl' : 'ltr'
+                                                            }
+                                                        ]}>{word}
                                                     </Text>))
                                                 }
                                             </>)

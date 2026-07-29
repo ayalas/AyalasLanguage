@@ -5,10 +5,11 @@ import { TouchableOpacity, View, Text } from 'react-native';
 type Props = {
   itemValue: string;
   position: number;
+  isRTL: boolean;
   itemClicked: (val: string, pos: number) => void;
 };
 
-export default function BucketListItem({ itemValue, position, itemClicked }: Props) {
+export default function BucketListItem({ itemValue, position, isRTL, itemClicked }: Props) {
   const { styles } = useTextStyles();
   
   function clickButton() {
@@ -18,7 +19,8 @@ export default function BucketListItem({ itemValue, position, itemClicked }: Pro
   return (
     <View className="bucket-list-item-cell">
       <TouchableOpacity testID="click-button" className="bucket-list-item-button" onPress={clickButton}>
-        <Text textBreakStrategy="simple" style={[styles.exerciseText, { textAlign: 'center', flexShrink: 1, flexWrap: 'wrap' }]}>{itemValue}</Text>
+        <Text textBreakStrategy="simple" style={[styles.exerciseText, { flexShrink: 1, 
+          flexWrap: 'wrap', display: 'flex', writingDirection: isRTL ? 'rtl' : 'ltr' }]}>{itemValue}</Text>
       </TouchableOpacity>
     </View>
   );

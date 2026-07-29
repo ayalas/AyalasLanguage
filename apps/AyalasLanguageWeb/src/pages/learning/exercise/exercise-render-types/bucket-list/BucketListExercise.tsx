@@ -136,6 +136,12 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
     }
   }
 
+  const isRTL = isRightToLeftInput(
+            exerciseInfo.exerciseTypeId,
+            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+        );
+
   return (
     <>
       <div className="exercise-outer-element">
@@ -146,10 +152,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
             )}</div>
           </div>
           {answerList && (
-            <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
-              user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-              user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-            ) ? "form-row rtlanswer" : "form-row answer"}>
+            <div className={`form-row ${isRTL ? "rtlanswer" : "answer"}`}>
               {answerList.map((item, i) => (
                 <BucketListItem key={`answer-${i}`} itemValue={item} position={i} itemClicked={answerListItemClicked} />
               ))}

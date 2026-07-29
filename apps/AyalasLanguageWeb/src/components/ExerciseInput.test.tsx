@@ -6,6 +6,7 @@ import { useOutletContext } from 'react-router-dom';
 import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import type { ExerciseInputHandle } from './ExerciseInput';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
+import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 
 // Mock axios
 vi.mock('axios', () => ({
@@ -41,7 +42,7 @@ describe('ExerciseInput Component', () => {
     });
 
     it('renders correctly with initial value and applies custom width', async () => {
-        render(<ExerciseInput value="hello" charWidth={10} />);
+        render(<ExerciseInput value="hello" charWidth={10} exerciseType={EXERCISE_TYPES.FILL_IN_THE_BLANKS} />);
 
         // Call the required function as requested
         disableClientValidation();
@@ -54,7 +55,7 @@ describe('ExerciseInput Component', () => {
 
     it('calls onChange and updates internal state when typing', async () => {
         const onChangeMock = vi.fn();
-        render(<ExerciseInput onChange={onChangeMock} />);
+        render(<ExerciseInput onChange={onChangeMock} exerciseType={EXERCISE_TYPES.FILL_IN_THE_BLANKS} />);
 
         disableClientValidation();
 
@@ -67,7 +68,7 @@ describe('ExerciseInput Component', () => {
 
     it('triggers checkAnswer when Enter key is pressed', async () => {
         const checkAnswerMock = vi.fn();
-        render(<ExerciseInput checkAnswer={checkAnswerMock} />);
+        render(<ExerciseInput checkAnswer={checkAnswerMock} exerciseType={EXERCISE_TYPES.FILL_IN_THE_BLANKS} />);
 
         disableClientValidation();
 
@@ -79,7 +80,7 @@ describe('ExerciseInput Component', () => {
 
     it('exposes imperative handle methods correctly', async () => {
         const ref = React.createRef<ExerciseInputHandle>();
-        render(<ExerciseInput ref={ref} />);
+        render(<ExerciseInput ref={ref} exerciseType={EXERCISE_TYPES.FILL_IN_THE_BLANKS} />);
 
         disableClientValidation();
 
@@ -113,7 +114,7 @@ describe('ExerciseInput Component', () => {
 
     it('clears error state when value is changed', async () => {
         const ref = React.createRef<ExerciseInputHandle>();
-        render(<ExerciseInput ref={ref} />);
+        render(<ExerciseInput ref={ref} exerciseType={EXERCISE_TYPES.FILL_IN_THE_BLANKS} />);
 
         disableClientValidation();
 
@@ -137,7 +138,7 @@ describe('ExerciseInput Component', () => {
 
     it('triggers onChange when focused (handleFocus)', async () => {
         const onChangeMock = vi.fn();
-        render(<ExerciseInput onChange={onChangeMock} value="initial" />);
+        render(<ExerciseInput onChange={onChangeMock} value="initial" exerciseType={EXERCISE_TYPES.FILL_IN_THE_BLANKS} />);
 
         disableClientValidation();
 

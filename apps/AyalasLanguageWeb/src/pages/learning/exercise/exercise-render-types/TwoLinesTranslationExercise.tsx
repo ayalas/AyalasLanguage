@@ -95,6 +95,12 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
     runAsync();
   }, [exerciseInfo])
 
+  const isRTL = isRightToLeftInput(
+            exerciseInfo.exerciseTypeId,
+            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+        );
+
   return (
     <>
       <div className="exercise-outer-element">
@@ -104,15 +110,13 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
               <div className="playButtonContainer"><button data-testid="play-question" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
             )}</div>
           </div>
-          <div className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
-            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-          ) ? "form-row rtlanswer" : "form-row answer"} >
+          <div className={`form-row ${isRTL ? "rtlanswer" : "answer"}`} >
             <ExerciseInput
               ref={inputRef}
               charWidth={2 + (second?.length ?? 0)}
               checkAnswer={parentCheckAnswer}
               onChange={OnChange}
+              exerciseType={exerciseInfo.exerciseTypeId}
               value={inputValue}
             />
           </div>

@@ -313,7 +313,7 @@
   flex: 1;
   flex-wrap: wrap;
   gap: 4px;
-  flex-direction: column;
+  flex-direction: row;
   overflow: hidden;
   align-items: start;
 }
@@ -356,13 +356,23 @@
 .input-text-placeholder {
   margin-left: 10px;
   margin-right: 10px;
-  max-width: 80%;
   font-size: var(--exrsize);
   font-family: var(--suns);
   flex-direction: row;
   color: var(--text-h);
   padding: 4px;
   justify-content: flex-start;
+  max-width: 80%;
+}
+
+.input-text-line {
+  max-width: 90%;
+  font-size: var(--exrsize);
+  font-family: var(--suns);
+  flex-direction: row;
+  color: var(--text-h);
+  justify-content: flex-start;
+  padding: 4px;
 }
 
 .fill-in-inner-element {
@@ -734,6 +744,7 @@
   padding-right: 5px;
   padding-top: 5px;
   flex-wrap: wrap;
+  flex-shrink: 1;
 }
 
 .bucket-list-item-button {
@@ -746,7 +757,7 @@
   border-style: solid;
   flex-direction: row;
   flex-wrap: wrap;
-  flex: 1;
+  flex-shrink: 1;
 }
 
 .rtlanswer {

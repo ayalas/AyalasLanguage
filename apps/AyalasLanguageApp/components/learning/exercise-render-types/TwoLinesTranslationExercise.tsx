@@ -1,8 +1,8 @@
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import  ExerciseInput from '@/components/learning/ExerciseInput';
+import ExerciseInput from '@/components/learning/ExerciseInput';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import  { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
-import type {ExerciseHandle} from '../Exercise';
+import { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import type { ExerciseHandle } from '../Exercise';
 import type { ExerciseInputHandle } from '@/components/learning/ExerciseInput';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
@@ -21,7 +21,7 @@ type Props = {
   ref: React.Ref<ExerciseHandle>;
 };
 
-export default function TwoLinesTranslationExercise ({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText, ref }: Props) {
+export default function TwoLinesTranslationExercise({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText, ref }: Props) {
   const inputRef = useRef<ExerciseInputHandle | null>(null);
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
@@ -90,7 +90,13 @@ export default function TwoLinesTranslationExercise ({ exerciseInfo, setError, m
       }
     }
     runAsync();
-  }, [exerciseInfo])
+  }, [exerciseInfo]);
+
+  const isRTL = isRightToLeftInput(
+    exerciseInfo.exerciseTypeId,
+    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+  );
 
   return (
     <>
@@ -101,14 +107,18 @@ export default function TwoLinesTranslationExercise ({ exerciseInfo, setError, m
               <View className="playButtonContainer"><TouchableOpacity testID="play-question" className="play-button" onPress={async () => await playTargetText(first)}><CirclePlay className='color-brand-play' /></TouchableOpacity></View>
             )}</View>
           </View>
-          <View className={isRightToLeftInput(exerciseInfo.exerciseTypeId,
-            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-          ) ? "form-row rtlanswer" : "form-row answer"} >
+          <View className={`form-row ${isRTL ? "flex-row-reverse justify-end" : "flex-row justify-start"}`}
+            style={{
+              // Force direction for layout engine (Android/iOS)
+              direction: isRTL ? 'rtl' : 'ltr'
+            }}
+
+          >
             <ExerciseInput
               ref={inputRef}
               charWidth={2 + (second?.length ?? 0)}
               checkAnswer={parentCheckAnswer}
+              exerciseType={exerciseInfo.exerciseTypeId}
             />
           </View>
         </View>

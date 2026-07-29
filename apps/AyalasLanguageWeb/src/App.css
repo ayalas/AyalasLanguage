@@ -277,7 +277,13 @@ input:required:invalid {
 .input-text-placeholder {
   margin-left: 10px;
   margin-right: 10px;
+  padding: 4px;
   max-width: 80vw;
+}
+
+.input-text-line {
+  max-width: 90vw;
+  padding: 4px;
 }
 
 .content-line-part,

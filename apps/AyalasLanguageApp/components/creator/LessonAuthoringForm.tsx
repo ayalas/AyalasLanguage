@@ -72,25 +72,25 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   const STORAGE_GENERATOR_MATCHES = 'lesson-generator-matches';
   const STORAGE_GENERATOR_WRONG_OPTIONS = 'lesson-generator-wrong-options';
 
-  const loadFromLocalStorage = function () {
-    let tempValue = getFromStorage(STORAGE_GENERATOR_MATCHES);
+  const loadFromLocalStorage = async function () {
+    let tempValue = await getFromStorage(STORAGE_GENERATOR_MATCHES);
     if (tempValue != null && !isNaN(Number(tempValue))) {
       setMatches(Number(tempValue))
     }
 
-    tempValue = getFromStorage(STORAGE_GENERATOR_WRONG_OPTIONS);
+    tempValue = await getFromStorage(STORAGE_GENERATOR_WRONG_OPTIONS);
     if (tempValue != null && !isNaN(Number(tempValue))) {
       setExtraOptions(Number(tempValue))
     }
   }
 
-  const saveToLocalStorage = function () {
+  const saveToLocalStorage = async function () {
     if (EXERCISE_TYPE_LOGIC[exerciseType].IsMatchingType) {
-      saveToStorage(STORAGE_GENERATOR_MATCHES, matches.toString());
+      await saveToStorage(STORAGE_GENERATOR_MATCHES, matches.toString());
     }
 
     if (EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions) {
-      saveToStorage(STORAGE_GENERATOR_WRONG_OPTIONS, extraOptions.toString());
+      await saveToStorage(STORAGE_GENERATOR_WRONG_OPTIONS, extraOptions.toString());
     }
   }
 
