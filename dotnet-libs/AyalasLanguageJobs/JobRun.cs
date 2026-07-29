@@ -8,86 +8,74 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageJobs
 {
-    public class JobRun
+    public abstract class JobRun
     {
-        [Required]
+
         protected int _jobId;
-        [Required]
         protected AyalasLanguageDbContext _db;
+
+        protected JobTypeEnum _jobType;
 
         protected int? _batchSize = null!;
         
         protected Job? _job;
-        public JobRun(int jobId, AyalasLanguageDbContext db, int? batchSize)
+
+        protected int? _mainRecordId =  null!;
+
+        protected int? _secondaryRecordId =  null!;
+
+        protected abstract Task<int> ShouldRun();
+        protected abstract Task RunInternal();
+
+        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db)
         {
-            _jobId = jobId;
+            _jobType = jobType;
             _db = db;
-            _batchSize = batchSize;
+        }
+
+        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db, int mainRecordId)
+        {
+            _jobType = jobType;
+            _db = db;
+            _mainRecordId = mainRecordId;
+        }
+
+        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db, int mainRecordId, int secondaryRecordId)
+        {
+            _jobType = jobType;
+            _db = db;
+            _mainRecordId = mainRecordId;
+            _secondaryRecordId = secondaryRecordId;
+        }
+
+        private async Task<Job?> CreateJob()
+        {
+            int numOfRecords = await ShouldRun();
+            if (numOfRecords == 0) return null;
+            var job = new Job
+            {
+                JobType = (byte)_jobType,
+                JobStatus = (byte)JobStatusEnum.NotStarted,
+                MainRecordId = _mainRecordId,
+                SecondaryRecordId = _secondaryRecordId,
+                //ExtraData = data if needed in the future...
+                LeftToProcess = numOfRecords
+            };
+
+            _db.Jobs.Add(job);
+            await _db.SaveChangesAsync();
+
+            return job;
         }
 
         public async void Run()
         {
-            _job = await _db.Jobs.FirstOrDefaultAsync(j => j.JobId == _jobId);
+            _job = await CreateJob();
             if (_job == null) return;
-            switch ((JobTypeEnum)_job.JobType)
-            {
-                case JobTypeEnum.UsersProgressUpdateOnExerciseCreate:
-                    await UsersProgressUpdateOnExerciseCreateJob();
-                    break;
-            }
+            await RunInternal();
         }
 
-        private async Task UsersProgressUpdateOnExerciseCreateJob()
-        {
-            if (_job == null) return;
-            var query = JobsQuery.UsersProgressUpdateOnExerciseCreate(_job.MainRecordId, _db);
-
-            List<UserProgress>? list = null;
-            bool batchOnly = false;
-            if (_batchSize != null && _job.LeftToProcess != null && _batchSize < _job.LeftToProcess)
-            {
-                list = await query.Take(_batchSize.Value).ToListAsync();
-
-                batchOnly = true;
-            }
-            else
-            {
-                list = await query.ToListAsync();
-            }
-
-            if (list == null || list.Count == 0)
-            {
-                await SetAsEmptyAndDone();
-                return;
-            }
-
-            bool hadErrors = false;
-            bool hadSuccess = false;
-
-            await SetRunning(list.Count);
-
-            foreach (UserProgress up in list)
-            {
-                try
-                {
-                    up.ExerciseId = _job.SecondaryRecordId;
-                    await _db.SaveChangesAsync();
-                    hadSuccess = true;
-                    await HandleSuccess();
-                }
-                catch (Exception ex)
-                {
-                    //calls SaveChangesAsync for the job too
-                    await HandleException(LogTypeEnum.UsersProgressUpdateOnExerciseCreateJobRunFailed, hadErrors, ex);
-                    hadErrors = true;
-                }
-            }
-
-            //save job status
-            await SaveJobStatus(hadErrors, hadSuccess, batchOnly);
-        }
-
-        private async Task SetRunning(int leftToProcess)
+        protected async Task SetRunning(int leftToProcess)
         {
             //change to Running
             if (_job == null) return;
@@ -97,7 +85,7 @@ namespace AyalasLanguageJobs
             await _db.SaveChangesAsync();
         }
 
-        private async Task SetAsEmptyAndDone()
+        protected async Task SetAsEmptyAndDone()
         {
             if (_job == null) return;
             _job.LeftToProcess = 0;
@@ -106,7 +94,7 @@ namespace AyalasLanguageJobs
             await _db.SaveChangesAsync();
         }
 
-        private async Task HandleSuccess()
+        protected async Task HandleSuccess()
         {
             if (_job == null) return;
             _job.Completed = _job.Completed + 1;
@@ -115,7 +103,7 @@ namespace AyalasLanguageJobs
             await _db.SaveChangesAsync();
         }
 
-        private async Task HandleException(LogTypeEnum logType, bool hadErrors, Exception? ex = null)
+        protected async Task HandleException(LogTypeEnum logType, bool hadErrors, Exception? ex = null)
         {
             if (_job == null) return;
             _db.ChangeTracker.Clear();
@@ -154,7 +142,7 @@ namespace AyalasLanguageJobs
             await _db.SaveChangesAsync();
         }
 
-        private async Task SaveJobStatus(bool hadErrors, bool hadSuccess, bool batchOnly)
+        protected async Task SaveJobStatus(bool hadErrors, bool hadSuccess, bool batchOnly)
         {
             if (_job == null) return;
             _job.ModifiedOn = DateTime.UtcNow;

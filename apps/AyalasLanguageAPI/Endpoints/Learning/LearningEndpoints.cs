@@ -333,13 +333,9 @@ public static class LearningEndpoints
             }
 
             //job for other users
-            var jobId = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
-                    userProgress.LearningPathId, exerciseToAdd.ExerciseId, db);
-            if (jobId != null)
-            {
-                JobRun run = new JobRun(jobId.Value, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
-                run.Run();
-            }
+            var job = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
+                    userProgress.LearningPathId, exerciseToAdd.ExerciseId, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
+            job?.Run();
 
             return Results.Created($"/api/learning/exercise/{exerciseToAdd.ExerciseId}", new CreateExerciseResponseDto(exerciseToAdd.ExerciseId));
         }

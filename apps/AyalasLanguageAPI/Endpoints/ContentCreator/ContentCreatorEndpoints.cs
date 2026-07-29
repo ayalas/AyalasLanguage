@@ -259,12 +259,9 @@ public static class ContentCreatorEndpoints
         }
 
         //job for other users
-        var jobId = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate, 
-                dto.LearningPathId, exercise.ExerciseId, db);
-        if (jobId != null) {
-            JobRun run = new JobRun(jobId.Value, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
-            run.Run();
-        }
+        var job = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate, 
+                dto.LearningPathId, exercise.ExerciseId, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
+         job?.Run();
 
         return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", new CreateExerciseResponseDto(exercise.ExerciseId));
     }
