@@ -11,3 +11,18 @@ export const safeParseData = (data: string | ExerciseData) => {
   }
   return (data as ExerciseData);
 };
+
+export const replaceExerciseChars = (data: ExerciseData) => {
+  data.First = replaceExerciseCharsInternal(data.First);
+  data.Second = replaceExerciseCharsInternal(data.Second);
+  data.ExtraOptions = replaceExerciseCharsInternal(data.ExtraOptions);
+  return data;
+}
+
+function replaceExerciseCharsInternal(s?: string){
+  if (s != null) {
+    s = s.replaceAll('،', ',');
+  }
+
+  return s;
+}

@@ -8,7 +8,7 @@ import { removeLastCharIfMatch, writeToLog } from '@ayalaslanguage/types/sharedf
 import { DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES, BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
 
-import { EXERCISE_TYPE_LOGIC, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import { EXERCISE_TYPE_LOGIC, replaceExerciseChars, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { getAIInstructions, type AIChatRequestDto, type IChatMessage } from '@ayalaslanguage/types/sharedfrontlib/ai';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
@@ -271,10 +271,11 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     }, 1000);
   }
 
-  const createExercises = async function (pathId: number, exerciseType: ExerciseType, arrData: any[]) {
+  const createExercises = async function (pathId: number, exerciseType: ExerciseType, arrData: ExerciseData[]) {
     const created: number[] = [];
-    for (const exer of arrData) {
+    for (let exer of arrData) {
       try {
+        exer = replaceExerciseChars(exer);
         const responseEx = await axios.post('/api/creator/exercise', {
           learningPathId: pathId,
           exerciseTypeId: exerciseType,
