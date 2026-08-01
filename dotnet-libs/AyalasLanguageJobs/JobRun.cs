@@ -68,7 +68,7 @@ namespace AyalasLanguageJobs
             return job;
         }
 
-        public async void Run()
+        public async Task Run()
         {
             _job = await CreateJob();
             if (_job == null) return;

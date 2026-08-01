@@ -250,7 +250,7 @@ public static class ContentCreatorEndpoints
         await db.SaveChangesAsync();
 
         //if we are generating more exercises on a done/empty lesson with a progress record - set it not to be done
-        if (userProgress != null 
+        if (userProgress != null
             && userProgress.ExerciseId == null)
         {
             userProgress.ExerciseId = exercise.ExerciseId;
@@ -259,9 +259,12 @@ public static class ContentCreatorEndpoints
         }
 
         //job for other users
-        var job = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate, 
+        var job = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
                 dto.LearningPathId, exercise.ExerciseId, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
-         job?.Run();
+        if (job != null)
+        {
+            await job.Run(); //must await so connection stays alive
+        }
 
         return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", new CreateExerciseResponseDto(exercise.ExerciseId));
     }

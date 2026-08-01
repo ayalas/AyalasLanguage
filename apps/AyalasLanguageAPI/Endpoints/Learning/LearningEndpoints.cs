@@ -335,7 +335,10 @@ public static class LearningEndpoints
             //job for other users
             var job = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
                     userProgress.LearningPathId, exerciseToAdd.ExerciseId, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
-            job?.Run();
+            if (job != null)
+            {
+                await job.Run(); //must await so connection stays alive
+            }
 
             return Results.Created($"/api/learning/exercise/{exerciseToAdd.ExerciseId}", new CreateExerciseResponseDto(exerciseToAdd.ExerciseId));
         }
