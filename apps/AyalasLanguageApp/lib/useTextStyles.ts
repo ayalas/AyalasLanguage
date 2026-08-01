@@ -17,7 +17,7 @@ export default function useTextStyles() {
     const styles = StyleSheet.create({
         h1: {
             fontFamily: fontFamily,
-            fontSize: 26, fontWeight: '600',
+            fontSize: 24, fontWeight: '600',
             marginTop: 24,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
             marginHorizontal: 0,
@@ -25,7 +25,7 @@ export default function useTextStyles() {
         },
         h2: {
             fontFamily: fontFamily,
-            fontSize: 24, 
+            fontSize: 22, 
             fontWeight: '600',
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
             marginTop: 0,
@@ -35,7 +35,7 @@ export default function useTextStyles() {
         text: {
             fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
-            fontSize: 18,
+            fontSize: 16,
             alignContent: 'center',
             textAlign: 'left',
             flexDirection: 'row',
@@ -44,7 +44,7 @@ export default function useTextStyles() {
         exerciseText: {
             fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
-            fontSize: 22,
+            fontSize: 20,
             alignContent: 'center',
             fontWeight: '400',
             flexDirection: 'row',
@@ -53,7 +53,7 @@ export default function useTextStyles() {
         inlineExercise: {
             fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
-            fontSize: 22,
+            fontSize: 20,
             alignContent: 'center',
             paddingHorizontal: 5,
             flexDirection: 'row',
@@ -61,7 +61,7 @@ export default function useTextStyles() {
         },
         italicHeading: {
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
-            fontSize: 18,
+            fontSize: 16,
             alignContent: 'center',
             fontStyle: 'italic',
             textAlign: 'left',
@@ -71,7 +71,7 @@ export default function useTextStyles() {
         dimmedText: {
             fontFamily: fontFamily,
             color: isDark ? DIMMED_DARK : DIMMED_LIGHT,
-            fontSize: 18,
+            fontSize: 16,
             alignContent: 'center',
             textAlign: 'left',
             flexDirection: 'row',
@@ -80,7 +80,7 @@ export default function useTextStyles() {
         layersText: {
             fontFamily: fontFamily,
             color: isDark ? LAYERS_DARK :LAYERS_LIGHT,
-            fontSize: 18,
+            fontSize: 16,
             alignContent: 'center',
             textAlign: 'left',
             flexDirection: 'row',
@@ -89,7 +89,7 @@ export default function useTextStyles() {
         label: {
             fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
-            fontSize: 18,
+            fontSize: 16,
             flexWrap: 'nowrap',
             alignContent: 'center',
             fontWeight: '500',
@@ -101,7 +101,7 @@ export default function useTextStyles() {
         labelWrap: {
             fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
-            fontSize: 18,
+            fontSize: 16,
             flexWrap: 'wrap',
             alignContent: 'center',
             fontWeight: '500',
@@ -111,7 +111,7 @@ export default function useTextStyles() {
         },
         errorText: {
             fontFamily: fontFamily,
-            fontSize: 18,
+            fontSize: 16,
             color: isDark ? ERROR_DARK : ERROR_LIGHT
         },
         doneCell: {
