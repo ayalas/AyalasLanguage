@@ -360,7 +360,7 @@ input:required:invalid {
 }
 
 .exercise-outer-element {
-  padding: 20px 12px 24px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -737,7 +737,7 @@ input:required:invalid {
   justify-content: flex-end;
   align-items: flex-end;
   text-align: right;
-  margin-left: auto;
+  flex: 1;
   padding-right: 15px;
 }
 
@@ -748,7 +748,7 @@ input:required:invalid {
   justify-content: flex-start;
   align-items: flex-start;
   text-align: left;
-  margin-right: auto;
+  flex: 1;
   padding-left: 15px;
   padding-right: 20px;
 }
@@ -769,7 +769,7 @@ input:required:invalid {
   border: 1px solid var(--border);
   cursor: pointer;
   padding: 10px 12px;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   border-radius: 999px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   font-size: var(--exrsize);
@@ -889,7 +889,7 @@ input:required:invalid {
 
 @media (max-width: 768px) {
   .lesson-inner-container {
-    padding: 14px 12px 0;
+    padding: 14px 12px 12px;
   }
 
   .lesson-outer-container {
