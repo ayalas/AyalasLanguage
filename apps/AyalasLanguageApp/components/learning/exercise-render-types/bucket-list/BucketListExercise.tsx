@@ -93,6 +93,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
 
   useEffect(() => {
     async function execAsync() {
+      
       if (exerciseInfo && exerciseInfo.exerciseObject != null && exerciseInfo.answers && exerciseInfo.answers.length > 0 && exerciseInfo.extraItems && exerciseInfo.extraItems.length > 0) {
 
         setFirst(exerciseInfo.exerciseObject.First as string);
@@ -109,7 +110,6 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
         setBucketList(optionsListRandomized);
 
         if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].AutoPlayQuestion) {
-          //play the sentence shown
           await playTargetText(exerciseInfo.exerciseObject.First as string);
         }
       }

@@ -150,17 +150,17 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
       }
 
       //set auto AI instructions to have the latest subject
-      const aiAutoDescNew = handleExerciseTypeLogic(exerciseType);
+      const req = handleExerciseTypeLogic(exerciseType);
 
       
-      if (!aiAutoDescNew || aiAutoDescNew.length === 0) {
+      if (req == null || req.messages.length === 0) {
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
       }
 
       let response: any;
       try {
-        response = await api.post('/api/ai/unclose/chat', { messages: aiAutoDescNew } as AIChatRequestDto);
+        response = await api.post('/api/ai/unclose/chat', req);
       }
       catch(err: unknown) {
         errorHandler(err, (errMsg: string) => {
@@ -177,7 +177,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
           setError('Automated generation did not return a result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "ai chat failed",
-            Instruction: aiAutoDescNew.map(it => it.content).join(' '),
+            Instruction: req.messages.map(it => it.content).join(' '),
             Result: objData
           } as LogAutoAIFailure);
           return null;
@@ -189,7 +189,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
           setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
           writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "Result is not an array",
-            Instruction: aiAutoDescNew.map(it => it.content).join(' '),
+            Instruction: req.messages.map(it => it.content).join(' '),
             Result: objData
           } as LogAutoAIFailure);
           return null;
@@ -200,7 +200,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
             setError('Automated generation returned an empty result. Switch to manual use of AI or try again.');
             writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
               Title: "Result is an empty array",
-              Instruction: aiAutoDescNew.map(it => it.content).join(' '),
+              Instruction: req.messages.map(it => it.content).join(' '),
               Result: objData
             } as LogAutoAIFailure);
             return null;
@@ -230,7 +230,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
               setError('Automated generation returned the expected result structure. Switch to manual use of AI or try again.');
               writeToLog<LogAutoAIFailure>(api, LOG_TYPE.AUTO_AI_FAILURE, {
                 Title: "Result is invalid",
-                Instruction: aiAutoDescNew.map(it => it.content).join(' '),
+                Instruction: req.messages.map(it => it.content).join(' '),
                 Result: objData
               } as LogAutoAIFailure);
               return null;
@@ -238,7 +238,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
 
             // writeToLog<LogAutoAIFailure>(LOG_TYPE.AUTO_AI_FAILURE, {
             //   Title: "TRACE LLM response",
-            //   Instruction: aiAutoDescNew.map(it => it.content).join(' '),
+            //   Instruction: req.messages.map(it => it.content).join(' '),
             //   Result: objData
             // } as LogAutoAIFailure);
 
@@ -320,7 +320,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
 
   const handleExerciseTypeLogic = function (exrTypeValue: ExerciseType) {
     const exType = EXERCISE_TYPE_LOGIC[exrTypeValue].GenerationInfo;
-    if (exType == null) return [];
+    if (exType == null) return null;
 
     let aiMessages: IChatMessage[];
     const numOfExercises = user?.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES;
@@ -336,7 +336,13 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     //automatic ai instructions (returning json)
     aiMessages = getAIInstructions(exType, targetLanguage, knownLanguage, numOfExercises, matches, extraOptions, true, subject);
 
-    return aiMessages;
+    return {
+      exerciseType: exrTypeValue,
+      numOfExercises, 
+      matches, 
+      extraOptions,
+      messages: aiMessages 
+    } as AIChatRequestDto;
   };
 
   const onChangeExerciseType = async (value: string | number) => {

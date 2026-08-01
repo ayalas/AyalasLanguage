@@ -72,6 +72,10 @@ namespace AyalasLanguageAPI.DTOs
     public record AIChatMessageDto(string role, string content);
     
     public record AIChatRequestDto(
+        ExerciseTypesEnum ExerciseType,
+        int NumOfExercises,
+        int Matches,
+        int ExtraOptions,
         List<AIChatMessageDto> Messages
     );
 

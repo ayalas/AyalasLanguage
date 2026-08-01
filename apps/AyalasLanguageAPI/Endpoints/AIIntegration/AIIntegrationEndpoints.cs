@@ -67,7 +67,7 @@ public static class AIIntegrationEndpoints
             "aria","clara","elena","grace","hazel","iris","luna","maya","ruby","sage","sofia","amber","brooke","cora",
             "diana","eden","faye","gemma","hope","ivy","atlas","caleb","felix","hugo","jasper","kai","leo","marcus","owen","theo","archer",
             "blake","cole","dane","ezra","finn","grant","heath","ivan","jude","foxhop"];
-        
+
         string voice = supportedVoices.Contains(request.Voice) ? request.Voice : "elena";
 
         try
@@ -137,29 +137,75 @@ public static class AIIntegrationEndpoints
             }
         }
 
-        string schemaJson = """
+        List<string> schemaJsonArr =
+        [
+            $$"""
             {
             "type": "object",
             "properties": {
                 "content": {
                 "type": "array",
+                "minItems": {{request.NumOfExercises}},
+                "maxItems": {{request.NumOfExercises}},
                 "items": {
                     "type": "object",
                     "properties": {
-                    "First": { "type": "string" },
-                    "Second": { "type": "string" },
-                    "Translation": { "type": ["string", "null"] },
-                    "ExtraOptions": { "type": ["string", "null"] }
-                    },
-                    "required": ["First", "Second", "Translation", "ExtraOptions"],
-                    "additionalProperties": false
+            """,
+        ];
+
+        string requiredFields;
+
+        if (FirstIsArray(request.ExerciseType) && SecondIsArray(request.ExerciseType))
+        {
+            // Added a comma at the very end of this string block
+            schemaJsonArr.Add($$"""
+                "Matches": { "type": "array", 
+                    "minItems": {{request.Matches}},
+                    "maxItems": {{request.Matches}},
+                    "items": { "type": "object", 
+                            "properties": { 
+                                "First": { "type": "string" }, 
+                                "Second": { "type": "string" } 
+                            }, 
+                            "required": ["First", "Second"], 
+                    "additionalProperties": false } 
+        },
+        """);
+            // Only these fields exist in this branch
+            requiredFields = "\"Matches\", \"Translation\", \"ExtraOptions\"";
+        }
+        else
+        {
+            schemaJsonArr.Add("\"First\": { \"type\": \"string\" },");
+            schemaJsonArr.Add(SecondIsArray(request.ExerciseType)
+                ? "\"Second\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },"
+                : "\"Second\": { \"type\": \"string\" },");
+
+            // These fields exist in this branch
+            requiredFields = "\"First\", \"Second\", \"Translation\", \"ExtraOptions\"";
+        }
+
+        // Use $$ and {{ }} for interpolation in raw string literals (C# 11+)
+        schemaJsonArr.Add($$"""
+                "Translation": { "type": ["string", "null"] },
+                    "ExtraOptions": { 
+                        "type": ["array", "null"],
+                        "minItems": {{request.ExtraOptions}},
+                        "maxItems": {{request.ExtraOptions}},
+                        "items": { "type": "string" }
+                    }
+                },
+                "required": [{{requiredFields}}],
+                "additionalProperties": false
                 }
-                }
-            },
-            "required": ["content"],
-            "additionalProperties": false
             }
-            """;
+        },
+        "required": ["content"],
+        "additionalProperties": false
+        }
+        """);
+
+        string schemaJson = string.Join("", schemaJsonArr);
         try
         {
             ChatCompletion completion = await client.CompleteChatAsync(
@@ -175,7 +221,7 @@ public static class AIIntegrationEndpoints
                 }
             );
 
-            string rawJson = completion.Content[0].Text;
+            string rawJson = TransformToClientJson(completion.Content[0].Text);
 
             /*  var logInfoData = new AIEndpointInfo
             {
@@ -353,5 +399,116 @@ public static class AIIntegrationEndpoints
         return Results.Content(jsonResponse, "application/json");
     }
 
+    private static bool FirstIsArray(ExerciseTypesEnum exType)
+    {
+        return exType switch
+        {
+            ExerciseTypesEnum.Matching or ExerciseTypesEnum.MatchingToSpoken => true,
+            _ => false,
+        };
+    }
 
+    private static bool SecondIsArray(ExerciseTypesEnum exType)
+    {
+        return exType switch
+        {
+            ExerciseTypesEnum.Matching or ExerciseTypesEnum.MatchingToSpoken
+            or ExerciseTypesEnum.CommonResponsesBucket
+            => true,
+            _ => false,
+        };
+    }
+
+    private static string TransformToClientJson(string rawJson)
+    {
+        // 1. Parse the LLM response
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var newResult = JsonSerializer.Deserialize<NewSchemaRoot>(rawJson, options);
+
+        var legacyContent = new List<OriginalSchemaItem>();
+
+        if (newResult == null || newResult.Content == null)
+        {
+            return rawJson; // Return the original JSON if parsing fails
+        }
+
+        foreach (var item in newResult.Content)
+        {
+            string finalFirst = "";
+            string finalSecond = "";
+
+            bool secondIsArray = false;
+
+            // CASE A: Matches (Both First and Second were treated as arrays)
+            if (item.Matches != null && item.Matches.Count > 0)
+            {
+                // Aggregate all "First" values and all "Second" values into comma-separated strings
+                finalFirst = string.Join(",", item.Matches.Select(m => m.First.Replace(",", " ")));
+                finalSecond = string.Join(",", item.Matches.Select(m => m.Second.Replace(",", " ")));
+            }
+            // CASE B: Standard or "Second only is Array" structure
+            else
+            {
+                finalFirst = item.First ?? "";
+
+                if (item.Second.HasValue)
+                {
+                    secondIsArray = item.Second.Value.ValueKind == JsonValueKind.Array;
+                    // If Second is an array, join it. If it's a string, just take it.
+                    finalSecond = secondIsArray
+                        ? string.Join(",", item.Second.Value.EnumerateArray().Select(x => x.GetString()?.Replace(",", " "))) // Replace commas in individual items to avoid confusion
+                        : item.Second.Value.GetString() ?? "";
+                }
+            }
+
+            // Convert ExtraOptions array back to a single space-separated string
+            string? legacyExtraOptions = item.ExtraOptions != null
+            ? string.Join(secondIsArray ? "," : " ", item.ExtraOptions.Select(opt => secondIsArray ? opt.Replace(",", " ") : opt))
+            : null;
+
+            // Add the single aggregated item to the list
+            legacyContent.Add(new OriginalSchemaItem
+            {
+                First = finalFirst,
+                Second = finalSecond,
+                Translation = item.Translation,
+                ExtraOptions = legacyExtraOptions
+            });
+        }
+
+        // 3. Serialize back to the original JSON format
+        return JsonSerializer.Serialize(new { content = legacyContent });
+    }
+
+}
+
+// The structure the LLM returns now
+internal class NewSchemaRoot
+{
+    public required List<NewSchemaItem> Content { get; set; }
+}
+
+internal class NewSchemaItem
+{
+    // These might be null depending on the ExerciseType logic
+    public string? First { get; set; }
+    public JsonElement? Second { get; set; } // Using JsonElement because it could be string OR array
+    public List<MatchItem>? Matches { get; set; }
+    public string? Translation { get; set; }
+    public List<string>? ExtraOptions { get; set; }
+}
+
+internal class MatchItem
+{
+    public required string First { get; set; }
+    public required string Second { get; set; }
+}
+
+// The structure your legacy client expects
+internal class OriginalSchemaItem
+{
+    public required string First { get; set; }
+    public required string Second { get; set; }
+    public string? Translation { get; set; }
+    public string? ExtraOptions { get; set; }
 }
