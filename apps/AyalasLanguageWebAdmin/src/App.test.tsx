@@ -4,9 +4,9 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './components/auth/AuthContext';
-import  LoginPage  from './pages/auth/LoginPage';
-import  ExercisesGrid from './components/ExercisesGrid';
-import {LearningPathPage} from './pages/content/LearningPathPage';
+import LoginPage from './pages/auth/LoginPage';
+import ExercisesGrid from './components/ExercisesGrid';
+import { LearningPathPage } from './pages/content/LearningPathPage';
 import { CONTENT_STATUS, EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import type { IRowExercise } from './types/grids/grids';
@@ -67,11 +67,11 @@ vi.mock('./components/auth/AuthContext', async () => {
   });
   return {
     AuthProvider: ({ children }: any) => (
-      <MockContext.Provider value={{ 
-        user: { userId: 1, role: 1, userName: 'admin@test.com' }, 
-        loading: false, 
-        login: vi.fn(), 
-        logout: vi.fn() 
+      <MockContext.Provider value={{
+        user: { userId: 1, role: 1, userName: 'admin@test.com' },
+        loading: false,
+        login: vi.fn(),
+        logout: vi.fn()
       }}>
         {children}
       </MockContext.Provider>
@@ -109,7 +109,7 @@ describe('Admin Console Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (mockedAxios as any).defaults = { withCredentials: true };
-    
+
     // Global GET interceptor
     mockedAxios.get.mockImplementation((_url: string) => {
       return Promise.resolve({ data: { data: [], numOfRecords: 0 } });
@@ -146,19 +146,19 @@ describe('Admin Console Tests', () => {
     it('should load the second page of exercises', async () => {
       // Return 500 items to ensure the 'Next' button is enabled
       const mockData = Array.from({ length: 101 }, (_, i) => ({
-                userId: i,
-                exerciseId: i,
-                learningPathId: i,
-                exerciseTypeId: EXERCISE_TYPES.COMMON_RESPONSES,
-                exerciseType: "Common Responses",
-                email: 'test@test.com',
-                name: `Exercise ${i}`,
-                knownLanguage: 'English',
-                targetLanguage: 'Danish',
-                data: 'data',
-                status: CONTENT_STATUS.DRAFT,
-                createdOn: new Date().toISOString()
-            } as IRowExercise));
+        userId: i,
+        exerciseId: i,
+        learningPathId: i,
+        exerciseTypeId: EXERCISE_TYPES.COMMON_RESPONSES,
+        exerciseType: "Common Responses",
+        email: 'test@test.com',
+        name: `Exercise ${i}`,
+        knownLanguage: 'English',
+        targetLanguage: 'Danish',
+        data: 'data',
+        status: CONTENT_STATUS.DRAFT,
+        createdOn: new Date().toISOString()
+      } as IRowExercise));
 
       mockedAxios.get.mockImplementation((url: string) => {
         if (url.includes('/api/exercises/')) {
@@ -229,8 +229,8 @@ describe('Admin Console Tests', () => {
     it('should render lesson info', async () => {
       mockedAxios.get.mockImplementation((url: string) => {
         if (url.includes('/admin/api/learning-path/5')) {
-          return Promise.resolve({ 
-            data: { name: 'Verbs', level: 1, chapter: 1, status: 1, email: 'a@b.com' } 
+          return Promise.resolve({
+            data: { name: 'Verbs', level: 1, chapter: 1, status: 1, email: 'a@b.com' }
           });
         }
         return Promise.resolve({ data: { data: [], numOfRecords: 0 } });
@@ -247,8 +247,10 @@ describe('Admin Console Tests', () => {
       );
 
       const lessonHeader = await screen.findByTestId('lesson-header');
-      expect(lessonHeader).toBeInTheDocument();
-      expect(lessonHeader).toHaveTextContent(/Lesson 1-1: Verbs/i);
+      await waitFor(() => {
+        expect(lessonHeader).toBeInTheDocument();
+        expect(lessonHeader).toHaveTextContent(/Lesson 1-1: Verbs/i);
+      });
     });
   });
 });
