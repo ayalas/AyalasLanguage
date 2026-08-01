@@ -7,7 +7,7 @@ import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAnd
 import { Exercise, type ExerciseHandle } from './exercise/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { EXERCISE_TYPE_LOGIC, safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
-import  { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 export function LessonPage() {
@@ -76,7 +76,7 @@ export function LessonPage() {
         extraItems: (replaceCharsForLanguage(targetLang, dataObj.ExtraOptions || '') || '').trim().split(separator),
         index
       });
-    } else if ( EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].IsMatchingType) {
+    } else if (EXERCISE_TYPE_LOGIC[curItem.exerciseTypeId].IsMatchingType) {
       const sentenceElements = (firstData || '').split(',');
       let answers = (secondData || '').split(',');
       if (answers.length < sentenceElements.length) {
@@ -147,6 +147,16 @@ export function LessonPage() {
 
     const newScore = scoreToAdd + 1;
 
+    if ((currentExercise.index ?? 0) === exercises.length - 1) {
+      const origLength = exercises.length;
+      const tempExercises = await loadExercises();
+      if (tempExercises.length > origLength) {
+        setScoreToAdd(newScore);
+        changeCurrentExercise(tempExercises, (currentExercise.index ?? 0) + 1);
+        return;
+      }
+    }
+
     if ((currentExercise.index ?? 0) < exercises.length - 1) {
       setScoreToAdd(newScore);
       changeCurrentExercise(exercises, (currentExercise.index ?? 0) + 1);
@@ -198,6 +208,24 @@ export function LessonPage() {
     changeCurrentExercise(exercises, 0);
   };
 
+  const loadExercises = async function () {
+    try {
+      const res = await axios.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+
+      if (res && res.data && res.data.length > 0) {
+
+        const exercisesTemp = [...res.data];
+
+        setExercises(exercisesTemp);
+        return exercisesTemp;
+      }
+    } catch (err: unknown) {
+      errorHandler(err, setError);
+    }
+
+    return [];
+  }
+
   useEffect(() => {
     async function getData() {
       try {
@@ -205,13 +233,9 @@ export function LessonPage() {
         const learningPathTemp = response.data;
         setLearningPathData(learningPathTemp);
         setPractiseMistakesInThisPath(learningPathTemp.practiseMistakesInThisPath);
-        const res = await axios.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+        const exercisesTemp = await loadExercises();
 
-        if (res && res.data && res.data.length > 0) {
-
-          const exercisesTemp = [...res.data];
-
-          setExercises(exercisesTemp);
+        if (exercisesTemp.length > 0) {
           let exCurInd = 0;
           if (learningPathTemp.exerciseId != null) {
             exCurInd = exercisesTemp.findIndex((e) => e.exerciseId == learningPathTemp.exerciseId);
@@ -260,7 +284,7 @@ export function LessonPage() {
             {currentExercise && (
               <>
                 <div className="form-row">
-                  <label className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</label>
+                  <label className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${exercises.length}`}</label>
                 </div>
 
                 <Exercise key={currentExercise.exerciseId}

@@ -140,10 +140,38 @@ export default function LessonScreen() {
     setLanguageSettings(res.data, user as User, login);
   };
 
+  const loadExercises = async function () {
+    try {
+      const res = await api.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+
+      if (res && res.data && res.data.length > 0) {
+
+        const exercisesTemp = [...res.data];
+
+        setExercises(exercisesTemp);
+        return exercisesTemp;
+      }
+    } catch (err: unknown) {
+      errorHandler(err, setError);
+    }
+
+    return [];
+  }
+
   const moveNext = async function () {
     if (!currentExercise) return;
 
     const newScore = scoreToAdd + 1;
+
+     if ((currentExercise.index ?? 0) === exercises.length - 1) {
+      const origLength = exercises.length;
+      const tempExercises = await loadExercises();
+      if (tempExercises.length > origLength) {
+        setScoreToAdd(newScore);
+        changeCurrentExercise(tempExercises, (currentExercise.index ?? 0) + 1);
+        return;
+      }
+    }
 
     if ((currentExercise.index ?? 0) < exercises.length - 1) {
       setScoreToAdd(newScore);
@@ -204,11 +232,9 @@ export default function LessonScreen() {
         const learningPathTemp = response.data;
         setLearningPathData(learningPathTemp);
         setPractiseMistakesInThisPath(learningPathTemp.practiseMistakesInThisPath);
-        const res = await api.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+        const exercisesTemp = await loadExercises();
 
-        if (res && res.data && res.data.length > 0) {
-
-          const exercisesTemp = [...res.data];
+        if (exercisesTemp.length > 0) {
 
           setExercises(exercisesTemp);
           let exCurInd = 0;
@@ -267,7 +293,7 @@ export default function LessonScreen() {
         {currentExercise && (
           <>
             <View className="form-row">
-              <Text style={styles.text}>{`Exercise ${(currentExercise.index ?? 0) + 1} of ${learningPathData?.exerciseCount}`}</Text>
+              <Text style={styles.text}>{`Exercise ${(currentExercise.index ?? 0) + 1} of ${exercises.length}`}</Text>
             </View>
 
             <Exercise key={currentExercise.exerciseId}
