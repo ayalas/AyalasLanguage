@@ -17,7 +17,7 @@ export async function getFromStorage(key: string) {
     return localStorage.getItem(key);
   }
   else {
-    return await SecureStore.getItemAsync(key);
+    return SecureStore.getItemAsync(key);
   }
 }
 
