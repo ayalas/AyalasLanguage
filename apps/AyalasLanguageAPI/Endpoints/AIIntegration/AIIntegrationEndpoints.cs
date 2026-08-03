@@ -14,6 +14,7 @@ using OpenAI;
 using System.ClientModel;
 using OpenAI.Audio;
 using System.ClientModel.Primitives;
+using System.Text.Json.Serialization;
 
 namespace AyalasLanguageAPI.Endpoints.AIIntegration;
 
@@ -114,6 +115,9 @@ public static class AIIntegrationEndpoints
         if (string.IsNullOrEmpty(apiKey)) return Results.Problem("AI Chat API Key not configured.");
         if (string.IsNullOrEmpty(endpoint)) return Results.Problem("AI Chat endpoint not configured.");
         if (string.IsNullOrEmpty(model)) return Results.Problem("AI Chat model not configured.");
+
+
+        model = await AutoSelectModel(model, endpoint, apiKey, httpClient, logger, db, userId);
 
         var client = new ChatClient(
             model: model,
@@ -223,23 +227,12 @@ public static class AIIntegrationEndpoints
 
             string rawJson = TransformToClientJson(completion.Content[0].Text);
 
-            /*  var logInfoData = new AIEndpointInfo
-            {
-                RequestData = System.Text.Json.JsonSerializer.Serialize(request),
-                Endpoint = endpoint ?? "",
-                Model = model ?? "",
-                ResponseData = rawJson
-            };
-
-            await db.CreateLogInternal(userId, LogTypeEnum.AIChatInfo, logInfoData); */
-
             return Results.Content(rawJson, "application/json");
         }
         catch (ClientResultException ex)
         {
             PipelineResponse? response = ex.GetRawResponse();
-            string? detailedError = response?.Content?.ToString() ?? ex.Message;
-
+            string? detailedError = string.IsNullOrEmpty(response?.Content?.ToString()) ? ex.Message : response?.Content?.ToString();
             var logData = new AIEndpointFailure
             {
                 Error = detailedError,
@@ -249,7 +242,7 @@ public static class AIIntegrationEndpoints
             };
             logger.LogError(ex, "AI Chat Error:{request}. {endpoint}: {detailedError}", logData.RequestData, endpoint, detailedError);
             await db.CreateLogInternal(userId, LogTypeEnum.AIChatFailure, logData);
-            return Results.Problem($"AI Chat Error: {detailedError}");
+            return Results.Problem($"AI Chat Error: {detailedError}.");
         }
     }
 
@@ -480,7 +473,61 @@ public static class AIIntegrationEndpoints
         return JsonSerializer.Serialize(new { content = legacyContent });
     }
 
+    private static async Task<string> AutoSelectModel(string preferredModel, string endpoint, string apiKey, HttpClient httpClient, ILogger<Program> logger, AyalasLanguageDbContext db, int userId)
+    {
+        var endpointUrl = $"{endpoint.TrimEnd('/')}/models";
+        string? model = null;
+        try 
+        {
+            using var modelRequest = new HttpRequestMessage(HttpMethod.Get, endpointUrl);
+            modelRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+            
+            var response = await httpClient.SendAsync(modelRequest);
+            response.EnsureSuccessStatusCode();
+            
+            var modelList = await response.Content.ReadFromJsonAsync<ModelListResponse>();
+
+            var models = modelList?.Data?.Where(m => m.Id.Equals(preferredModel, StringComparison.OrdinalIgnoreCase)).ToList();
+            model = models?.Where(m => m.Id.Equals(preferredModel, StringComparison.OrdinalIgnoreCase)).FirstOrDefault()?.Id;
+            if (string.IsNullOrEmpty(model))
+            {
+                model = modelList?.Data?.FirstOrDefault()?.Id;
+                logger.LogWarning("Preferred model not found in models list from the AI endpoint. Using first instead: {model}", model);
+            }
+            if (string.IsNullOrEmpty(model))
+            {
+                logger.LogWarning("No models found in models list from the AI endpoint.");
+                return preferredModel;
+            }
+
+            return model;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to fetch dynamic model list.");
+
+            var logData = new AIEndpointFailure
+            {
+                Error = ex.Message,
+                RequestData = $"get dynamic model list for {preferredModel}",
+                Endpoint = endpointUrl,
+                Model = model ?? preferredModel,
+                CallStack = ex.StackTrace
+            };
+            logger.LogError(ex, "AI Chat Error:{request}. {endpoint}: {detailedError}", logData.RequestData, endpoint, ex.Message);
+            await db.CreateLogInternal(userId, LogTypeEnum.AIChatFailure, logData);
+            return preferredModel;
+        }
+    }
 }
+
+internal record ModelListResponse(
+    [property: JsonPropertyName("data")] List<ModelInfo> Data
+);
+
+internal record ModelInfo(
+    [property: JsonPropertyName("id")] string Id
+);
 
 // The structure the LLM returns now
 internal class NewSchemaRoot
