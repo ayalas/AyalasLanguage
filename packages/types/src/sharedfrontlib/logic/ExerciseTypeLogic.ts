@@ -143,7 +143,7 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
         first_data_instructions: "Words in the language you know, separated by semi-colon(;)",
         second_data_instructions: "Words in the language you are learning, separated by semi-colon(;)",
         ai_instruction: `Each exercise consists of a set of ${PLACEHOLDERS.NUM_OF_MATCHES_PLACEHOLDER} words\\expressions in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}, and a matching set of the translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. Do not include punctuations. Vary the options and exercises - do not repeat the same words between exercises. Keep the order correct, so the first word in the set matches the first word in the translated set, and so on.`,
-        ai_manual_format: "Return a list of sets for each language. In each list, separate each set with semi-colon.",
+        ai_manual_format: "Return a list of sets for each language. In each list, separate each set with semi-colon. Separate the words in each set by comma.",
         ai_json_format: `content: [{Matches: [{First: string, Second: string}]}] where each item inside content is an exercise, Matches would be the list of ${PLACEHOLDERS.NUM_OF_MATCHES_PLACEHOLDER} matching word pairs, First would be the a word in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and Second would a translation in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}.`
     }, {
         Type: EXERCISE_TYPES.MATCHING,
@@ -249,7 +249,7 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
         first_data_instructions: "Words in the language you know, separated by semi-colon(;)",
         second_data_instructions: "Words in the language you are learning, separated by semi-colon(;)",
         ai_instruction: `Each exercise consists of a set of ${PLACEHOLDERS.NUM_OF_MATCHES_PLACEHOLDER} words\\expressions in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}, and a matching set of translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. Do not include punctuations. Vary the words and exercises - do not repeat repeat the same words between exercises. Keep the order correct, so the first word in the set matches the first word in the translated set, and so on.`,
-        ai_manual_format: "Return a list of sets for each language. In each list, separate each set with semi-colon.",
+        ai_manual_format: "Return a list of sets for each language. In each list, separate each set with semi-colon. Separate the words in each set by comma.",
         ai_json_format: `content: [{Matches: [{First: string, Second: string}]}] where each item inside content is an exercise, Matches would be the list of ${PLACEHOLDERS.NUM_OF_MATCHES_PLACEHOLDER} matching word pairs, First would be the a word in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and Second would a translation in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}.`
     }, {
         Type: EXERCISE_TYPES.MATCHING_TO_SPOKEN,
