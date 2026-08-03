@@ -614,8 +614,8 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(8000)
-                        .HasColumnType("varchar(8000)");
+                        .HasMaxLength(20000)
+                        .HasColumnType("longtext");
 
                     b.Property<int>("LogType")
                         .HasColumnType("int");

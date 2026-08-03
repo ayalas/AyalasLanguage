@@ -11,7 +11,7 @@ namespace AyalasLanguageAPI.Data.Model
         public int LogType { get; set; }
         public int? UserId { get; set; }
         public virtual User? User { get; set; }
-        [Required, StringLength(8000)]
+        [Required, StringLength(20000)]
         public string? Description { get; set; }
         public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
     }
