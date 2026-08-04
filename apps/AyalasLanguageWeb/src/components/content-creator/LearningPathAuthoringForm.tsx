@@ -148,9 +148,9 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       try {
         response = await axios.post('/api/ai/unclose/chat', req);
       }
-      catch(err: unknown) {
+      catch (err: unknown) {
         errorHandler(err, (errMsg: string) => {
-            setError(`Automated generation failed. Switch to manual use of AI or try again. Error: ${errMsg}`);
+          setError(`Automated generation failed. Switch to manual use of AI or try again. Error: ${errMsg}`);
         });
         return null;
       }
@@ -173,7 +173,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
         if (!Array.isArray(jsonOutput)) {
           setError('Automated generation did not return the expected result. Switch to manual use of AI or try again.');
-          writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
+          writeToLog<LogAutoAIFailure>(axios, LOG_TYPE.AUTO_AI_FAILURE, {
             Title: "Result is not an array",
             Instruction: req.messages.map(it => it.content).join(' '),
             Result: objData
@@ -184,7 +184,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           //verify that has at least one element that can be assigned to ExerciseData
           if (jsonOutput.length == 0) {
             setError('Automated generation returned an empty result. Switch to manual use of AI or try again.');
-            writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
+            writeToLog<LogAutoAIFailure>(axios, LOG_TYPE.AUTO_AI_FAILURE, {
               Title: "Result is an empty array",
               Instruction: req.messages.map(it => it.content).join(' '),
               Result: objData
@@ -214,7 +214,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
             if (!isValid) {
               setError('Automated generation returned the expected result structure. Switch to manual use of AI or try again.');
-              writeToLog<LogAutoAIFailure>(axios,LOG_TYPE.AUTO_AI_FAILURE, {
+              writeToLog<LogAutoAIFailure>(axios, LOG_TYPE.AUTO_AI_FAILURE, {
                 Title: "Result is invalid",
                 Instruction: req.messages.map(it => it.content).join(' '),
                 Result: objData
@@ -328,10 +328,10 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
 
     return {
       exerciseType: exrTypeValue,
-      numOfExercises, 
-      matches, 
+      numOfExercises,
+      matches,
       extraOptions,
-      messages: aiMessages 
+      messages: aiMessages
     } as AIChatRequestDto;
   };
 
@@ -395,7 +395,26 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setChapter(initialRecord.chapter);
           setTitle(initialRecord.name ?? "");
           setAccess(initialRecord.access);
-        } else {
+        }
+        if (isLoading) {
+          setIsLoading(false);
+          if (user?.disableAutoAI) {
+            setUseAutoAI(false);
+          }
+
+          titleRef.current?.focus();
+        }
+      } catch (ex: unknown) {
+        errorHandler(ex, setError);
+      }
+    }
+    execAsync();
+  }, [initialRecord, user]);
+
+  useEffect(() => {
+    async function execAsync() {
+      try {
+        if (initialRecord == null && initChapter !== null && initLevel !== null) {
           let tempLevel = 1;
           if (initLevel !== '' && Number(initLevel) > 0) {
             tempLevel = Number(initLevel);
@@ -405,21 +424,15 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           if (initChapter !== '' && Number(initChapter) > 0) {
             hintChapter = Number(initChapter);
           }
-          const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { Level: tempLevel, ChapterHint: hintChapter });
+          const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
           setChapter(res.data.chapter);
         }
-        setIsLoading(false);
-        if (user?.disableAutoAI) {
-          setUseAutoAI(false);
-        }
-        
-        titleRef.current?.focus();
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
     }
     execAsync();
-  }, [initialRecord, searchParams, user]);
+  }, [initChapter, initLevel]);
 
   useEffect(() => {
     const timeoutid = setTimeout(() => {

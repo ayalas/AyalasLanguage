@@ -514,7 +514,7 @@ public static class AIIntegrationEndpoints
                 Model = model ?? preferredModel,
                 CallStack = ex.StackTrace
             };
-            logger.LogError(ex, "AI Chat Error:{request}. {endpoint}: {detailedError}", logData.RequestData, endpoint, ex.Message);
+            logger.LogError(ex, "AI Chat Error:{request}. {endpoint}: {detailedError}", logData.RequestData, endpointUrl, ex.Message);
             await db.CreateLogInternal(userId, LogTypeEnum.AIChatFailure, logData);
             return preferredModel;
         }

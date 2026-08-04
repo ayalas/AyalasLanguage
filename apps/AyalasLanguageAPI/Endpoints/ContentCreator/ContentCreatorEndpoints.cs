@@ -76,7 +76,7 @@ public static class ContentCreatorEndpoints
                 {
                     hint = sortedArray[0].Chapter;
                 }
-                decimal nextPath = ContentCreatorLogic.FindPath(sortedArray, hint, dto.ChapterHint != 0, logger);
+                decimal nextPath = ContentCreatorLogic.FindPath(sortedArray, hint, true, logger);
                 logger.LogInformation("NextChapter (1.1.1.1): parameters: ChapterHint:{ChapterHint}, Level:{Level}. Process: hint:{hint}, sortedArrayLength:{sortedArrayLength}. Result:{nextChapter} ",
                     dto.ChapterHint, dto.Level, hint, sortedArray.Length, nextPath);
                 //if the desired chapter exists we need to find the closest to it
@@ -103,7 +103,7 @@ public static class ContentCreatorEndpoints
 
         if (dto.Chapter <= 0)
         {
-            return Results.BadRequest("Level must be a positive number.");
+            return Results.BadRequest("Chapter must be a positive number.");
         }
 
         if (await ContentCreatorLogic.IsOtherLearningPathFoundWith(user.TargetLanguageId.Value, user.KnownLanguageId.Value, dto.Level, dto.Chapter, null, db))

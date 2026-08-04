@@ -360,7 +360,20 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
           setChapter(initialRecord.chapter);
           setTitle(initialRecord.name ?? "");
           setAccess(initialRecord.access);
-        } else {
+        }
+        setIsLoading(false);
+      } catch (ex: unknown) {
+        errorHandler(ex, setError);
+      }
+    }
+    execAsync();
+  }, [initialRecord, user]);
+
+
+   useEffect(() => {
+    async function execAsync() {
+      try {
+        if (initialRecord == null && initChapter !== null && initLevel !== null) {
           let tempLevel = 1;
           if (initLevel !== '' && Number(initLevel) > 0) {
             tempLevel = Number(initLevel);
@@ -370,16 +383,15 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
           if (initChapter !== '' && Number(initChapter) > 0) {
             hintChapter = Number(initChapter);
           }
-          const res = await api.post<NextChapterResponse>('/api/creator/next-chapter', { Level: tempLevel, ChapterHint: hintChapter });
+          const res = await api.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
           setChapter(res.data.chapter);
         }
-        setIsLoading(false);
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
     }
     execAsync();
-  }, [initialRecord, initLevel, initChapter, user]);
+  }, [initChapter, initLevel]);
 
   useEffect(() => {
     const timeoutid = setTimeout(() => {
