@@ -28,6 +28,11 @@ RUN pnpm install --frozen-lockfile
 # This prevents network errors during the test phase.
 # ---------------------------------------------------
 COPY AyalasLanguage.sln ./
+
+# 1. Remove the Tryouts project from the solution so the restore ignores it
+# Use the path exactly as it appears in your error message
+RUN dotnet sln AyalasLanguage.sln remove extras/Tryouts/Tryouts.csproj
+
 COPY apps/AyalasLanguageAPI/*.csproj ./apps/AyalasLanguageAPI/
 COPY dotnet-libs/AyalasLanguageAPI.Data/*.csproj ./dotnet-libs/AyalasLanguageAPI.Data/
 COPY dotnet-libs/AyalasLanguageAPI.Data.Migrations.SQLite/*.csproj ./dotnet-libs/AyalasLanguageAPI.Data.Migrations.SQLite/
