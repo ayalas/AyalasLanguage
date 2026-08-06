@@ -1,7 +1,6 @@
 # ==========================================
 # STAGE 1: Unified Build Environment (SDK + Node)
 # ==========================================
-# We use the alpine version to match your final runtime and keep size down
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
 WORKDIR /src
 
@@ -19,21 +18,37 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/AyalasLanguageWeb/package.json ./apps/AyalasLanguageWeb/
 COPY apps/AyalasLanguageWebAdmin/package.json ./apps/AyalasLanguageWebAdmin/
 
-# 4. Install frontend dependencies
+# 4. Install frontend dependencies (Cached Layer)
 ENV CI=true
 RUN pnpm install --frozen-lockfile
+
+# ---------------------------------------------------
+# NEW STEP: .NET Restore (Cached Layer)
+# Copy all .csproj files and restore BEFORE copying full source.
+# This prevents network errors during the test phase.
+# ---------------------------------------------------
+COPY AyalasLanguage.sln ./
+COPY apps/AyalasLanguageAPI/*.csproj ./apps/AyalasLanguageAPI/
+COPY dotnet-libs/AyalasLanguageAPI.Data/*.csproj ./dotnet-libs/AyalasLanguageAPI.Data/
+COPY dotnet-libs/AyalasLanguageAPI.Data.Migrations.SQLite/*.csproj ./dotnet-libs/AyalasLanguageAPI.Data.Migrations.SQLite/
+COPY dotnet-libs/AyalasLanguageAPI.Data.Migrations.MySQL/*.csproj ./dotnet-libs/AyalasLanguageAPI.Data.Migrations.MySQL/
+COPY dotnet-libs/AyalasLanguageJobs/*.csproj ./dotnet-libs/AyalasLanguageJobs/
+
+RUN dotnet restore
+# ---------------------------------------------------
 
 # 5. Copy the rest of the source (Backend + Frontend)
 COPY . .
 
-# 6. Run Turbo commands (Now has access to both 'dotnet' and 'node')
+# 6. Run Turbo commands 
+# Now that 'dotnet restore' was run above, these will use the cached packages
 RUN pnpm turbo test
 RUN pnpm turbo build
 
 # 7. Publish .NET Backend
 WORKDIR /src/apps/AyalasLanguageAPI
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
+# Adding --no-restore because we already did it in step 4.5
+RUN dotnet publish -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
 # ==========================================
 # STAGE 2: Final Production Image Assembly
@@ -54,7 +69,7 @@ USER $APP_UID
 # Copy Backend artifacts
 COPY --from=build-env /app/publish .
 
-# Copy Frontend artifacts (from the unified build-env)
+# Copy Frontend artifacts
 COPY --from=build-env /src/apps/AyalasLanguageWeb/dist ./dist
 COPY --from=build-env /src/apps/AyalasLanguageWebAdmin/admin ./admin
 
