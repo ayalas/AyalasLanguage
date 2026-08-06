@@ -88,7 +88,7 @@ describe('ExerciseInput Component', () => {
 
         // Test setValue and focus
         // Wrap direct ref method calls that update state in act()
-        act(() => {
+        await act(async() => {
             ref.current?.setValue('New Value');
         });
         await waitFor(() => {
@@ -97,7 +97,7 @@ describe('ExerciseInput Component', () => {
 
         // Test setToError (changes background color)
         // Wrap direct ref method calls that update state in act()
-        act(() => {
+        await act(async() => {
             ref.current?.setToError();
         });
         await waitFor(() => {
@@ -122,7 +122,7 @@ describe('ExerciseInput Component', () => {
 
         // Trigger error
         // Wrap direct ref method calls that update state in act()
-        act(() => {
+        await act(async() => {
             ref.current?.setToError();
         });
         await waitFor(() => {

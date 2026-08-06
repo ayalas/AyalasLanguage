@@ -105,7 +105,7 @@ describe('InlineExerciseWithBlanks', () => {
     fireEvent.change(input2, { target: { value: 'black.' } });
 
     let result = false;
-    act(() => {
+    await act(async () => {
       result = ref.current?.checkAnswer() || false;
     });
 
@@ -124,7 +124,7 @@ describe('InlineExerciseWithBlanks', () => {
     fireEvent.change(input1, { target: { value: 'dog' } }); // Wrong answer
 
     let result = true;
-    act(() => {
+    await act(async () => {
       result = ref.current?.checkAnswer() || false;
     });
 
@@ -153,7 +153,7 @@ describe('InlineExerciseWithBlanks', () => {
     mockProps.exerciseInfo.exerciseTypeId = EXERCISE_TYPES.FILL_IN_THE_BLANKS;
     render(<InlineExerciseWithBlanks {...mockProps} ref={ref} />);
 
-    act(() => {
+    await act(async () => {
       ref.current?.setFocus();
     });
     // Requirement to wrap in act() met.
@@ -173,7 +173,7 @@ describe('InlineExerciseWithBlanks', () => {
     render(<InlineExerciseWithBlanks {...mockProps} ref={ref} />);
 
     let answer = 'init';
-    act(() => {
+    await act(async () => {
       answer = ref.current?.getCurrentAnswer() || '';
     });
 

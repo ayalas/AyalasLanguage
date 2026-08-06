@@ -67,7 +67,7 @@ describe('MatchWordItem', () => {
     await fireEvent.click(button);
 
     // Call the captured function inside act()
-    act(() => {
+    await act(async () => {
       capturedSetToDone();
     });
 
@@ -94,7 +94,7 @@ describe('MatchWordItem', () => {
     // Click to capture the error function
     await fireEvent.click(button);
 
-    act(() => {
+    await act(async () => {
       capturedSetErrorState(true);
     });
 
@@ -119,11 +119,11 @@ describe('MatchWordItem', () => {
     await fireEvent.click(button);
 
     // Test Error state
-    act(() => captured.errorFn(true));
+    await act(async () => captured.errorFn(true));
     expect(button).toHaveClass('match-words-item-error');
 
     // Test Done state (which should clear error)
-    act(() => captured.doneFn());
+    await act(async () => captured.doneFn());
     expect(button).toHaveClass('match-words-item-done');
     expect(button).not.toHaveClass('match-words-item-error');
   });

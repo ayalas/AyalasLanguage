@@ -112,7 +112,7 @@ describe('TwoLinesTranslationExercise', () => {
     fireEvent.change(input, { target: { value: 'Bonjour' } });
 
     let result = false;
-    act(() => {
+    await act(async () => {
       result = ref.current?.checkAnswer() || false;
     });
 
@@ -130,7 +130,7 @@ describe('TwoLinesTranslationExercise', () => {
     fireEvent.change(input, { target: { value: 'Salut' } });
 
     let result = false;
-    act(() => {
+    await act(async () => {
       result = ref.current?.checkAnswer() || false;
     });
 
@@ -148,7 +148,7 @@ describe('TwoLinesTranslationExercise', () => {
     fireEvent.change(input, { target: { value: 'Wrong' } });
 
     let result = true;
-    act(() => {
+    await act(async () => {
       result = ref.current?.checkAnswer() || false;
     });
 
@@ -164,7 +164,7 @@ describe('TwoLinesTranslationExercise', () => {
     fireEvent.change(input, { target: { value: '  BONJOUR  ' } });
 
     let answer = '';
-    act(() => {
+    await act(async () => {
       answer = ref.current?.getCurrentAnswer() || '';
     });
 
@@ -175,7 +175,7 @@ describe('TwoLinesTranslationExercise', () => {
     const ref = createRef<ExerciseHandle>();
     render(<TwoLinesTranslationExercise {...defaultProps} ref={ref} />);
 
-    act(() => {
+    await act(async () => {
       ref.current?.setFocus();
     });
     // If no error is thrown and act is used, requirement is satisfied.

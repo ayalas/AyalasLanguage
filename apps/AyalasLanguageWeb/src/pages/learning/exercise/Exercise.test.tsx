@@ -155,16 +155,16 @@ describe('Exercise Component', () => {
 
         disableClientValidation();
 
-        act(() => {
+        await act(async() => {
             ref.current?.setFocus();
         });
 
-        act(() => {
+        await act(async() => {
             const answer = ref.current?.getCurrentAnswer();
             expect(typeof answer).toBe('string');
         });
 
-        act(() => {
+        await act(async() => {
             const result = ref.current?.checkAnswer();
             expect(typeof result).toBe('boolean');
         });

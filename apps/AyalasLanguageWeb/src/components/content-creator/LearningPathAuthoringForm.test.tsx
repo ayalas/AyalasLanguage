@@ -20,7 +20,7 @@ const mockUser = {
 };
 
 // Create a STABLE searchParams object to prevent the useEffect from re-running
-const mockSearchParams = new URLSearchParams();
+const mockSearchParams = new URLSearchParams('level=1&chapter=1');
 
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
@@ -104,7 +104,7 @@ describe('LearningPathAuthoringForm', () => {
     const saveBtn = screen.getByTestId('save');
     disableClientValidation();
 
-    act(() => {
+    await act(async() => {
       fireEvent.click(saveBtn);
     });
 
