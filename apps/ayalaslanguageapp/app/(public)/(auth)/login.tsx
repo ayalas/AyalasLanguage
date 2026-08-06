@@ -52,7 +52,14 @@ const LogInScreen = () => {
         }
       }, 200);
     } catch (err) {
-      errorHandler(err, setError);
+      errorHandler(err, (msg) => {
+        if (msg === "No response received from the server.") {
+          setError(`Unable to connect to the server ${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}`);
+        }
+        else {
+          setError(msg);
+        }
+      });
     }
   }
 
@@ -75,7 +82,14 @@ const LogInScreen = () => {
         }
       }
     } catch (err) {
-      errorHandler(err, setError);
+      errorHandler(err, (msg) => {
+        if (msg === "No response received from the server.") {
+          setError(`Unable to connect to the server ${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}`);
+        }
+        else {
+          setError(msg);
+        }
+      });
     }
   }
 
