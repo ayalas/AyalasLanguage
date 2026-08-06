@@ -24,10 +24,17 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.ayalasw.AyalasLanguageApp"
+      "package": "com.ayalasw.AyalasLanguageApp",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "updates": {
-      "fallbackToCacheTimeout": 180000
+      "fallbackToCacheTimeout": 180000,
+      "url": "https://u.expo.dev/c0e996d0-d862-425e-a25c-b5961c60a5cf"
     },
     "web": {
       "output": "static",
@@ -75,6 +82,9 @@
       "eas": {
         "projectId": "c0e996d0-d862-425e-a25c-b5961c60a5cf"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
