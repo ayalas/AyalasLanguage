@@ -17,7 +17,7 @@
       },
       "channel": "preview",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://langapp.xyz",
+        "EXPO_PUBLIC_BACKEND_BASE_URL": "https://langapp.xyz",
         "EXPO_PUBLIC_APP_VARIANT": "preview"
       }
     },
@@ -30,7 +30,7 @@
       "autoIncrement": true,
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://langapp.xyz",
+        "EXPO_PUBLIC_BACKEND_BASE_URL": "https://langapp.xyz",
         "EXPO_PUBLIC_APP_VARIANT": "production"
       }
     }
