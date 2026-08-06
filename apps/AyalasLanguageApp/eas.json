@@ -6,20 +6,31 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "pnpm": "11.8.0" 
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       },
-      "channel": "preview"
+      "channel": "preview",
+      "pnpm": "11.8.0",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://langapp.xyz",
+        "EXPO_PUBLIC_APP_VARIANT": "preview"
+      }
     },
     "production": {
       "distribution": "internal",
       "android": { "buildType": "apk" },
       "autoIncrement": true,
-      "channel": "production"
+      "channel": "production",
+      "pnpm": "11.8.0",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://langapp.xyz",
+        "EXPO_PUBLIC_APP_VARIANT": "production"
+      }
     }
   },
   "submit": {
