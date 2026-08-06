@@ -50,6 +50,7 @@ export function PublicHeader() {
                             <li className="menu-line"><Link to='/register' className="menu-item">Register new account</Link></li>
                             <li className="menu-line"><Link to='/contactus' className="menu-item"><Mail />&nbsp;Contact Us</Link></li>
                             <li className="menu-line"><Link target='discord' to='https://discord.gg/UkzNfauGd' className="menu-item"><div className="discordIcon" ></div>Discuss on Discord</Link></li>
+                            <li className="menu-line"><Link target='android' to='/download-app' className="menu-item"><div className="androidIcon" title="Android icons created by Swifticons - Flaticon" ></div>Available on Android</Link></li>
                             <li className="menu-line"><Link to='/about' className="menu-item">More on {BRAND_NAME}</Link></li>
                         </ul>
                     </div>

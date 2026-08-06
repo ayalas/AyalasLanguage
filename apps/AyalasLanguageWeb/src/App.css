@@ -312,9 +312,23 @@ input:required:invalid {
   background-size: cover;
 }
 
+.androidIcon {
+  height: 24px;
+  width: 32px;
+  border: 0;
+  padding: 0;
+  margin-right: 8px;
+  display: inline-flex;
+  background-image: url("assets/android-White-BG.png");
+  background-size: cover;
+}
+
 @media (prefers-color-scheme: dark) {
   .discordIcon {
     background-image: url("assets/Discord-Symbol-White.png");
+  }
+  .androidIcon {
+    background-image: url("assets/android.png");
   }
 }
 

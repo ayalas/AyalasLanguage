@@ -25,6 +25,7 @@ import { ContactUsAuthenticatedUserPage } from './pages/contactus/ContactUsAuthe
 import { PublicRoute } from './components/auth/PublicRoute';
 import { AboutPublicPage } from './pages/about/AboutPublicPage';
 import { AboutAuthenticatedUserPage } from './pages/about/AboutAuthenticatedUserPage';
+import { DownloadAppPage } from './pages/DownloadApp';
 
 function App() {
   useEffect(() => {
@@ -45,6 +46,7 @@ function App() {
           <Route path="/forgot" element={<ForgotPage />} />
           <Route path="/reset/:token" element={ <ResetPasswordPage/>} />
           <Route path="/about" element={ <PublicRoute authPath='/userabout'><AboutPublicPage/></PublicRoute>} />
+          <Route path="/download-app" element={ <DownloadAppPage/>} />
 
           {/* Secured/Protected Routes */}
           <Route element={<ProtectedRoute />}>
