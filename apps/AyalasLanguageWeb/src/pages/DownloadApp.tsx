@@ -11,7 +11,7 @@ export function DownloadAppPage() {
                 <div className="androidIcon" title="Android icons created by Swifticons - Flaticon" ></div><h1>Available on android!</h1>
                 </div>
                 <div className="form-label-row">
-                    <Link target="_blank" to="https://expo.dev/accounts/ayalasw/projects/AyalasLanguageApp/builds/f8c2acd4-13fa-429d-b667-a32e05fada84">Download {BRAND_NAME} on Android</Link>
+                    <Link target="_blank" to="https://github.com/ayalas/AyalasLanguage/releases/latest">Download {BRAND_NAME} on Android</Link>
                 </div>
             </div>
         </>);
