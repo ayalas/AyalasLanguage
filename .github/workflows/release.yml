@@ -14,7 +14,7 @@ jobs:
       - name: 🏗 Setup pnpm & Node
         uses: pnpm/setup@v1
         with:
-          version: 11 # It will find 11.8.0 from your package.json automatically
+          version: 11.8.0
           runtime: node@22
           cache: true
 
