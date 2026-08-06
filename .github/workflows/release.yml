@@ -11,11 +11,12 @@ jobs:
       - name: 🏗 Setup repo
         uses: actions/checkout@v4
 
-      - name: 🏗 Setup Node
-        uses: actions/setup-node@v4
+      - name: 🏗 Setup pnpm & Node
+        uses: pnpm/setup@v1
         with:
-          node-version: 22 # Matching your successful EAS build config
-          cache: 'pnpm'
+          version: 11 # It will find 11.8.0 from your package.json automatically
+          runtime: node@22
+          cache: true
 
       - name: 🏗 Setup EAS
         uses: expo/expo-github-action@v8
@@ -28,11 +29,12 @@ jobs:
 
       - name: 🚀 Build APK on EAS
         id: build
+        working-directory: apps/ayalaslanguageapp
         run: |
           # The --json flag captures the build metadata
           # The --non-interactive flag is required for CI
           # We use jq to extract the download URL from the JSON output
-          BUILD_JSON=$(pnpm --filter ayalaslanguageapp exec eas build --platform android --profile preview --non-interactive --json)
+          BUILD_JSON=$(eas build --platform android --profile preview --non-interactive --json)
           DOWNLOAD_URL=$(echo $BUILD_JSON | jq -r '.[0].artifacts.applicationArchiveUrl')
           echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
 
