@@ -257,6 +257,47 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
         SortByEaseRank: 15,
         IsMatchingType: true,
         TargetIsSpoken: true
+    }),
+
+    [EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_1CLICK]: createLogic({
+        instruction: `Translate to ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} with one click`,
+        description: "Generate sentences in the language you know to translate to the language you are learning.",
+        first_data_instructions: "Sentences in the language you know, separated by semi-colon(;)",
+        second_data_instructions: "Sentences in the language you are learning, separated by semi-colon(;)",
+        ai_instruction: `Each exercise consists of a sentence in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and its translation in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. Do not include punctuations, just the sentences.`,
+        ai_manual_format: `Return the result as two separate lists - one of sentences in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and the other of their translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. In each list, separate each sentence with semi-colon.`,
+        ai_json_format: `content: [{First: string, Second: string}] where each item inside content is an exercise, First would be the sentence in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and Second would be the sentence in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}.`
+    }, {
+        Type: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_1CLICK,
+        Name: "Translate to target - 1 click",
+        SortByEaseRank: 18,
+        CanRevealAnswers: true,
+        ShowsTranslationOnRevealedAnswer: true,
+        ShouldPlayAnswer: true,
+        CanPlayQuestion: true,
+        HasExtraOptions: true,
+        HasSingleBucketAnswer: true,
+        ExtraOptionsSeparator: ","
+    }),
+
+    [EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_1CLICK]: createLogic({
+        instruction: `Translate to ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} with one click`,
+        description: "Generate sentences in the language you are learning to translate to the language you know.",
+        first_data_instructions: "Sentences in the language you are learning, separated by semi-colon(;)",
+        second_data_instructions: "Sentences in the language you know, separated by semi-colon(;)",
+        ai_instruction: `Each exercise consists of a sentence in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} and its translation in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}. Do not include punctuations, just the sentences.`,
+        ai_manual_format: `Return the result as two separate lists - one of sentences in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} and the other of their translations in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}. In each list, separate each sentence with semi-colon.`,
+        ai_json_format: `content: [{First: string, Second: string}] where each item inside content is an exercise, First would be the sentence in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} and Second would be the sentence in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}.`
+    }, {
+        Type: EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_1CLICK,
+        Name: "Translate back - 1 click",
+        SortByEaseRank: 17,
+        CanRevealAnswers: true,
+        AutoPlayQuestion: true,
+        CanPlayQuestion: true,
+        HasExtraOptions: true,
+        HasSingleBucketAnswer: true,
+        ExtraOptionsSeparator: ","
     })
 
     // ... add all other types here
@@ -279,10 +320,12 @@ export const isRightToLeftInput = (type: ExerciseType | 0, targetIsRtl: boolean,
         EXERCISE_TYPES.COMMON_RESPONSES_BUCKET,
         EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET,
         EXERCISE_TYPES.FILL_IN_THE_BLANKS,
-        EXERCISE_TYPES.FROM_KNOWN_TO_TARGET
+        EXERCISE_TYPES.FROM_KNOWN_TO_TARGET,
+        EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_1CLICK
     ] as (ExerciseType | 0)[]).includes(type) && targetIsRtl) ||
         (([
             EXERCISE_TYPES.FROM_TARGET_TO_KNOWN,
+            EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_1CLICK,
             EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_BUCKET
         ] as (ExerciseType | 0)[]).includes(type) && knownIsRtl);
 };
