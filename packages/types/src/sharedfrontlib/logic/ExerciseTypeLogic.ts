@@ -261,20 +261,19 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
 
     [EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_1CLICK]: createLogic({
         instruction: `Translate to ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} with one click`,
-        description: "Generate sentences in the language you know to translate to the language you are learning.",
+        description: "Generate sentences in the language you know to translate to the language you are learning by choosing from a list of options.",
         first_data_instructions: "Sentences in the language you know, separated by semi-colon(;)",
         second_data_instructions: "Sentences in the language you are learning, separated by semi-colon(;)",
-        ai_instruction: `Each exercise consists of a sentence in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and its translation in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. Do not include punctuations, just the sentences.`,
-        ai_manual_format: `Return the result as two separate lists - one of sentences in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and the other of their translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. In each list, separate each sentence with semi-colon.`,
-        ai_json_format: `content: [{First: string, Second: string}] where each item inside content is an exercise, First would be the sentence in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and Second would be the sentence in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}.`
+	    extra_options_instructions: "Sets of wrong translations to each sentence. Each translation separated by comma (, - U+002C). Each set that corresponds to the sentence to respond to - separated by semi-colon(;)",
+        ai_instruction: `Each exercise consists of a sentence in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and its translation in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. Do not include punctuations, just the sentences. For each exercise, generate ${PLACEHOLDERS.NUM_OF_WRONG_OPTIONS_PLACEHOLDER} wrong extra translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}.`,
+        ai_manual_format: `Prepare a first list of the sentences in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}. Then prepare a separate list with the correct translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. In each list, separate each sentence with semi-colon. Then prepare a third list of wrong translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} for each sentence. Separate each wrong translation by a comma and each such set of wrong translations per correct one - by a semi-colon.`,
+	    ai_json_format: `content: [{First: string, Second: string, ExtraOptions: array of string - list of ${PLACEHOLDERS.NUM_OF_WRONG_OPTIONS_PLACEHOLDER} wrong extra translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}}] where each item inside content is an exercise, First would be the sentence in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}, Second would be the correct translation in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} and ExtraOptions would be the list of wrong translations in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} to the presented sentence in First.`
     }, {
         Type: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_1CLICK,
         Name: "Translate to target - 1 click",
         SortByEaseRank: 18,
         CanRevealAnswers: true,
-        ShowsTranslationOnRevealedAnswer: true,
         ShouldPlayAnswer: true,
-        CanPlayQuestion: true,
         HasExtraOptions: true,
         HasSingleBucketAnswer: true,
         ExtraOptionsSeparator: ","
@@ -282,12 +281,13 @@ export const EXERCISE_TYPE_LOGIC: Record<ExerciseType | 0, ExcerciseTypeLogic> =
 
     [EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_1CLICK]: createLogic({
         instruction: `Translate to ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} with one click`,
-        description: "Generate sentences in the language you are learning to translate to the language you know.",
+        description: "Generate sentences in the language you are learning to translate to the language you know by choosing from a list of options.",
         first_data_instructions: "Sentences in the language you are learning, separated by semi-colon(;)",
         second_data_instructions: "Sentences in the language you know, separated by semi-colon(;)",
-        ai_instruction: `Each exercise consists of a sentence in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} and its translation in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}. Do not include punctuations, just the sentences.`,
-        ai_manual_format: `Return the result as two separate lists - one of sentences in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} and the other of their translations in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}. In each list, separate each sentence with semi-colon.`,
-        ai_json_format: `content: [{First: string, Second: string}] where each item inside content is an exercise, First would be the sentence in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} and Second would be the sentence in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}.`
+	    extra_options_instructions: "Sets of wrong translations to each sentence. Each translation separated by comma (, - U+002C). Each set that corresponds to the sentence to respond to - separated by semi-colon(;)",
+        ai_instruction: `Each exercise consists of a sentence in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER} and its translation in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}. Do not include punctuations, just the sentences. For each exercise, generate ${PLACEHOLDERS.NUM_OF_WRONG_OPTIONS_PLACEHOLDER} wrong extra translations in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}.`,
+	    ai_manual_format: `Prepare a first list of the sentences in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}. Then prepare a separate list with the correct translations in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}. In each list, separate each sentence with semi-colon. Then prepare a third list of wrong translations in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} for each sentence. Separate each wrong translation by a comma and each such set of wrong translations per correct one - by a semi-colon.`,
+	    ai_json_format: `content: [{First: string, Second: string, ExtraOptions: array of string - list of ${PLACEHOLDERS.NUM_OF_WRONG_OPTIONS_PLACEHOLDER} wrong extra translations in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER}}] where each item inside content is an exercise, First would be the sentence in ${PLACEHOLDERS.TARGET_LANGUAGE_PLACEHOLDER}, Second would be the correct translation in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} and ExtraOptions would be the list of wrong translations in ${PLACEHOLDERS.KNOWN_LANGUAGE_PLACEHOLDER} to the presented sentence in First.`
     }, {
         Type: EXERCISE_TYPES.FROM_TARGET_TO_KNOWN_1CLICK,
         Name: "Translate back - 1 click",

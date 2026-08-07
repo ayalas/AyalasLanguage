@@ -40,7 +40,9 @@ public enum ExerciseTypesEnum
     CommonResponsesBucket = 6,
     CommonResponses = 7,
     FromTargetToKnownBucket = 8,
-    MatchingToSpoken = 9
+    MatchingToSpoken = 9,
+    FromKnownToTarget1Click = 10,
+    FromTargetToKnown1Click = 11
 }
 
 public enum DashboardRangeFilter {

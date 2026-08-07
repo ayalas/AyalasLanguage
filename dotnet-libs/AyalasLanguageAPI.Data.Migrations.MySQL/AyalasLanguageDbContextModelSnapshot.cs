@@ -169,6 +169,16 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         {
                             ExerciseTypeId = 9,
                             Name = "Matching to spoken word"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 10,
+                            Name = "Translate to target - 1 click"
+                        },
+                        new
+                        {
+                            ExerciseTypeId = 11,
+                            Name = "Translate back to known  - 1 click"
                         });
                 });
 

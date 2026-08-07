@@ -159,7 +159,7 @@ public static class AIIntegrationEndpoints
 
         string requiredFields;
 
-        if (FirstIsArray(request.ExerciseType) && SecondIsArray(request.ExerciseType))
+        if (request.ExerciseType.FirstIsArray() && request.ExerciseType.SecondIsArray())
         {
             // Added a comma at the very end of this string block
             schemaJsonArr.Add($$"""
@@ -181,7 +181,7 @@ public static class AIIntegrationEndpoints
         else
         {
             schemaJsonArr.Add("\"First\": { \"type\": \"string\" },");
-            schemaJsonArr.Add(SecondIsArray(request.ExerciseType)
+            schemaJsonArr.Add(request.ExerciseType.SecondIsArray()
                 ? "\"Second\": { \"type\": \"array\", \"items\": { \"type\": \"string\" } },"
                 : "\"Second\": { \"type\": \"string\" },");
 
@@ -392,25 +392,7 @@ public static class AIIntegrationEndpoints
         return Results.Content(jsonResponse, "application/json");
     }
 
-    private static bool FirstIsArray(ExerciseTypesEnum exType)
-    {
-        return exType switch
-        {
-            ExerciseTypesEnum.Matching or ExerciseTypesEnum.MatchingToSpoken => true,
-            _ => false,
-        };
-    }
-
-    private static bool SecondIsArray(ExerciseTypesEnum exType)
-    {
-        return exType switch
-        {
-            ExerciseTypesEnum.Matching or ExerciseTypesEnum.MatchingToSpoken
-            or ExerciseTypesEnum.CommonResponsesBucket
-            => true,
-            _ => false,
-        };
-    }
+    
 
     private static string TransformToClientJson(string rawJson)
     {

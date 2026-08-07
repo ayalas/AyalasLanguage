@@ -47,7 +47,9 @@ public class AyalasLanguageDbContext : DbContext
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.CommonResponsesBucket, Name = "Common responses - bucket list" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.CommonResponses, Name = "Common responses" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnownBucket, Name = "From target to known language - bucket list" },
-            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.MatchingToSpoken, Name = "Matching to spoken word" }
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.MatchingToSpoken, Name = "Matching to spoken word" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget1Click, Name = "Translate to target - 1 click" },
+            new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnown1Click, Name = "Translate back to known  - 1 click" }
         );
 
         // Seed common languages
