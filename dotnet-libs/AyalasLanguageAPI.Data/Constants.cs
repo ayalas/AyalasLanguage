@@ -65,6 +65,8 @@ public enum LogTypeEnum
     AIChatFailure = 4,
     AITTSFailure = 5,
     AIChatInfo = 6,
+    DeleteOldLogsJobRunFailed = 7,
+    DeleteOldTokensJobRunFailed = 8,
     UnhandledException = 100
 }
 
@@ -78,7 +80,9 @@ public enum AppIdEnum
 
 public enum JobTypeEnum
 {
-    UsersProgressUpdateOnExerciseCreate = 1
+    UsersProgressUpdateOnExerciseCreate = 1,
+    DeleteOldLogs = 2,
+    DeleteOldTokens = 3
 }
 
 public enum JobStatusEnum

@@ -1,5 +1,7 @@
 export const JOB_TYPE = {
-    USERS_PROGRESS_ON_EXERCISE_CREATE: 1
+    USERS_PROGRESS_ON_EXERCISE_CREATE: 1,
+    DELETE_OLD_LOGS: 2,
+    DELETE_OLD_TOKENS: 3
 } as const;
 
 export type JobType = typeof JOB_TYPE[keyof typeof JOB_TYPE];

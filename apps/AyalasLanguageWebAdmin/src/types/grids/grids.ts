@@ -9,11 +9,15 @@ export const LOG_TYPE_MAPPING = {
   [LOG_TYPE.AI_BACKEND_CHAT_FAILURE]: "AI chat backend failed",
   [LOG_TYPE.AI_BACKEND_TTS_FAILURE]: "AI tts backend failed",
   [LOG_TYPE.AI_BACKEND_CHAT_INFO]: "AI chat backend info",
+  [LOG_TYPE.DELETE_OLD_LOGS_JOB_RUN_FAILED]: "Delete Old Logs Job Run Failed",
+  [LOG_TYPE.DELETE_OLD_TOKENS_JOB_RUN_FAILED]: "Delete Old Tokens Job Run Failed",
   [LOG_TYPE.UNHANDLED_EXCEPTION]: "Unhandled Exception"
 } as const;
 
 export const JOB_TYPE_MAPPING = {
-  [JOB_TYPE.USERS_PROGRESS_ON_EXERCISE_CREATE]: "User Progress Job"
+  [JOB_TYPE.USERS_PROGRESS_ON_EXERCISE_CREATE]: "User Progress Job",
+  [JOB_TYPE.DELETE_OLD_LOGS]: "Delete Old Logs Job",
+  [JOB_TYPE.DELETE_OLD_TOKENS]: "Delete Old Tokens Job"
 } as const;
 
 export const JOB_STATUS_MAPPING = {

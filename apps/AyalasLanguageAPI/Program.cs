@@ -1,27 +1,19 @@
 using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.Endpoints;
-using AyalasLanguageAPI.Endpoints.Static;
-using AyalasLanguageAPI.Data.Model;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using AyalasLanguageAPI.Routing;
+using AyalasLanguageAPI.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//add services
 builder.AddAyalasLanguageDb();
-
 builder.Services.AddMemoryCache();
-
 builder.Services.AddHttpClient(); 
-
 builder.AddAuthenticationSchemes();
-
 builder.Services.AddAuthorization();
-
+builder.AddJobServices();
 builder.AddRouteConstraints();
-
 builder.AddCorsSettings();
 
 var app = builder.Build();
@@ -56,5 +48,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.ServeStaticFiles(builder.Environment.ContentRootPath, builder.Configuration);
 }
+
+app.UseJobScheduler();
 
 app.Run();

@@ -107,7 +107,7 @@ public static class LearningEndpoints
                         : (byte)UserProgressEnum.InProgress,
                 db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
                 up != null && up.practiseMistakesInThisPath,
-                up != null? up.ModifiedOn : null,
+                up != null ? up.ModifiedOn : null,
                 // --- Get ExerciseTypeId START ---
                 up == null || up.ExerciseId == null
                     ? db.Exercises
@@ -267,7 +267,7 @@ public static class LearningEndpoints
             .FirstOrDefaultAsync();
     }
 
-    private static async Task<IResult> AddMistake(AddMistakeDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> AddMistake(AddMistakeDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, IJobQueue jobQueue)
     {
         var userId = claim.GetUserId();
 
@@ -333,12 +333,12 @@ public static class LearningEndpoints
             }
 
             //job for other users
-            var job = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
-                    userProgress.LearningPathId, exerciseToAdd.ExerciseId, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
-            if (job != null)
-            {
-                await job.Run(); //must await so connection stays alive
-            }
+            await jobQueue.EnqueueJobAsync(new JobRequest(
+                JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
+                userProgress.LearningPathId,
+                exerciseToAdd.ExerciseId,
+                null
+            ));
 
             return Results.Created($"/api/learning/exercise/{exerciseToAdd.ExerciseId}", new CreateExerciseResponseDto(exerciseToAdd.ExerciseId));
         }

@@ -5,6 +5,7 @@ using AyalasLanguageAPI.Data.Logging;
 using AyalasLanguageAPI.Data.Model;
 using AyalasLanguageJobs.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace AyalasLanguageJobs
 {
@@ -13,6 +14,7 @@ namespace AyalasLanguageJobs
 
         protected int _jobId;
         protected AyalasLanguageDbContext _db;
+        protected IConfiguration _configuration;
 
         protected JobTypeEnum _jobType;
 
@@ -27,23 +29,26 @@ namespace AyalasLanguageJobs
         protected abstract Task<int> ShouldRun();
         protected abstract Task RunInternal();
 
-        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db)
+        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db, IConfiguration configuration)
         {
             _jobType = jobType;
             _db = db;
+            _configuration = configuration;
         }
 
-        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db, int mainRecordId)
+        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db, IConfiguration configuration, int mainRecordId)
         {
             _jobType = jobType;
             _db = db;
             _mainRecordId = mainRecordId;
+            _configuration = configuration;
         }
 
-        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db, int mainRecordId, int secondaryRecordId)
+        public JobRun(JobTypeEnum jobType, AyalasLanguageDbContext db, IConfiguration configuration, int mainRecordId, int secondaryRecordId)
         {
             _jobType = jobType;
             _db = db;
+            _configuration = configuration;
             _mainRecordId = mainRecordId;
             _secondaryRecordId = secondaryRecordId;
         }

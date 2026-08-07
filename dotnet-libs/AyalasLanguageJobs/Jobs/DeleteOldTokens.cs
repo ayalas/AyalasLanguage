@@ -6,26 +6,24 @@ using Microsoft.Extensions.Configuration;
 
 namespace AyalasLanguageJobs.Jobs
 {
-    public class UsersProgressUpdateOnExerciseCreate: JobRun 
+    public class DeleteOldTokens: JobRun
     {
-        public UsersProgressUpdateOnExerciseCreate(AyalasLanguageDbContext db, IConfiguration configuration, int mainRecordId, int secRecordId, int? batchSize = null)
-            : base(JobTypeEnum.UsersProgressUpdateOnExerciseCreate, db, configuration, mainRecordId, secRecordId)
+        protected int _daysBack = 180;
+        public DeleteOldTokens(AyalasLanguageDbContext db, IConfiguration configuration) : base(JobTypeEnum.DeleteOldTokens, db, configuration)
         {
-            _batchSize = batchSize;
-        }
-
+            _ = int.TryParse(configuration.GetSection("JobSettings:DeleteOldTokens:DaysBack").Value, out _daysBack);
+        }  
         protected override async Task<int> ShouldRun()
         {
-            if (_mainRecordId == null) return 0;
-            var query = JobsQuery.UsersProgressUpdateOnExerciseCreate(_mainRecordId.Value, _db);
+            var query = JobsQuery.DeleteOldTokens(_daysBack, _db);
             return await query.CountAsync();
         }
         protected override async Task RunInternal()
         {
-            if (_job == null || _job.MainRecordId == null) return;
-            var query = JobsQuery.UsersProgressUpdateOnExerciseCreate(_job.MainRecordId.Value, _db);
+            if (_job == null) return;
+            var query = JobsQuery.DeleteOldTokens(_daysBack, _db);
 
-            List<UserProgress>? list = null;
+            List<Token>? list = null;
             bool batchOnly = false;
             if (_batchSize != null && _job.LeftToProcess != null && _batchSize < _job.LeftToProcess)
             {
@@ -49,11 +47,11 @@ namespace AyalasLanguageJobs.Jobs
 
             await SetRunning(list.Count);
 
-            foreach (UserProgress up in list)
+            foreach (Token token in list)
             {
                 try
                 {
-                    up.ExerciseId = _job.SecondaryRecordId;
+                    _db.Tokens.Remove(token);
                     await _db.SaveChangesAsync();
                     hadSuccess = true;
                     await HandleSuccess();
@@ -61,7 +59,7 @@ namespace AyalasLanguageJobs.Jobs
                 catch (Exception ex)
                 {
                     //calls SaveChangesAsync for the job too
-                    await HandleException(LogTypeEnum.UsersProgressUpdateOnExerciseCreateJobRunFailed, hadErrors, ex);
+                    await HandleException(LogTypeEnum.DeleteOldTokensJobRunFailed, hadErrors, ex);
                     hadErrors = true;
                 }
             }

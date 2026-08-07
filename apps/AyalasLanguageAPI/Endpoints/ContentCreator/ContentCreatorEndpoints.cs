@@ -219,7 +219,7 @@ public static class ContentCreatorEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> CreateExercise(CreateExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
+    private static async Task<IResult> CreateExercise(CreateExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger, IJobQueue jobQueue)
     {
         var userId = claim.GetUserId();
         var learningPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.LearningPathId == dto.LearningPathId);
@@ -259,12 +259,12 @@ public static class ContentCreatorEndpoints
         }
 
         //job for other users
-        var job = await JobsFactory.CreateJob(JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
-                dto.LearningPathId, exercise.ExerciseId, db, Constants.IMMEDIATE_JOB_BATCH_SIZE);
-        if (job != null)
-        {
-            await job.Run(); //must await so connection stays alive
-        }
+        await jobQueue.EnqueueJobAsync(new JobRequest(
+            JobTypeEnum.UsersProgressUpdateOnExerciseCreate,
+            dto.LearningPathId,
+            exercise.ExerciseId,
+            null
+        ));
 
         return Results.Created($"/api/learning/exercise/{exercise.ExerciseId}", new CreateExerciseResponseDto(exercise.ExerciseId));
     }
