@@ -1,4 +1,5 @@
 export default ({ config }) => {
+ 
   const stackEnv = process.env.STACK_ENV || 'Development';
   
   // Kick in /mobile logic for anything that isn't Development (Staging, Production, etc.)
@@ -41,7 +42,6 @@ export default ({ config }) => {
       url: "https://u.expo.dev/c0e996d0-d862-425e-a25c-b5961c60a5cf"
     },
     web: {
-      output: "static",
       favicon: "./assets/images/favicon.png"
     },
     plugins: [

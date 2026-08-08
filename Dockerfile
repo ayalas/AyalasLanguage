@@ -4,6 +4,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
 WORKDIR /src
 
+ARG STACK_ENV=Production
+
 # 1. Install Node.js and pnpm
 COPY --from=node:22-alpine /usr/lib /usr/lib
 COPY --from=node:22-alpine /usr/local/lib /usr/local/lib
@@ -75,7 +77,7 @@ COPY --from=build-env /src/apps/AyalasLanguageWeb/dist ./dist
 # 2. Admin (/admin)
 COPY --from=build-env /src/apps/AyalasLanguageWebAdmin/admin ./admin
 # 3. Mobile (/mobile)
-COPY --from=build-env /src/apps/ayalaslanguageapp/static ./mobile 
+COPY --from=build-env /src/apps/ayalaslanguageapp/dist ./mobile 
 
 EXPOSE 5000
 ENTRYPOINT [ "dotnet", "AyalasLanguageAPI.dll" ]

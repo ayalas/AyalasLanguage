@@ -9,7 +9,7 @@ export const getAPIBaseUrl = () => {
 
   // If we are on Web AND it's a production build (built by Docker)
   if (Platform.OS === 'web' && isDeployed) {
-    return '/mobile/api';
+    return '/mobile';
   }
 
   // Otherwise (Local Dev or Native App), use the .env value
