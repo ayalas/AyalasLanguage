@@ -16,9 +16,9 @@ namespace AyalasLanguageAPI.Endpoints;
 
 public static class AuthEndpoints
 {
-    public static void MapAuthEndpoints(this IEndpointRouteBuilder app)
+    public static void MapAuthEndpoints(this IEndpointRouteBuilder app, string prefix)
     {
-        var authBase = app.MapGroup("/api/auth").AddEndpointFilter<ErrorLoggingFilter>();
+        var authBase = app.MapGroup($"{prefix}/auth").AddEndpointFilter<ErrorLoggingFilter>();
 
         var publicAuth = authBase.MapGroup("").WithTags("PublicAuth");
 

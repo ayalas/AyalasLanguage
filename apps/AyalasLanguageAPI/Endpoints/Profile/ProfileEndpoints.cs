@@ -11,9 +11,9 @@ namespace AyalasLanguageAPI.Endpoints.Profile
 {
     public static class ProfileEndpoints
     {
-        public static void MapProfileEndpoints(this IEndpointRouteBuilder app)
+        public static void MapProfileEndpoints(this IEndpointRouteBuilder app, string prefix)
         {
-            var profileGroup = app.MapGroup("/api/profile")
+            var profileGroup = app.MapGroup($"{prefix}/profile")
                 .AddEndpointFilter<ErrorLoggingFilter>().WithTags("Profile")
                 .RequireAuthorization(new AuthorizeAttribute
                 {

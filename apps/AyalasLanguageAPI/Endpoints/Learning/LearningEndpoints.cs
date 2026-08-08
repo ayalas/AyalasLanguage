@@ -13,9 +13,9 @@ namespace AyalasLanguageAPI.Endpoints.Learning;
 
 public static class LearningEndpoints
 {
-    public static void MapLearningEndpoints(this IEndpointRouteBuilder app)
+    public static void MapLearningEndpoints(this IEndpointRouteBuilder app, string prefix)
     {
-        var learning = app.MapGroup("/api/learning").WithTags("Learning")
+        var learning = app.MapGroup($"{prefix}/learning").WithTags("Learning")
             .AddEndpointFilter<ErrorLoggingFilter>()
             .RequireAuthorization(new AuthorizeAttribute
             {

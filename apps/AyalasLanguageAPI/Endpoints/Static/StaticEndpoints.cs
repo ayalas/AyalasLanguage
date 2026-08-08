@@ -12,9 +12,9 @@ namespace AyalasLanguageAPI.Endpoints.Static;
 
 public static class StaticEndpoints
 {
-    public static void MapStaticEndpoints(this IEndpointRouteBuilder app)
+    public static void MapStaticEndpoints(this IEndpointRouteBuilder app, string prefix)
     {
-        var staticData = app.MapGroup("/api/static")
+        var staticData = app.MapGroup($"{prefix}/static")
             .AddEndpointFilter<ErrorLoggingFilter>().WithTags("Static")
             .RequireAuthorization(new AuthorizeAttribute
             {

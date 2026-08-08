@@ -23,24 +23,30 @@ namespace AyalasLanguageAPI.Endpoints
     {
         public static void MapAyalasLanguageEndpoints(this IEndpointRouteBuilder app)
         {
-            app.MapAuthEndpoints(); // Register, change password, login, logout
+            // Register User APIs for the Web Frontend
+            app.RegisterUserRoutes("/api");
 
-            // Protected endpoints (requires authentication)
-            app.MapProfileEndpoints(); //edit profile, get profile, switch language
-            app.MapLearningEndpoints(); // get learning path, update progress, get exercises
-            app.MapContentCreatorEndpoints(); // add exercises and learning paths
-            app.MapPublicEndpoints();
-            app.MapAIIntegrationEndpoints();
-            app.MapStaticEndpoints();
+            // Register EXACT SAME APIs for the Mobile Frontend
+            app.RegisterUserRoutes("/mobile/api");
 
             //admin endpoints
             app.MapAdminEndpoints();
 
-            //falback all apis
-            app.Map("/api/{**slug}", (string? slug) =>
-            {
-                return Results.NotFound();
-            });
+            // Fallback for any unmatched API calls
+            app.Map("/api/{**slug}", (string? slug) => Results.NotFound());
+            app.Map("/mobile/api/{**slug}", (string? slug) => Results.NotFound());
+        }
+
+        private static void RegisterUserRoutes(this IEndpointRouteBuilder app, string prefix)
+        {
+            // Pass the prefix down to each sub-module
+            app.MapAuthEndpoints(prefix);
+            app.MapProfileEndpoints(prefix);
+            app.MapLearningEndpoints(prefix);
+            app.MapContentCreatorEndpoints(prefix);
+            app.MapPublicEndpoints(prefix);
+            app.MapAIIntegrationEndpoints(prefix);
+            app.MapStaticEndpoints(prefix);
         }
 
     }

@@ -21,9 +21,9 @@ using AyalasLanguageJobs;
 
 public static class ContentCreatorEndpoints
 {
-    public static void MapContentCreatorEndpoints(this IEndpointRouteBuilder app)
+    public static void MapContentCreatorEndpoints(this IEndpointRouteBuilder app, string prefix)
     {
-        var creator = app.MapGroup("/api/creator")
+        var creator = app.MapGroup($"{prefix}/creator")
             .AddEndpointFilter<ErrorLoggingFilter>()
             .WithTags("Content Creator").RequireAuthorization(new AuthorizeAttribute
             {

@@ -9,6 +9,7 @@ namespace AyalasLanguageAPI.Routing
         {
             var publicFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:public", app.Logger);
             var adminFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:admin", app.Logger);
+            var mobileFileProvider = GetFileProvider(config, rootPath, "FrontendsPhysicalFolders:mobile", app.Logger);
 
             // 1. Static Files Middleware (Handles physical files like .js, .css, .png)
             if (adminFileProvider != null)
@@ -18,6 +19,11 @@ namespace AyalasLanguageAPI.Routing
                     FileProvider = adminFileProvider,
                     RequestPath = "/admin"
                 });
+            }
+
+            if (mobileFileProvider != null)
+            {
+                app.UseStaticFiles(new StaticFileOptions { FileProvider = mobileFileProvider, RequestPath = "/mobile" });
             }
 
             if (publicFileProvider != null)
@@ -38,6 +44,15 @@ namespace AyalasLanguageAPI.Routing
                 {
                     FileProvider = adminFileProvider,
                     RequestPath = "" // Leave empty so it finds index.html in the admin folder root
+                }).AllowAnonymous();
+            }
+
+            if (mobileFileProvider != null) // NEW
+            {
+                app.MapFallbackToFile("/mobile/{*path:nonfile}", "index.html", new StaticFileOptions
+                {
+                    FileProvider = mobileFileProvider,
+                    RequestPath = ""
                 }).AllowAnonymous();
             }
 

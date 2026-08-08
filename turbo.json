@@ -3,7 +3,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "admin/**", "bin/**", "obj/**"]
+      "env": ["EXPO_PUBLIC_BACKEND_BASE_URL", "NODE_ENV", "STACK_ENV", "EXPO_PUBLIC_STACK_ENV"],
+      "outputs": ["dist/**", "static/**", "admin/**", "bin/**", "obj/**"]
     },
     "dev": {
       "cache": false,

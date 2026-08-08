@@ -10,9 +10,9 @@ namespace AyalasLanguageAPI.Endpoints;
 
 public static class PublicEndpoints
 {
-    public static void MapPublicEndpoints(this IEndpointRouteBuilder app)
+    public static void MapPublicEndpoints(this IEndpointRouteBuilder app, string prefix)
     {
-        var publicEndpoints = app.MapGroup("/api/public")
+        var publicEndpoints = app.MapGroup($"{prefix}/public")
             .AddEndpointFilter<ErrorLoggingFilter>().WithTags("Public");
 
         publicEndpoints.MapPost("/message", CreatePublicContactUs);

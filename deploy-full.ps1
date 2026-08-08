@@ -13,7 +13,7 @@ $localTarPath  = Join-Path $env:TEMP "${imageName}.tar"
 # STEP 1: COMPLIANCE CODE COMPILATION (LOCALLY)
 # =========================================================================
 Write-Host "Building Docker image locally..." -ForegroundColor Cyan
-docker build -t ${imageName}:latest .
+docker build -build-arg STACK_ENV=Production -t ${imageName}:latest .
 $exitCode = $LASTEXITCODE
 
 if ($exitCode -ne 0) {

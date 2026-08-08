@@ -20,9 +20,9 @@ namespace AyalasLanguageAPI.Endpoints.AIIntegration;
 
 public static class AIIntegrationEndpoints
 {
-    public static void MapAIIntegrationEndpoints(this IEndpointRouteBuilder app)
+    public static void MapAIIntegrationEndpoints(this IEndpointRouteBuilder app, string prefix)
     {
-        var aiGroup = app.MapGroup("/api/ai")
+        var aiGroup = app.MapGroup($"{prefix}/ai")
                 .AddEndpointFilter<ErrorLoggingFilter>()
                 .WithTags("ai")
                 .RequireAuthorization(new AuthorizeAttribute

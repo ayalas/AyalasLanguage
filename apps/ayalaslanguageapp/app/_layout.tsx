@@ -1,13 +1,14 @@
 import { SplashScreen, Stack } from "expo-router";
 import "../global.css";
 import axios from "axios";
+import { getAPIBaseUrl } from "@/lib/api";
 import { AuthProvider } from "@/lib/AuthContext";
 import { useFonts } from 'expo-font';
 import { useEffect } from "react";
 import { StatusBar, useColorScheme } from "react-native";
 import { PRIMARY_DARK, PRIMARY_LIGHT } from "@/constants";
 
-axios.defaults.baseURL = process.env.EXPO_PUBLIC_BACKEND_BASE_URL;
+axios.defaults.baseURL = getAPIBaseUrl();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();

@@ -4,33 +4,28 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
 WORKDIR /src
 
-# 1. Install Node.js and pnpm from the official Node image
+# 1. Install Node.js and pnpm
 COPY --from=node:22-alpine /usr/lib /usr/lib
 COPY --from=node:22-alpine /usr/local/lib /usr/local/lib
 COPY --from=node:22-alpine /usr/local/include /usr/local/include
 COPY --from=node:22-alpine /usr/local/bin /usr/local/bin
 
-# 2. Setup pnpm and turbo
 RUN npm install -g pnpm turbo
 
-# 3. Copy monorepo configuration for frontend caching
+# 3. Copy monorepo configuration (including the NEW mobile app)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY apps/AyalasLanguageWeb/package.json ./apps/AyalasLanguageWeb/
 COPY apps/AyalasLanguageWebAdmin/package.json ./apps/AyalasLanguageWebAdmin/
+COPY apps/ayalaslanguageapp/package.json ./apps/ayalaslanguageapp/ 
 
-# 4. Install frontend dependencies (Cached Layer)
+# 4. Install frontend dependencies
 ENV CI=true
 RUN pnpm install --frozen-lockfile
 
 # ---------------------------------------------------
-# NEW STEP: .NET Restore (Cached Layer)
-# Copy all .csproj files and restore BEFORE copying full source.
-# This prevents network errors during the test phase.
+# .NET Restore
 # ---------------------------------------------------
 COPY AyalasLanguage.sln ./
-
-# 1. Remove the Tryouts project from the solution so the restore ignores it
-# Use the path exactly as it appears in your error message
 RUN dotnet sln AyalasLanguage.sln remove extras/Tryouts/Tryouts.csproj
 
 COPY apps/AyalasLanguageAPI/*.csproj ./apps/AyalasLanguageAPI/
@@ -40,19 +35,20 @@ COPY dotnet-libs/AyalasLanguageAPI.Data.Migrations.MySQL/*.csproj ./dotnet-libs/
 COPY dotnet-libs/AyalasLanguageJobs/*.csproj ./dotnet-libs/AyalasLanguageJobs/
 
 RUN dotnet restore
-# ---------------------------------------------------
 
-# 5. Copy the rest of the source (Backend + Frontend)
+# 5. Copy full source
 COPY . .
 
-# 6. Run Turbo commands 
-# Now that 'dotnet restore' was run above, these will use the cached packages
+# 6. Run Turbo builds
+# This will build the Public Web, Admin Web, and now the Mobile Web (Expo)
 RUN pnpm turbo test
-RUN pnpm turbo build
+RUN STACK_ENV=${STACK_ENV} \
+    EXPO_PUBLIC_STACK_ENV=${STACK_ENV} \
+    NODE_ENV=production \
+    pnpm turbo build
 
 # 7. Publish .NET Backend
 WORKDIR /src/apps/AyalasLanguageAPI
-# Adding --no-restore because we already did it in step 4.5
 RUN dotnet publish -c Release -o /app/publish --no-restore /p:UseAppHost=false
 
 # ==========================================
@@ -66,7 +62,6 @@ ENV ASPNETCORE_ENVIRONMENT=$BUILD_ENV
 ENV EmailConfirmation:ClientAddress=$CLIENT_CONFIRM_URL
 ENV ASPNETCORE_URLS=http://+:5000
 
-# Set up permissions
 USER root
 RUN mkdir -p /app/data && chown -R $APP_UID:$APP_UID /app/data
 USER $APP_UID
@@ -75,8 +70,12 @@ USER $APP_UID
 COPY --from=build-env /app/publish .
 
 # Copy Frontend artifacts
+# 1. Public (Root)
 COPY --from=build-env /src/apps/AyalasLanguageWeb/dist ./dist
+# 2. Admin (/admin)
 COPY --from=build-env /src/apps/AyalasLanguageWebAdmin/admin ./admin
+# 3. Mobile (/mobile)
+COPY --from=build-env /src/apps/ayalaslanguageapp/static ./mobile 
 
 EXPOSE 5000
 ENTRYPOINT [ "dotnet", "AyalasLanguageAPI.dll" ]

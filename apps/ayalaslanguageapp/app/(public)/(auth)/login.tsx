@@ -52,14 +52,7 @@ const LogInScreen = () => {
         }
       }, 200);
     } catch (err) {
-      errorHandler(err, (msg) => {
-        if (msg.indexOf("No response")  >= 0) {
-          setError(`${msg} ${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}`);
-        }
-        else {
-          setError(msg);
-        }
-      });
+      errorHandler(err, setError);
     }
   }
 
@@ -82,14 +75,7 @@ const LogInScreen = () => {
         }
       }
     } catch (err) {
-      errorHandler(err, (msg) => {
-        if (msg.indexOf("No response")  >= 0) {
-          setError(`${msg} ${process.env.EXPO_PUBLIC_BACKEND_BASE_URL}`);
-        }
-        else {
-          setError(msg);
-        }
-      });
+      errorHandler(err, setError);
     }
   }
 
