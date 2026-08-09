@@ -106,6 +106,9 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
 
     return (
         <>
+            <View className="pt-safe">
+            {/* This will have ~44px on iPhone but 0px on standard Web */}
+            </View>
             <View className="header-row" style={{zIndex: 1000}}>
                 <View className="header-title">
                     <Link className="header-app-link" href="/"><Image className="logo" source={isDark ? imgLogoDark : imgLogo} /></Link>

@@ -63,7 +63,7 @@
   min-height: 100%;
   background-color: var(--bg);
   color: var(--text-h);
-  padding: 18px;
+  padding: 5px 18px 18px;
   margin: 0;
   flex: 1 1 0%;
 }
@@ -467,7 +467,7 @@
   text-align: start;
   gap: 14px;
   width: 100%;
-  padding: 25px 0 0 0;
+  padding: 0;
   flex-wrap: wrap;
   flex-direction: row;
   flex-shrink: 0;
@@ -758,7 +758,6 @@
   direction: rtl;
   text-align: left;
 }
-
 
 @media (max-width: 768px) {
 
