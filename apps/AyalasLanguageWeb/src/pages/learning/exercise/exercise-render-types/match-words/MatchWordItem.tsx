@@ -1,22 +1,18 @@
+import type { MatchSelection } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { CirclePlay } from 'lucide-react';
 import React, { useState } from 'react';
 
-export type MatchSelection = {
-  itemValue: string;
-  matchingValue: string;
-  setErrorState: (v: boolean) => void;
-  setIsSelected: (v: boolean) => void;
-  setToDone: () => void;
-};
 
 type Props = {
+  itemId: number;
   itemValue: string;
+  matchingId: number;
   matchingValue: string;
   setSelected: (matchObject: MatchSelection | null, setToDone: () => void, setToError: (v: boolean) => void) => void;
   isSpoken: boolean;
 };
 
-export const MatchWordItem: React.FC<Props> = ({ itemValue, matchingValue, setSelected, isSpoken }) => {
+export const MatchWordItem: React.FC<Props> = ({ itemId, itemValue, matchingId, matchingValue, setSelected, isSpoken }) => {
   const [isSelected, setIsSelected] = useState(false);
   const [errorState, setErrorState] = useState(false);
   const [isDone, setIsDone] = useState(false);
@@ -36,7 +32,7 @@ export const MatchWordItem: React.FC<Props> = ({ itemValue, matchingValue, setSe
     const tempIsSelected = !isSelected;
 
     if (tempIsSelected) {
-      setSelected({ itemValue, matchingValue, setErrorState, setIsSelected, setToDone }, setToDone, setErrorState);
+      setSelected({ itemId, itemValue, matchingId, matchingValue, setErrorState, setIsSelected, setToDone }, setToDone, setErrorState);
     } else {
       setSelected(null, setToDone, setErrorState);
     }

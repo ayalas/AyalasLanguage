@@ -25,8 +25,20 @@ export type ExtendedExerciseInfo = ExerciseInfo & {
 };
 
 export type MatchCell = { 
-  First: string; 
+  FirstId: number;
+  First: string;
+  SecondId: number;
   Second: string 
 }
+
+export type MatchSelection = {
+  itemId: number;
+  itemValue: string;
+  matchingId: number;
+  matchingValue: string;
+  setErrorState: (v: boolean) => void;
+  setIsSelected: (v: boolean) => void;
+  setToDone: () => void;
+};
 
 export type SetColumnType = (arr: MatchCell[]) => void;

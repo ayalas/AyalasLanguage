@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MatchWordItem from './MatchWordItem';
-import type { MatchSelection } from './MatchWordItem';
-import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { ExtendedExerciseInfo, MatchCell, MatchSelection } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import {EXERCISE_TYPE_LOGIC, randomizeMatchData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { View } from 'react-native';
 
@@ -13,14 +12,9 @@ type Props = {
   playTargetText: (s: string) => Promise<void>;
 };
 
-type ColumnType = {
-    First: string; 
-    Second: string;
-}
-
 export default function MatchWordsExercise ({ exerciseInfo, setError, moveNext, addMistake, playTargetText }:Props)  {
-  const [column1, setColumn1] = useState<ColumnType[]>([]);
-  const [column2, setColumn2] = useState<ColumnType[]>([]);
+  const [column1, setColumn1] = useState<MatchCell[]>([]);
+  const [column2, setColumn2] = useState<MatchCell[]>([]);
   const [countDone, setCountDone] = useState<number>(0);
   const [column1Selected, setColumn1Selected] = useState<MatchSelection | null>(null);
   const [column2Selected, setColumn2Selected] = useState<MatchSelection | null>(null);
@@ -44,7 +38,7 @@ export default function MatchWordsExercise ({ exerciseInfo, setError, moveNext, 
     setColumnSelected: (s: MatchSelection | null) => void,
     setOtherColumnSelected: (s: MatchSelection | null) => void
   ) {
-    if (matchObject != null && thisColumnSelected != null && matchObject.itemValue !== thisColumnSelected.itemValue) {
+    if (matchObject != null && thisColumnSelected != null && matchObject.itemId !== thisColumnSelected.itemId) {
       thisColumnSelected.setErrorState(false);
       thisColumnSelected.setIsSelected(false);
     }
@@ -99,7 +93,9 @@ export default function MatchWordsExercise ({ exerciseInfo, setError, moveNext, 
               {column1.map((item, i) => (
                 <MatchWordItem
                   key={`qi-${i}`}
+                  itemId={item.FirstId}
                   itemValue={item.First}
+                  matchingId={item.SecondId}
                   matchingValue={item.Second}
                   setSelected={onColumn1Selected}
                   isSpoken={false}
@@ -113,7 +109,9 @@ export default function MatchWordsExercise ({ exerciseInfo, setError, moveNext, 
               {column2.map((item, i) => (
                 <MatchWordItem
                   key={`qi-${i}`}
+                  itemId={item.FirstId}
                   itemValue={item.First}
+                  matchingId={item.SecondId}
                   matchingValue={item.Second}
                   setSelected={onColumn2Selected}
                   isSpoken={EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].TargetIsSpoken}

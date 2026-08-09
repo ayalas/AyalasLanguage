@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MatchWordItem from './MatchWordItem';
-import type { MatchSelection } from './MatchWordItem';
-import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { ExtendedExerciseInfo, MatchCell, MatchSelection } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import {EXERCISE_TYPE_LOGIC, randomizeMatchData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 
 type Props = {
@@ -13,8 +12,8 @@ type Props = {
 };
 
 const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext, addMistake, playTargetText }) => {
-  const [column1, setColumn1] = useState<Array<{ First: string; Second: string }>>([]);
-  const [column2, setColumn2] = useState<Array<{ First: string; Second: string }>>([]);
+  const [column1, setColumn1] = useState<Array<MatchCell>>([]);
+  const [column2, setColumn2] = useState<Array<MatchCell>>([]);
   const [countDone, setCountDone] = useState<number>(0);
   const [column1Selected, setColumn1Selected] = useState<MatchSelection | null>(null);
   const [column2Selected, setColumn2Selected] = useState<MatchSelection | null>(null);
@@ -38,7 +37,8 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
     setColumnSelected: (s: MatchSelection | null) => void,
     setOtherColumnSelected: (s: MatchSelection | null) => void
   ) {
-    if (matchObject != null && thisColumnSelected != null && matchObject.itemValue !== thisColumnSelected.itemValue) {
+    //remove old selection on the same column
+    if (matchObject != null && thisColumnSelected != null && matchObject.itemId !== thisColumnSelected.itemId) {
       thisColumnSelected.setErrorState(false);
       thisColumnSelected.setIsSelected(false);
     }
@@ -93,7 +93,9 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
               {column1.map((item, i) => (
                 <MatchWordItem
                   key={`qi-${i}`}
+                  itemId={item.FirstId}
                   itemValue={item.First}
+                  matchingId={item.SecondId}
                   matchingValue={item.Second}
                   setSelected={onColumn1Selected}
                   isSpoken={false}
@@ -107,7 +109,9 @@ const MatchWordsExercise: React.FC<Props> = ({ exerciseInfo, setError, moveNext,
               {column2.map((item, i) => (
                 <MatchWordItem
                   key={`qi-${i}`}
+                  itemId={item.FirstId}
                   itemValue={item.First}
+                  matchingId={item.SecondId}
                   matchingValue={item.Second}
                   setSelected={onColumn2Selected}
                   isSpoken={EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].TargetIsSpoken}
