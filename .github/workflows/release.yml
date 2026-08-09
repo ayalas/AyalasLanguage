@@ -41,11 +41,11 @@ jobs:
           echo "DOWNLOAD_URL=$DOWNLOAD_URL" >> $GITHUB_ENV
 
       - name: 📥 Download APK
-        run: curl -L -o ayalas-app.apk ${{ env.DOWNLOAD_URL }}
+        run: curl -L -o langapp.apk ${{ env.DOWNLOAD_URL }}
 
       - name: 🚀 Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ayalas-app.apk
+          files: langapp.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
