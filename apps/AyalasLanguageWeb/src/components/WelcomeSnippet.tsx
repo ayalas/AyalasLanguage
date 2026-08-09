@@ -27,10 +27,16 @@ export function WelcomeSnippet({ isPublic }: { isPublic: boolean }) {
         <Link className="home-link" to="/home">Login to {BRAND_NAME}</Link>. This link will redirect you to the app if you are already logged in.
       </div>
       <div className='form-row'>
+        This app is also <Link className="home-link" to="/download-app">available on Android devices</Link>, through GitHub Releases.
+      </div>
+      <div className='form-row'>
         To discuss content creation, features and more, go to {BRAND_NAME}'s <Link className="home-link" to="https://discord.gg/UkzNfauGd">Discord server</Link>.
       </div>
       <div className='form-row'>
-        To write to this app's admin, use the <Link className="home-link" to="/contactus">Contact Us form</Link>.
+        To write to this app's creator and admin, use the <Link className="home-link" to="/contactus">Contact Us form</Link>.
+      </div>
+      <div className='form-row'>
+        One last gem: this web app is mobile friendly, but if you want to try out another rendition of it written in React Native, it is mounted <Link className="home-link" to="/mobile">here</Link>.
       </div>
     </>
   );
