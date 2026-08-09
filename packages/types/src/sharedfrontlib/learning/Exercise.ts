@@ -25,16 +25,14 @@ export type ExtendedExerciseInfo = ExerciseInfo & {
 };
 
 export type MatchCell = { 
-  FirstId: number;
+  Id: number;
   First: string;
-  SecondId: number;
   Second: string 
 }
 
 export type MatchSelection = {
   itemId: number;
   itemValue: string;
-  matchingId: number;
   matchingValue: string;
   setErrorState: (v: boolean) => void;
   setIsSelected: (v: boolean) => void;

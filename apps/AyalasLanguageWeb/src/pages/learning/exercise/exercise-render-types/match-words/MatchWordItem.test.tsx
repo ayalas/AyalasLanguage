@@ -8,6 +8,7 @@ vi.mock('axios');
 
 describe('MatchWordItem', () => {
   const mockProps = {
+    itemId: 1,
     itemValue: 'Apple',
     matchingValue: 'Pomme',
     setSelected: vi.fn(),

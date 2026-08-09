@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import MatchWordsExercise from './MatchWordsExercise';
 import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
-import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import { type ExerciseData, type ExtendedExerciseInfo, type MatchSelection } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 
@@ -18,16 +18,17 @@ vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
 // Mock the child component to simulate the selection logic
 vi.mock('./MatchWordItem', () => ({
   __esModule: true,
-  default: ({ itemValue, matchingValue, setSelected }: any) => {
+  default: ({ itemId, itemValue, matchingValue, setSelected }: any) => {
     const handleClick = () => {
       // Create a mock Selection object as expected by the parent
       const selection = {
+        itemId,
         itemValue,
         matchingValue,
         setErrorState: vi.fn(),
         setIsSelected: vi.fn(),
         setToDone: vi.fn(),
-      };
+      } as MatchSelection;
       setSelected(selection, selection.setToDone, selection.setErrorState);
     };
     return (

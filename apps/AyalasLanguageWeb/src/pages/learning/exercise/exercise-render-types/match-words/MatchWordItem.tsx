@@ -6,13 +6,12 @@ import React, { useState } from 'react';
 type Props = {
   itemId: number;
   itemValue: string;
-  matchingId: number;
   matchingValue: string;
   setSelected: (matchObject: MatchSelection | null, setToDone: () => void, setToError: (v: boolean) => void) => void;
   isSpoken: boolean;
 };
 
-export const MatchWordItem: React.FC<Props> = ({ itemId, itemValue, matchingId, matchingValue, setSelected, isSpoken }) => {
+export const MatchWordItem: React.FC<Props> = ({ itemId, itemValue, matchingValue, setSelected, isSpoken }) => {
   const [isSelected, setIsSelected] = useState(false);
   const [errorState, setErrorState] = useState(false);
   const [isDone, setIsDone] = useState(false);
@@ -32,7 +31,7 @@ export const MatchWordItem: React.FC<Props> = ({ itemId, itemValue, matchingId, 
     const tempIsSelected = !isSelected;
 
     if (tempIsSelected) {
-      setSelected({ itemId, itemValue, matchingId, matchingValue, setErrorState, setIsSelected, setToDone }, setToDone, setErrorState);
+      setSelected({ itemId, itemValue, matchingValue, setErrorState, setIsSelected, setToDone }, setToDone, setErrorState);
     } else {
       setSelected(null, setToDone, setErrorState);
     }

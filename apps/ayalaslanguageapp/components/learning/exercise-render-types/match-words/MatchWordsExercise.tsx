@@ -93,9 +93,8 @@ export default function MatchWordsExercise ({ exerciseInfo, setError, moveNext, 
               {column1.map((item, i) => (
                 <MatchWordItem
                   key={`qi-${i}`}
-                  itemId={item.FirstId}
+                  itemId={item.Id}
                   itemValue={item.First}
-                  matchingId={item.SecondId}
                   matchingValue={item.Second}
                   setSelected={onColumn1Selected}
                   isSpoken={false}
@@ -109,9 +108,8 @@ export default function MatchWordsExercise ({ exerciseInfo, setError, moveNext, 
               {column2.map((item, i) => (
                 <MatchWordItem
                   key={`qi-${i}`}
-                  itemId={item.FirstId}
+                  itemId={item.Id}
                   itemValue={item.First}
-                  matchingId={item.SecondId}
                   matchingValue={item.Second}
                   setSelected={onColumn2Selected}
                   isSpoken={EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].TargetIsSpoken}

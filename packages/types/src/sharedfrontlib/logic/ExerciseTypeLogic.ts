@@ -339,8 +339,7 @@ export const randomizeMatchData = (exerciseInfo: ExtendedExerciseInfo, setColumn
         let sequence = getRandomizedSequence(exerciseLegth);
         for (let i = 0; i < sequence.length; i++) {
           matchesTemp.push({
-            FirstId: sequence[i],
-            SecondId: sequence[i],
+            Id: sequence[i],
             First: exerciseInfo.sentenceElements[sequence[i]].trim(),
             Second: exerciseInfo.answers[sequence[i]].trim()
           });
@@ -350,8 +349,7 @@ export const randomizeMatchData = (exerciseInfo: ExtendedExerciseInfo, setColumn
         sequence = getRandomizedSequence(exerciseLegth);
         for (let i = 0; i < sequence.length; i++) {
           matchesTemp2.push({
-            FirstId: sequence[i],
-            SecondId: sequence[i],
+            Id: sequence[i],
             First: exerciseInfo.answers[sequence[i]].trim(),
             Second: exerciseInfo.sentenceElements[sequence[i]].trim()
           });
