@@ -10,7 +10,7 @@ namespace AyalasLanguageJobs
     public static class JobsFactory
     {
        
-        public static async Task<JobRun?> CreateJob(JobTypeEnum jobType, int? mainRecordId, int? secondaryRecordId, AyalasLanguageDbContext db, IConfiguration configuration, int? batchSize = null)
+        public static JobRun? CreateJob(JobTypeEnum jobType, int? mainRecordId, int? secondaryRecordId, AyalasLanguageDbContext db, IConfiguration configuration, int? batchSize = null)
         {
 
             JobRun? job = null;

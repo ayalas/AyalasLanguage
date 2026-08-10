@@ -21,7 +21,7 @@ export function ExerciseUpdatePage() {
     const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
     const navigate = useNavigate();
 
-    async function onFormSubmit(e: React.SubmitEvent) {
+    async function onFormSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         try {
 

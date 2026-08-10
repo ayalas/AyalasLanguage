@@ -38,7 +38,7 @@ namespace AyalasLanguageJobs
                     var db = scope.ServiceProvider.GetRequiredService<AyalasLanguageDbContext>();
            
                     // Use your existing Factory to create the job
-                    var job = await JobsFactory.CreateJob(
+                    var job = JobsFactory.CreateJob(
                         request.JobType,
                         request.MainRecordId,
                         request.SecondaryRecordId,

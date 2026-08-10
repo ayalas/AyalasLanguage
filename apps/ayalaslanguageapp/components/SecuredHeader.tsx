@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Image, Text, StyleProp, ViewStyle } from 'react-native'
+import { View, Image, Text, StyleProp, ViewStyle, Platform } from 'react-native'
 import { useAuth } from '@/lib/AuthContext';
 import { Link, useRouter } from 'expo-router';
 import { SquareMenu, Volleyball } from 'lucide-react-native';
@@ -14,6 +14,7 @@ import imgLogo from "@/assets/images/logo.png";
 import imgLogoDark from "@/assets/images/logo-dark.png"; //todo
 import useTextStyles from '@/lib/useTextStyles';
 import { BORDER_DARK, BORDER_LIGHT, PRIMARY_DARK, PRIMARY_LIGHT } from '@/constants';
+import { usePWAInstall } from '@ayalaslanguage/types/sharedfrontlib/pwa';
 
 export const LANGUAGE_INDICATOR_ENUM = {
     NONE: 0,
@@ -38,6 +39,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     const router = useRouter();
     const [menuVisible, setMenuVisible] = useState(false);
     const { styles, isDark } = useTextStyles();
+    const { isInstallable, triggerInstall } = usePWAInstall();
     const languageItems = useMemo(() => {
         if (user == null || !user.languageSettings || !user.languageSettings.otherUserLanguages) return [];
         return user.languageSettings.otherUserLanguages.map((language) => ({
@@ -133,6 +135,9 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                         }>
                         <Menu.Item onPress={() => { router.push('/profile'); closeMenu(); }} title="Profile settings" />
                         <Menu.Item onPress={() => { router.push('/account'); closeMenu(); }} title="Manage account" />
+                        {Platform.OS === 'web' && isInstallable && (
+                             <Menu.Item onPress={triggerInstall} title="Install Fullscreen Experience" />
+                        )}
                         <Menu.Item onPress={() => { router.push('/usernote'); closeMenu(); }} title="Contact Us" />
                         <Divider />
                         <Menu.Item onPress={() => { logoutAction(); closeMenu(); }} title="Logout" />

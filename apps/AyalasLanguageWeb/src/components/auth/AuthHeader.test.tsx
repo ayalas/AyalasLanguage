@@ -6,7 +6,7 @@ import axios from 'axios';
 import { switchLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
-
+import { usePWAInstall } from '@ayalaslanguage/types/sharedfrontlib/pwa';
 
 // --- Mock Setup ---
 
@@ -17,6 +17,14 @@ const { mockNavigate } = vi.hoisted(() => {
     mockNavigate: vi.fn(),
   };
 });
+
+// 2. Add the mock for the PWA module
+vi.mock('@ayalaslanguage/types/sharedfrontlib/pwa', () => ({
+  usePWAInstall: vi.fn(() => ({
+    isInstallable: false,
+    triggerInstall: vi.fn(),
+  })),
+}));
 
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -82,6 +90,7 @@ const mockUser: User = {
 describe('AuthHeader Component', () => {
   const mockLogout = vi.fn();
   const mockLogin = vi.fn();
+  const mockTriggerInstall = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -90,6 +99,10 @@ describe('AuthHeader Component', () => {
       user: mockUser,
       logout: mockLogout,
       login: mockLogin,
+    });
+    vi.mocked(usePWAInstall).mockReturnValue({
+      isInstallable: false,
+      triggerInstall: mockTriggerInstall,
     });
   });
 
@@ -185,5 +198,29 @@ describe('AuthHeader Component', () => {
     const errorLabel = await screen.findByText('Mock Error');
     expect(errorLabel).toBeInTheDocument();
     expect(errorLabel).toHaveClass('form-error');
+  });
+
+  it('shows and calls triggerInstall when PWA is installable', async () => {
+    // Override mock for this specific test
+    vi.mocked(usePWAInstall).mockReturnValue({
+      isInstallable: true,
+      triggerInstall: mockTriggerInstall,
+    });
+
+    render(
+      <MemoryRouter>
+        <AuthHeader />
+      </MemoryRouter>
+    );
+
+    // Open menu
+    fireEvent.click(await screen.findByTestId('square-menu-icon'));
+
+    // Check if install link exists and click it
+    const installBtn = screen.getByText(/Install Fullscreen Experience/i);
+    expect(installBtn).toBeInTheDocument();
+    
+    fireEvent.click(installBtn);
+    expect(mockTriggerInstall).toHaveBeenCalled();
   });
 });

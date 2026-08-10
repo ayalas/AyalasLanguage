@@ -42,7 +42,9 @@ export default ({ config }) => {
       url: "https://u.expo.dev/c0e996d0-d862-425e-a25c-b5961c60a5cf"
     },
     web: {
-      favicon: "./assets/images/favicon.png"
+      favicon: "./assets/images/favicon.png",
+      bundler: "metro",
+      output: "single"
     },
     plugins: [
       "expo-router",

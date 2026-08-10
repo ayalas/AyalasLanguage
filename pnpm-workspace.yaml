@@ -19,3 +19,7 @@ overrides:
   "@babel/traverse": "^7.25.9"
   "@babel/types": "^7.25.9"
   "@babel/helper-module-imports": "^7.24.7"
+  "react": "19.2.7"
+  "react-dom": "19.2.7"
+  "@types/react": "19.2.7"
+  "@types/react-dom": "19.2.4"

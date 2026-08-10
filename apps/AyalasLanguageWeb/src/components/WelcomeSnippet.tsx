@@ -36,7 +36,10 @@ export function WelcomeSnippet({ isPublic }: { isPublic: boolean }) {
         To write to this app's creator and admin, use the <Link className="home-link" to="/contactus">Contact Us form</Link>.
       </div>
       <div className='form-row'>
-        One last gem: this web app is mobile friendly, but if you want to try out another rendition of it written in React Native, it is mounted <Link className="home-link" to="/mobile">here</Link>.
+        This web app is mobile friendly, but if you want to try out another rendition of it written in React Native, it is mounted <Link className="home-link" to="/mobile">here</Link>.
+      </div>
+      <div className='form-row'>
+        One last gem: both the default web app and the /mobile endpoint have a "Fullscreen experience" installation option (a PWA app) from the main menu, after a successful login.
       </div>
     </>
   );

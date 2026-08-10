@@ -28,7 +28,7 @@ export function ContactUsAuthenticatedUserPage() {
         }
     }
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         await submitAction();
     };

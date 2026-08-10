@@ -114,7 +114,7 @@ namespace AyalasLanguageJobs
             _db.ChangeTracker.Clear();
             _job.Errors = _job.Errors + 1;
             _job.ModifiedOn = DateTime.UtcNow;
-            if (!hadErrors)
+            if (!hadErrors && ex != null)
             {
                 _job.FirstError = ex.ToString();
             }

@@ -10,8 +10,14 @@ export const usePWAInstall = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
+    // 1. Check if the event already fired before the component mounted
+    if ((window as any).deferredPrompt) {
+      setInstallPrompt((window as any).deferredPrompt);
+    }
+
+    // 2. Listen for the event in case it hasn't fired yet
     const handler = (e: Event) => {
-      e.preventDefault(); // Prevent the default browser mini-infobar
+      e.preventDefault();
       setInstallPrompt(e as BeforeInstallPromptEvent);
     };
 
@@ -20,13 +26,16 @@ export const usePWAInstall = () => {
   }, []);
 
   const triggerInstall = async () => {
-    if (!installPrompt) return;
+    // Use either the state or the global variable
+    const prompt = installPrompt || (window as any).deferredPrompt;
+    if (!prompt) return;
     
-    await installPrompt.prompt();
-    const { outcome } = await installPrompt.userChoice;
+    await prompt.prompt();
+    const { outcome } = await prompt.userChoice;
     
     if (outcome === 'accepted') {
-      setInstallPrompt(null); // Clear prompt after success
+      setInstallPrompt(null);
+      (window as any).deferredPrompt = null;
     }
   };
 

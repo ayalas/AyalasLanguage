@@ -241,7 +241,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     return arrObjects;
   };
 
-  const onFormSubmit = async function (e: React.SubmitEvent) {
+  const onFormSubmit = async function (e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoadingMessage('Generating exercises...');
     setIsLoading(true);

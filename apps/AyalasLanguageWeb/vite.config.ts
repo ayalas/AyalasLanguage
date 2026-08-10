@@ -4,6 +4,7 @@ import babel from '@rolldown/plugin-babel'
 import fs from 'fs'
 import path from 'path'
 import legacy from '@vitejs/plugin-legacy'
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,6 +12,30 @@ export default defineConfig({
     react(), // Standard React fast refresh
     babel({
       presets: [reactCompilerPreset()] // Handles the React Compiler automatically
+    }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      manifest: {
+        name: 'Lang App',
+        id: "/",
+        start_url: "/",
+        short_name: 'LangAppFSexp',
+        description: 'Enjoy Lang App in a dedicated fullscreen experience',
+        theme_color: '#ffffff',
+        display: 'standalone',
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png'
+          }
+        ]
+      }
     }),
     legacy({
       targets: ['chrome >= 80', 'android >= 10'],

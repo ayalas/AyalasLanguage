@@ -8,6 +8,7 @@
     "./exercise": "./src/exercise.ts",
     "./auth": "./src/auth.ts",
     "./error": "./src/error.ts",
+    "./sharedfrontlib/pwa": "./src/sharedfrontlib/usePWAInstall.ts",
     "./sharedfrontlib/logic": "./src/sharedfrontlib/logic/index.ts",
     "./sharedfrontlib/ai": "./src/sharedfrontlib/ai/index.ts",
     "./sharedfrontlib/user": "./src/sharedfrontlib/User.ts",
@@ -16,9 +17,12 @@
     "./test-utils": "./src/test-utils/disableClientValidation.ts"
   },
   "devDependencies": {
-    "axios": "^1.18.0"
+    "@types/react": "19.2.7",
+    "axios": "^1.18.0",
+    "react": "19.2.7"
   },
   "peerDependencies": {
-    "axios": "^1.18.0"
+    "axios": "^1.18.0",
+    "react": "19.2.7"
   }
 }

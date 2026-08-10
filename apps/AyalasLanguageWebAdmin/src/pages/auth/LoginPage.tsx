@@ -38,7 +38,7 @@ export default function LoginPage(): React.ReactElement {
     }
   }
 
-  const handleSubmit = async (e: React.SubmitEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       if (on2FA) {
