@@ -5,6 +5,8 @@ export default ({ config }) => {
   // Kick in /mobile logic for anything that isn't Development (Staging, Production, etc.)
   const isDeployed = stackEnv.toLowerCase() !== 'development';
 
+  console.log(`[Build Info] STACK_ENV: ${stackEnv}, baseUrl: ${isDeployed ? '/mobile' : '/'}`);
+
   return {
     ...config,
     name: "LangApp XYZ",
@@ -84,7 +86,7 @@ export default ({ config }) => {
       reactCompiler: true,
       // In production (Docker), we serve from /mobile
       // In development, we serve from root (/)
-      baseUrl: isDeployed ? '/mobile' : ''
+      baseUrl: isDeployed ? '/mobile/' : '/' 
     },
     extra: {
       router: {},

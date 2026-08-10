@@ -5,6 +5,9 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build-env
 WORKDIR /src
 
 ARG STACK_ENV=Production
+ENV STACK_ENV=${STACK_ENV}
+ENV EXPO_PUBLIC_STACK_ENV=${STACK_ENV}
+ENV NODE_ENV=production
 
 # 1. Install Node.js and pnpm
 COPY --from=node:22-alpine /usr/lib /usr/lib
@@ -44,10 +47,7 @@ COPY . .
 # 6. Run Turbo builds
 # This will build the Public Web, Admin Web, and now the Mobile Web (Expo)
 RUN pnpm turbo test
-RUN STACK_ENV=${STACK_ENV} \
-    EXPO_PUBLIC_STACK_ENV=${STACK_ENV} \
-    NODE_ENV=production \
-    pnpm turbo build
+RUN pnpm turbo build
 
 # 7. Publish .NET Backend
 WORKDIR /src/apps/AyalasLanguageAPI
