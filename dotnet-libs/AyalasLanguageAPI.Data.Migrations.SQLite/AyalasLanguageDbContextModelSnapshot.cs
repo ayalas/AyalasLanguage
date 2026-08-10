@@ -235,6 +235,9 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Property<bool>("IsRightToLeft")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("KeyboardLanguageName")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("NativeName")
                         .HasMaxLength(128)
                         .HasColumnType("TEXT");
@@ -539,6 +542,15 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                             EnglishName = "Catalan",
                             IsRightToLeft = false,
                             NativeName = "Català"
+                        },
+                        new
+                        {
+                            LanguageId = 38,
+                            Code = "ar-MA",
+                            EnglishName = "Darija - Moroccan Arabic",
+                            IsRightToLeft = true,
+                            KeyboardLanguageName = "Arabic",
+                            NativeName = "الدارجة"
                         });
                 });
 

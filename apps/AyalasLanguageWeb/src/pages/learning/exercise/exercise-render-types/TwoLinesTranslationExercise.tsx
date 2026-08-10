@@ -134,7 +134,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
         </div>
       )}
       {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].UsesVirtualKeyboard && (
-        <VirtualKeyboard languageCode={(user?.languageSettings?.targetLanguageEnglishName ?? 'en').toLowerCase()} isRightToLeft={user?.languageSettings?.targetLanguageIsRightToLeft} onChange={OnChange} value={inputValue} />
+        <VirtualKeyboard languageCode={(user?.languageSettings?.keyboardLanguageName ?? 'en').toLowerCase()} isRightToLeft={user?.languageSettings?.targetLanguageIsRightToLeft} onChange={OnChange} value={inputValue} />
       )}
     </>
   );

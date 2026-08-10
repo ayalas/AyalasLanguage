@@ -18,6 +18,8 @@ namespace AyalasLanguageAPI.Data.Model
 
         public bool IsRightToLeft { get; set; } = false;
 
+        public string? KeyboardLanguageName { get; set; }
+
         // Navigation properties
         public virtual ICollection<UserLanguage> UserLanguages { get; set; } = new List<UserLanguage>();
 

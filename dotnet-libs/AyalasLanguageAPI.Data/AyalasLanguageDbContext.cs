@@ -90,7 +90,9 @@ public class AyalasLanguageDbContext : DbContext
             new Language { LanguageId = (int)LanguageEnum.Malay, Code = "ms", EnglishName = "Malay", NativeName = "Bahasa Melayu" },
             new Language { LanguageId = (int)LanguageEnum.Persian, Code = "fa", EnglishName = "Persian", NativeName = "فارسی", IsRightToLeft = true },
             new Language { LanguageId = (int)LanguageEnum.Slovak, Code = "sk", EnglishName = "Slovak", NativeName = "Slovenčina" },
-            new Language { LanguageId = (int)LanguageEnum.Catalan, Code = "ca", EnglishName = "Catalan", NativeName = "Català" }
+            new Language { LanguageId = (int)LanguageEnum.Catalan, Code = "ca", EnglishName = "Catalan", NativeName = "Català" },
+            new Language { LanguageId = (int)LanguageEnum.DarijaMoroccanArabic, Code = "ar-MA", EnglishName = "Darija - Moroccan Arabic", 
+                NativeName = "الدارجة", IsRightToLeft = true, KeyboardLanguageName = "Arabic" }
         );
 
         base.OnModelCreating(modelBuilder);

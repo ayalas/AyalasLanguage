@@ -44,6 +44,7 @@ export const LANGUAGE_TO_POLLY_MAP: Record<
 > = {
   en: { language: 'en-US', engine: 'generative', voice: 'Ruth', openAIVoice: 'en-US-AvaNeural' },
   ar: { language: 'arb', engine: 'standard', voice: 'Zeina', openAIVoice: 'ar-EG-SalmaNeural' },
+  "ar-MA": { language: "ar-MA", engine: 'standard', voice: 'Mouna', openAIVoice: 'ar-MA-MounaNeural' },
   da: { language: 'da-DK', engine: 'standard', voice: 'Naja', openAIVoice: 'da-DK-ChristelNeural' },
   es: { language: 'es-ES', engine: 'neural', voice: 'Lucia', openAIVoice: 'es-ES-ElviraNeural' },
   fr: { language: 'fr-FR', engine: 'neural', voice: 'Lea', openAIVoice: 'fr-FR-DeniseNeural' },

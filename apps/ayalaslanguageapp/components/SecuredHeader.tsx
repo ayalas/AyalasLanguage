@@ -160,7 +160,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                     ArrowDownIconComponent={IconDown}
                                     style={{
                                         width: 'auto',
-                                        maxWidth: 150,
+                                        maxWidth: 250,
                                         minHeight: 40,
                                         borderWidth: 1,
                                         borderStyle: 'solid',

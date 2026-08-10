@@ -199,9 +199,12 @@ public static class AuthEndpoints
 
         var languageSettings = new CurrentLanguageResponseDto(user.TargetLanguageId,
             user.TargetLanguage?.NativeName, user.KnownLanguageId,
-            user.KnownLanguage?.EnglishName, otherLanguages,
+            user.KnownLanguage?.EnglishName,
+            
+            otherLanguages,
             user.KnownLanguage != null && user.KnownLanguage.IsRightToLeft,
             user.TargetLanguage != null && user.TargetLanguage.IsRightToLeft,
+            user.TargetLanguage?.KeyboardLanguageName ??  user.TargetLanguage?.EnglishName,
             user.TargetLanguage?.EnglishName,
             user.TargetLanguage?.Code, userScore);
 

@@ -186,7 +186,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
                     )}
                 </div>
             )}
-            <VirtualKeyboard languageCode={user?.languageSettings?.targetLanguageEnglishName?.toLowerCase() || ''} isRightToLeft={true}
+            <VirtualKeyboard languageCode={user?.languageSettings?.keyboardLanguageName?.toLowerCase() || ''} isRightToLeft={true}
                 onChange={onChangeFromKeyboard}
                 value={valueFromKeyboard}
             />

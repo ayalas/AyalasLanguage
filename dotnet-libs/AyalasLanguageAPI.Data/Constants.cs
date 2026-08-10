@@ -135,7 +135,8 @@ public enum LanguageEnum
     Malay = 34,
     Persian = 35,
     Slovak = 36,
-    Catalan = 37
+    Catalan = 37,
+    DarijaMoroccanArabic = 38
 }
 
 public static class Constants
