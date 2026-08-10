@@ -39,7 +39,7 @@ export function WelcomeSnippet({ isPublic }: { isPublic: boolean }) {
         This web app is mobile friendly, but if you want to try out another rendition of it written in React Native, it is mounted <Link className="home-link" to="/mobile/">here</Link>.
       </div>
       <div className='form-row'>
-        One last gem: both the default web app and the /mobile endpoint have a "Fullscreen experience" installation option (a PWA app) from the main menu, after a successful login.
+        One last gem: both the default web app and the /mobile/ endpoint have a "Fullscreen experience" installation option (a PWA app) from the main menu or pressing the Share button on iOS and then Add to Home Screen, after a successful login.
       </div>
     </>
   );
