@@ -4,6 +4,7 @@ using AyalasLanguageAPI.AdminDTOs;
 using AyalasLanguageAPI.Auth;
 using AyalasLanguageAPI.Data;
 using AyalasLanguageAPI.Data.Model;
+using AyalasLanguageAPI.DTOs;
 using AyalasLanguageAPI.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -218,7 +219,7 @@ public static class AdminEndpoints
         return new AdminUserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin);
     }
     
-    private static async Task<AdminGridResponse<AdminUserRowDto>> GetUsers(int page, AyalasLanguageDbContext db)
+    private static async Task<PagedResponse<AdminUserRowDto>> GetUsers(int page, AyalasLanguageDbContext db)
     {
         var arr = await db.Users
             .Include(u => u.KnownLanguage)
@@ -238,7 +239,7 @@ public static class AdminEndpoints
         int numOfRecords = 0;
         if (page == 0)
             numOfRecords = await db.Users.CountAsync();
-        return new AdminGridResponse<AdminUserRowDto>(numOfRecords, arr);
+        return new PagedResponse<AdminUserRowDto>(numOfRecords, arr);
     }
 
     private static async Task<AdminUserDetailsDto?> GetUser(int userId, AyalasLanguageDbContext db)
@@ -268,7 +269,7 @@ public static class AdminEndpoints
         return user;
     }
 
-    private static async Task<AdminGridResponse<AdminContactUsRowDto>?> GetContactUsRecords(int page, AyalasLanguageDbContext db, ILogger<Program> logger)
+    private static async Task<PagedResponse<AdminContactUsRowDto>?> GetContactUsRecords(int page, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var arr = await db.ContactUs
             .Include(c => c.User)
@@ -285,10 +286,10 @@ public static class AdminEndpoints
         int numOfRecords = 0;
         if (page == 0)
             numOfRecords = await db.ContactUs.CountAsync();
-        return new AdminGridResponse<AdminContactUsRowDto>(numOfRecords, arr);
+        return new PagedResponse<AdminContactUsRowDto>(numOfRecords, arr);
     }
 
-    private static async Task<AdminGridResponse<AdminLogRowDto>> GetLogsRecords(int page, IMemoryCache cache, AyalasLanguageDbContext db)
+    private static async Task<PagedResponse<AdminLogRowDto>> GetLogsRecords(int page, IMemoryCache cache, AyalasLanguageDbContext db)
     {
         var arr = await db.Logs
             .Include(l => l.User)
@@ -305,10 +306,10 @@ public static class AdminEndpoints
         int numOfRecords = 0;
         if (page == 0)
             numOfRecords = await db.Logs.CountAsync();
-        return new AdminGridResponse<AdminLogRowDto>(numOfRecords, arr);
+        return new PagedResponse<AdminLogRowDto>(numOfRecords, arr);
     }
 
-    private static async Task<AdminGridResponse<AdminJobRowDto>> GetJobsRecords(int page, int? filter, IMemoryCache cache, AyalasLanguageDbContext db)
+    private static async Task<PagedResponse<AdminJobRowDto>> GetJobsRecords(int page, int? filter, IMemoryCache cache, AyalasLanguageDbContext db)
     {
         JobFilter jobFilter = filter == null? JobFilter.All : (JobFilter)filter;
 
@@ -351,10 +352,10 @@ public static class AdminEndpoints
         int numOfRecords = 0;
         if (page == 0)
             numOfRecords = await db.Logs.CountAsync();
-        return new AdminGridResponse<AdminJobRowDto>(numOfRecords, arr);
+        return new PagedResponse<AdminJobRowDto>(numOfRecords, arr);
     }
 
-    private static async Task<AdminGridResponse<AdminExerciseRowDto>> GetLearningPathExercises(int page, int learningPathId, byte? status, IMemoryCache cache, AyalasLanguageDbContext db)
+    private static async Task<PagedResponse<AdminExerciseRowDto>> GetLearningPathExercises(int page, int learningPathId, byte? status, IMemoryCache cache, AyalasLanguageDbContext db)
     {
         var baseQuery = db.Exercises.Where(lp => lp.LearningPathId == learningPathId).AsQueryable();
 
@@ -370,9 +371,9 @@ public static class AdminEndpoints
         var arrMapped = await QueryExercises(query, page, status, cache, db);
 
         int numOfRecords = await baseQuery.CountAsync();
-        return new AdminGridResponse<AdminExerciseRowDto>(numOfRecords, arrMapped);
+        return new PagedResponse<AdminExerciseRowDto>(numOfRecords, arrMapped);
     }
-    private static async Task<AdminGridResponse<AdminExerciseRowDto>> GetExercises(int page, byte? status, IMemoryCache cache, AyalasLanguageDbContext db)
+    private static async Task<PagedResponse<AdminExerciseRowDto>> GetExercises(int page, byte? status, IMemoryCache cache, AyalasLanguageDbContext db)
     {
         var baseQuery = db.Exercises.AsQueryable();
 
@@ -389,7 +390,7 @@ public static class AdminEndpoints
         var arrMapped = await QueryExercises(query, page, status, cache, db);
 
         int numOfRecords = await baseQuery.CountAsync();
-        return new AdminGridResponse<AdminExerciseRowDto>(numOfRecords, arrMapped);
+        return new PagedResponse<AdminExerciseRowDto>(numOfRecords, arrMapped);
     }
 
     private static async Task<AdminExerciseRowDto[]> QueryExercises(IQueryable<Exercise> query, int page, byte? status, IMemoryCache cache, AyalasLanguageDbContext db)
@@ -448,7 +449,7 @@ public static class AdminEndpoints
 
     }
 
-    private static async Task<AdminGridResponse<AdminLearningPathRowDto>> GetLearningPaths(int page, byte? status, AyalasLanguageDbContext db)
+    private static async Task<PagedResponse<AdminLearningPathRowDto>> GetLearningPaths(int page, byte? status, AyalasLanguageDbContext db)
     {
         var baseQuery = db.LearningPaths.AsQueryable();
 
@@ -464,10 +465,10 @@ public static class AdminEndpoints
         var arr = await QueryLearningPaths(query, page, db);
 
         int numOfRecords = await baseQuery.CountAsync();
-        return new AdminGridResponse<AdminLearningPathRowDto>(numOfRecords, arr);
+        return new PagedResponse<AdminLearningPathRowDto>(numOfRecords, arr);
     }
 
-    public static async Task<AdminGridResponse<AdminLoginRowDto>> GetLogins(int page, AyalasLanguageDbContext db)
+    public static async Task<PagedResponse<AdminLoginRowDto>> GetLogins(int page, AyalasLanguageDbContext db)
     {
         var baseQuery = db.Tokens.Include(lp => lp.User);
         var arr = await baseQuery.OrderByDescending(e => e.TokenId)
@@ -481,7 +482,7 @@ public static class AdminEndpoints
             )
             ).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
         int numOfRecords = await baseQuery.CountAsync();
-        return new AdminGridResponse<AdminLoginRowDto>(numOfRecords, arr);
+        return new PagedResponse<AdminLoginRowDto>(numOfRecords, arr);
     }
 
     private static async Task<AdminLearningPathRowDto?> GetSingleLearningPath(int learningPathId, AyalasLanguageDbContext db)

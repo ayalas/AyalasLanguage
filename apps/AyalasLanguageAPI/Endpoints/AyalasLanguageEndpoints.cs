@@ -18,6 +18,7 @@ namespace AyalasLanguageAPI.Endpoints
     using AyalasLanguageAPI.Endpoints.Profile;
     using AyalasLanguageAPI.Endpoints.Static;
     using AyalasLanguageAPI.Endpoints.AIIntegration;
+    using AyalasLanguageAPI.Endpoints.Inbox;
 
     public static class AyalasLanguageEndpoints
     {
@@ -47,6 +48,7 @@ namespace AyalasLanguageAPI.Endpoints
             app.MapPublicEndpoints(prefix);
             app.MapAIIntegrationEndpoints(prefix);
             app.MapStaticEndpoints(prefix);
+            app.MapInboxEndpoints(prefix);
         }
 
     }

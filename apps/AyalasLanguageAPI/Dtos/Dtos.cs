@@ -88,4 +88,15 @@ namespace AyalasLanguageAPI.DTOs
         string Provider = "aws-polly",
         bool Ssml = false
     );
+
+    //Inbox DTOs
+    public record SendUserMessageRequestDto(int ToUserContactId, int? LearningPathId, string Message);
+    public record SendUserMessageResponseDto(int UserMessageId);
+    public record CreateUserContactRequestDto(int ContactUserId, string ContactName, string? Notes);
+    public record CreateUserContactResponseDto(int UserContactId);
+
+    public record UserMessageDto(int UserMessageId, int FromUserId, int ToUserId, int ToUserContactId, string ContactName, int? LearningPathId, string Message);
+    public record ContactDto(int UserContactId, int ContactUserId, string ContactName, string? Notes);
+
+    public record PagedResponse<T>(int NumOfRecords, T[] Data);
 }
