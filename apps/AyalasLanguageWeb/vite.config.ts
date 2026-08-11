@@ -21,7 +21,8 @@ export default defineConfig({
         start_url: "/",
         short_name: 'LangAppFSexp',
         description: 'Enjoy Lang App in a dedicated fullscreen experience',
-        theme_color: '#ffffff',
+        theme_color: "#1f2937",
+        background_color: "#fae6f2",
         display: 'standalone',
         icons: [
           {
