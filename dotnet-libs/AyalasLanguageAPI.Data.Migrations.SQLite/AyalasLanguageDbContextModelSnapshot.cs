@@ -43,7 +43,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ContactUs");
+                    b.ToTable("ContactUs", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Exercise", b =>
@@ -95,7 +95,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Exercises");
+                    b.ToTable("Exercises", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.ExerciseType", b =>
@@ -111,7 +111,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasKey("ExerciseTypeId");
 
-                    b.ToTable("ExerciseTypes");
+                    b.ToTable("ExerciseTypes", (string)null);
 
                     b.HasData(
                         new
@@ -214,7 +214,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasKey("JobId");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Language", b =>
@@ -244,7 +244,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasKey("LanguageId");
 
-                    b.ToTable("Languages");
+                    b.ToTable("Languages", (string)null);
 
                     b.HasData(
                         new
@@ -603,7 +603,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("KnownLanguageId", "TargetLanguageId", "Level", "Chapter");
 
-                    b.ToTable("LearningPaths");
+                    b.ToTable("LearningPaths", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Log", b =>
@@ -632,7 +632,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex(new[] { "LogType" }, "IX_Log_Log_Type");
 
-                    b.ToTable("Logs");
+                    b.ToTable("Logs", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.Token", b =>
@@ -662,7 +662,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tokens");
+                    b.ToTable("Tokens", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.User", b =>
@@ -736,37 +736,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("TargetLanguageId");
 
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserContact", b =>
-                {
-                    b.Property<int>("UserContactId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ContactName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ContactUserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("UserContactId");
-
-                    b.HasAlternateKey("UserId", "ContactUserId");
-
-                    b.HasIndex("ContactUserId");
-
-                    b.ToTable("UserContacts");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserExerciseType", b =>
@@ -781,7 +751,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("ExerciseTypeId");
 
-                    b.ToTable("UserExerciseTypes");
+                    b.ToTable("UserExerciseTypes", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserLanguage", b =>
@@ -802,38 +772,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("LanguageId");
 
-                    b.ToTable("UserLanguages");
-                });
-
-            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserMessage", b =>
-                {
-                    b.Property<int>("UserMessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("FromUserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("LearningPathId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(20000)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("ToUserContactId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("UserMessageId");
-
-                    b.HasIndex("FromUserId");
-
-                    b.HasIndex("LearningPathId");
-
-                    b.HasIndex("ToUserContactId");
-
-                    b.ToTable("UserMessages");
+                    b.ToTable("UserLanguages", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserProgress", b =>
@@ -859,7 +798,7 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
 
                     b.HasIndex("LearningPathId");
 
-                    b.ToTable("UserProgresses");
+                    b.ToTable("UserProgresses", (string)null);
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.ContactUs", b =>
@@ -993,25 +932,6 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("TargetLanguage");
                 });
 
-            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserContact", b =>
-                {
-                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "ContactUser")
-                        .WithMany()
-                        .HasForeignKey("ContactUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ContactUser");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserExerciseType", b =>
                 {
                     b.HasOne("AyalasLanguageAPI.Data.Model.ExerciseType", "ExerciseType")
@@ -1048,31 +968,6 @@ namespace AyalasLanguageAPI.Data.Migrations.SQLite
                     b.Navigation("Language");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserMessage", b =>
-                {
-                    b.HasOne("AyalasLanguageAPI.Data.Model.User", "FromUser")
-                        .WithMany()
-                        .HasForeignKey("FromUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AyalasLanguageAPI.Data.Model.LearningPath", "LearningPath")
-                        .WithMany()
-                        .HasForeignKey("LearningPathId");
-
-                    b.HasOne("AyalasLanguageAPI.Data.Model.UserContact", "ToUserContact")
-                        .WithMany()
-                        .HasForeignKey("ToUserContactId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FromUser");
-
-                    b.Navigation("LearningPath");
-
-                    b.Navigation("ToUserContact");
                 });
 
             modelBuilder.Entity("AyalasLanguageAPI.Data.Model.UserProgress", b =>
