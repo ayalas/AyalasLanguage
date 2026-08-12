@@ -90,13 +90,9 @@ namespace AyalasLanguageAPI.DTOs
     );
 
     //Inbox DTOs
-    public record SendUserMessageRequestDto(int ToUserContactId, int? LearningPathId, string Message);
+    public record SendUserMessageRequestDto(int ToUserId, int? LearningPathId, string Message, int? InResponseToUserMessageId);
     public record SendUserMessageResponseDto(int UserMessageId);
-    public record CreateUserContactRequestDto(int ContactUserId, string ContactName, string? Notes);
-    public record CreateUserContactResponseDto(int UserContactId);
-
-    public record UserMessageDto(int UserMessageId, int FromUserId, int ToUserId, int ToUserContactId, string ContactName, int? LearningPathId, string Message);
-    public record ContactDto(int UserContactId, int ContactUserId, string ContactName, string? Notes);
-
+    public record UserMessageDto(int UserMessageId, int FromUserId, int ToUserId, string ContactName, int? LearningPathId, string Message, string? LearningPathName);
+    
     public record PagedResponse<T>(int NumOfRecords, T[] Data);
 }

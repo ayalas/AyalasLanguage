@@ -91,7 +91,7 @@ const SignUpScreen = () => {
             <>
               <View className="form-row">
                 <View className="form-label-cell">
-                  <Text style={styles.label}>Display Name</Text>
+                  <Text style={styles.label}>Nick Name</Text>
                 </View>
                 <View className="form-input-cell">
                   <TextInput testID="display-name" keyboardType="default"

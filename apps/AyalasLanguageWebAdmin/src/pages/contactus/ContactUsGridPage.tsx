@@ -8,7 +8,7 @@ import { AuthHeader } from '../../components/auth/AuthHeader';
 export default function ContactUsGridPage() {
     const [colDefs] = useState<ColDef<IRowContactUs>[]>([
         { field: "userId", flex: 1, headerName: 'User Id' },
-        { field: "displayName", headerName: 'Display Name', flex: 2, filter: true },
+        { field: "displayName", headerName: 'Nick Name', flex: 2, filter: true },
         { field: "email", headerName: 'Email', flex: 2, filter: true },
         {
             field: "message", headerName: 'Message', flex: 6, filter: true, editable: true, wrapText: true,

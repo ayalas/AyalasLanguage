@@ -100,7 +100,7 @@ export function RegisterPage() {
               <>
                 <div className="form-row">
                   <div className="form-label-cell">
-                    <label className="form-label">Display Name</label>
+                    <label className="form-label">Nick Name</label>
                   </div>
                   <div className="form-input-cell">
                     <input data-testid="display-name" type="text" maxLength={128} 

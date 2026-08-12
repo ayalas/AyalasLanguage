@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageAPI.Data.Model
 {
@@ -11,13 +12,18 @@ namespace AyalasLanguageAPI.Data.Model
         public virtual User FromUser { get; set; } = null!;
 
         [Required]
-        public int ToUserContactId { get; set; }
-        public virtual UserContact ToUserContact { get; set; } = null!;
+        public int ToUserId { get; set; }
+        public virtual User ToUser { get; set; } = null!;
 
         public int? LearningPathId { get; set; }= null!;
+        [DeleteBehavior(DeleteBehavior.SetNull)]
         public virtual LearningPath LearningPath { get; set; } = null!;
 
         [Required, StringLength(20000)]
         public string Message { get; set; } = null!;
+
+        public int? InResponseToUserMessageId { get; set; }= null!;
+        [DeleteBehavior(DeleteBehavior.SetNull)]
+        public virtual UserMessage InResponseToUserMessage { get; set; }= null!;
     }
 }

@@ -40,7 +40,7 @@ export function UserPage() {
                 <>
                     <div className="form-row">
                         <div className="form-label-cell">
-                            <label className="form-label">Display Name: {record?.displayName}</label>
+                            <label className="form-label">Nick Name: {record?.displayName}</label>
                         </div>
                     </div>
                     <div className="form-row">

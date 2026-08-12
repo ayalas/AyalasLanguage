@@ -125,7 +125,7 @@ export default function AccountScreen() {
           <KeyboardAvoidingView>
             <View className="form-row">
               <View className="form-label-cell">
-                <Text style={styles.label}>First Name</Text>
+                <Text style={styles.label}>Nick Name</Text>
               </View>
             </View>
             <View className="form-row">

@@ -6,6 +6,7 @@ using AyalasLanguageAPI.DTOs;
 using AyalasLanguageAPI.Data.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using OpenAI.Chat;
 
 namespace AyalasLanguageAPI.Endpoints.Inbox
 {
@@ -23,34 +24,30 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
             inboxGroup.MapDelete("/message/{messageId:int}", DeleteUserMessage);
             inboxGroup.MapGet("/message/{messageId:int}", GetUserMessage);
             inboxGroup.MapGet("/{page:int}", GetUserMessages);
-            inboxGroup.MapGet("/contacts", GetUserContacts);
-            inboxGroup.MapPost("/contacts", CreateContact);
-        }
-
-        private static async Task<IResult> CreateContact(CreateUserContactRequestDto request, ClaimsPrincipal claim, AyalasLanguageDbContext db)
-        {
-            var userId = claim.GetUserId();
-
-            UserContact uc = new()
-            {
-                UserId = userId,
-                ContactName = request.ContactName,
-                ContactUserId = request.ContactUserId,
-                Notes = request.Notes
-            };
-
-            db.UserContacts.Add(uc);
-            await db.SaveChangesAsync();
-            return Results.Created($"/api/inbox/contact/{uc.UserContactId}", new CreateUserContactResponseDto(uc.UserContactId));
         }
 
         private static async Task<IResult> SendMessageToUser(SendUserMessageRequestDto request, ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
 
-            //validate that the contact is a contact of this user
-            var exists = await db.UserContacts
-                .AnyAsync(uc => uc.UserId == userId && uc.UserContactId == request.ToUserContactId);
+            //assert that the recepient has sent a message to the sender
+            // or that this is in regards to a lesson owned by the recepient
+            bool exists = false;
+            if (request.LearningPathId != null)
+            {
+                exists = await db.LearningPaths
+                .AnyAsync(lp => lp.LearningPathId == request.LearningPathId && lp.UserId == request.ToUserId);
+            }
+            else if (request.InResponseToUserMessageId == null)
+            {
+                return Results.BadRequest("Missing InResponseToUserMessageId");
+            }
+            else
+            {
+                exists = await db.UserMessages
+                .AnyAsync(um => um.UserMessageId == request.InResponseToUserMessageId &&
+                     um.FromUserId == request.ToUserId && um.ToUserId == userId);
+            }
 
             if (!exists)
                 return Results.Forbid();
@@ -59,8 +56,9 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
             {
                 FromUserId = userId,
                 LearningPathId = request.LearningPathId,
-                ToUserContactId = request.ToUserContactId,
-                Message = request.Message
+                ToUserId = request.ToUserId,
+                Message = request.Message,
+                InResponseToUserMessageId = request.InResponseToUserMessageId
             };
 
             db.UserMessages.Add(um);
@@ -87,21 +85,6 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
             return Results.NoContent();
         }
 
-        private static async Task<ContactDto[]> GetUserContacts(ClaimsPrincipal claim, AyalasLanguageDbContext db)
-        {
-            var userId = claim.GetUserId();
-            var arr = await db.UserContacts
-            .Where( uc => uc.UserId == userId)
-            .Select( uc => new ContactDto (
-                uc.UserContactId,
-                uc.ContactUserId,
-                uc.ContactName,
-                uc.Notes
-            )).ToArrayAsync();
-
-            return arr;
-        }
-
         private static async Task<IResult> GetUserMessage(int messageId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
@@ -110,11 +93,11 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
                 .Select(m => new UserMessageDto(
                     m.UserMessageId,
                     m.FromUserId,
-                    m.ToUserContact.UserId,
-                    m.ToUserContactId,
-                    m.ToUserContact.ContactName,
+                    m.ToUserId,
+                    m.InResponseToUserMessageId != null? m.ToUser.DisplayName : "",  //privacy protection
                     m.LearningPathId,
-                    m.Message
+                    m.Message,
+                    m.LearningPathId == null? null: m.LearningPath.Name
                 )).FirstOrDefaultAsync();
 
             if (msg == null)
@@ -131,15 +114,15 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
         {
             var userId = claim.GetUserId();
             var arr = await db.UserMessages
-                .Where(m => m.FromUserId == userId || m.ToUserContact.UserId == userId)
+                .Where(m => m.FromUserId == userId || m.ToUserId == userId)
                 .Select(m => new UserMessageDto(
                     m.UserMessageId,
                     m.FromUserId,
-                    m.ToUserContact.UserId,
-                    m.ToUserContactId,
-                    m.ToUserContact.ContactName,
+                    m.ToUserId,
+                    m.InResponseToUserMessageId != null? m.ToUser.DisplayName : "", //privacy protection
                     m.LearningPathId,
-                    m.Message
+                    m.Message,
+                    m.LearningPathId == null? null: m.LearningPath.Name
                 ))
                 .Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
 

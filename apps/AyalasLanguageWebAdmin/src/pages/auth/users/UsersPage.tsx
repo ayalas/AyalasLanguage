@@ -15,7 +15,7 @@ export default function UsersPage() {
     const [colDefs] = useState<ColDef<IRowUser>[]>([
         { field: "userId", flex: 1, headerName: 'User Id' },
         {
-            field: "displayName", headerName: 'Display Name', flex: 2, filter: true,
+            field: "displayName", headerName: 'Nick Name', flex: 2, filter: true,
             cellRenderer: GridLinkCell<IRowUser>,
             cellRendererParams: {
                 getLinkCallback: (data: IRowUser) => {

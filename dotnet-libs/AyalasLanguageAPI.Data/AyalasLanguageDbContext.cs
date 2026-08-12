@@ -22,7 +22,6 @@ public class AyalasLanguageDbContext : DbContext
 
     public DbSet<Job> Jobs { get; set; }
     public DbSet<UserMessage> UserMessages { get; set; }
-    public DbSet<UserContact> UserContacts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,9 +38,6 @@ public class AyalasLanguageDbContext : DbContext
 
         modelBuilder.Entity<LearningPath>()
             .HasIndex(p => new { p.KnownLanguageId, p.TargetLanguageId, p.Level, p.Chapter });
-
-        modelBuilder.Entity<UserContact>()
-            .HasAlternateKey (uc => new { uc.UserId, uc.ContactUserId });
 
         modelBuilder.Entity<ExerciseType>().HasData(
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "From known to target language" },
