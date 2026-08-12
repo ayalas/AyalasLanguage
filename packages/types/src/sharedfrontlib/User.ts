@@ -36,5 +36,6 @@ export interface User {
   use2FALogin: boolean;
   disableAutoAI: boolean;
   numOfExercisesToGenerate?: number;
+  unreadMessages: number;
   languageSettings?: LanguageSettings;
 }

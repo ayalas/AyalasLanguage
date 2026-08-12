@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, History } from 'lucide-react';
+import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, History, Send } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { handleKeyDown, downloadFile } from '../../utils/utils';
@@ -295,6 +295,16 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         }
         throw ex;
       }
+    }
+  };
+
+  const sendMessageToAuthor = async function () {
+    try {
+      if (initialRecord == null) return;
+      
+      navigate(`/inbox/message?learningPathId=${initialRecord.learningPathId}`);
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
     }
   };
 
@@ -611,6 +621,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   disabled: isLoading,
                   onClick: deleteLesson,
                   children: <><Trash />&nbsp;Delete Lesson</>
+                },
+                {
+                  isVisible: initialRecord != null && initialRecord.access == AUTHOR_ACCESS.LEARNER,
+                  dataTestId: "send-message",
+                  disabled: isLoading,
+                  onClick: sendMessageToAuthor,
+                  children: <><Send />&nbsp;Send Message to Author</>
                 },
                 {
                   isVisible: initialRecord != null && !isLoading,

@@ -177,6 +177,10 @@ public static class AuthEndpoints
             .FirstOrDefaultAsync(u => u.UserId == userId);
         if (user == null) return null;
 
+        //get unread messages
+        int countUnread = await db.UserMessages
+            .Where(um => um.ToUserId == userId && um.Read == false).CountAsync();
+
         int userScore = 0;
         if (user.TargetLanguageId != null)
         {
@@ -208,7 +212,7 @@ public static class AuthEndpoints
             user.TargetLanguage?.EnglishName,
             user.TargetLanguage?.Code, userScore);
 
-        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin, user.DisableAutoAI,user.NumOfExercisesToGenerate, languageSettings);
+        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin, user.DisableAutoAI,user.NumOfExercisesToGenerate,countUnread, languageSettings);
     }
 
     private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, IConfiguration config)

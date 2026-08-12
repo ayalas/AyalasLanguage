@@ -18,7 +18,7 @@ namespace AyalasLanguageAPI.DTOs
     public record EditUserProfileDto(bool? DisableAutoAI, byte? NumOfExercisesToGenerate, int? TargetLanguageId, int? KnownLanguageId);
     public record SwitchLanguageDto(int? TargetLanguageId, int? KnownLanguageId);
     public record CurrentLanguageResponseDto(int? TargetLanguageId, string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool KnownLanguageIsRightToLeft, bool TargetLanguageIsRightToLeft, string? KeyboardLanguageName, string? TargetLanguageEnglishName, string? TargetLanguageCode, int Score);
-    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool DisableAutoAI, byte? NumOfExercisesToGenerate, CurrentLanguageResponseDto languageSettings);
+    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool DisableAutoAI, byte? NumOfExercisesToGenerate, int UnreadMessages, CurrentLanguageResponseDto languageSettings);
     public record UserLanguageDto(int LanguageId, bool IsLearning);
 
 
@@ -90,9 +90,9 @@ namespace AyalasLanguageAPI.DTOs
     );
 
     //Inbox DTOs
-    public record SendUserMessageRequestDto(int ToUserId, int? LearningPathId, string Message, int? InResponseToUserMessageId);
+    public record SendUserMessageRequestDto(int? LearningPathId, int? InResponseToUserMessageId, string Message);
     public record SendUserMessageResponseDto(int UserMessageId);
-    public record UserMessageDto(int UserMessageId, int FromUserId, int ToUserId, string ContactName, int? LearningPathId, string Message, string? LearningPathName);
+    public record UserMessageDto(int UserMessageId, int FromUserId, string FromUserName, int ToUserId, string ContactName, int? LearningPathId, string Message, string? LearningPathName, DateTime SendDate, bool ReadWithRequest);
     
     public record PagedResponse<T>(int NumOfRecords, T[] Data);
 }

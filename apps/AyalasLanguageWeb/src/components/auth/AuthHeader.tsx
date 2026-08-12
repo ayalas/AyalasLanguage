@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, Link, useNavigate } from 'react-router-dom';
-import { Mail, SquareMenu, Volleyball } from 'lucide-react';
+import { Inbox, Mail, MailWarning, SquareMenu, Volleyball } from 'lucide-react';
 import axios from 'axios';
 import { switchLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import {
@@ -100,13 +100,17 @@ export function AuthHeader({ languageIndicator = LANGUAGE_INDICATOR_ENUM.NONE }:
         </div>
 
         <div className="header-profile-container">
-            <div className="header-profile-name">
-              {user?.displayName}
-              <div className="header-score" title="Total Score"><Volleyball /> {user?.languageSettings?.score}</div>
-            </div>
+          <div className="header-profile-name">
+            {user?.displayName}
+            <div className="header-score" title="Total Score"><Volleyball /> {user?.languageSettings?.score}</div>
+          </div>
         </div>
         <Link ref={setReference as any} {...getReferenceProps()} to="#">
-          <SquareMenu />
+          {user?.unreadMessages != null && user?.unreadMessages > 0 && (
+            <MailWarning />
+          ) || (
+              <SquareMenu />
+            )}
         </Link>
 
         {isOpen && (
@@ -116,13 +120,18 @@ export function AuthHeader({ languageIndicator = LANGUAGE_INDICATOR_ENUM.NONE }:
             {...getFloatingProps()}
           >
             <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+              {user?.unreadMessages != null && user?.unreadMessages > 0 && (
+                <li className="menu-line"><Link to='/inbox' className="menu-item"><MailWarning />&nbsp;Inbox&nbsp;<div className="unread">{user?.unreadMessages}</div></Link></li>
+              ) || (
+                  <li className="menu-line"><Link to='/inbox' className="menu-item"><Inbox />&nbsp;Inbox</Link></li>
+                )}
               <li className="menu-line"><Link to='/profile' className="menu-item">Profile settings</Link></li>
               <li className="menu-line"><Link to='/account' className="menu-item">Manage account</Link></li>
-            {isInstallable && (
-            <li className="menu-line"
-              onClick={triggerInstall}>
-              <span className="menu-item">Install Fullscreen Experience</span>
-            </li>)}
+              {isInstallable && (
+                <li className="menu-line"
+                  onClick={triggerInstall}>
+                  <span className="menu-item">Install Fullscreen Experience</span>
+                </li>)}
               <li className="menu-line"><Link to='/usernote' className="menu-item"><Mail />&nbsp;Contact Us</Link></li>
               <li className="menu-line"><Link target='discord' to='https://discord.gg/UkzNfauGd' className="menu-item"><div className="discordIcon" ></div>Discuss on Discord</Link></li>
               <li className="menu-line"><Link to='/userabout' className="menu-item">About {BRAND_NAME}</Link></li>
@@ -133,32 +142,32 @@ export function AuthHeader({ languageIndicator = LANGUAGE_INDICATOR_ENUM.NONE }:
         )}
       </div>
       {languageIndicator !== LANGUAGE_INDICATOR_ENUM.NONE && (
-          <div className="switch-container">
-        {(user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
+        <div className="switch-container">
+          {(user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
             <div className="header-input-cell">
               {languageIndicator === LANGUAGE_INDICATOR_ENUM.SWITCH && (
                 <select id="language-picker" className="header-select" value={String(selectedLanguageId)} onChange={onChangeLanguage} >
-                <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguageEnglishName}</option>
-                {
-                  user.languageSettings.otherUserLanguages.map((lang: any) => {
-                    return (
-                      <option key={lang.languageId} value={lang.languageId}>
-                        {lang.englishName}
-                      </option>
-                    );
-                  })
-                }
-              </select>
+                  <option key={user.languageSettings.targetLanguageId} value={user.languageSettings.targetLanguageId}>{user.languageSettings.targetLanguageEnglishName}</option>
+                  {
+                    user.languageSettings.otherUserLanguages.map((lang: any) => {
+                      return (
+                        <option key={lang.languageId} value={lang.languageId}>
+                          {lang.englishName}
+                        </option>
+                      );
+                    })
+                  }
+                </select>
               ) || (
-                <>
-                {selectedLanguage}
-                </>
-              )}
+                  <>
+                    {selectedLanguage}
+                  </>
+                )}
             </div>
           ))}
-        
-      </div>
-      ) }
+
+        </div>
+      )}
       {
         error !== '' && (
           <div className="form-row">

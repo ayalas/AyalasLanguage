@@ -8,6 +8,7 @@
     "./exercise": "./src/exercise.ts",
     "./auth": "./src/auth.ts",
     "./error": "./src/error.ts",
+    "./sharedfrontlib/inbox": "./src/sharedfrontlib/Inbox.ts",
     "./sharedfrontlib/pwa": "./src/sharedfrontlib/usePWAInstall.ts",
     "./sharedfrontlib/logic": "./src/sharedfrontlib/logic/index.ts",
     "./sharedfrontlib/ai": "./src/sharedfrontlib/ai/index.ts",

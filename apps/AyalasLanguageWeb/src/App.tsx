@@ -26,6 +26,9 @@ import { PublicRoute } from './components/auth/PublicRoute';
 import { AboutPublicPage } from './pages/about/AboutPublicPage';
 import { AboutAuthenticatedUserPage } from './pages/about/AboutAuthenticatedUserPage';
 import { DownloadAppPage } from './pages/DownloadApp';
+import { InboxPage } from './pages/inbox/InboxPage';
+import { SendMessagePage } from './pages/inbox/SendMessagePage';
+import { MessagePage } from './pages/inbox/MessagePage';
 
 function App() {
   useEffect(() => {
@@ -58,6 +61,9 @@ function App() {
             <Route path="/author/exercise/:exerciseId" element={<ExerciseUpdatePage />} />
             <Route path="/path/:learningPathId" element={<LessonPage />} />
             <Route path="/confirm/:token" element={ <ConfirmEmailPage/>} />
+            <Route path="/inbox" element={<InboxPage />} />
+            <Route path="/inbox/message" element={<SendMessagePage />} />
+            <Route path="/inbox/:messageId" element={<MessagePage />} />
           </Route>
           <Route element={<ProtectedRoute publicPath='/about' />}>
             <Route path="/userabout" element={ <AboutAuthenticatedUserPage/>}/>

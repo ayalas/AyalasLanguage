@@ -234,7 +234,7 @@ public static class AdminEndpoints
             u.KnownLanguage == null ? null : u.KnownLanguage.EnglishName,
             u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName,
             u.CreatedOn
-        )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+        )).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
 
         int numOfRecords = 0;
         if (page == 0)
@@ -281,7 +281,7 @@ public static class AdminEndpoints
             c.Email,
             c.Message,
             c.CreatedOn
-        )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+        )).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
 
         int numOfRecords = 0;
         if (page == 0)
@@ -301,7 +301,7 @@ public static class AdminEndpoints
             (LogTypeEnum)l.LogType,
             l.Description,
             l.CreatedOn
-        )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+        )).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
 
         int numOfRecords = 0;
         if (page == 0)
@@ -347,7 +347,7 @@ public static class AdminEndpoints
             l.Completed,
             l.Errors,
             l.LeftToProcess
-        )).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+        )).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
 
         int numOfRecords = 0;
         if (page == 0)
@@ -415,7 +415,7 @@ public static class AdminEndpoints
                 e.LearningPathId,
                 e.ExerciseId,
                 e.Status
-            }).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+            }).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
 
         Language[]? languages = await db.GetAppDataFromCache(Constants.LANGUAGE_SET_CACHE_KEY, cache,
         async (ctx) => await ctx.Languages.ToArrayAsync());
@@ -480,7 +480,7 @@ public static class AdminEndpoints
                 e.CreatedOn,
                 e.ExpiresOn
             )
-            ).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+            ).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
         int numOfRecords = await baseQuery.CountAsync();
         return new PagedResponse<AdminLoginRowDto>(numOfRecords, arr);
     }
@@ -514,7 +514,7 @@ public static class AdminEndpoints
             lp.CreatedOn,
             lp.LearningPathId,
             lp.Status
-        }).Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
+        }).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
 
         return arr.Select(lp => new AdminLearningPathRowDto(
             lp.UserId,

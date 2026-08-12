@@ -34,6 +34,20 @@ public static class DataExtensions
                     continue;
                 }
 
+                if (app.Environment.IsDevelopment())
+                {
+                    try 
+                    {
+                        // Use "DELETE FROM" safely. 
+                        // We ignore errors because if the table doesn't exist, we don't care.
+                        context.Database.ExecuteSqlRaw("DELETE FROM __EFMigrationsLock");
+                    }
+                    catch (Exception) 
+                    {
+                        // Table likely doesn't exist yet (first run), just ignore and continue
+                    }
+                }
+
                 // Apply only the correct, isolated migration
                 context.Database.Migrate();
             }

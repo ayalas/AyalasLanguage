@@ -33,10 +33,18 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
             //assert that the recepient has sent a message to the sender
             // or that this is in regards to a lesson owned by the recepient
             bool exists = false;
+            int? toUserId = null;
             if (request.LearningPathId != null)
             {
-                exists = await db.LearningPaths
-                .AnyAsync(lp => lp.LearningPathId == request.LearningPathId && lp.UserId == request.ToUserId);
+                var temp = await db.LearningPaths
+                    .Where(lp => lp.LearningPathId == request.LearningPathId)
+                    .Select(lp => lp.UserId)
+                    .FirstOrDefaultAsync();
+                if (temp > 0)
+                {
+                    exists = true;
+                    toUserId = temp;
+                }
             }
             else if (request.InResponseToUserMessageId == null)
             {
@@ -44,21 +52,29 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
             }
             else
             {
-                exists = await db.UserMessages
-                .AnyAsync(um => um.UserMessageId == request.InResponseToUserMessageId &&
-                     um.FromUserId == request.ToUserId && um.ToUserId == userId);
+                var temp = await db.UserMessages
+                    .Where(um => um.UserMessageId == request.InResponseToUserMessageId
+                        && um.ToUserId == userId)
+                    .Select(um => um.FromUserId)
+                    .FirstOrDefaultAsync();
+                if (temp > 0)
+                {
+                    exists = true;
+                    toUserId = temp;
+                }
             }
 
-            if (!exists)
+            if (!exists || toUserId == null)
                 return Results.Forbid();
 
             UserMessage um = new()
             {
                 FromUserId = userId,
                 LearningPathId = request.LearningPathId,
-                ToUserId = request.ToUserId,
+                ToUserId = toUserId.Value,
                 Message = request.Message,
-                InResponseToUserMessageId = request.InResponseToUserMessageId
+                InResponseToUserMessageId = request.InResponseToUserMessageId,
+                SendDate = DateTime.UtcNow
             };
 
             db.UserMessages.Add(um);
@@ -66,7 +82,7 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
             return Results.Created($"/api/inbox/message/{um.UserMessageId}", new SendUserMessageResponseDto(um.UserMessageId));
         }
 
-        private static async Task<IResult> DeleteUserMessage (int messageId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+        private static async Task<IResult> DeleteUserMessage(int messageId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
             var msg = await db.UserMessages.FirstOrDefaultAsync(um => um.UserMessageId == messageId);
@@ -88,26 +104,45 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
         private static async Task<IResult> GetUserMessage(int messageId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
-            var msg = await db.UserMessages
-                .Where(m => m.UserMessageId == messageId)
-                .Select(m => new UserMessageDto(
-                    m.UserMessageId,
-                    m.FromUserId,
-                    m.ToUserId,
-                    m.InResponseToUserMessageId != null? m.ToUser.DisplayName : "",  //privacy protection
-                    m.LearningPathId,
-                    m.Message,
-                    m.LearningPathId == null? null: m.LearningPath.Name
-                )).FirstOrDefaultAsync();
+            var message = await db.UserMessages
+                .Include(m => m.ToUser)
+                .Include(m => m.FromUser)
+                .Include(m => m.LearningPath)
+                 .FirstOrDefaultAsync(m => m.UserMessageId == messageId);
 
-            if (msg == null)
+            if (message == null)
                 return Results.NotFound();
-
-            //does the user has permission to read this message?
-            if (msg.FromUserId != userId && msg.ToUserId != userId)
+  
+            // 2. Permission Check
+            if (message.FromUserId != userId && message.ToUserId != userId)
                 return Results.Forbid();
 
-            return Results.Ok(msg);
+            bool readWithRequest = false;
+            // 3. Conditional Update
+            if (!message.Read && message.ToUserId == userId)
+            {
+                message.Read = true;
+                message.ReadDate = DateTime.UtcNow;
+                await db.SaveChangesAsync(); // Persist the 'Read' status to the DB
+                readWithRequest = true;
+            }
+
+            // 4. Manually map the entity back to the Dto
+            var dto = new UserMessageDto(
+                message.UserMessageId,
+                message.FromUserId,
+                message.FromUser.DisplayName,
+                message.ToUserId,
+                // privacy logic: only show name if it's a response
+                message.InResponseToUserMessageId != null ? message.ToUser?.DisplayName ?? "" : "",
+                message.LearningPathId,
+                message.Message,
+                message.LearningPath?.Name,
+                message.SendDate,
+                readWithRequest
+            );
+
+            return Results.Ok(dto);
         }
 
         private static async Task<PagedResponse<UserMessageDto>> GetUserMessages(int page, ClaimsPrincipal claim, AyalasLanguageDbContext db)
@@ -115,14 +150,18 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
             var userId = claim.GetUserId();
             var arr = await db.UserMessages
                 .Where(m => m.FromUserId == userId || m.ToUserId == userId)
+                .OrderByDescending( m => m.UserMessageId)
                 .Select(m => new UserMessageDto(
                     m.UserMessageId,
                     m.FromUserId,
+                    m.FromUser.DisplayName,
                     m.ToUserId,
-                    m.InResponseToUserMessageId != null? m.ToUser.DisplayName : "", //privacy protection
+                    m.InResponseToUserMessageId != null ? m.ToUser.DisplayName : "", //privacy protection
                     m.LearningPathId,
                     m.Message,
-                    m.LearningPathId == null? null: m.LearningPath.Name
+                    m.LearningPathId == null ? null : m.LearningPath.Name,
+                    m.SendDate,
+                    false
                 ))
                 .Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
 

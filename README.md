@@ -3,6 +3,7 @@ This is a language learning app demo project.
 Students choose their known and target language, and go through exercises contributed by themselves and others in this specific learning path.
 
 This project is designed to demonstrate both backend and frontend capabilies.
+It includes a private messaging module with push notifications, background services (for jobs), PWA installation option (for fullscreen experience), a React frontend and a React Native frontend with Android builds in GitHub releases.
 
 AyalasLanguageAPI - Backend is implemented with ASP.Net Core Minimal APIs, Entity Framework and SQLite\MySQL.
 AyalasLanguageWEB - Frontend implemented with React, Vite and TypeScript

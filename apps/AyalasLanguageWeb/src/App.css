@@ -495,6 +495,47 @@ input:required:invalid {
   flex-shrink: 0;
 }
 
+.grid-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    border-bottom: 1px dashed var(--border);
+}
+
+.grid-row-end {
+  border-bottom: none;
+}
+
+.grid-cell {
+    flex: 1;
+    padding: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-right: 1px dashed var(--border);
+}
+
+.grid-cell-long {
+  flex: 1.5;
+}
+
+.grid-cell-end {
+  border-right: none;
+}
+
+.pager-button {
+  border: none;
+  box-shadow: none;
+  padding: 2px;
+  transition: none;
+}
+
+.header-links {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
 .header-score {
   display: flex;
   justify-content: flex-end;
@@ -892,6 +933,16 @@ input:required:invalid {
 
 .hg-theme-default .hg-button {
   color: #2d3748;
+}
+
+.unread {
+  background: #ff6b6b;
+  color: #ffffff;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  font-size: var(--fontsize);
+  border-radius: var(--radius);
+  text-align: right;
 }
 
 @media (max-width: 1024px) {

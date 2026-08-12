@@ -25,5 +25,12 @@ namespace AyalasLanguageAPI.Data.Model
         public int? InResponseToUserMessageId { get; set; }= null!;
         [DeleteBehavior(DeleteBehavior.SetNull)]
         public virtual UserMessage InResponseToUserMessage { get; set; }= null!;
+
+        public bool Read { get; set; } = false;
+
+        [Required]
+        public DateTime SendDate {get; set;}
+
+        public DateTime? ReadDate {get; set;}= null!;
     }
 }

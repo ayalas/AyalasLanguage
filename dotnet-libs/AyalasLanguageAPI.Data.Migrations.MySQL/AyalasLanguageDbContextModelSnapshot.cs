@@ -820,6 +820,15 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                         .HasMaxLength(20000)
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("Read")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("ReadDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("SendDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("ToUserId")
                         .HasColumnType("int");
 
