@@ -27,5 +27,6 @@ export interface InboxUserMessage
     message: string;
     learningPathName?: string;
     sendDate: string;
+    read: boolean;
     readWithRequest: boolean;
 }

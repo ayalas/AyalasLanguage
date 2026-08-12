@@ -495,6 +495,10 @@ input:required:invalid {
   flex-shrink: 0;
 }
 
+.inbox-grid {
+  padding-top: 20px;
+}
+
 .grid-row {
     display: flex;
     flex-direction: row;
@@ -521,6 +525,10 @@ input:required:invalid {
 
 .grid-cell-end {
   border-right: none;
+}
+
+.grid-unread {
+  color: rgb(55, 194, 20);
 }
 
 .pager-button {

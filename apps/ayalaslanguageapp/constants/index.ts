@@ -20,3 +20,4 @@ export const PRIMARY_DARK = '#f3f4f6';
 
 //storage
 export const STORAGE_TOKEN_KEY = 'auth_token';
+export const PAGE_SIZE = 25;

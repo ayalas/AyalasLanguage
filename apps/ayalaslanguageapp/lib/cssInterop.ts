@@ -1,5 +1,8 @@
 import { cssInterop } from "nativewind";
-import { Save, Send, ArrowBigLeft, History, CircleDotDashed, X, CirclePlay, Eye, LayersPlus, LogInIcon, RotateCcw, UserIcon, SquareMenu, Check, SquarePen, Trash, UserPen, Workflow, Ban, Trash2, ArchiveRestore, TicketPlus, FilePenLine, PenLine, PencilSparkles, Tally1, Tally4, Tally2, EyeOff } from "lucide-react-native";
+import { Save, Send, ArrowBigLeft, History, CircleDotDashed, X, CirclePlay, Eye, 
+  LayersPlus, LogInIcon, RotateCcw, UserIcon, SquareMenu, Check, SquarePen, Trash, UserPen, Workflow, 
+  Ban, Trash2, ArchiveRestore, TicketPlus, FilePenLine, PenLine, PencilSparkles, Tally1, Tally4, 
+  Tally2, EyeOff, ChevronFirst, ChevronLast, CircleArrowRight, CircleArrowLeft, MailWarning } from "lucide-react-native";
 
 cssInterop(LayersPlus, {
   className: {
@@ -264,4 +267,60 @@ cssInterop(PencilSparkles, {
     },
   },
 });
+
+cssInterop(ChevronLast, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(CircleArrowRight, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(CircleArrowLeft, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(ChevronFirst, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+cssInterop(MailWarning, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+
+
+
+
+
+
+
+
+
+
 

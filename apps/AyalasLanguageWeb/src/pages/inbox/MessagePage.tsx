@@ -9,6 +9,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { errorHandler } from "@ayalaslanguage/types/error";
 import { Inbox, Send, Trash } from "lucide-react";
+import { AuthHeader } from "../../components/auth/AuthHeader";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -27,7 +28,7 @@ export function MessagePage() {
                 setMsg(msg.data);
                 if (msg.data.readWithRequest) {
                     //reduce the number of unread messages for the user
-                    const tmp: User = {...user} as User;
+                    const tmp: User = { ...user } as User;
                     if (tmp.unreadMessages != null && tmp.unreadMessages > 0) {
                         tmp.unreadMessages = tmp.unreadMessages - 1;
                         login(tmp);
@@ -53,54 +54,57 @@ export function MessagePage() {
     };
 
     return (
-        <div className="form-container">
-            <FormHeader isPublic={false} title="Message" />
-            {error !== "" && (
-                <div className="form-row">
-                    <label className="form-error">{error}</label>
-                </div>
-            )}
-            {msg != null && (
-                <>
+        <>
+            <AuthHeader />
+            <div className="form-container">
+                <FormHeader isPublic={false} title="Message" />
+                {error !== "" && (
                     <div className="form-row">
-                        <div className="form-label-cell">
-                            <label className="form-label">From: {msg.fromUserId == user?.userId ? "Me" : msg.fromUserName}</label>
-                        </div>
+                        <label className="form-error">{error}</label>
                     </div>
-
-                    <div className="form-row">
-                        <div className="form-label-cell">
-                            <label className="form-label">To: {msg.toUserId == user?.userId ? "Me" : msg.contactName}</label>
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-label-cell">
-                            <label className="form-content-row">{msg.message}</label>
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-label-cell">
-                            <label className="form-label">Sent: {dayjs.utc(msg.sendDate).local().format('MMM DD, YYYY HH:mm')}</label>
-                        </div>
-                    </div>
-                    <div className="buttons-container">
-                        {msg.fromUserId == user?.userId && (
-                            <div className="form-button-cell">
-                                <button data-testid="delete" type="button" onClick={deleteMessage} className="form-button"><Trash /> Delete Message</button>
+                )}
+                {msg != null && (
+                    <>
+                        <div className="form-row">
+                            <div className="form-label-cell">
+                                <label className="form-label">From: {msg.fromUserId == user?.userId ? "Me" : msg.fromUserName}</label>
                             </div>
-                        ) || (
-                            <div className="form-button-cell">
-                                <button data-testid="reply" type="button" onClick={() => { navigate(`/inbox/message?inResponseToMessageId=${msg.userMessageId}`) }} className="form-button"><Send /> Reply</button>
-                            </div>
-                        )}
-                        <div className="form-button-cell">
-                            <button data-testid="delete" type="button" onClick={() => { navigate('/inbox') }} className="form-button"><Inbox /> Back to Inbox</button>
                         </div>
-                    </div>
-                </>
-            )}
-        </div>
+
+                        <div className="form-row">
+                            <div className="form-label-cell">
+                                <label className="form-label">To: {msg.toUserId == user?.userId ? "Me" : msg.contactName}</label>
+                            </div>
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-label-cell">
+                                <label className="form-content-row">{msg.message}</label>
+                            </div>
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-label-cell">
+                                <label className="form-label">Sent: {dayjs.utc(msg.sendDate).local().format('MMM DD, YYYY HH:mm')}</label>
+                            </div>
+                        </div>
+                        <div className="buttons-container">
+                            {msg.fromUserId == user?.userId && (
+                                <div className="form-button-cell">
+                                    <button data-testid="delete" type="button" onClick={deleteMessage} className="form-button"><Trash /> Delete Message</button>
+                                </div>
+                            ) || (
+                                    <div className="form-button-cell">
+                                        <button data-testid="reply" type="button" onClick={() => { navigate(`/inbox/message?inResponseToMessageId=${msg.userMessageId}`) }} className="form-button"><Send /> Reply</button>
+                                    </div>
+                                )}
+                            <div className="form-button-cell">
+                                <button data-testid="inbox" type="button" onClick={() => { navigate('/inbox') }} className="form-button"><Inbox /> Back to Inbox</button>
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </>
     );
 }

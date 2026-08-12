@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter, useLocalSearchParams, Link } from 'expo-router';
-import { LayersPlus, Trash, Ban, Workflow, UserPen, BookOpenCheck, Save, History } from 'lucide-react-native';
+import { LayersPlus, Trash, Ban, Workflow, UserPen, BookOpenCheck, Save, History, Send } from 'lucide-react-native';
 
 import { Slider } from '@miblanchard/react-native-slider';
 
@@ -308,6 +308,16 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     }
   };
 
+  const sendMessageToAuthor = async function () {
+    try {
+      if (initialRecord == null) return;
+      
+      router.replace(`/inbox/message?learningPathId=${initialRecord.learningPathId}`);
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
+    }
+  };
+
   const deleteLesson = async function () {
     try {
       if (initialRecord == null) return;
@@ -594,6 +604,14 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                   onClick: deleteLesson,
                   itemText: "Delete Lesson",
                   leadingIcon: (props) => <Trash {...props} className="color-brand-primary" />
+                },
+                {
+                  isVisible: initialRecord != null && initialRecord.access == AUTHOR_ACCESS.LEARNER,
+                  dataTestId: "send-message",
+                  disabled: isLoading,
+                  onClick: sendMessageToAuthor,
+                  itemText: "Send Message to Author",
+                  leadingIcon: (props) => <Send {...props} className="color-brand-primary" />
                 },
                 {
                   isVisible: initialRecord != null && !isLoading,

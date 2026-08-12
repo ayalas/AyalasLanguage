@@ -139,6 +139,7 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
                 message.Message,
                 message.LearningPath?.Name,
                 message.SendDate,
+                message.Read || message.FromUserId == userId,
                 readWithRequest
             );
 
@@ -148,9 +149,10 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
         private static async Task<PagedResponse<UserMessageDto>> GetUserMessages(int page, ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
-            var arr = await db.UserMessages
-                .Where(m => m.FromUserId == userId || m.ToUserId == userId)
-                .OrderByDescending( m => m.UserMessageId)
+            var baseQuery = db.UserMessages
+                .Where(m => m.FromUserId == userId || m.ToUserId == userId).AsQueryable();
+
+            var arr = await baseQuery.OrderByDescending( m => m.UserMessageId)
                 .Select(m => new UserMessageDto(
                     m.UserMessageId,
                     m.FromUserId,
@@ -161,13 +163,14 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
                     m.Message,
                     m.LearningPathId == null ? null : m.LearningPath.Name,
                     m.SendDate,
+                    m.Read || m.FromUserId == userId,
                     false
                 ))
                 .Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
 
             int numOfRecords = 0;
             if (page == 0)
-                numOfRecords = await db.Users.CountAsync();
+                numOfRecords = await baseQuery.CountAsync();
             return new PagedResponse<UserMessageDto>(numOfRecords, arr);
         }
     }

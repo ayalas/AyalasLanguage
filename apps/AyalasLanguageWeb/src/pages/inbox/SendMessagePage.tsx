@@ -1,7 +1,7 @@
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import { Send } from "lucide-react";
+import { Inbox, Send } from "lucide-react";
 import axios from "axios";
 
 import { errorHandler } from "@ayalaslanguage/types/error";
@@ -21,6 +21,7 @@ export function SendMessagePage() {
     const [replyingToMessage, setReplyingToMessage] = useState("");
     const [error, setError] = useState("");
     const [recepient, setRecepient] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function execAsync() {
@@ -85,9 +86,16 @@ export function SendMessagePage() {
             <div className="form-container">
                 <FormHeader isPublic={false} title="Send Message" />
                 {messageSent ? (
-                    <div className="form-row">
-                        <h3>Message sent successfully.</h3>
-                    </div>
+                    <>
+                        <div className="form-row">
+                            <h3>Message sent successfully.</h3>
+                        </div>
+                        <div className="buttons-container">
+                            <div className="form-button-cell">
+                                <button data-testid="inbox" type="button" onClick={() => { navigate('/inbox') }} className="form-button"><Inbox /> Inbox</button>
+                            </div>
+                        </div>
+                    </>
                 ) :
                     (
                         <form onSubmit={handleSubmit}>
@@ -98,8 +106,8 @@ export function SendMessagePage() {
                             )}
                             <div className="form-row">
                                 <div className="form-label-cell">
-                                    <label className="form-label">Recepient: <Link to={inResponseToMessageId != null? `/inbox/${inResponseToMessageId}`
-                                            : `/author/path/${learningPathId}`}>{recepient}</Link></label>
+                                    <label className="form-label">Recepient: <Link to={inResponseToMessageId != null ? `/inbox/${inResponseToMessageId}`
+                                        : `/author/path/${learningPathId}`}>{recepient}</Link></label>
                                 </div>
                             </div>
                             <div className="form-row">

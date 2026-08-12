@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View, Image, Text, StyleProp, ViewStyle, Platform } from 'react-native'
 import { useAuth } from '@/lib/AuthContext';
 import { Link, useRouter } from 'expo-router';
-import { SquareMenu, Volleyball } from 'lucide-react-native';
+import { MailWarning, SquareMenu, Volleyball } from 'lucide-react-native';
 import DropDownPicker, { ItemType, ValueType } from 'react-native-dropdown-picker';
 import { Menu, Divider, IconButton } from 'react-native-paper';
 import api from '@/lib/api'; //secured axios instance
@@ -48,18 +48,18 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
         } as ItemType<ValueType>)) as ItemType<ValueType>[];
     }, [user]); // Only re-run if this specific data changes
 
-    const IconUp = ({style}: {style: StyleProp<ViewStyle>}) => {
+    const IconUp = ({ style }: { style: StyleProp<ViewStyle> }) => {
         return (
             <View style={style}>
-                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▲</Text> 
+                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▲</Text>
             </View>
         );
     };
 
-    const IconDown = ({style}: {style: StyleProp<ViewStyle>}) => {
+    const IconDown = ({ style }: { style: StyleProp<ViewStyle> }) => {
         return (
             <View style={style}>
-                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▼</Text> 
+                <Text style={{ color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT }}>▼</Text>
             </View>
         );
     };
@@ -109,9 +109,9 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
     return (
         <>
             <View className="pt-safe">
-            {/* This will have ~44px on iPhone but 0px on standard Web */}
+                {/* This will have ~44px on iPhone but 0px on standard Web */}
             </View>
-            <View className="header-row" style={{zIndex: 1000}}>
+            <View className="header-row" style={{ zIndex: 1000 }}>
                 <View className="header-title">
                     <Link className="header-app-link" href="/"><Image className="logo" source={isDark ? imgLogoDark : imgLogo} /></Link>
                 </View>
@@ -128,15 +128,28 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                         visible={menuVisible}
                         onDismiss={closeMenu}
                         anchor={
-                            <IconButton style={{ paddingHorizontal: 16, width:'100%', paddingVertical: 10}}
-                                icon={() => <SquareMenu className="color-brand-primary" />}
+                            <IconButton style={{ paddingHorizontal: 16, width: '100%', paddingVertical: 10 }}
+                                icon={() => (
+                                    <>
+                                        {user?.unreadMessages != null && user?.unreadMessages > 0 && (
+                                            <MailWarning className="color-brand-primary" />
+                                        ) || (
+                                                <SquareMenu className="color-brand-primary" />
+                                            )}
+                                    </>
+                                )}
                                 onPress={openMenu}
                             />
                         }>
+                        {user?.unreadMessages != null && user?.unreadMessages > 0 && (
+                            <Menu.Item onPress={() => { router.push('/inbox'); closeMenu(); }} title={`Inbox [${user?.unreadMessages}]`} />
+                        ) || (
+                            <Menu.Item onPress={() => { router.push('/inbox'); closeMenu(); }} title="Inbox" />
+                            )}
                         <Menu.Item onPress={() => { router.push('/profile'); closeMenu(); }} title="Profile settings" />
                         <Menu.Item onPress={() => { router.push('/account'); closeMenu(); }} title="Manage account" />
                         {Platform.OS === 'web' && isInstallable && (
-                             <Menu.Item onPress={triggerInstall} title="Install Fullscreen Experience" />
+                            <Menu.Item onPress={triggerInstall} title="Install Fullscreen Experience" />
                         )}
                         <Menu.Item onPress={() => { router.push('/usernote'); closeMenu(); }} title="Contact Us" />
                         <Divider />
@@ -145,7 +158,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                 </View>
             </View>
             {languageIndicator !== LANGUAGE_INDICATOR_ENUM.NONE && (
-                <View className="switch-container" style={{zIndex: 1000}}>
+                <View className="switch-container" style={{ zIndex: 1000 }}>
                     {(user && user.languageSettings && (user.languageSettings.knownLanguageId ?? 0) > 0 && user.languageSettings.otherUserLanguages && user.languageSettings.otherUserLanguages.length > 0 && (
                         <View className="header-input-cell">
                             {languageIndicator === LANGUAGE_INDICATOR_ENUM.SWITCH && (
@@ -164,7 +177,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                         minHeight: 40,
                                         borderWidth: 1,
                                         borderStyle: 'solid',
-                                        borderColor: isDark? PRIMARY_DARK : PRIMARY_LIGHT,
+                                        borderColor: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
                                         backgroundColor: 'transparent',
                                         alignItems: 'center',
                                         justifyContent: 'center'

@@ -50,42 +50,48 @@ export function InboxPage() {
     }, []);
 
     return (
-        <div className="form-container">
-            <FormHeader isPublic={false} title="Inbox" />
-            {error !== "" && (
-                <div className="form-row">
-                    <label className="form-error">{error}</label>
-                </div>
-            )}
+        <>
+            <div className="form-container">
+                <FormHeader isPublic={false} title="Inbox" />
+                {error !== "" && (
+                    <div className="form-row">
+                        <label className="form-error">{error}</label>
+                    </div>
+                )}
 
-            {rowData.length == 0 && (
-                <div className="form-row">
+                {rowData.length == 0 && (
+                    <div className="form-row">
                         <div className="form-label-cell">
                             <label className="form-label">No messages.</label>
                         </div>
                     </div>
-            ) || (
-                    <>
-                        <div className="grid-row">
-                            <div className="grid-cell">From</div>
-                            <div className="grid-cell">To</div>
-                            <div className="grid-cell grid-cell-long">Message</div>
-                            <div className="grid-cell grid-cell-long grid-cell-end">Sent</div>
-                        </div>
-                        {rowData.map((msg, index) => {
-                            return (
-                                <div key={msg.userMessageId} className={`grid-row${index == rowData.length - 1 ? " grid-row-end" : ""}`}>
-                                    <div className="grid-cell">{msg.fromUserId == user?.userId ? "Me" : msg.fromUserName}</div>
-                                    <div className="grid-cell">{msg.toUserId == user?.userId ? "Me" : msg.contactName}</div>
-                                    <div className="grid-cell grid-cell-long"><Link to={`/inbox/${msg.userMessageId}`}>{msg.message.substring(0, 100)}...</Link></div>
-                                    <div className="grid-cell grid-cell-long grid-cell-end">{dayjs.utc(msg.sendDate).local().format('MMM DD, YYYY HH:mm')}</div>
-                                </div>
-                            )
-                        })}
+                ) || (
+                        <div className="inbox-grid">
+                            <div className="grid-row">
+                                <div className="grid-cell">From</div>
+                                <div className="grid-cell">To</div>
+                                <div className="grid-cell grid-cell-long">Message</div>
+                                <div className="grid-cell grid-cell-long grid-cell-end">Sent</div>
+                            </div>
+                            {rowData.map((msg, index) => {
+                                return (
+                                    <div key={msg.userMessageId} className={`grid-row${index == rowData.length - 1 ? " grid-row-end" : ""}`}>
+                                        <div className={`grid-cell${msg.read? "": " grid-unread"}`}>{msg.fromUserId == user?.userId ? "Me" : msg.fromUserName}</div>
+                                        <div className={`grid-cell${msg.read? "": " grid-unread"}`}>{msg.toUserId == user?.userId ? "Me" : msg.contactName}</div>
+                                        <div className={`grid-cell grid-cell-long${msg.read? "": " grid-unread"}`}><Link to={`/inbox/${msg.userMessageId}`}>{msg.message.substring(0, 100)}</Link></div>
+                                        <div className={`grid-cell grid-cell-long grid-cell-end${msg.read? "": " grid-unread"}`}>{
+                                        dayjs.utc(msg.sendDate).local().format(
+                                                dayjs.utc(msg.sendDate).local().isSame(dayjs(), 'year') ? 'MMM DD' : 'MMM DD, YYYY'
+                                            )
+                                        }</div>
+                                    </div>
+                                )
+                            })}
 
-                        <InboxPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={loadData} />
-                    </>
-                )}
-        </div>
+                            <InboxPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={loadData} />
+                        </div>
+                    )}
+            </div>
+        </>
     );
 }

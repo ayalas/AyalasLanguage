@@ -27,7 +27,7 @@ export function GridPager(props: Props) {
                     <button data-testid="next" type="button" disabled={!hasMoreData} onClick={async () => await loadData(page + 1)} className="form-button" title="Previous page">Next <CircleArrowRight /></button>
                 </div>
                 <div className="form-button-cell">
-                    <button data-testid="last" type="button" disabled={totalPages == 1} onClick={async () => await loadData(totalPages)} className="form-button" title="Last page"><ChevronLast /></button>
+                    <button data-testid="last" type="button" disabled={totalPages == page} onClick={async () => await loadData(totalPages)} className="form-button" title="Last page"><ChevronLast /></button>
                 </div>
             </div>
         </div>
