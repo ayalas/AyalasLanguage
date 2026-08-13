@@ -43,7 +43,7 @@ export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseI
                </div>
               </>
             )}
-            {exerciseInfo.exerciseObject?.First}
+            <span className="exercise-line-text">{exerciseInfo.exerciseObject?.First}</span>
           </div>
         </div>
       )}

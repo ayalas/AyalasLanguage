@@ -21,8 +21,10 @@ export const usePWAInstall = () => {
       setInstallPrompt(e as BeforeInstallPromptEvent);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    if (window && window.addEventListener) {
+      window.addEventListener('beforeinstallprompt', handler);
+      return () => window.removeEventListener('beforeinstallprompt', handler);
+    }
   }, []);
 
   const triggerInstall = async () => {

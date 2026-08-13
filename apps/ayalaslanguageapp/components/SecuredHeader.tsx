@@ -106,6 +106,8 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
         }
     }
 
+    const widthSetting = Platform.OS === 'android'? 250 : 'auto';
+
     return (
         <>
             <View className="pt-safe">
@@ -172,7 +174,7 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                     ArrowUpIconComponent={IconUp}
                                     ArrowDownIconComponent={IconDown}
                                     style={{
-                                        width: 'auto',
+                                        width: widthSetting,
                                         maxWidth: 250,
                                         minHeight: 40,
                                         borderWidth: 1,
@@ -183,13 +185,18 @@ export default function SecuredHeader({ languageIndicator = LANGUAGE_INDICATOR_E
                                         justifyContent: 'center'
                                     }}
                                     textStyle={[styles.text, { textAlign: 'center', paddingTop: 5 }]}
-                                    listItemLabelStyle={{ textAlign: 'center', marginLeft: -28, paddingTop: 10 }}
+                                    listItemLabelStyle={{ textAlign: 'center', marginLeft: 0, paddingTop: 10,  flex: 1 }}
                                     dropDownContainerStyle={{
-                                        width: 'auto',
+                                        width: widthSetting,
                                         minWidth: 150,
                                         borderWidth: 0
                                     }}
-                                    listItemContainerStyle={[styles.bgAlter, { alignItems: 'center', justifyContent: 'center' }]}
+                                    listItemContainerStyle={[styles.bgAlter, 
+                                        { 
+                                            flexDirection: 'row',
+                                            alignItems: 'center', 
+                                            justifyContent: 'center' 
+                                        }]}
                                     placeholder={selectedLanguage}
                                     setValue={setSelectedLanguageId}
                                     onChangeValue={(value) =>
