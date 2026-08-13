@@ -116,7 +116,7 @@ export function SendMessagePage() {
                                 </div>
                             </div>
                             <div className="form-row">
-                                <div className="form-input-row">
+                                <div className="form-input-long">
                                     <textarea data-testid="message" required={true} className="text-area-wide" maxLength={20000} value={message} onChange={(e) => { setMessage(e.target.value) }} />
                                 </div>
                             </div>

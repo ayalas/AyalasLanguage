@@ -10,6 +10,7 @@ import { FormHeader } from '@/components/FormHeader';
 import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo, LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import LessonAuthoringForm from '@/components/creator/LessonAuthoringForm';
 import useTextStyles from '@/lib/useTextStyles';
+import InboxMessagesComponent from '@/components/inbox/InboxMessagesComponent';
 
 export default function LessonUpdateScreen() {
   const { id: learningPathId } = useLocalSearchParams<{ id?: string }>();
@@ -87,6 +88,7 @@ export default function LessonUpdateScreen() {
         {initialRecord != null && (
           <ScrollView showsVerticalScrollIndicator={false}>
             <LessonAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} headerTitle="Lesson editor" />
+            <InboxMessagesComponent showOnNoData={false} title="Replies" learningPathId={initialRecord.learningPathId}  />
             {existingExercises && existingExercises.length > 0 && (
               <View style={{ paddingTop: 10 }}>
                   <Text style={styles.h2}>Existing exercises</Text>

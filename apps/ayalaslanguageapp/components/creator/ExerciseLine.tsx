@@ -41,7 +41,7 @@ export default function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedE
               </TouchableOpacity>
             </>
           )}
-          <Text numberOfLines={1} style={[styles.text, { flexShrink: 1, marginLeft: 10 }]}>{exerciseInfo.exerciseObject?.First}</Text>
+          <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.text, { flex: 1, marginLeft: 10 }]}>{exerciseInfo.exerciseObject?.First}</Text>
         </View>
       )}
       {error !== '' && (

@@ -9,6 +9,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { FormHeader } from '../../../components/FormHeader';
 import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo, LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import { InboxMessagesComponent } from '../../../components/inbox/InboxMessagesComponent';
 
 export function LearningPathUpdatePage() {
   const [initialRecord, setInitialRecord] = useState<LearningPathInfo | null>(null);
@@ -85,6 +86,7 @@ export function LearningPathUpdatePage() {
         {initialRecord != null && (
           <>
             <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
+            <InboxMessagesComponent showOnNoData={false} title="Replies" learningPathId={initialRecord.learningPathId}  />
             {existingExercises && existingExercises.length > 0 && (
               <>
                 <div className="inform-header">

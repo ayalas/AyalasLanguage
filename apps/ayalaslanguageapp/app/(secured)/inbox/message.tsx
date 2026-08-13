@@ -104,8 +104,8 @@ export default function SendMessagePage() {
                                 )}
                                 <View className="form-row">
                                     <View className="form-label-cell">
-                                        <Text style={styles.label}>Recepient: <Link href={inResponseToMessageId != null ? `/inbox/${inResponseToMessageId}`
-                                            : `/author/path/${learningPathId}`}>{recepient}</Link></Text>
+                                        <Text style={styles.label}>Recepient: </Text><Link href={inResponseToMessageId != null ? `/inbox/${inResponseToMessageId}`
+                                            : `/author/path/${learningPathId}`}><Text style={styles.underline}>{recepient}</Text></Link>
                                     </View>
                                 </View>
                                 <View className="form-row">
@@ -114,7 +114,7 @@ export default function SendMessagePage() {
                                     </View>
                                 </View>
                                 <View className="form-row">
-                                    <View className="form-input-row">
+                                    <View className="form-input-long">
                                         <TextInput data-testid="message" multiline={true} numberOfLines={8} className="text-area-wide" maxLength={20000} value={message} onChangeText={setMessage} />
                                     </View>
                                 </View>

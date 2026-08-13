@@ -92,7 +92,7 @@ namespace AyalasLanguageAPI.DTOs
     //Inbox DTOs
     public record SendUserMessageRequestDto(int? LearningPathId, int? InResponseToUserMessageId, string Message);
     public record SendUserMessageResponseDto(int UserMessageId);
-    public record UserMessageDto(int UserMessageId, int FromUserId, string FromUserName, int ToUserId, string ContactName, int? LearningPathId, string Message, string? LearningPathName, DateTime SendDate, bool Read, bool ReadWithRequest);
+    public record UserMessageDto(int UserMessageId, int FromUserId, string FromUserName, int ToUserId, string ContactName, int? LearningPathId, string Message, string? LearningPathName, DateTime SendDate, bool Read, bool ReadWithRequest, int? InResponseToMessageId);
     
     public record PagedResponse<T>(int NumOfRecords, T[] Data);
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FormHeader } from "../../components/FormHeader";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
 import type { InboxUserMessage } from "@ayalaslanguage/types/sharedfrontlib/inbox";
 import axios from "axios";
 import type { User } from "@ayalaslanguage/types/sharedfrontlib/user";
@@ -8,8 +8,9 @@ import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { errorHandler } from "@ayalaslanguage/types/error";
-import { Inbox, Send, Trash } from "lucide-react";
+import { Inbox, Reply, Trash } from "lucide-react";
 import { AuthHeader } from "../../components/auth/AuthHeader";
+import { InboxMessagesComponent } from "../../components/inbox/InboxMessagesComponent";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -20,13 +21,18 @@ export function MessagePage() {
     const [msg, setMsg] = useState<InboxUserMessage | null>(null);
     const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
     const navigate = useNavigate();
+    const [recepient, setRecepient] = useState("");
 
     useEffect(() => {
         async function runAsync() {
             try {
-                const msg = await axios.get<InboxUserMessage>(`/api/inbox/message/${messageId}`);
-                setMsg(msg.data);
-                if (msg.data.readWithRequest) {
+                const tmpMsg = await axios.get<InboxUserMessage>(`/api/inbox/message/${messageId}`);
+                setMsg(tmpMsg.data);
+
+                setRecepient(tmpMsg.data.toUserId == user?.userId ? "Me" : tmpMsg.data.contactName != "" ? tmpMsg.data.contactName :
+                    `Author of "${tmpMsg.data.learningPathName}"`);
+
+                if (tmpMsg.data.readWithRequest) {
                     //reduce the number of unread messages for the user
                     const tmp: User = { ...user } as User;
                     if (tmp.unreadMessages != null && tmp.unreadMessages > 0) {
@@ -73,13 +79,14 @@ export function MessagePage() {
 
                         <div className="form-row">
                             <div className="form-label-cell">
-                                <label className="form-label">To: {msg.toUserId == user?.userId ? "Me" : msg.contactName}</label>
+                                <label className="form-label">To: <Link to={msg.inResponseToMessageId != null ? `/inbox/${msg.inResponseToMessageId}`
+                                        : `/author/path/${msg.learningPathId}`}>{recepient}</Link>{msg.inResponseToMessageId != null ? "": " (lesson)"}</label>
                             </div>
                         </div>
 
                         <div className="form-row">
-                            <div className="form-label-cell">
-                                <label className="form-content-row">{msg.message}</label>
+                            <div className="form-input-long">
+                                <textarea data-testid="message" readOnly={true} className="text-area-wide" maxLength={20000} value={msg.message} />
                             </div>
                         </div>
 
@@ -88,14 +95,22 @@ export function MessagePage() {
                                 <label className="form-label">Sent: {dayjs.utc(msg.sendDate).local().format('MMM DD, YYYY HH:mm')}</label>
                             </div>
                         </div>
+                        <InboxMessagesComponent showOnNoData={false} title="Replies" inResponseToMessageId={msg.userMessageId}  />
                         <div className="buttons-container">
                             {msg.fromUserId == user?.userId && (
-                                <div className="form-button-cell">
-                                    <button data-testid="delete" type="button" onClick={deleteMessage} className="form-button"><Trash /> Delete Message</button>
-                                </div>
+                                <>
+                                    <div className="form-button-cell">
+                                        <button data-testid="delete" type="button" onClick={deleteMessage} className="form-button"><Trash /> Delete Message</button>
+                                    </div>
+                                    {msg.inResponseToMessageId != null && (
+                                        <div className="form-button-cell">
+                                        <button data-testid="reply-again" type="button" onClick={() => { navigate(`/inbox/message?inResponseToMessageId=${msg.inResponseToMessageId}`) }} className="form-button"><Reply /> Reply Again</button>
+                                    </div>
+                                    )}
+                                </>
                             ) || (
                                     <div className="form-button-cell">
-                                        <button data-testid="reply" type="button" onClick={() => { navigate(`/inbox/message?inResponseToMessageId=${msg.userMessageId}`) }} className="form-button"><Send /> Reply</button>
+                                        <button data-testid="reply" type="button" onClick={() => { navigate(`/inbox/message?inResponseToMessageId=${msg.userMessageId}`) }} className="form-button"><Reply /> Reply</button>
                                     </div>
                                 )}
                             <div className="form-button-cell">

@@ -29,4 +29,5 @@ export interface InboxUserMessage
     sendDate: string;
     read: boolean;
     readWithRequest: boolean;
+    inResponseToMessageId?: number;
 }

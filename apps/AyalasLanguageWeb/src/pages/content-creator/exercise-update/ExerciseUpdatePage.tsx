@@ -118,13 +118,13 @@ export function ExerciseUpdatePage() {
                     </div>
                     <div className="form-label-row">First line</div>
                     <div className="form-row">
-                        <div className="form-input-row">
+                        <div className="form-input-long">
                             <textarea data-testid="first-line" className="text-area-minimal" required={true} value={firstLine} onChange={(e) => { setFirstLine(e.target.value) }} />
                         </div>
                     </div>
                     <div className="form-label-row">Second line</div>
                     <div className="form-row">
-                        <div className="form-input-row">
+                        <div className="form-input-long">
                             <textarea data-testid="second-line" className="text-area-minimal" required={true} value={secondLine} onChange={(e) => { setSecondLine(e.target.value) }} />
                         </div>
                     </div>
@@ -132,7 +132,7 @@ export function ExerciseUpdatePage() {
                         <>
                             <div className="form-label-row">Translation</div>
                             <div className="form-row">
-                                <div className="form-input-row">
+                                <div className="form-input-long">
                                     <textarea data-testid="translation" className="text-area-minimal" value={translation} onChange={(e) => { setTranslation(e.target.value) }} />
                                 </div>
                             </div>
@@ -142,7 +142,7 @@ export function ExerciseUpdatePage() {
                         <>
                             <div className="form-label-row">Extra Options</div>
                             <div className="form-row">
-                                <div className="form-input-row">
+                                <div className="form-input-long">
                                     <textarea data-testid="extra-options" className="text-area-minimal" required={true} value={extraOptions} onChange={(e) => { setExtraOptions(e.target.value) }} />
                                 </div>
                             </div>

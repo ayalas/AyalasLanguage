@@ -13,7 +13,7 @@ export function InboxPager(props: Props) {
     const { hasMoreData, page, loadData, totalPages } = props;
     const { styles } = useTextStyles();
 
-    return (totalPages > 0 && (
+    return (totalPages > 1 && (
         <View className="form-row">
             <View className="header-links">
                 <View>

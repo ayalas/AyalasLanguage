@@ -3,7 +3,6 @@ import { useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Save, Send } from 'lucide-react';
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { AuthHeader } from '../../components/auth/AuthHeader';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { handleKeyDown } from '../../utils/utils';
 import { checkPasswordStrength, generatePasswordFeedback } from '@ayalaslanguage/types/sharedfrontlib/utils';
@@ -110,7 +109,6 @@ export function AccountPage() {
 
   return (
     <>
-      <AuthHeader />
       <div className="form-container">
 
         {accountChanged ? (

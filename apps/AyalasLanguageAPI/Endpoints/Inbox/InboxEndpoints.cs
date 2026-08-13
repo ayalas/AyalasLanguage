@@ -140,17 +140,28 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
                 message.LearningPath?.Name,
                 message.SendDate,
                 message.Read || message.FromUserId == userId,
-                readWithRequest
+                readWithRequest,
+                message.InResponseToUserMessageId
             );
 
             return Results.Ok(dto);
         }
 
-        private static async Task<PagedResponse<UserMessageDto>> GetUserMessages(int page, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+        private static async Task<PagedResponse<UserMessageDto>> GetUserMessages(int page, int? inResponseToMessageId, int? learningPathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
         {
             var userId = claim.GetUserId();
             var baseQuery = db.UserMessages
                 .Where(m => m.FromUserId == userId || m.ToUserId == userId).AsQueryable();
+
+            if (inResponseToMessageId != null)
+            {
+                baseQuery = baseQuery.Where(m => m.InResponseToUserMessageId == inResponseToMessageId);
+            }
+            else if (learningPathId != null)
+            {
+               baseQuery = baseQuery.Where(m => m.LearningPathId == learningPathId); 
+            }
+            
 
             var arr = await baseQuery.OrderByDescending( m => m.UserMessageId)
                 .Select(m => new UserMessageDto(
@@ -164,7 +175,8 @@ namespace AyalasLanguageAPI.Endpoints.Inbox
                     m.LearningPathId == null ? null : m.LearningPath.Name,
                     m.SendDate,
                     m.Read || m.FromUserId == userId,
-                    false
+                    false,
+                    m.InResponseToUserMessageId
                 ))
                 .Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1).ToArrayAsync();
 

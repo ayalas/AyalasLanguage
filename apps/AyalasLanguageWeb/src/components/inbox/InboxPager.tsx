@@ -7,8 +7,7 @@ interface Props {
   totalPages: number;
 }
 
-export function InboxPager(props: Props) {
-    const { hasMoreData, page, loadData, totalPages } = props;
+export function InboxPager({ hasMoreData, page, loadData, totalPages } : Props) {
 
     return (totalPages > 1 && (
         <div className="form-row">

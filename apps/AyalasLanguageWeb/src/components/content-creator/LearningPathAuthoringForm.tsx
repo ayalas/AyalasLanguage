@@ -507,12 +507,12 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   <div className="form-label-row">Subject</div>
                   <div className="form-row">
                     <div className="form-input-row">
-                      <input ref={titleRef} type="text" className="form-input form-input-long" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onKeyDown={(e) => handleKeyDown(e, exerciseTypeRef)} onChange={(e) => { setTitle(e.target.value) }} />
+                      <input ref={titleRef} type="text" className="form-input" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onKeyDown={(e) => handleKeyDown(e, exerciseTypeRef)} onChange={(e) => { setTitle(e.target.value) }} />
                     </div>
                     <div className="form-content-row">AI will generate exercises on this subject.</div>
                   </div>
                   <div className="form-label-row">Exercise Type</div>
-                  <div className="form-row">
+                  <div className="form-input-row">
                     <div className="exercise-type-selector-container">
                       <select ref={exerciseTypeRef} required data-testid="exercise-type" className="exercise-type-select" value={exerciseType}
                         onChange={onChangeExerciseType}>
@@ -547,14 +547,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                       </div>
                       <div className="form-label-row">First set of words/sentences</div>
                       <div className="form-row">
-                        <div className="form-input-row">
+                        <div className="form-input-long">
                           <textarea ref={firstSetRef} data-testid="first-set" className="text-area-wide" value={firstSet} onKeyDown={(e) => handleKeyDown(e, secondSetRef)} onChange={(e) => { setFirstSet(e.target.value) }} />
                         </div>
                         <div className="form-content-row">{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.first_data_instructions ?? ''}</div>
                       </div>
                       <div className="form-label-row">Second set of words/sentences</div>
                       <div className="form-row">
-                        <div className="form-input-row">
+                        <div className="form-input-long">
                           <textarea ref={secondSetRef} data-testid="second-set" className="text-area-wide" value={secondSet} onKeyDown={(e) => handleKeyDown(e, EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions ? wrongExtraOptionsRef : saveButtonRef)} onChange={(e) => { setSecondSet(e.target.value) }} />
                         </div>
                         <div className="form-content-row">{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.second_data_instructions ?? ''}</div>
@@ -563,7 +563,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                         <>
                           <div className="form-label-row">Wrong Extra Options</div>
                           <div className="form-row">
-                            <div className="form-input-row">
+                            <div className="form-input-long">
                               <textarea ref={wrongExtraOptionsRef} data-testid="extra-options" className="text-area-wide" value={wrongExtraOptions} onKeyDown={(e) => handleKeyDown(e, saveButtonRef)} onChange={(e) => { setWrongExtraOptions(e.target.value) }} />
                             </div>
                             <div className="form-content-row">{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.extra_options_instructions ?? ''}</div>

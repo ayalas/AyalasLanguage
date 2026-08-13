@@ -127,13 +127,13 @@ export default function ExerciseScreen() {
         <KeyboardAvoidingView>
           <Text style={styles.label}>First line</Text>
           <View className="form-row">
-            <View className="form-input-row">
+            <View className="form-input-long">
               <TextInput multiline={true} numberOfLines={2} testID="first-line" className="text-area-minimal" value={firstLine} onChangeText={setFirstLine} />
             </View>
           </View>
           <Text style={styles.label}>Second line</Text>
           <View className="form-row">
-            <View className="form-input-row">
+            <View className="form-input-long">
               <TextInput multiline={true} numberOfLines={2} testID="second-line" className="text-area-minimal" value={secondLine} onChangeText={setSecondLine} />
             </View>
           </View>
@@ -141,7 +141,7 @@ export default function ExerciseScreen() {
             <>
               <Text style={styles.label}>Translation</Text>
               <View className="form-row">
-                <View className="form-input-row">
+                <View className="form-input-long">
                   <TextInput multiline={true} numberOfLines={2} testID="translation" className="text-area-minimal" value={translation} onChangeText={setTranslation} />
                 </View>
               </View>
@@ -151,7 +151,7 @@ export default function ExerciseScreen() {
             <>
               <Text style={styles.label}>Extra Options</Text>
               <View className="form-row">
-                <View className="form-input-row">
+                <View className="form-input-long">
                   <TextInput multiline={true} numberOfLines={2} testID="extra-options" className="text-area-minimal" value={extraOptions} onChangeText={setExtraOptions} />
                 </View>
               </View>

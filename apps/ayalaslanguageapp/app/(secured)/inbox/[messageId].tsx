@@ -1,7 +1,7 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput } from "react-native";
 import { useEffect, useState } from "react";
 import { FormHeader } from "@/components/FormHeader";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter, useLocalSearchParams, Link } from "expo-router";
 import type { InboxUserMessage } from "@ayalaslanguage/types/sharedfrontlib/inbox";
 import api from "@/lib/api";
 import type { User } from "@ayalaslanguage/types/sharedfrontlib/user";
@@ -9,10 +9,11 @@ import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { errorHandler } from "@ayalaslanguage/types/error";
-import { Inbox, Send, Trash } from "lucide-react-native";
+import { Inbox, Reply, Trash } from "lucide-react-native";
 import SecuredHeader from "@/components/SecuredHeader";
 import useTextStyles from "@/lib/useTextStyles";
 import { useAuth } from "@/lib/AuthContext";
+import InboxMessagesComponent from "@/components/inbox/InboxMessagesComponent";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -23,14 +24,19 @@ export default function MessagePage() {
     const [msg, setMsg] = useState<InboxUserMessage | null>(null);
     const { user, login } = useAuth();
     const router = useRouter();
+    const [recepient, setRecepient] = useState("");
     const { styles } = useTextStyles();
 
     useEffect(() => {
         async function runAsync() {
             try {
-                const msg = await api.get<InboxUserMessage>(`/api/inbox/message/${messageId}`);
-                setMsg(msg.data);
-                if (msg.data.readWithRequest) {
+                const tmpMsg = await api.get<InboxUserMessage>(`/api/inbox/message/${messageId}`);
+                setMsg(tmpMsg.data);
+
+                setRecepient(tmpMsg.data.toUserId == user?.userId ? "Me" : tmpMsg.data.contactName != "" ? tmpMsg.data.contactName :
+                    `Author of "${tmpMsg.data.learningPathName}"`);
+                //if (msg.data.learningPathName)
+                if (tmpMsg.data.readWithRequest) {
                     //reduce the number of unread messages for the user
                     const tmp: User = { ...user } as User;
                     if (tmp.unreadMessages != null && tmp.unreadMessages > 0) {
@@ -78,13 +84,14 @@ export default function MessagePage() {
 
                             <View className="form-row">
                                 <View className="form-label-cell">
-                                    <Text style={styles.label}>To: {msg.toUserId == user?.userId ? "Me" : msg.contactName}</Text>
+                                    <Text style={styles.label}>To: </Text><Link href={msg.inResponseToMessageId != null ? `/inbox/${msg.inResponseToMessageId}`
+                                            : `/author/path/${msg.learningPathId}`}><Text style={styles.underline}>{recepient}</Text></Link><Text style={styles.label}>{msg.inResponseToMessageId != null ? "" : " (lesson)"}</Text>
                                 </View>
                             </View>
 
                             <View className="form-row">
-                                <View className="form-label-cell">
-                                    <Text style={styles.dimmedText}>{msg.message}</Text>
+                                <View className="form-input-long">
+                                    <TextInput data-testid="message" multiline={true} numberOfLines={8} className="text-area-wide text-area-ro" value={msg.message} />
                                 </View>
                             </View>
 
@@ -93,14 +100,22 @@ export default function MessagePage() {
                                     <Text style={styles.label}>Sent: {dayjs.utc(msg.sendDate).local().format('MMM DD, YYYY HH:mm')}</Text>
                                 </View>
                             </View>
+                            <InboxMessagesComponent showOnNoData={false} title="Replies" inResponseToMessageId={msg.userMessageId}  />
                             <View className="buttons-container">
                                 {msg.fromUserId == user?.userId && (
-                                    <View className="form-button-cell">
-                                        <TouchableOpacity testID="delete" onPress={deleteMessage} className="form-button"><Trash className="color-brand-primary" /><Text style={styles.text}>&nbsp;Delete Message</Text></TouchableOpacity>
-                                    </View>
+                                    <>
+                                        <View className="form-button-cell">
+                                            <TouchableOpacity testID="delete" onPress={deleteMessage} className="form-button"><Trash className="color-brand-primary" /><Text style={styles.text}>&nbsp;Delete Message</Text></TouchableOpacity>
+                                        </View>
+                                        {msg.inResponseToMessageId != null && (
+                                            <View className="form-button-cell">
+                                                <TouchableOpacity testID="reply-again" onPress={() => { router.replace(`/inbox/message?inResponseToMessageId=${msg.inResponseToMessageId}`) }} className="form-button"><Reply className="color-brand-primary" /><Text style={styles.text}>&nbsp;Reply Again</Text></TouchableOpacity>
+                                            </View>
+                                        )}
+                                    </>
                                 ) || (
                                         <View className="form-button-cell">
-                                            <TouchableOpacity testID="reply" onPress={() => { router.replace(`/inbox/message?inResponseToMessageId=${msg.userMessageId}`) }} className="form-button"><Send className="color-brand-primary" /><Text style={styles.text}>&nbsp;Reply</Text></TouchableOpacity>
+                                            <TouchableOpacity testID="reply" onPress={() => { router.replace(`/inbox/message?inResponseToMessageId=${msg.userMessageId}`) }} className="form-button"><Reply className="color-brand-primary" /><Text style={styles.text}>&nbsp;Reply</Text></TouchableOpacity>
                                         </View>
                                     )}
                                 <View className="form-button-cell">

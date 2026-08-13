@@ -532,7 +532,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                       </View>
                       <Text style={styles.label}>First set of words/sentences</Text>
                       <View className="form-row">
-                        <View className="form-input-row">
+                        <View className="form-input-long">
                           <TextInput multiline={true} numberOfLines={8}
                             testID="first-set" className="text-area-wide"
                             value={firstSet} onChangeText={setFirstSet} />
@@ -541,7 +541,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                       </View>
                       <Text style={styles.label}>Second set of words/sentences</Text>
                       <View className="form-row">
-                        <View className="form-input-row">
+                        <View className="form-input-long">
                           <TextInput testID="second-set" multiline={true} numberOfLines={8}
                             className="text-area-wide" value={secondSet} onChangeText={setSecondSet} />
                         </View>
@@ -551,7 +551,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                         <>
                           <Text style={styles.label}>Wrong Extra Options</Text>
                           <View className="form-row">
-                            <View className="form-input-row">
+                            <View className="form-input-long">
                               <TextInput testID="extra-options" multiline={true} numberOfLines={8}
                                 className="text-area-wide"
                                 value={wrongExtraOptions} onChangeText={setWrongExtraOptions} />

@@ -67,7 +67,7 @@ export function ContactUsPublicPage() {
                                 </div>
                                 <div className="form-label-row">Message</div>
                                 <div className="form-row">
-                                    <div className="form-input-row">
+                                    <div className="form-input-long">
                                         <textarea ref={messageRef} data-testid="message" maxLength={500} required={true} className="text-area-wide" value={message} 
                                             onKeyDown={(e) => handleKeyDown(e, null, submitAction)} onChange={(e) => { setMessage(e.target.value) }} />
                                     </div>
