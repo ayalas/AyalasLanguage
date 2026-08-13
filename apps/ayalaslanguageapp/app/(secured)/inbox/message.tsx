@@ -105,7 +105,7 @@ export default function SendMessagePage() {
                                 <View className="form-row">
                                     <View className="form-label-cell">
                                         <Text style={styles.label}>Recepient: </Text><Link href={inResponseToMessageId != null ? `/inbox/${inResponseToMessageId}`
-                                            : `/author/path/${learningPathId}`}><Text style={styles.underline}>{recepient}</Text></Link>
+                                            : `/author/path/${learningPathId}`}><Text style={[styles.text, styles.underline]}>{recepient}</Text></Link>
                                     </View>
                                 </View>
                                 <View className="form-row">

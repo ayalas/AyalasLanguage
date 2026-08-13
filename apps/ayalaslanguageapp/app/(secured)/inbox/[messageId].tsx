@@ -85,7 +85,7 @@ export default function MessagePage() {
                             <View className="form-row">
                                 <View className="form-label-cell">
                                     <Text style={styles.label}>To: </Text><Link href={msg.inResponseToMessageId != null ? `/inbox/${msg.inResponseToMessageId}`
-                                            : `/author/path/${msg.learningPathId}`}><Text style={styles.underline}>{recepient}</Text></Link><Text style={styles.label}>{msg.inResponseToMessageId != null ? "" : " (lesson)"}</Text>
+                                            : `/author/path/${msg.learningPathId}`}><Text style={[styles.text, styles.underline]}>{recepient}</Text></Link><Text style={styles.label}>{msg.inResponseToMessageId != null ? "" : " (lesson)"}</Text>
                                 </View>
                             </View>
 

@@ -107,7 +107,7 @@ export default function InboxMessagesComponent({ showOnNoData, learningPathId, i
                                             <View key={msg.userMessageId} className={`grid-row${index == rowData.length - 1 ? " grid-row-end" : ""}`}>
                                                 <View className="grid-cell"><Text numberOfLines={1} style={[styles.text, { color: msg.read ? colorPrimary : COLOR_PLAY }]}>{msg.fromUserId == user?.userId ? "Me" : msg.fromUserName}</Text></View>
                                                 <View className="grid-cell"><Text numberOfLines={1} style={[styles.text, { color: msg.read ? colorPrimary : COLOR_PLAY }]}>{msg.toUserId == user?.userId ? "Me" : msg.contactName}</Text></View>
-                                                <View className="grid-cell grid-cell-long"><Link href={`/inbox/${msg.userMessageId}`}><Text numberOfLines={1} style={[styles.underline, { color: msg.read ? colorPrimary : COLOR_PLAY }]}>{msg.message.substring(0, 100)}</Text></Link></View>
+                                                <View className="grid-cell grid-cell-long"><Link href={`/inbox/${msg.userMessageId}`}><Text numberOfLines={1} style={[styles.text, styles.underline, { color: msg.read ? colorPrimary : COLOR_PLAY }]}>{msg.message.substring(0, 100)}</Text></Link></View>
                                                 <View className="grid-cell grid-cell-long grid-cell-end"><Text style={[styles.text, { color: msg.read ? colorPrimary : COLOR_PLAY }]}>{
                                                     dayjs.utc(msg.sendDate).local().format(
                                                         dayjs.utc(msg.sendDate).local().isSame(dayjs(), 'year') ? 'MMM DD' : 'MMM DD, YYYY'
