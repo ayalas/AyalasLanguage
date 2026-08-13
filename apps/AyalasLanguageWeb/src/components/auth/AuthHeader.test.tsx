@@ -7,6 +7,7 @@ import { switchLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
 import { usePWAInstall } from '@ayalaslanguage/types/sharedfrontlib/pwa';
+import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 
 // --- Mock Setup ---
 
@@ -48,31 +49,18 @@ vi.mock('lucide-react', () => ({
   Mail: () => <div data-testid="mail-icon" />,
   SquareMenu: () => <div data-testid="square-menu-icon" />,
   Volleyball: () => <div data-testid="volleyball-icon" />,
+  Inbox: () => <div data-testid="inbox-icon" />,
+  MailWarning: () => <div data-testid="main-warning-icon" />
 }));
-
-// --- Types & Data ---
-
-interface User {
-  userId: number;
-  displayName: string;
-  userName: string;
-  emailConfirmed: boolean;
-  role: number;
-  languageSettings: {
-    targetLanguageId: number;
-    targetLanguageEnglishName: string;
-    targetLanguageCode: string;
-    knownLanguageId: number;
-    score: number;
-    otherUserLanguages: Array<{ languageId: number; englishName: string }>;
-  };
-}
-
+ 
 const mockUser: User = {
   userId: 1,
   displayName: 'Bob',
   userName: 'ayala@gmail.com',
   emailConfirmed: false,
+  unreadMessages: 0,
+  use2FALogin: false,
+  disableAutoAI: false,
   role: ROLE_TYPE.CONTENT_CREATOR,
   languageSettings: {
     targetLanguageId: 10,
@@ -174,7 +162,7 @@ describe('AuthHeader Component', () => {
         mockUser,
         mockLogin,
         20,
-        mockUser.languageSettings.knownLanguageId
+        mockUser.languageSettings?.knownLanguageId
       );
     });
   });

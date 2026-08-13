@@ -38,16 +38,6 @@ vi.mock('@ayalaslanguage/types/error', () => ({
     ),
 }));
 
-
-// Mock child components to keep the test focused
-vi.mock('../../components/auth/AuthHeader', async () => {
-  const actual = await vi.importActual('../../components/auth/AuthHeader');
-  return {
-    ...actual,
-    AuthHeader: () => <div data-testid="auth-header" />,
-  };
-});
-
 //Mock FormHeader component to keep the test light
 vi.mock('../../components/FormHeader', async () => {
   const actual = await vi.importActual('../../components/FormHeader');
@@ -79,7 +69,6 @@ describe('AccountPage Component', () => {
     it('renders the form elements correctly with initial state', () => {
         render(<MemoryRouter><AccountPage /></MemoryRouter>);
 
-        expect(screen.getByTestId('auth-header')).toBeInTheDocument();
         expect(screen.getByRole('heading', { name: /account details/i })).toBeInTheDocument();
         expect(screen.getByTestId('current-password')).toBeInTheDocument();
         expect(screen.getByTestId('new-password')).toBeInTheDocument();

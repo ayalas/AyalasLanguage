@@ -14,6 +14,12 @@ const { mockNavigate } = vi.hoisted(() => {
     mockNavigate: vi.fn(),
   };
 });
+
+vi.mock('../../../components/inbox/InboxMessagesComponent', () => ({
+  // Return a simple div instead of the real component
+  InboxMessagesComponent: () => <div data-testid="mock-inbox">Inbox Messages</div>,
+}));
+
 // Mock react-router-dom
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
