@@ -12,7 +12,7 @@ import {
   BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData
 } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
-import {EXERCISE_TYPE_LOGIC, replaceExerciseChars, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import { EXERCISE_TYPE_LOGIC, replaceExerciseChars, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { getAIInstructions, type IChatMessage, AIChatRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
@@ -47,7 +47,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   const [secondSet, setSecondSet] = useState('');
   const [wrongExtraOptions, setWrongExtraOptions] = useState('');
   const [aiInstructions, setAIInstructions] = useState('');
-  const { level: initLevel, chapter: initChapter } = useLocalSearchParams<{ level?: string, chapter?: string }>();
+  const { level: initLevel, chapter: initChapter, type: initType } = useLocalSearchParams<{ level?: string, chapter?: string, type?: string }>();
   const router = useRouter();
   const [useAutoAI, setUseAutoAI] = useState(true);
 
@@ -152,7 +152,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
       //set auto AI instructions to have the latest subject
       const req = handleExerciseTypeLogic(exerciseType);
 
-      
+
       if (req == null || req.messages.length === 0) {
         setError('There is no automated AI instruction for this exercise type. Switch to manual use of AI or try a different exercise type.');
         return null;
@@ -162,9 +162,9 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
       try {
         response = await api.post('/api/ai/unclose/chat', req);
       }
-      catch(err: unknown) {
+      catch (err: unknown) {
         errorHandler(err, (errMsg: string) => {
-            setError(`Automated generation failed. Switch to manual use of AI or try again. Error: ${errMsg}`);
+          setError(`Automated generation failed. Switch to manual use of AI or try again. Error: ${errMsg}`);
         });
         return null;
       }
@@ -311,7 +311,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   const sendMessageToAuthor = async function () {
     try {
       if (initialRecord == null) return;
-      
+
       router.replace(`/inbox/message?learningPathId=${initialRecord.learningPathId}`);
     } catch (ex: unknown) {
       errorHandler(ex, setError);
@@ -348,10 +348,10 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
 
     return {
       exerciseType: exrTypeValue,
-      numOfExercises, 
-      matches, 
+      numOfExercises,
+      matches,
       extraOptions,
-      messages: aiMessages 
+      messages: aiMessages
     } as AIChatRequestDto;
   };
 
@@ -380,28 +380,35 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   }, [initialRecord, user]);
 
 
-   useEffect(() => {
+  useEffect(() => {
     async function execAsync() {
       try {
-        if (initialRecord == null && initChapter !== null && initLevel !== null) {
-          let tempLevel = 1;
-          if (initLevel !== '' && Number(initLevel) > 0) {
-            tempLevel = Number(initLevel);
-            setLevel(tempLevel);
+        if (initialRecord == null) {
+          if (initChapter !== null && initLevel !== null) {
+            let tempLevel = 1;
+            if (initLevel !== '' && Number(initLevel) > 0) {
+              tempLevel = Number(initLevel);
+              setLevel(tempLevel);
+            }
+            let hintChapter = 0;
+            if (initChapter !== '' && Number(initChapter) > 0) {
+              hintChapter = Number(initChapter);
+            }
+            const res = await api.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
+            setChapter(res.data.chapter);
           }
-          let hintChapter = 0;
-          if (initChapter !== '' && Number(initChapter) > 0) {
-            hintChapter = Number(initChapter);
+          if (initType !== null) {
+            const exType = Number(initType) as ExerciseType;
+            setExerciseType(exType);
+            handleExerciseTypeLogic(exType);
           }
-          const res = await api.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
-          setChapter(res.data.chapter);
         }
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
     }
     execAsync();
-  }, [initChapter, initLevel]);
+  }, [initChapter, initLevel, initType]);
 
   useEffect(() => {
     const timeoutid = setTimeout(() => {

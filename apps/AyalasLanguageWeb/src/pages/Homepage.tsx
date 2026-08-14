@@ -174,7 +174,7 @@ export default function Homepage() {
                                 );
                               })}
                               <div className="learning-level-creator">
-                                <Link to={`/author/path?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`} title="Generate more exercises here"><LayersPlus /></Link>
+                                <Link to={`/author/path?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}&type=${exerciseTypeObject.exerciseTypeId}`} title="Generate more exercises here"><LayersPlus /></Link>
                               </div>
                             </div>
                           </div>

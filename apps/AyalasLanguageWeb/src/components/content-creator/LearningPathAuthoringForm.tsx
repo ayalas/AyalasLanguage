@@ -42,6 +42,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [searchParams] = useSearchParams();
   const initLevel = searchParams.get('level');
   const initChapter = searchParams.get('chapter');
+  const initType = searchParams.get('type');
   const navigate = useNavigate();
   const [useAutoAI, setUseAutoAI] = useState(true);
 
@@ -301,7 +302,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const sendMessageToAuthor = async function () {
     try {
       if (initialRecord == null) return;
-      
+
       navigate(`/inbox/message?learningPathId=${initialRecord.learningPathId}`);
     } catch (ex: unknown) {
       errorHandler(ex, setError);
@@ -424,25 +425,34 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   useEffect(() => {
     async function execAsync() {
       try {
-        if (initialRecord == null && initChapter !== null && initLevel !== null) {
-          let tempLevel = 1;
-          if (initLevel !== '' && Number(initLevel) > 0) {
-            tempLevel = Number(initLevel);
-            setLevel(tempLevel);
+        //on create
+        if (initialRecord == null) {
+          if (initChapter !== null && initLevel !== null) {
+            let tempLevel = 1;
+            if (initLevel !== '' && Number(initLevel) > 0) {
+              tempLevel = Number(initLevel);
+              setLevel(tempLevel);
+            }
+            let hintChapter = 0;
+            if (initChapter !== '' && Number(initChapter) > 0) {
+              hintChapter = Number(initChapter);
+            }
+            const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
+            setChapter(res.data.chapter);
           }
-          let hintChapter = 0;
-          if (initChapter !== '' && Number(initChapter) > 0) {
-            hintChapter = Number(initChapter);
+          if (initType !== null) {
+            const exType = Number(initType) as ExerciseType;
+            setExerciseType(exType);
+            handleExerciseTypeLogic(exType);
           }
-          const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
-          setChapter(res.data.chapter);
         }
+
       } catch (ex: unknown) {
         errorHandler(ex, setError);
       }
     }
     execAsync();
-  }, [initChapter, initLevel]);
+  }, [initChapter, initLevel, initType]);
 
   useEffect(() => {
     const timeoutid = setTimeout(() => {

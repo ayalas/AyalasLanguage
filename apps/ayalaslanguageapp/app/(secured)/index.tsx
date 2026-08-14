@@ -192,7 +192,7 @@ export default function HomeScreen() {
                               );
                             })}
                             <View className="learning-level-creator">
-                              <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}`}><LayersPlus className="color-brand-layers" /></Link>
+                              <Link href={`/author/create?level=${lastPathObj.level}&chapter=${lastPathObj.chapter}&type=${exerciseTypeObject.exerciseTypeId}`}><LayersPlus className="color-brand-layers" /></Link>
                             </View>
                           </View>
                         </View>
