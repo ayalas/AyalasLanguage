@@ -59,11 +59,17 @@ export function ExerciseUpdatePage() {
         e.preventDefault();
 
         if (initialRecord != null && initialRecord.learningPathId != null) {
-            navigate(`/author/path/${initialRecord?.learningPathId}`);
+            navigate(`/path/${initialRecord?.learningPathId}`);
         }
     }
 
+    function onBackEditorClick(e: React.MouseEvent) {
+        e.preventDefault();
 
+        if (initialRecord != null && initialRecord.learningPathId != null) {
+            navigate(`/author/path/${initialRecord?.learningPathId}`);
+        }
+    }
 
     useEffect(() => {
         async function loadAsync() {
@@ -171,7 +177,10 @@ export function ExerciseUpdatePage() {
                             </>)}
                     <div className="buttons-container">
                         <div className="form-button-cell">
-                            <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back</button>
+                            <button data-testid="back" className="form-button button-back" onClick={onBackClick}><ArrowBigLeft /> Back to Lesson</button>
+                        </div>
+                        <div className="form-button-cell">
+                            <button data-testid="back-editor" className="form-button" onClick={onBackEditorClick}>Lesson Editor</button>
                         </div>
                         <div className="form-button-cell">
                             <button data-testid="save" type="submit" className="form-button" title="Save"><Save />&nbsp;Save</button>

@@ -62,6 +62,13 @@ export default function ExerciseScreen() {
   function onBackClick() {
 
     if (initialRecord != null && initialRecord.learningPathId != null) {
+      router.replace(`/path/${initialRecord?.learningPathId}`);
+    }
+  }
+
+  function onBackEditorClick() {
+
+    if (initialRecord != null && initialRecord.learningPathId != null) {
       router.replace(`/author/path/${initialRecord?.learningPathId}`);
     }
   }
@@ -184,7 +191,10 @@ export default function ExerciseScreen() {
             </>)}
         <View className="buttons-container">
           <View className="form-button-cell">
-            <TouchableOpacity testID="back" className="form-button" onPress={onBackClick}><ArrowBigLeft className='color-brand-primary' /><Text style={styles.text}>&nbsp;Back</Text></TouchableOpacity>
+            <TouchableOpacity testID="back" className="form-button" onPress={onBackClick}><ArrowBigLeft className='color-brand-primary' /><Text style={styles.text}>&nbsp;Back to Lesson</Text></TouchableOpacity>
+          </View>
+          <View className="form-button-cell">
+            <TouchableOpacity testID="back-editor" className="form-button" onPress={onBackEditorClick}><Text style={styles.text}>Lesson Editor</Text></TouchableOpacity>
           </View>
           <View className="form-button-cell">
             <TouchableOpacity testID="save" className="form-button" onPress={onFormSubmit}><Save className='color-brand-primary' /><Text style={styles.text}>&nbsp;Save</Text></TouchableOpacity>

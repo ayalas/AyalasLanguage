@@ -179,7 +179,7 @@ export function LessonPage() {
     }
   }
 
-  const saveProgress = async function () {
+  const saveProgress = async function (routeToHome = true) {
     try {
       if (!currentExercise) return;
 
@@ -198,7 +198,10 @@ export function LessonPage() {
         await axios.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
       }
 
-      navigate('/home');
+      if (routeToHome) {
+        navigate('/home');
+      }
+      
     } catch (err: unknown) {
       errorHandler(err, setError);
     }

@@ -1,5 +1,5 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine } from 'lucide-react';
 import axios from 'axios';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
@@ -15,6 +15,7 @@ import { Toaster } from 'sonner';
 import { useMistakesReadd } from '../../../components/useMistakesReadd';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import type { AITtsRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
+import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 
 export interface ExerciseHandle {
   setFocus: () => void;
@@ -27,7 +28,7 @@ type Props = {
     moveNext: () => void;
     movePrev: () => void;
     childLoaded: (id: number) => void;
-    saveProgress: () => void;
+    saveProgress: (routeToHome?:boolean) => void;
     restartLesson: () => void;
     practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
@@ -40,6 +41,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     const [displayAnswer, setDisplayAnswer] = useState(false);
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
+    const navigate = useNavigate();
 
     const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: exerciseInfo.learningPathId , 
         exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue});
@@ -234,6 +236,15 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                         dataTestId: "edit-lesson",
                         children: <><FilePenLine />&nbsp;Edit lesson</>,
                         toPath: `/author/path/${exerciseInfo.learningPathId}`,
+                    },
+                    {
+                        dataTestId: "edit-exercise",
+                        children: <><FilePenLine />&nbsp;Edit Exercise</>,
+                        onClick: () => {  
+                                saveProgress(false);
+                                navigate(`/author/exercise/${exerciseInfo.exerciseId}`);
+                            },
+                        isVisible: exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT
                     },
                     {
                         dataTestId: "save-progress",

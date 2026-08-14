@@ -20,6 +20,8 @@ import { TouchableOpacity, Text, View } from 'react-native';
 import useTextStyles from '@/lib/useTextStyles';
 import { COLOR_PLAY, COLOR_SAVE } from '@/constants';
 import { AITtsRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
+import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { useRouter } from 'expo-router';
 
 export interface ExerciseHandle {
     setFocus: () => void;
@@ -32,7 +34,7 @@ type Props = {
     moveNext: () => void;
     movePrev: () => void;
     childLoaded: (id: number) => void;
-    saveProgress: () => void;
+    saveProgress: (routeToHome?:boolean) => void;
     restartLesson: () => void;
     practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
@@ -51,6 +53,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
         learningPathId: exerciseInfo.learningPathId,
         exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue
     });
+    const router = useRouter();
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
@@ -256,6 +259,17 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                             dataTestId: "edit-lesson",
                             itemText: "Edit lesson",
                             toPath: `/author/path/${exerciseInfo.learningPathId}`,
+                            leadingIcon: (props) => <FilePenLine {...props} className="color-brand-primary" />,
+                        },
+                        {
+                            dataTestId: "edit-exercise",
+                            itemText: "Edit Exercise",
+                            onClick: () => {  
+                                saveProgress(false);
+                                router.replace(`/author/exercise/${exerciseInfo.exerciseId}`);
+
+                            },
+                            isVisible: exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT,
                             leadingIcon: (props) => <FilePenLine {...props} className="color-brand-primary" />,
                         },
                         {

@@ -163,7 +163,7 @@ export default function LessonScreen() {
 
     const newScore = scoreToAdd + 1;
 
-     if ((currentExercise.index ?? 0) === exercises.length - 1) {
+    if ((currentExercise.index ?? 0) === exercises.length - 1) {
       const origLength = exercises.length;
       const tempExercises = await loadExercises();
       if (tempExercises.length > origLength) {
@@ -195,7 +195,7 @@ export default function LessonScreen() {
     }
   }
 
-  const saveProgress = async function () {
+  const saveProgress = async function (routeToHome = true) {
     try {
       if (!currentExercise) return;
 
@@ -214,7 +214,9 @@ export default function LessonScreen() {
         await api.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
       }
 
-      router.replace('/');
+      if (routeToHome) {
+        router.replace('/');
+      }
     } catch (err: unknown) {
       errorHandler(err, setError);
     }
@@ -266,7 +268,7 @@ export default function LessonScreen() {
         }
       }
     }, 300);
-    return () => clearTimeout(timeoutId); 
+    return () => clearTimeout(timeoutId);
   }, [isMounted, isChildMounted, currentExercise, currentExercise?.exerciseId])
 
   return (
