@@ -2,8 +2,8 @@ import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'r
 import { ExerciseInput } from '../../../../components/ExerciseInput';
 import VirtualKeyboard from '../../../../components/VirtualKeyboard';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import  { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
-import type {ExerciseHandle} from '../Exercise';
+import { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
+import type { ExerciseHandle } from '../Exercise';
 import type { ExerciseInputHandle } from '../../../../components/ExerciseInput';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { replaceCharsForLanguage } from '@ayalaslanguage/types/sharedfrontlib/utils';
@@ -26,10 +26,15 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
   const [translation, setTranslation] = useState('');
+  const [hasError, setHasError] = useState(false);
 
   const OnChange = useCallback((value: string) => {
+    if (hasError && value !== inputValue) {
+      setError("");
+      setHasError(false);
+    }
     setInputValue(value);
-}, []); // Stable reference
+  }, [hasError]); // Stable reference
 
   function compareToAnswer(userAnswer: string, correctAnswer: string) {
     const target = (replaceCharsForLanguage(user?.languageSettings?.targetLanguage ?? '', correctAnswer) ?? '').trim().toLowerCase();
@@ -71,6 +76,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
         moveNext();
       } else {
         setError('You have got some errors. Try again!');
+        setHasError(true);
       }
 
       return canMoveNext;
@@ -96,10 +102,10 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
   }, [exerciseInfo])
 
   const isRTL = isRightToLeftInput(
-            exerciseInfo.exerciseTypeId,
-            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-        );
+    exerciseInfo.exerciseTypeId,
+    user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+    user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+  );
 
   return (
     <>

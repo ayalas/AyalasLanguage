@@ -25,6 +25,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
   const [translation, setTranslation] = useState('');
+  const [hasError, setHasError] = useState(false);
   const { styles } = useTextStyles();
 
   function checkAnswerInternal(userAnswers: (string)[] = []) {
@@ -74,6 +75,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       }
     } else {
       setError('You have got an error. Try again!');
+      setHasError(true);
     }
 
     return canMoveNext;
@@ -119,11 +121,21 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
   }, [exerciseInfo]);
 
   function answerListItemClicked(itemValue: string, position: number) {
+    //clear error when starting to correct
+    if (hasError) {
+      setError("");
+      setHasError(false);
+    }
     setBucketList([...bucketList, itemValue]);
     setAnswerList(answerList.filter((_, ind) => ind !== position));
   }
 
   async function bucketListItemClicked(itemValue: string, position: number) {
+    //clear error when starting to correct
+    if (hasError) {
+      setError("");
+      setHasError(false);
+    }
     if (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer) {
       playTargetText(itemValue);
     }

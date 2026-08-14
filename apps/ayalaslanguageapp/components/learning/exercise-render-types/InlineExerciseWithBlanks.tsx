@@ -5,7 +5,7 @@ import { type ExtendedExerciseInfo, PLACEHOLDERS } from '@ayalaslanguage/types/s
 import { EXERCISE_TYPE_LOGIC, isRightToLeftInput } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { CirclePlay } from 'lucide-react-native';
-import type {ExerciseHandle} from '../Exercise';
+import type { ExerciseHandle } from '../Exercise';
 import { TouchableOpacity, Text, View } from 'react-native';
 import useTextStyles from '@/lib/useTextStyles';
 
@@ -20,12 +20,14 @@ interface Props {
     ref: React.Ref<ExerciseHandle>;
 }
 
-export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, 
-        playTargetText, ref }: Props) {
+export default function InlineExerciseWithBlanks({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user,
+    playTargetText, ref }: Props) {
     const questionsRefMap = useRef<Map<string, ExerciseInputHandle | undefined>>(new Map());
     const currentInputKey = useRef("");
     const [second, setSecond] = useState('');
     const [translation, setTranslation] = useState('');
+    const [hasError, setHasError] = useState(false);
+    const [inputValue, setInputValue] = useState('');
     const { styles } = useTextStyles();
 
     const checkAnswerOrMoveToNextInput = function () {
@@ -50,9 +52,14 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
         }
     };
 
-     const onChangeFromInput = useCallback((value: string, key?: string) => {
+    const onChangeFromInput = useCallback((value: string, key?: string) => {
+        if (hasError && value !== inputValue) {
+            setError("");
+            setHasError(false);
+        }
+        setInputValue(value);
         if (key) currentInputKey.current = key;
-    }, []);
+    }, [hasError]);
 
     useImperativeHandle(ref, () => ({
         setFocus() {
@@ -73,6 +80,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
             }
             if (thisQuestionRefs.size < realAnswers.length) {
                 setError('please fill in all the input elements');
+                setHasError(true);
             }
 
             let canMoveNext = true;
@@ -99,6 +107,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
             }
             else {
                 setError('You have got some errors. Try again!');
+                setHasError(true);
             }
 
             return canMoveNext;
@@ -123,21 +132,21 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
     }, [exerciseInfo])
 
     const isRTL = isRightToLeftInput(
-            exerciseInfo.exerciseTypeId,
-            user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
-            user?.languageSettings?.knownLanguageIsRightToLeft ?? false
-        );
+        exerciseInfo.exerciseTypeId,
+        user?.languageSettings?.targetLanguageIsRightToLeft ?? false,
+        user?.languageSettings?.knownLanguageIsRightToLeft ?? false
+    );
 
     return (
         <>
             <View className="exercise-outer-element">
-                <View className={`exercise-inner-element fill-in-inner-element ${isRTL ? 
+                <View className={`exercise-inner-element fill-in-inner-element ${isRTL ?
                     "flex-row-reverse justify-end" : "flex-row justify-start"}`}
                     style={{
                         // Force direction for layout engine (Android/iOS)
-                        direction: isRTL ? 'rtl' : 'ltr' 
+                        direction: isRTL ? 'rtl' : 'ltr'
                     }}
-                    >
+                >
                     {
                         exerciseInfo.sentenceElements?.map((part, i) => {
                             const setRef = (el: ExerciseInputHandle | null) => {
@@ -157,17 +166,17 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
                                             customKey={`${exerciseInfo.exerciseId}-${i}`}
                                             onChange={onChangeFromInput}
                                             exerciseType={exerciseInfo.exerciseTypeId}
-                                            onFocus={(key) => { if(key) currentInputKey.current = key; }}
+                                            onFocus={(key) => { if (key) currentInputKey.current = key; }}
                                         />
                                     ) || (
                                             <>
                                                 {
-                                                    words.map((word, index) => (<Text 
-                                                        key={`ex-word-${exerciseInfo.exerciseId}input-container${i}-${index}`} 
+                                                    words.map((word, index) => (<Text
+                                                        key={`ex-word-${exerciseInfo.exerciseId}input-container${i}-${index}`}
                                                         style={[styles.inlineExercise,
-                                                            {
-                                                              writingDirection: isRTL ? 'rtl' : 'ltr'
-                                                            }
+                                                        {
+                                                            writingDirection: isRTL ? 'rtl' : 'ltr'
+                                                        }
                                                         ]}>{word}
                                                     </Text>))
                                                 }
@@ -184,7 +193,7 @@ export default function InlineExerciseWithBlanks ({ exerciseInfo, setError, move
                         {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
                             <TouchableOpacity testID="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='color-brand-play' /></TouchableOpacity>
                         )}</View>
-                    { EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
+                    {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
                         <Text style={styles.text}>{translation}</Text>
                     )}
                 </View>

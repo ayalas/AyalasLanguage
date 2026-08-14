@@ -26,6 +26,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
     const currentInputKey = useRef("");
     const [second, setSecond] = useState('');
     const [translation, setTranslation] = useState('');
+    const [hasError, setHasError] = useState(false);
 
     const checkAnswerOrMoveToNextInput = function () {
         if (currentInputKey.current != "") {
@@ -50,17 +51,26 @@ export const InlineExerciseWithBlanks = function (props: Props) {
     };
 
     const onChangeFromKeyboard = useCallback((input: string) => {
+        if (hasError && valueFromKeyboard !== input) {
+            setError("");
+            setHasError(false);
+        }
         if (currentInputKey.current !== "") {
             setValueFromKeyboard(input);
             const entry = questionsRefMap.current.get(currentInputKey.current);
             entry?.setValue(input);
         }
-    }, []);
+        
+    }, [hasError]);
 
     const onChangeFromInput = useCallback((value: string, key?: string) => {
+        if (hasError && valueFromKeyboard !== value) {
+            setError("");
+            setHasError(false);
+        }
         setValueFromKeyboard(value);
         if (key) currentInputKey.current = key;
-    }, []);
+    }, [hasError]);
 
     useImperativeHandle(ref, () => ({
         setFocus() {
@@ -81,6 +91,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
             }
             if (thisQuestionRefs.size < realAnswers.length) {
                 setError('please fill in all the input elements');
+                setHasError(true);
             }
 
             let canMoveNext = true;
@@ -107,6 +118,7 @@ export const InlineExerciseWithBlanks = function (props: Props) {
             }
             else {
                 setError('You have got some errors. Try again!');
+                setHasError(true);
             }
 
             return canMoveNext;

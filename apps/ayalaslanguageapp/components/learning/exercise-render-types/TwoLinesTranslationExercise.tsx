@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import ExerciseInput from '@/components/learning/ExerciseInput';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { isRightToLeftInput, EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
@@ -26,6 +26,8 @@ export default function TwoLinesTranslationExercise({ exerciseInfo, setError, mo
   const [first, setFirst] = useState('');
   const [second, setSecond] = useState('');
   const [translation, setTranslation] = useState('');
+  const [hasError, setHasError] = useState(false);
+  const [inputValue, setInputValue] = useState('');
   const { styles } = useTextStyles();
 
   function compareToAnswer(userAnswer: string, correctAnswer: string) {
@@ -68,6 +70,7 @@ export default function TwoLinesTranslationExercise({ exerciseInfo, setError, mo
         moveNext();
       } else {
         setError('You have got some errors. Try again!');
+        setHasError(true);
       }
 
       return canMoveNext;
@@ -91,6 +94,14 @@ export default function TwoLinesTranslationExercise({ exerciseInfo, setError, mo
     }
     runAsync();
   }, [exerciseInfo]);
+
+  const onChangeFromInput = useCallback((value: string, key?: string) => {
+    if (hasError && value !== inputValue) {
+      setError("");
+      setHasError(false);
+    }
+    setInputValue(value);
+  }, [hasError]);
 
   const isRTL = isRightToLeftInput(
     exerciseInfo.exerciseTypeId,
@@ -119,6 +130,7 @@ export default function TwoLinesTranslationExercise({ exerciseInfo, setError, mo
               charWidth={2 + (second?.length ?? 0)}
               checkAnswer={parentCheckAnswer}
               exerciseType={exerciseInfo.exerciseTypeId}
+              onChange={onChangeFromInput}
             />
           </View>
         </View>
