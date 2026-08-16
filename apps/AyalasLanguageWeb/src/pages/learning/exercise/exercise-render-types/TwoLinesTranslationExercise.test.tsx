@@ -5,7 +5,7 @@ import { TwoLinesTranslationExercise } from './TwoLinesTranslationExercise';
 import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type {ExerciseHandle} from '../Exercise';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 
 // Mock axios as requested
@@ -63,6 +63,7 @@ describe('TwoLinesTranslationExercise', () => {
     data: JSON.stringify(objData),
     exerciseObject: objData,
     access: AUTHOR_ACCESS.CAN_EDIT,
+    ownershipType: OWNERSHIP_TYPE.PUBLIC
   };
 
   const mockUser = {

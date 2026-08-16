@@ -71,6 +71,7 @@ describe('LessonPage', () => {
     exerciseCount: 2,
     practiseMistakesInThisPath: false,
     exerciseId: 101,
+    ownershipType: OWNERSHIP_TYPE.PUBLIC
   };
 
   const data1: ExerciseData = {First: 'can', Second: 'will'};

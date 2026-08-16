@@ -4,7 +4,7 @@ import MatchWordsExercise from './MatchWordsExercise';
 import { getRandomizedSequence } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { type ExerciseData, type ExtendedExerciseInfo, type MatchSelection } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 
 // Mock axios as requested
@@ -50,6 +50,7 @@ describe('MatchWordsExercise', () => {
       sentenceElements: ['Hello', 'Apple'],
       answers: ['Bonjour', 'Pomme'],
       access: AUTHOR_ACCESS.CAN_EDIT,
+      ownershipType: OWNERSHIP_TYPE.PUBLIC
     } as ExtendedExerciseInfo,
     setError: vi.fn(),
     moveNext: vi.fn(),

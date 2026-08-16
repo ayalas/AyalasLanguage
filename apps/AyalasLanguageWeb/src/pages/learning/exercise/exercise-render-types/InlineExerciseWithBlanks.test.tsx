@@ -5,7 +5,7 @@ import { InlineExerciseWithBlanks } from './InlineExerciseWithBlanks';
 import type { ExerciseHandle } from '../Exercise';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { PLACEHOLDERS, type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES, type ExerciseType } from '@ayalaslanguage/types/exercise';
 
 // Mock axios as requested
@@ -64,6 +64,7 @@ describe('InlineExerciseWithBlanks', () => {
       exerciseObject : dataObject,
       data: JSON.stringify(dataObject),
       access: AUTHOR_ACCESS.CAN_EDIT,
+      ownershipType: OWNERSHIP_TYPE.PUBLIC
     } as ExtendedExerciseInfo,
     setError: vi.fn(),
     moveNext: vi.fn(),
