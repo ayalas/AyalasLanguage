@@ -282,7 +282,7 @@ export default function LessonScreen() {
         )}
         {learningPathData && (
           <>
-            <FormHeader title={`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`} />
+            <FormHeader titleSize='sm' title={`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`} />
             {!currentExercise && (
               <View className="form-row">
                 <View className="form-button-cell">

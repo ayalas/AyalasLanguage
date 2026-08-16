@@ -552,13 +552,13 @@
 .form-header {
   display: flex;
   gap: 12px;
+  padding-top: 5px !important;
   padding-left: 15px !important;
   padding-right: 15px !important;
-  display: flex !important;
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   justify-content: space-between !important;
-  align-items: center !important;
+  align-items: top !important;
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
