@@ -208,7 +208,7 @@ public static class ContentCreatorEndpoints
                 && e.UserId != userId 
                 && e.Status != (byte)ContentStatusEnum.Removed))
             {
-                return Results.Conflict("Lesson cannot be made private because there are Exercises in it from multiple contributers");
+                return Results.Conflict("Lesson cannot be made private because there are exercises in it from multiple contributers");
             }
         }
 
@@ -216,6 +216,7 @@ public static class ContentCreatorEndpoints
         path.Chapter = dto.Chapter;
         path.Name = dto.Name;
         path.Status = (byte)ContentStatusEnum.Draft;
+        path.OwnershipType = (byte)dto.OwnershipType;
 
         await db.SaveChangesAsync();
         return Results.Ok();

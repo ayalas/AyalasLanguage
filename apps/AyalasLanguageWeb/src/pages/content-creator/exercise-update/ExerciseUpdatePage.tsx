@@ -49,7 +49,7 @@ export function ExerciseUpdatePage() {
 
             const data = JSON.stringify(dataToSend);
 
-            await axios.put(`/api/creator/exercise/${exerciseId}`, { Data: data });
+            await axios.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType });
 
             navigate(`/author/path/${initialRecord?.learningPathId}`);
         } catch (ex: unknown) {
@@ -160,7 +160,7 @@ export function ExerciseUpdatePage() {
 
                     <div className="form-row">
                         <div className="form-input-row">
-                            <input type="checkbox" className="form-input" data-testid="private" checked={ownershipType == OWNERSHIP_TYPE.USER} onChange={(e) => { setOwnershipType(e.target.checked ? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
+                            <input type="checkbox" data-testid="private" checked={ownershipType == OWNERSHIP_TYPE.USER} onChange={(e) => { setOwnershipType(e.target.checked ? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
                             <label className="content-line-part">Private</label>
                         </div>
                         <div className="form-content-row">Make this lesson private, so only you can see it</div>

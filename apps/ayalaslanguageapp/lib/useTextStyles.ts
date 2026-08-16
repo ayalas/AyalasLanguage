@@ -39,7 +39,6 @@ export default function useTextStyles() {
             alignContent: 'center',
             textAlign: 'left',
             flexDirection: 'row',
-            alignSelf: 'flex-start'
         },
         exerciseText: {
             fontFamily: fontFamily,
@@ -48,7 +47,6 @@ export default function useTextStyles() {
             alignContent: 'center',
             fontWeight: '400',
             flexDirection: 'row',
-            alignSelf: 'flex-start'
         },
         inlineExercise: {
             fontFamily: fontFamily,
@@ -57,7 +55,6 @@ export default function useTextStyles() {
             alignContent: 'center',
             paddingHorizontal: 5,
             flexDirection: 'row',
-            alignSelf: 'flex-start'
         },
         italicHeading: {
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
@@ -66,7 +63,6 @@ export default function useTextStyles() {
             fontStyle: 'italic',
             textAlign: 'left',
             flexDirection: 'row',
-            alignSelf: 'flex-start'
         },
         dimmedText: {
             fontFamily: fontFamily,
@@ -75,7 +71,6 @@ export default function useTextStyles() {
             alignContent: 'center',
             textAlign: 'left',
             flexDirection: 'row',
-            alignSelf: 'flex-start'
         },
         layersText: {
             fontFamily: fontFamily,
@@ -84,7 +79,6 @@ export default function useTextStyles() {
             alignContent: 'center',
             textAlign: 'left',
             flexDirection: 'row',
-            alignSelf: 'flex-start'
         },
         label: {
             fontFamily: fontFamily,
@@ -96,7 +90,6 @@ export default function useTextStyles() {
             textAlign: 'left',
             paddingBottom: 4,
             flexDirection: 'row',
-            alignSelf: 'flex-start'
         },
         labelWrap: {
             fontFamily: fontFamily,
@@ -107,7 +100,6 @@ export default function useTextStyles() {
             fontWeight: '500',
             textAlign: 'left',
             flexDirection: 'row',
-            alignSelf: 'flex-start',
         },
         errorText: {
             fontFamily: fontFamily,

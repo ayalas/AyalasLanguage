@@ -373,10 +373,13 @@
 }
 
 .form-input-row {
+  flex-direction: row;
+  align-items: center;
   max-width: 800px;
   width: 100%;
   text-align: start;
   line-height: 1.4;
+  gap: 4px;
 }
 
 .form-input-long {

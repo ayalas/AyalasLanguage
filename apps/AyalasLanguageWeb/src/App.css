@@ -251,6 +251,7 @@ body {
   display: inline-flex;
   padding-right: 10px;
   padding-top: 10px;
+  align-items: center;
 }
 
 .form-input-cell {

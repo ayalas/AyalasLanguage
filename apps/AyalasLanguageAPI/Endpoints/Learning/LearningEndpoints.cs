@@ -122,7 +122,8 @@ public static class LearningEndpoints
                     : up.ExerciseId == null
                         ? (byte)UserProgressEnum.Done
                         : (byte)UserProgressEnum.InProgress,
-                db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
+                db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed &&
+                (e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId)),
                 up != null && up.practiseMistakesInThisPath,
                 up != null ? up.ModifiedOn : null,
                 // --- Get ExerciseTypeId START ---
@@ -174,7 +175,8 @@ public static class LearningEndpoints
         //validate the learning path permission once whether there is a progress record or not
         if (dto.practiseMistakesInThisPath != null && dto.practiseMistakesInThisPath.Value == true
             && await db.LearningPaths.AnyAsync(
-                lp => lp.UserId != userId && lp.OwnershipType == (byte)OwnershipTypeEnum.User
+                lp =>  lp.LearningPathId == dto.LearningPathId &&
+                lp.UserId != userId && lp.OwnershipType == (byte)OwnershipTypeEnum.User
             ))
         {
             return Results.Conflict("Cannot set Practise My Mistakes on a private lesson not owned by you");
@@ -346,6 +348,7 @@ public static class LearningEndpoints
                 KnownLanguageId = exercise.KnownLanguageId,
                 LearningPathId = userProgress.LearningPathId,
                 ExerciseTypeId = exercise.ExerciseTypeId,
+                OwnershipType = exercise.OwnershipType,
                 Data = exercise.Data,
                 UserId = userId,
                 SourceExerciseId = exercise.SourceExerciseId ?? exercise.ExerciseId

@@ -54,7 +54,7 @@ export default function ExerciseScreen() {
 
       const data = JSON.stringify(dataToSend);
 
-      await api.put(`/api/creator/exercise/${exerciseId}`, { Data: data });
+      await api.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType });
 
       router.replace(`/author/path/${initialRecord?.learningPathId}`);
     } catch (ex: unknown) {
