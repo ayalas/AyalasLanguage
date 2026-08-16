@@ -41,7 +41,7 @@ vi.mock('../../components/content-creator/LearningPathAuthoringForm', () => ({
             vi.fn(), // setError
             vi.fn().mockResolvedValue(true), // createExercises
             { level: 1 , chapter: 1
-             , title: 'Test Path', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest,
+             , name: 'Test Path', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest,
             3, // exerciseType
             [{ id: 1 }] // arrData
           )
@@ -79,8 +79,9 @@ describe('LearningPathCreatePage', () => {
 
     expect(mockedAxios.post).toHaveBeenCalledWith('/api/creator/learning-path', {
       level: 1,
-      chapter: 2,
+      chapter: 1,
       name: 'Test Path',
+      ownershipType: OWNERSHIP_TYPE.PUBLIC
     });
 
     expect(mockNavigate).toHaveBeenCalledWith(`/path/123`);
@@ -94,7 +95,7 @@ describe('LearningPathCreatePage', () => {
       <button
         data-testid="submit-btn-empty"
         onClick={() => handleSubmit(vi.fn(), vi.fn(), { level: 1 , chapter: 1
-             , title: 'Empty', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest, 1, [])}
+             , name: 'Empty', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest, 1, [])}
       >
         Submit Empty
       </button>
@@ -126,7 +127,7 @@ describe('LearningPathCreatePage', () => {
       <button
         data-testid="submit-btn-fail"
         onClick={() => handleSubmit(vi.fn(), mockCreateExercises, { level: 1 , chapter: 1
-             , title: 'Fail Test', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest, 1, [{ id: 1 }])}
+             , name: 'Fail Test', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest, 1, [{ id: 1 }])}
       >
         Submit Fail
       </button>

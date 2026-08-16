@@ -140,7 +140,8 @@ describe("ExerciseUpdatePage", () => {
             expect(mockedAxios.put).toHaveBeenCalledWith(
                 `/api/creator/exercise/${mockExerciseId}`,
                 expect.objectContaining({
-                    Data: expect.stringContaining('"First":"Updated First"')
+                    Data: expect.stringContaining('"First":"Updated First"'),
+                    ownershipType: 0
                 })
             );
         });
@@ -162,7 +163,7 @@ describe("ExerciseUpdatePage", () => {
         const firstInput = await screen.findByTestId('first-line');
         await waitFor(() => expect(firstInput).toHaveValue("Hello"));
 
-        const backButton = screen.getByTestId("back");
+        const backButton = screen.getByTestId("back-editor");
         fireEvent.click(backButton);
 
         expect(mockNavigate).toHaveBeenCalledWith("/author/path/456");

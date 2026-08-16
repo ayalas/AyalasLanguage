@@ -49,7 +49,7 @@ vi.mock('../../../components/content-creator/LearningPathAuthoringForm', () => (
             vi.fn(), // setError
             vi.fn().mockResolvedValue({}), // createExercises
            { level: 1 , chapter: 1
-             , title: 'Updated Title', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest,
+             , name: 'Updated Title', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest,
             1, // exerciseType
             [] // arrData
           )
@@ -122,7 +122,7 @@ describe('LearningPathUpdatePage', () => {
     await waitFor(() => {
       expect(mockedAxios.put).toHaveBeenCalledWith(
         `/api/creator/learning-path/${mockLearningPathId}`,
-        { level: 1, chapter: 1, name: 'Updated Title' }
+        { level: 1, chapter: 1, name: 'Updated Title', ownershipType: OWNERSHIP_TYPE.PUBLIC }
       );
       expect(mockNavigate).toHaveBeenCalledWith(`/path/${mockLearningPathId}`);
     });
