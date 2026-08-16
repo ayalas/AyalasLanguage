@@ -8,7 +8,7 @@ import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/ty
 
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import userEvent from '@testing-library/user-event'; // 1. Import userEvent
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 
 // Mock axios as requested
@@ -51,7 +51,8 @@ describe('Exercise Component', () => {
         data: JSON.stringify(dataObj),
         sentenceElements: ['Hello'],
         answers: ['Bonjour'],
-        access: AUTHOR_ACCESS.CAN_EDIT
+        access: AUTHOR_ACCESS.CAN_EDIT,
+        ownershipType: OWNERSHIP_TYPE.PUBLIC
     };
 
     const mockProps = {
