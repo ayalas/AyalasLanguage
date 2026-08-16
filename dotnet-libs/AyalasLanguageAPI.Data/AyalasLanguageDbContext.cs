@@ -16,7 +16,6 @@ public class AyalasLanguageDbContext : DbContext
     public DbSet<LearningPath> LearningPaths { get; set; }
     public DbSet<Exercise> Exercises { get; set; }
     public DbSet<UserProgress> UserProgresses { get; set; }
-    public DbSet<UserExerciseType> UserExerciseTypes { get; set; }
     public DbSet<ContactUs> ContactUs { get; set; }
     public DbSet<Log> Logs { get; set; }
 
@@ -28,9 +27,6 @@ public class AyalasLanguageDbContext : DbContext
         // Composite Key for UserLanguage
         modelBuilder.Entity<UserLanguage>()
             .HasKey(ul => new { ul.UserId, ul.LanguageId });
-
-        modelBuilder.Entity<UserExerciseType>()
-            .HasKey(ul => new { ul.UserId, ul.ExerciseTypeId });
 
         // Composite Key for UserProgress
         modelBuilder.Entity<UserProgress>()
