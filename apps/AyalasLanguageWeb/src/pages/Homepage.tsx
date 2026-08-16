@@ -1,7 +1,7 @@
 import { useEffect, useState, Fragment, useRef } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import axios from 'axios';
-import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react';
+import { LayersPlus, Check, CircleDotDashed, History, KeyRound } from 'lucide-react';
 import dayjs from 'dayjs';
 
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
@@ -12,6 +12,7 @@ import { type ILearningPath, DEFAULT_NUM_OF_EXERCISES, LEANRING_STATUS } from "@
 
 import { AuthHeader, LANGUAGE_INDICATOR_ENUM } from '../components/auth/AuthHeader';
 import { ExerciseTypeGroupTitle } from '../components/ExerciseTypeGroupTitle';
+import { OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 
 type ExerciseTypeGroupObject = {
   exerciseTypeId: 0 | ExerciseType,
@@ -152,9 +153,10 @@ export default function Homepage() {
                           <div className="learning-exercise-type-inner-container">
                             <ExerciseTypeGroupTitle exerciseTypeId={exerciseTypeObject.exerciseTypeId} />
                             <div className="learning-exercise-type-inner-body">
-                              {exerciseTypeObject.paths.map((path: any) => {
+                              {exerciseTypeObject.paths.map((path: ILearningPath) => {
                                 const isDone = path.status == LEANRING_STATUS.DONE;
                                 const isInProgress = path.status == LEANRING_STATUS.IN_PROGRESS;
+                                const isPrivate = path.ownershipType == OWNERSHIP_TYPE.USER;
                                 return (
                                   <div className="learning-lesson" key={path.learningPathId}
                                     ref={path.learningPathId == latestLesson? latestLessonRef : null}
@@ -166,6 +168,9 @@ export default function Homepage() {
                                     {isInProgress && (
                                       <span title="In progress"><CircleDotDashed className="learning-progress-img" /></span>
                                     )}
+                                    {(isPrivate && (
+                                      <span title="private"><KeyRound className="learning-progress-img" /></span>
+                                    ))}
                                     {path.practiseMistakesInThisPath && (
                                       <span title="Mistakes will be readded to this lesson"><History className="learning-progress-img" /></span>
                                     )}

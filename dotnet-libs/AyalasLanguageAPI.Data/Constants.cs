@@ -97,6 +97,12 @@ public enum JobStatusEnum
     Failed = 5
 }
 
+public enum OwnershipTypeEnum
+{
+    Public = 0,
+    User = 1
+}
+
 public enum LanguageEnum
 {
     English = 1,

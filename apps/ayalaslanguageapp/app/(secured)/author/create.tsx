@@ -4,15 +4,15 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { FormHeader } from '@/components/FormHeader';
 import api from '@/lib/api';
 import { ScrollView, View } from 'react-native';
+import { EditLearningPathRequest } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
 export default function LessonCreateScreen() {
   const router = useRouter();
 
-  const handleSubmit = async (setError: (s: string) => void, createExercises: any, level: number, chapter: number, title: string, exerciseType: number, arrData: any[]) => {
+  const handleSubmit = async (setError: (s: string) => void, createExercises: any, 
+    req: EditLearningPathRequest, exerciseType: number, arrData: any[]) => {
     let learningPathId = 0;
     try {
-      const req: any = { level, chapter, name: title };
-
       const response = await api.post('/api/creator/learning-path', req);
       learningPathId = response.data.learningPathId;
 

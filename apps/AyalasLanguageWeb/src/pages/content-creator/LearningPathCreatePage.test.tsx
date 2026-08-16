@@ -5,6 +5,8 @@ import { MemoryRouter, useSearchParams } from 'react-router-dom';
 import { LearningPathCreatePage } from './LearningPathCreatePage'; // Adjust path as necessary
 import { LearningPathAuthoringForm } from '../../components/content-creator/LearningPathAuthoringForm';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
+import type { EditLearningPathRequest } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import { OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 
 // Mocking axios as requested
 vi.mock('axios');
@@ -38,9 +40,8 @@ vi.mock('../../components/content-creator/LearningPathAuthoringForm', () => ({
           handleSubmit(
             vi.fn(), // setError
             vi.fn().mockResolvedValue(true), // createExercises
-            1, // level
-            2, // chapter
-            'Test Path', // title
+            { level: 1 , chapter: 1
+             , title: 'Test Path', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest,
             3, // exerciseType
             [{ id: 1 }] // arrData
           )
@@ -92,7 +93,8 @@ describe('LearningPathCreatePage', () => {
     (LearningPathAuthoringForm as any).mockImplementationOnce(({ handleSubmit }: any) => (
       <button
         data-testid="submit-btn-empty"
-        onClick={() => handleSubmit(vi.fn(), vi.fn(), 1, 1, 'Empty', 1, [])}
+        onClick={() => handleSubmit(vi.fn(), vi.fn(), { level: 1 , chapter: 1
+             , title: 'Empty', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest, 1, [])}
       >
         Submit Empty
       </button>
@@ -123,7 +125,8 @@ describe('LearningPathCreatePage', () => {
     (LearningPathAuthoringForm as any).mockImplementationOnce(({ handleSubmit }: any) => (
       <button
         data-testid="submit-btn-fail"
-        onClick={() => handleSubmit(vi.fn(), mockCreateExercises, 1, 1, 'Fail Test', 1, [{ id: 1 }])}
+        onClick={() => handleSubmit(vi.fn(), mockCreateExercises, { level: 1 , chapter: 1
+             , title: 'Fail Test', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest, 1, [{ id: 1 }])}
       >
         Submit Fail
       </button>

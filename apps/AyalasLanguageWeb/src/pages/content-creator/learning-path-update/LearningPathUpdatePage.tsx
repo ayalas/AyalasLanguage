@@ -8,7 +8,7 @@ import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { FormHeader } from '../../../components/FormHeader';
-import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo, LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { EditLearningPathRequest, ExerciseData, ExerciseInfo, ExtendedExerciseInfo, LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { InboxMessagesComponent } from '../../../components/inbox/InboxMessagesComponent';
 
 export function LearningPathUpdatePage() {
@@ -18,10 +18,10 @@ export function LearningPathUpdatePage() {
   const navigate = useNavigate();
   const { learningPathId } = useParams();
 
-  const handleSubmit = async (setError: (s: string) => void, createExercises: any, level: number, chapter: number, title: string, exerciseType: number, arrData: any[]) => {
+  const handleSubmit = async (setError: (s: string) => void, createExercises: any, req: EditLearningPathRequest,
+    exerciseType: number, arrData: any[]) => {
     try {
       if (initialRecord?.access == AUTHOR_ACCESS.CAN_EDIT) {
-        const req = { level, chapter, name: title } as any;
         await axios.put(`/api/creator/learning-path/${learningPathId}`, req);
       }
 

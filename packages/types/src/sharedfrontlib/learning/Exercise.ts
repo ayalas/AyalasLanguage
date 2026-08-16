@@ -1,3 +1,4 @@
+import type { OwnershipType } from "../../auth";
 import type { ExerciseType } from "../../exercise";
 
 export interface ExerciseData {
@@ -13,7 +14,8 @@ export interface ExerciseInfo {
   exerciseTypeId: ExerciseType;
   data: string;
   access: number;
-  learningPathId?: number
+  learningPathId?: number;
+  ownershipType: OwnershipType;
 }
 
 export type ExtendedExerciseInfo = ExerciseInfo & {

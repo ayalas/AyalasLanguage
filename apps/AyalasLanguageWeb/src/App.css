@@ -741,6 +741,10 @@ input:required:invalid {
   color: rgb(255, 200, 1);
 }
 
+.lucide-key-round {
+  color: rgb(220, 189, 15);
+}
+
 .lucide-eye {
   color: var(--accent);
 }

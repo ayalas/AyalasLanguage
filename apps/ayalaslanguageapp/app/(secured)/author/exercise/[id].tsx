@@ -12,6 +12,8 @@ import SecuredHeader from "@/components/SecuredHeader";
 import { FormHeader } from "@/components/FormHeader";
 import api from "@/lib/api";
 import useTextStyles from '@/lib/useTextStyles';
+import { OWNERSHIP_TYPE, OwnershipType } from '@ayalaslanguage/types/auth';
+import Checkbox from 'expo-checkbox';
 
 export default function ExerciseScreen() {
   const { id: exerciseId } = useLocalSearchParams<{ id?: string }>();
@@ -23,6 +25,7 @@ export default function ExerciseScreen() {
   const [secondLine, setSecondLine] = useState('');
   const [translation, setTranslation] = useState('');
   const [extraOptions, setExtraOptions] = useState('');
+  const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
   const { styles } = useTextStyles();
   const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
 
@@ -73,8 +76,6 @@ export default function ExerciseScreen() {
     }
   }
 
-
-
   useEffect(() => {
     async function loadAsync() {
       try {
@@ -84,10 +85,11 @@ export default function ExerciseScreen() {
           console.log(exerciseTemp);
           if (exerciseTemp.data != null && exerciseTemp.data !== "") {
             exerciseTemp.exerciseObject = JSON.parse(exerciseTemp.data);
-            
+
           }
           setInitialRecord(exerciseTemp);
           setTypeName(EXERCISE_TYPE_LOGIC[exerciseTemp.exerciseTypeId].Name);
+          setOwnershipType(exerciseTemp.ownershipType);
           if (exerciseTemp.exerciseObject != null) {
             if (exerciseTemp.exerciseObject.First != null) {
               setFirstLine(exerciseTemp.exerciseObject.First);
@@ -116,90 +118,99 @@ export default function ExerciseScreen() {
       <View className="form-container">
         <FormHeader title="Exercise editor" />
         <ScrollView showsVerticalScrollIndicator={false} scrollEnabled={true}>
-        <Pressable onPress={Keyboard.dismiss} accessible={false}>
-          <View>
-            {error !== '' && (
+          <Pressable onPress={Keyboard.dismiss} accessible={false}>
+            <View>
+              {error !== '' && (
+                <View className="form-row">
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
+              )}
+              <Text style={styles.label}>Exercise Type</Text>
               <View className="form-row">
-                <Text style={styles.errorText}>{error}</Text>
+                <View className="form-input-row">
+                  <Text style={styles.text}>{typeName}</Text>
+                </View>
               </View>
+            </View>
+          </Pressable>
+          <KeyboardAvoidingView>
+            <Text style={styles.label}>First line</Text>
+            <View className="form-row">
+              <View className="form-input-long">
+                <TextInput multiline={true} numberOfLines={2} testID="first-line" className="text-area-minimal" value={firstLine} onChangeText={setFirstLine} />
+              </View>
+            </View>
+            <Text style={styles.label}>Second line</Text>
+            <View className="form-row">
+              <View className="form-input-long">
+                <TextInput multiline={true} numberOfLines={2} testID="second-line" className="text-area-minimal" value={secondLine} onChangeText={setSecondLine} />
+              </View>
+            </View>
+            {initialRecord != null && EXERCISE_TYPE_LOGIC[initialRecord.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
+              <>
+                <Text style={styles.label}>Translation</Text>
+                <View className="form-row">
+                  <View className="form-input-long">
+                    <TextInput multiline={true} numberOfLines={2} testID="translation" className="text-area-minimal" value={translation} onChangeText={setTranslation} />
+                  </View>
+                </View>
+              </>
             )}
-            <Text style={styles.label}>Exercise Type</Text>
+            {initialRecord != null && EXERCISE_TYPE_LOGIC[initialRecord.exerciseTypeId].HasExtraOptions && (
+              <>
+                <Text style={styles.label}>Extra Options</Text>
+                <View className="form-row">
+                  <View className="form-input-long">
+                    <TextInput multiline={true} numberOfLines={2} testID="extra-options" className="text-area-minimal" value={extraOptions} onChangeText={setExtraOptions} />
+                  </View>
+                </View>
+              </>
+            )}
+
             <View className="form-row">
               <View className="form-input-row">
-                <Text style={styles.text}>{typeName}</Text>
+                <Checkbox data-testid="private" value={ownershipType == OWNERSHIP_TYPE.USER} onValueChange={(isChecked: boolean) => { setOwnershipType(isChecked ? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
+                <Text style={styles.text}>Private</Text>
               </View>
+              <Text style={styles.dimmedText}>Make this exercise private, so only you can see it</Text>
+            </View>
+
+          </KeyboardAvoidingView>
+          {initialRecord != null && initialRecord.exerciseObject != null
+            && initialRecord.exerciseObject.Alternatives != null
+            && initialRecord.exerciseObject.Alternatives.length > 0 && (
+              <>
+                <Text style={styles.label}>Alternatives</Text>
+                <FlatList
+                  keyExtractor={(item) => item}
+                  scrollEnabled={false}
+                  showsVerticalScrollIndicator={false}
+                  data={initialRecord.exerciseObject.Alternatives}
+                  renderItem={({ item }) => {
+                    const setRef = (el: AlternativeHandle) => {
+                      if (el) {
+                        alternativeRefs.current.set(item, el);
+                      } else {
+                        alternativeRefs.current.delete(item);
+                      }
+                    };
+                    return (
+                      <AlternativeLine ref={setRef} alternative={item} />
+                    );
+                  }}
+                />
+              </>)}
+          <View className="buttons-container">
+            <View className="form-button-cell">
+              <TouchableOpacity testID="back" className="form-button" onPress={onBackClick}><ArrowBigLeft className='color-brand-primary' /><Text style={styles.text}>&nbsp;Back to Lesson</Text></TouchableOpacity>
+            </View>
+            <View className="form-button-cell">
+              <TouchableOpacity testID="back-editor" className="form-button" onPress={onBackEditorClick}><Text style={styles.text}>Lesson Editor</Text></TouchableOpacity>
+            </View>
+            <View className="form-button-cell">
+              <TouchableOpacity testID="save" className="form-button" onPress={onFormSubmit}><Save className='color-brand-primary' /><Text style={styles.text}>&nbsp;Save</Text></TouchableOpacity>
             </View>
           </View>
-        </Pressable>
-        <KeyboardAvoidingView>
-          <Text style={styles.label}>First line</Text>
-          <View className="form-row">
-            <View className="form-input-long">
-              <TextInput multiline={true} numberOfLines={2} testID="first-line" className="text-area-minimal" value={firstLine} onChangeText={setFirstLine} />
-            </View>
-          </View>
-          <Text style={styles.label}>Second line</Text>
-          <View className="form-row">
-            <View className="form-input-long">
-              <TextInput multiline={true} numberOfLines={2} testID="second-line" className="text-area-minimal" value={secondLine} onChangeText={setSecondLine} />
-            </View>
-          </View>
-          {initialRecord != null && EXERCISE_TYPE_LOGIC[initialRecord.exerciseTypeId].ShowsTranslationOnRevealedAnswer && (
-            <>
-              <Text style={styles.label}>Translation</Text>
-              <View className="form-row">
-                <View className="form-input-long">
-                  <TextInput multiline={true} numberOfLines={2} testID="translation" className="text-area-minimal" value={translation} onChangeText={setTranslation} />
-                </View>
-              </View>
-            </>
-          )}
-          {initialRecord != null && EXERCISE_TYPE_LOGIC[initialRecord.exerciseTypeId].HasExtraOptions && (
-            <>
-              <Text style={styles.label}>Extra Options</Text>
-              <View className="form-row">
-                <View className="form-input-long">
-                  <TextInput multiline={true} numberOfLines={2} testID="extra-options" className="text-area-minimal" value={extraOptions} onChangeText={setExtraOptions} />
-                </View>
-              </View>
-            </>
-          )}
-        </KeyboardAvoidingView>
-        {initialRecord != null && initialRecord.exerciseObject != null
-          && initialRecord.exerciseObject.Alternatives != null
-          && initialRecord.exerciseObject.Alternatives.length > 0 && (
-            <>
-              <Text style={styles.label}>Alternatives</Text>
-              <FlatList
-                keyExtractor={(item) => item}
-                scrollEnabled={false}
-                showsVerticalScrollIndicator={false}
-                data={initialRecord.exerciseObject.Alternatives}
-                renderItem={({item}) => {
-                  const setRef = (el: AlternativeHandle) => {
-                    if (el) {
-                      alternativeRefs.current.set(item, el);
-                    } else {
-                      alternativeRefs.current.delete(item);
-                    }
-                  };
-                  return (
-                    <AlternativeLine ref={setRef} alternative={item} />
-                  );
-                }}
-              />
-            </>)}
-        <View className="buttons-container">
-          <View className="form-button-cell">
-            <TouchableOpacity testID="back" className="form-button" onPress={onBackClick}><ArrowBigLeft className='color-brand-primary' /><Text style={styles.text}>&nbsp;Back to Lesson</Text></TouchableOpacity>
-          </View>
-          <View className="form-button-cell">
-            <TouchableOpacity testID="back-editor" className="form-button" onPress={onBackEditorClick}><Text style={styles.text}>Lesson Editor</Text></TouchableOpacity>
-          </View>
-          <View className="form-button-cell">
-            <TouchableOpacity testID="save" className="form-button" onPress={onFormSubmit}><Save className='color-brand-primary' /><Text style={styles.text}>&nbsp;Save</Text></TouchableOpacity>
-          </View>
-        </View>
         </ScrollView>
       </View>
     </View>

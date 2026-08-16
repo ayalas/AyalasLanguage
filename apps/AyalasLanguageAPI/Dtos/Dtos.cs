@@ -14,50 +14,43 @@ namespace AyalasLanguageAPI.DTOs
     public record ForgotPasswordDto(string UserName);
     //profile DTOs
     public record ResetPasswordDto(string UserName, string Password, string Token);
-    public record UserProfileDto(string DisplayName, List<UserLanguageDto> Languages, List<UserExerciseTypeDto> ExerciseTypes, SwitchLanguageDto Current);
     public record EditUserProfileDto(bool? DisableAutoAI, byte? NumOfExercisesToGenerate, int? TargetLanguageId, int? KnownLanguageId);
     public record SwitchLanguageDto(int? TargetLanguageId, int? KnownLanguageId);
     public record CurrentLanguageResponseDto(int? TargetLanguageId, string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool KnownLanguageIsRightToLeft, bool TargetLanguageIsRightToLeft, string? KeyboardLanguageName, string? TargetLanguageEnglishName, string? TargetLanguageCode, int Score);
     public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool DisableAutoAI, byte? NumOfExercisesToGenerate, int UnreadMessages, CurrentLanguageResponseDto languageSettings);
     public record UserLanguageDto(int LanguageId, bool IsLearning);
 
-
-    public record UserExerciseTypeDto(int ExerciseTypeId);
-
     // Static DTOs
     public record LanguageDto(int LanguageId, string? Code, string EnglishName, string? NativeName);
 
     // Learning Path & Progress
-    public record LearningPathDto(int LearningPathId, uint Level, decimal Chapter, string? Name, ContentStatusEnum ContentStatus, int? Status = null, int ExerciseCount = 0, bool PractiseMistakesInThisPath = false, DateTime? LastModified = null, int? ExerciseTypeId = null);
-    public record LearningPathSingleDto(int LearningPathId, uint Level, decimal Chapter, string? Name, int? Status = null, int? ExerciseId = null, int ExerciseCount = 0, byte Access = 0, bool practiseMistakesInThisPath = false);
+    public record LearningPathDto(int LearningPathId, uint Level, decimal Chapter, string? Name, ContentStatusEnum ContentStatus, OwnershipTypeEnum OwnershipType, int? Status = null, int ExerciseCount = 0, bool PractiseMistakesInThisPath = false, DateTime? LastModified = null, int? ExerciseTypeId = null);
+    public record LearningPathSingleDto(int LearningPathId, uint Level, decimal Chapter, string? Name, OwnershipTypeEnum OwnershipType, int? Status = null, int? ExerciseId = null, int ExerciseCount = 0, byte Access = 0, bool practiseMistakesInThisPath = false);
 
 
     public record UpdateProgressDto(int LearningPathId, int? exerciseId, bool? practiseMistakesInThisPath);
 
     public record AddMistakeDto(int ExerciseId);
     // Exercise DTOs
-    public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access, int? LearningPathId);
+    public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access, int? LearningPathId, OwnershipTypeEnum OwnershipType);
 
     public record NextChapterDto(int Level, decimal ChapterHint);
     public record NextChapterResponseDto(decimal Chapter);
     // Content Creator DTOs
-    public record CreateLearningPathDto(
-        uint Level,
-        decimal Chapter,
-        string? Name
-    );
     public record CreateLearningPathResponseDto(int LearningPathId);
-    public record EditLearningPathDto(uint Level, decimal Chapter, string? Name);
+    public record EditLearningPathDto(uint Level, decimal Chapter, string? Name, OwnershipTypeEnum OwnershipType);
 
     public record CreateExerciseDto(
         int? LearningPathId,
         int ExerciseTypeId,
-        string Data
+        string Data,
+        OwnershipTypeEnum OwnershipType
     );
     public record CreateExerciseResponseDto(int ExerciseId);
 
     public record EditExerciseDto(
-        string Data
+        string Data,
+        OwnershipTypeEnum OwnershipType
     );
 
     public record AddScoreDto(int ScoreToAdd);

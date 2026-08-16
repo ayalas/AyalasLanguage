@@ -19,8 +19,8 @@ namespace AyalasLanguageAPI.AdminDTOs
     public record AdminLogRowDto(int LogId, int? UserId, string? Email, LogTypeEnum LogType, string? Description, DateTime CreatedOn);
     public record AdminJobRowDto(int JobId, int? MainRecordId, int? SecondaryRecordId, string? ExtraData, JobTypeEnum JobType, JobStatusEnum JobStatus, DateTime CreatedOn, DateTime ModifiedOn, string? FirstError, int Completed, int Errors, int? LeftToProcess);
 
-    public record AdminExerciseRowDto(int? UserId, string? Email, string? KnownLanguage, string? TargetLanguage, string? Name, string Data, int ExerciseTypeId, string ExerciseType, DateTime CreatedOn, int? LearningPathId, int ExerciseId, byte Status);
-    public record AdminLearningPathRowDto(int? UserId, string? Email, string? KnownLanguage, string? TargetLanguage, string? Name, uint Level, decimal Chapter, DateTime CreatedOn, int LearningPathId, int CountExercises, byte Status);
+    public record AdminExerciseRowDto(int? UserId, string? Email, string? KnownLanguage, string? TargetLanguage, string? Name, string Data, int ExerciseTypeId, string ExerciseType, DateTime CreatedOn, int? LearningPathId, int ExerciseId, byte Status, byte OwnershipType);
+    public record AdminLearningPathRowDto(int? UserId, string? Email, string? KnownLanguage, string? TargetLanguage, string? Name, uint Level, decimal Chapter, DateTime CreatedOn, int LearningPathId, int CountExercises, byte Status, byte OwnershipType);
     public record AdminSetUserRoleRequest(int UserId, byte Role);
     public record AdminSetLearningPathStatusRequest(int LearningPathId, ContentStatusEnum Status);
     public record AdminMultiSetLearningPathStatusRequest(int[] LearningPathIds, ContentStatusEnum Status);

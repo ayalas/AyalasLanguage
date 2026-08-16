@@ -33,9 +33,17 @@ public static class LearningEndpoints
     private static async Task<IResult> GetSingleLearningPath(int pathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
+        bool isAdmin = claim.IsInRole("Admin");
 
-        return Results.Ok(await db.LearningPaths
-            .Where(lp => lp.LearningPathId == pathId && lp.Status != (byte)ContentStatusEnum.Removed)
+        var query = db.LearningPaths
+            .Where(lp => lp.LearningPathId == pathId && lp.Status != (byte)ContentStatusEnum.Removed);
+
+        if (!isAdmin)
+        {
+            query = query.Where(lp => lp.OwnershipType == (byte)OwnershipTypeEnum.Public || lp.UserId == userId);
+        }
+
+        return Results.Ok(await query
             // 1. GroupJoin correlates the LearningPath with the filtered UserProgress
             .GroupJoin(
                 db.UserProgresses.Where(up => up.UserId == userId),
@@ -52,6 +60,7 @@ public static class LearningEndpoints
                     x.lp.Level,
                     x.lp.Chapter,
                     x.lp.Name,
+                    (OwnershipTypeEnum)x.lp.OwnershipType,
                     // EF9 cleanly translates null-coalescing and conditionals here into SQL CASE WHEN
                     up == null
                         ? (byte)UserProgressEnum.NotStarted
@@ -71,6 +80,7 @@ public static class LearningEndpoints
     private static async Task<IResult> GetLearningPath(ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
+        bool isAdmin = claim.IsInRole("Admin");
 
         var user = await db.Users.FindAsync(userId); // Ensure user exists
         if (user == null) return Results.NotFound();
@@ -82,10 +92,16 @@ public static class LearningEndpoints
 
         int languageId = user.TargetLanguageId.Value;
 
-        var learningPathsWithStatus = (await db.LearningPaths
+        var query = db.LearningPaths
         .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value
-        && lp.Status != (byte)ContentStatusEnum.Removed)
-        .GroupJoin(
+        && lp.Status != (byte)ContentStatusEnum.Removed);
+
+        if (!isAdmin)
+        {
+            query = query.Where(lp => lp.OwnershipType == (byte)OwnershipTypeEnum.Public || lp.UserId == userId);
+        }
+
+        var learningPathsWithStatus = (await query.GroupJoin(
             db.UserProgresses.Include(up => up.Exercise).Where(up => up.UserId == userId),
             lp => lp.LearningPathId,
             up => up.LearningPathId,
@@ -100,6 +116,7 @@ public static class LearningEndpoints
                 x.lp.Chapter,
                 x.lp.Name,
                 (ContentStatusEnum)x.lp.Status,
+                (OwnershipTypeEnum)x.lp.OwnershipType,
                 up == null
                     ? (byte)UserProgressEnum.NotStarted
                     : up.ExerciseId == null
@@ -150,12 +167,23 @@ public static class LearningEndpoints
             {
                 return Results.BadRequest("Exercise not found");
             }
+
             exerciseId = dto.exerciseId;
+        }
+
+        //validate the learning path permission once whether there is a progress record or not
+        if (dto.practiseMistakesInThisPath != null && dto.practiseMistakesInThisPath.Value == true
+            && await db.LearningPaths.AnyAsync(
+                lp => lp.UserId != userId && lp.OwnershipType == (byte)OwnershipTypeEnum.User
+            ))
+        {
+            return Results.Conflict("Cannot set Practise My Mistakes on a private lesson not owned by you");
         }
 
         bool modified = false;
         if (progress == null)
         {
+
             db.UserProgresses.Add(new UserProgress
             {
                 UserId = userId,
@@ -232,26 +260,24 @@ public static class LearningEndpoints
     {
         var userId = claim.GetUserId();
         bool isAdmin = claim.IsInRole("Admin");
-        //get user exercise types
-        var userExerciseTypes = await db.UserExerciseTypes.Where(ue => ue.UserId == userId).Select(ue => ue.ExerciseTypeId).ToListAsync();
 
-        //get all exercise types if user has not specified any
-        if (!userExerciseTypes.Any())
+        //Allow admin to get all exercises (but not create new ones on private lessons)
+        var query = db.Exercises
+            .Where(e => e.LearningPathId == pathId
+            && e.Status != (byte)ContentStatusEnum.Removed).AsQueryable();
+
+        if (!isAdmin)
         {
-            userExerciseTypes = await db.ExerciseTypes.Select(et => et.ExerciseTypeId).ToListAsync();
+            query = query.Where(e => e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
+            //add if we want to handle approved exercises
+            //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
         }
 
         //Filter exercises by path and user exercise types
-        var exercises = await db.Exercises
-            .Where(e => e.LearningPathId == pathId && userExerciseTypes.Contains(e.ExerciseTypeId)
-            && e.Status != (byte)ContentStatusEnum.Removed
-            //add if we want to handle approved exercises
-            //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
-            )
-            .OrderBy(e => e.ExerciseId) // Ensure consistent ordering
+        var exercises = await query.OrderBy(e => e.ExerciseId) // Ensure consistent ordering
             .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data,
                 isAdmin || e.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
-            , pathId))
+            , pathId, (OwnershipTypeEnum)e.OwnershipType))
             .ToListAsync();
 
         return Results.Ok(exercises);
@@ -260,7 +286,10 @@ public static class LearningEndpoints
     internal static async Task<UserProgress?> GetMistakesLearningPathForUser(int userId, int targetLanguageId, int knownLanguageId, AyalasLanguageDbContext db)
     {
         return await db.UserProgresses.Where(p => p.UserId == userId && p.practiseMistakesInThisPath == true)
-            .Join(db.LearningPaths.Where((lp) => lp.TargetLanguageId == targetLanguageId && lp.KnownLanguageId == knownLanguageId),
+            .Join(db.LearningPaths.Where((lp) => lp.TargetLanguageId == targetLanguageId && lp.KnownLanguageId == knownLanguageId
+                //do not consider a private lesson to be someone else's "Mistakes" lesson (even if admin and was able to set practiseMistakesInThisPath to true by some manipulation)
+                && (lp.OwnershipType == (byte)OwnershipTypeEnum.Public || lp.UserId == userId)
+            ),
             (up) => up.LearningPathId,
             (lp) => lp.LearningPathId,
             (up, lp) => up)

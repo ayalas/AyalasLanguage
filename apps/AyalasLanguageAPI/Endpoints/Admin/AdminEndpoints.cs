@@ -414,7 +414,8 @@ public static class AdminEndpoints
                 e.CreatedOn,
                 e.LearningPathId,
                 e.ExerciseId,
-                e.Status
+                e.Status,
+                e.OwnershipType
             }).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
 
         Language[]? languages = await db.GetAppDataFromCache(Constants.LANGUAGE_SET_CACHE_KEY, cache,
@@ -442,7 +443,8 @@ public static class AdminEndpoints
                 e.CreatedOn,
                 e.LearningPathId,
                 e.ExerciseId,
-                e.Status
+                e.Status,
+                e.OwnershipType
             );
         }).ToArray();
 
@@ -513,7 +515,8 @@ public static class AdminEndpoints
             lp.Chapter,
             lp.CreatedOn,
             lp.LearningPathId,
-            lp.Status
+            lp.Status,
+            lp.OwnershipType
         }).Skip(page * Constants.ADMIN_PAGE_SIZE).Take(Constants.ADMIN_PAGE_SIZE + 1).ToArrayAsync();
 
         return arr.Select(lp => new AdminLearningPathRowDto(
@@ -527,7 +530,8 @@ public static class AdminEndpoints
             lp.CreatedOn,
             lp.LearningPathId,
             db.Exercises.Count(e => e.LearningPathId == lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed),
-            lp.Status
+            lp.Status,
+            lp.OwnershipType
         )).ToArray();
     }
 

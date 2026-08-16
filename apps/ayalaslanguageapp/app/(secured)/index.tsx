@@ -2,7 +2,7 @@ import { useEffect, useState, Fragment, useRef } from "react";
 import { ScrollView, Text, View, ActivityIndicator } from "react-native";
 import { Link } from 'expo-router';
 
-import { LayersPlus, Check, CircleDotDashed, History } from 'lucide-react-native';
+import { LayersPlus, Check, CircleDotDashed, History, KeyRound } from 'lucide-react-native';
 import dayjs from 'dayjs';
 
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
@@ -16,6 +16,7 @@ import api from '@/lib/api'; //secured axios instance
 import { useAuth } from "@/lib/AuthContext";
 import SecuredHeader, { LANGUAGE_INDICATOR_ENUM } from "@/components/SecuredHeader";
 import useTextStyles from '@/lib/useTextStyles';
+import { OWNERSHIP_TYPE } from "@ayalaslanguage/types/auth";
 
 type ExerciseTypeGroupObject = {
   exerciseTypeId: 0 | ExerciseType,
@@ -158,9 +159,10 @@ export default function HomeScreen() {
                         <View className="learning-exercise-type-inner-container">
                           <ExerciseTypeGroupTitle exerciseTypeId={exerciseTypeObject.exerciseTypeId} />
                           <View className="learning-exercise-type-inner-body">
-                            {exerciseTypeObject.paths.map((path: any) => {
+                            {exerciseTypeObject.paths.map((path: ILearningPath) => {
                               const isDone = path.status === LEANRING_STATUS.DONE;
                               const isInProgress = path.status === LEANRING_STATUS.IN_PROGRESS;
+                              const isPrivate = path.ownershipType == OWNERSHIP_TYPE.USER;
                               return (
                                 <View className="learning-lesson" key={path.learningPathId}
                                   ref={path.learningPathId === latestLesson ? latestLessonRef : null}
@@ -183,6 +185,9 @@ export default function HomeScreen() {
                                   )}
                                   {isInProgress && (
                                     <CircleDotDashed className="color-brand-dashed" />
+                                  )}
+                                  {isPrivate && (
+                                    <KeyRound className="color-brand-key" />
                                   )}
                                   {path.practiseMistakesInThisPath && (
                                     <History className="color-brand-primary" />

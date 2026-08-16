@@ -91,7 +91,7 @@ public static class ContentCreatorEndpoints
         return Results.Ok(new NextChapterResponseDto(hint));
     }
 
-    private static async Task<IResult> CreateLearningPath(CreateLearningPathDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
+    private static async Task<IResult> CreateLearningPath(EditLearningPathDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
 
@@ -119,7 +119,8 @@ public static class ContentCreatorEndpoints
             Chapter = dto.Chapter,
             Name = dto.Name,
             Status = (int)ContentStatusEnum.Draft, // Default to draft
-            UserId = userId
+            UserId = userId,
+            OwnershipType = (byte)dto.OwnershipType
         };
 
         db.LearningPaths.Add(path);
@@ -134,6 +135,12 @@ public static class ContentCreatorEndpoints
 
         var learningPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.LearningPathId == id);
         if (learningPath == null) return Results.BadRequest("Learning path not found.");
+
+        //check permissions: only owner can create exercies on private lessons
+        if (learningPath.OwnershipType == (byte)OwnershipTypeEnum.User && learningPath.UserId != userId)
+        {
+            return Results.Forbid();
+        }
 
         string? fileContent = null;
         using (var stream = file.OpenReadStream())
@@ -163,7 +170,8 @@ public static class ContentCreatorEndpoints
                 LearningPathId = id,
                 ExerciseTypeId = dto.ExerciseTypeId,
                 Data = dto.Data,
-                UserId = userId
+                UserId = userId,
+                OwnershipType = (byte)dto.OwnershipType
             };
 
             db.Exercises.Add(exercise);
@@ -178,10 +186,9 @@ public static class ContentCreatorEndpoints
         var path = await db.LearningPaths.FindAsync(id);
         if (path == null) return Results.NotFound();
 
-        if ((path.UserId != claim.GetUserId() || path.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
+        var userId = claim.GetUserId();
+        if ((path.UserId != userId || path.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
-
-
 
         if (dto.Chapter <= 0)
         {
@@ -191,6 +198,18 @@ public static class ContentCreatorEndpoints
         if (await ContentCreatorLogic.IsOtherLearningPathFoundWith(path.TargetLanguageId, path.KnownLanguageId, dto.Level, dto.Chapter, path.LearningPathId, db))
         {
             return Results.BadRequest("Another lesson already exists with with these level and chapter values.");
+        }
+
+        //check on going private: that there are no exercises by other users already
+        if (path.OwnershipType == (byte)OwnershipTypeEnum.Public && dto.OwnershipType == OwnershipTypeEnum.User)
+        {
+            if (await db.Exercises.AnyAsync(
+                e => e.LearningPathId == id 
+                && e.UserId != userId 
+                && e.Status != (byte)ContentStatusEnum.Removed))
+            {
+                return Results.Conflict("Lesson cannot be made private because there are Exercises in it from multiple contributers");
+            }
         }
 
         path.Level = dto.Level;
@@ -210,7 +229,7 @@ public static class ContentCreatorEndpoints
         if ((path.UserId != claim.GetUserId() || path.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        if (db.Exercises.Any(up => up.LearningPathId == id))
+        if (db.Exercises.Any(e => e.LearningPathId == id && e.Status != (byte)ContentStatusEnum.Removed))
             return Results.BadRequest("Learning path has exercises.");
 
         db.LearningPaths.Remove(path);
@@ -224,6 +243,18 @@ public static class ContentCreatorEndpoints
         var userId = claim.GetUserId();
         var learningPath = await db.LearningPaths.FirstOrDefaultAsync(lp => lp.LearningPathId == dto.LearningPathId);
         if (learningPath == null) return Results.BadRequest("Learning path not found.");
+
+        //check that not private or is owner - only owner can create exercies on private lessons
+        if (learningPath.OwnershipType == (byte)OwnershipTypeEnum.User 
+            && learningPath.UserId != userId)
+        {
+             return Results.Forbid();
+        }
+
+        if (learningPath.Status == (byte)ContentStatusEnum.Removed)
+        {
+            return Results.Conflict("Lesson is removed.");
+        }
 
         if (!await ContentCreatorLogic.ValidateExerciseData(dto.ExerciseTypeId, dto.Data, logger, userId, db))
         {
@@ -278,7 +309,7 @@ public static class ContentCreatorEndpoints
         if ((exercise.UserId != claim.GetUserId() || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
 
-        return Results.Ok(new ExerciseDto(exercise.ExerciseId, exercise.ExerciseTypeId, exercise.Data, (byte)UserAccessEnum.CanEdit, exercise.LearningPathId));
+        return Results.Ok(new ExerciseDto(exercise.ExerciseId, exercise.ExerciseTypeId, exercise.Data, (byte)UserAccessEnum.CanEdit, exercise.LearningPathId, (OwnershipTypeEnum)exercise.OwnershipType));
     }
 
     private static async Task<IResult> EditExercise(int id, EditExerciseDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
@@ -374,6 +405,7 @@ public static class ContentCreatorEndpoints
         }
 
         exercise.Data = dto.Data;
+        exercise.OwnershipType = (byte)dto.OwnershipType;
         exercise.Status = (byte)ContentStatusEnum.Draft;
 
         await db.SaveChangesAsync();

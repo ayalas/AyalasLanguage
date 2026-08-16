@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import { useState } from 'react';
-import { SquarePen, Trash2 } from 'lucide-react-native';
+import { KeyRound, SquarePen, Trash2 } from 'lucide-react-native';
 import api from '@/lib/api';
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { useRouter } from 'expo-router';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -13,6 +13,7 @@ export default function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedE
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
   const { styles } = useTextStyles();
+  const isPrivate = exerciseInfo.ownershipType == OWNERSHIP_TYPE.USER;
 
   async function onDeleteClick() {
     try {
@@ -39,6 +40,9 @@ export default function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedE
               <TouchableOpacity testID="edit-item" className="button-item" onPress={onEditClick}>
                 <SquarePen width="18" height="18" className="color-brand-primary" />
               </TouchableOpacity>
+              {isPrivate && (
+                <KeyRound width="18" height="18" className="color-brand-key" />
+              )}
             </>
           )}
           <Text ellipsizeMode="tail" numberOfLines={1} style={[styles.text, { flex: 1, marginLeft: 10 }]}>{exerciseInfo.exerciseObject?.First}</Text>

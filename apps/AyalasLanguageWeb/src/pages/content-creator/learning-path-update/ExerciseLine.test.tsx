@@ -7,7 +7,7 @@ import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/
 import { errorHandler } from '@ayalaslanguage/types/error';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 
 // Mock axios
 vi.mock('axios');
@@ -42,6 +42,7 @@ describe('ExerciseLine Component', () => {
     exerciseObject: {
       First: 'Sample Exercise Content',
     },
+    ownershipType: OWNERSHIP_TYPE.PUBLIC
   };
 
   beforeEach(() => {

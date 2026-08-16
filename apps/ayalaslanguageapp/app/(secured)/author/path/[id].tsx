@@ -7,7 +7,7 @@ import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { FormHeader } from '@/components/FormHeader';
-import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo, LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { EditLearningPathRequest, ExerciseData, ExerciseInfo, ExtendedExerciseInfo, LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import LessonAuthoringForm from '@/components/creator/LessonAuthoringForm';
 import useTextStyles from '@/lib/useTextStyles';
 import InboxMessagesComponent from '@/components/inbox/InboxMessagesComponent';
@@ -20,10 +20,10 @@ export default function LessonUpdateScreen() {
   const router = useRouter();
   const { styles } = useTextStyles();
 
-  const handleSubmit = async (setError: (s: string) => void, createExercises: any, level: number, chapter: number, title: string, exerciseType: number, arrData: any[]) => {
+  const handleSubmit = async (setError: (s: string) => void, createExercises: any, 
+    req: EditLearningPathRequest, exerciseType: number, arrData: any[]) => {
     try {
       if (initialRecord?.access == AUTHOR_ACCESS.CAN_EDIT) {
-        const req = { level, chapter, name: title } as any;
         await api.put(`/api/creator/learning-path/${learningPathId}`, req);
       }
 

@@ -14,6 +14,7 @@ module.exports = {
           layers: "var(--layers)",
           play: "rgb(55, 194, 20)",
           dashed: "rgb(255, 200, 1)",
+          key: "rgb(220, 189, 15)",
           bgSurface: 'var(--surface-strong)'
         },
       },

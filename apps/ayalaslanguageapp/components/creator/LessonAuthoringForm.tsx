@@ -11,12 +11,12 @@ import {
   DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES,
   BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData
 } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
+import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess, OwnershipType, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPE_LOGIC, replaceExerciseChars, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { getAIInstructions, type IChatMessage, AIChatRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
-import type { NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { EditLearningPathRequest, NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
 import { useMistakesReadd } from '@/lib/useMistakesReadd';
 import { useAuth } from '@/lib/AuthContext';
@@ -29,12 +29,14 @@ import FormDropDown from '../FormDropDown';
 import { ItemType, ValueType } from 'react-native-dropdown-picker';
 import { getFromStorage, saveToStorage } from '@/lib/platformStorage';
 import { FormHeader } from '../FormHeader';
+import { Checkbox } from 'expo-checkbox';
 
 export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloadExercise, headerTitle }:
   { handleSubmit: (...args: any[]) => Promise<void>; initialRecord?: LearningPathInfo; reloadExercise?: () => void, headerTitle: string }) {
   const [error, setError] = useState('');
   const [level, setLevel] = useState(1);
   const [chapter, setChapter] = useState(1);
+  const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
   const [matches, setMatches] = useState<number>(MAX_MATCHES);
   const [extraOptions, setExtraOptions] = useState<number>(BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS);
   const [title, setTitle] = useState('');
@@ -265,7 +267,12 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     //error is displayed when arrData is null
     if (arrData != null) {
       saveToLocalStorage();
-      await handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
+      await handleSubmit(setError, createExercises, {
+          level, 
+          chapter, 
+          name: title,
+          ownershipType
+      } as EditLearningPathRequest, exerciseType, arrData);
     }
     setIsLoading(false);
   };
@@ -274,7 +281,14 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     setLoadingMessage('Saving lesson...');
     setIsLoading(true);
 
-    await handleSubmit(setError, null, level, chapter, title, exerciseType, null);
+    await handleSubmit(setError, null, 
+      {
+          level, 
+          chapter, 
+          name: title,
+          ownershipType
+      } as EditLearningPathRequest,
+      exerciseType, null);
 
     setTimeout(() => {
       setIsLoading(false);
@@ -289,7 +303,8 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
         const responseEx = await api.post('/api/creator/exercise', {
           learningPathId: pathId,
           exerciseTypeId: exerciseType,
-          data: JSON.stringify(exer)
+          data: JSON.stringify(exer),
+          ownershipType: ownershipType
         });
         if (responseEx.data && responseEx.data.exerciseId) {
           created.push(responseEx.data.exerciseId);
@@ -370,6 +385,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
           setChapter(initialRecord.chapter);
           setTitle(initialRecord.name ?? "");
           setAccess(initialRecord.access);
+          setOwnershipType(initialRecord.ownershipType);
         }
         setIsLoading(false);
       } catch (ex: unknown) {
@@ -461,8 +477,17 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                     <View className="form-input-row">
                       <TextInput className="form-input w-full" testID="title" editable={access === AUTHOR_ACCESS.CAN_EDIT} value={title} onChangeText={setTitle} />
                     </View>
-                    <Text style={styles.text}>AI will generate exercises on this subject.</Text>
+                    <Text style={styles.dimmedText}>AI will generate exercises on this subject.</Text>
                   </View>
+
+                  <View className="form-row">
+                    <View className="form-input-row">
+                      <Checkbox data-testid="private" value={ownershipType == OWNERSHIP_TYPE.USER} onValueChange={(isChecked: boolean) => { setOwnershipType(isChecked? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
+                      <Text style={styles.text}>Private</Text>
+                     </View>
+                    <Text style={styles.dimmedText}>Make this lesson private, so only you can see it</Text>
+                  </View>
+
                   <Text style={styles.label}>Exercise Type</Text>
                   <View className="form-row" style={{ zIndex: 2000 }}>
                     <View className="exercise-type-selector-container">
@@ -544,7 +569,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                             testID="first-set" className="text-area-wide"
                             value={firstSet} onChangeText={setFirstSet} />
                         </View>
-                        <Text style={styles.text}>{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.first_data_instructions ?? ''}</Text>
+                        <Text style={styles.dimmedText}>{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.first_data_instructions ?? ''}</Text>
                       </View>
                       <Text style={styles.label}>Second set of words/sentences</Text>
                       <View className="form-row">
@@ -552,7 +577,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                           <TextInput testID="second-set" multiline={true} numberOfLines={8}
                             className="text-area-wide" value={secondSet} onChangeText={setSecondSet} />
                         </View>
-                        <Text style={styles.text}>{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.second_data_instructions ?? ''}</Text>
+                        <Text style={styles.dimmedText}>{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.second_data_instructions ?? ''}</Text>
                       </View>
                       {EXERCISE_TYPE_LOGIC[exerciseType].HasExtraOptions && (
                         <>
@@ -563,7 +588,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                                 className="text-area-wide"
                                 value={wrongExtraOptions} onChangeText={setWrongExtraOptions} />
                             </View>
-                            <Text style={styles.text}>{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.extra_options_instructions ?? ''}</Text>
+                            <Text style={styles.dimmedText}>{EXERCISE_TYPE_LOGIC[exerciseType].GenerationInfo?.extra_options_instructions ?? ''}</Text>
                           </View>
                         </>
                       )}

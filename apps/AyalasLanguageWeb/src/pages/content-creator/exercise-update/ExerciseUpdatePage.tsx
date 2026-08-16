@@ -8,6 +8,7 @@ import type { ExerciseData, ExerciseInfo, ExtendedExerciseInfo } from '@ayalasla
 import { AlternativeLine, type AlternativeHandle } from "./AlternativeLine";
 import { EXERCISE_TYPE_LOGIC } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { FormHeader } from "../../../components/FormHeader";
+import { OWNERSHIP_TYPE, type OwnershipType } from "@ayalaslanguage/types/auth";
 
 export function ExerciseUpdatePage() {
     const { exerciseId } = useParams();
@@ -18,6 +19,7 @@ export function ExerciseUpdatePage() {
     const [secondLine, setSecondLine] = useState('');
     const [translation, setTranslation] = useState('');
     const [extraOptions, setExtraOptions] = useState('');
+    const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
     const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
     const navigate = useNavigate();
 
@@ -82,6 +84,7 @@ export function ExerciseUpdatePage() {
                     }
                     setInitialRecord(exerciseTemp);
                     setTypeName(EXERCISE_TYPE_LOGIC[exerciseTemp.exerciseTypeId].Name);
+                    setOwnershipType(exerciseTemp.ownershipType);
                     if (exerciseTemp.exerciseObject != null) {
                         if (exerciseTemp.exerciseObject.First != null) {
                             setFirstLine(exerciseTemp.exerciseObject.First);
@@ -154,6 +157,15 @@ export function ExerciseUpdatePage() {
                             </div>
                         </>
                     )}
+
+                    <div className="form-row">
+                        <div className="form-input-row">
+                            <input type="checkbox" className="form-input" data-testid="private" checked={ownershipType == OWNERSHIP_TYPE.USER} onChange={(e) => { setOwnershipType(e.target.checked ? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
+                            <label className="content-line-part">Private</label>
+                        </div>
+                        <div className="form-content-row">Make this lesson private, so only you can see it</div>
+                    </div>
+
                     {initialRecord != null && initialRecord.exerciseObject != null
                         && initialRecord.exerciseObject.Alternatives != null
                         && initialRecord.exerciseObject.Alternatives.length > 0 && (

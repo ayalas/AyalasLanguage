@@ -16,6 +16,7 @@ namespace AyalasLanguageAPI.Data.Model
         public virtual Language KnownLanguage { get; set; } = null!;
 
         public int? LearningPathId { get; set; }
+        [DeleteBehavior(DeleteBehavior.Cascade)]
         public virtual LearningPath? LearningPath { get; set; }
 
         [Required]
@@ -28,6 +29,8 @@ namespace AyalasLanguageAPI.Data.Model
         [Required]
         public int UserId { get; set; }
         public virtual User User { get; set; } = null!;
+        [Required]
+        public byte OwnershipType { get; set; } = 0;
 
         public byte Status { get; set; } = 0;
         public int? SourceExerciseId { get; set; }
@@ -35,5 +38,7 @@ namespace AyalasLanguageAPI.Data.Model
         public virtual Exercise? SourceExercise { get; set; }
         public virtual ICollection<Exercise> ChildExercises { get; set; } = new List<Exercise>();
         public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
+
+       
     }
 }

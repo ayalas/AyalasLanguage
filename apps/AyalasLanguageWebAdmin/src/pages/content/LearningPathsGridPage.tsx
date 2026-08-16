@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
-import { CONTENT_STATUS_MAPPING, type IRowLearningPath } from '../../types/grids/grids';
+import { CONTENT_STATUS_MAPPING, OWNERSHIP_TYPE_MAPPING, type IRowLearningPath } from '../../types/grids/grids';
 import type { ContentStatus } from '@ayalaslanguage/types/exercise';
 import dayjs from 'dayjs';
 import GenericGrid from '../../components/GenericGrid';
@@ -12,6 +12,7 @@ import { ContentStatusFilter } from '../../components/gridfilters/ContentStatusF
 import { GridLinkCell } from '../../components/gridcells/GridLinkCell';
 import type { AgGridReact } from 'ag-grid-react';
 import { useSearchParams } from 'react-router-dom';
+import type { OwnershipType } from '@ayalaslanguage/types/auth';
 
 export default function LearningPathsGridPage() {
     const [success, setSuccess] = useState('');
@@ -60,7 +61,11 @@ export default function LearningPathsGridPage() {
             // Vital: ensures the grid saves the selection as a Number, not a string
             valueParser: (params) => Number(params.newValue) as ContentStatus,
         },
-        { field: "countExercises", headerName: 'Exercises', flex: 1, filter: true }
+        { field: "countExercises", headerName: 'Exercises', flex: 1, filter: true },
+        {
+            field: "ownershipType", flex: 2, headerName: 'Owner',
+            valueFormatter: params => OWNERSHIP_TYPE_MAPPING[params.value as OwnershipType]
+        }
     ]);
 
     useEffect(() => {

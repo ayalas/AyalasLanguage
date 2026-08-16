@@ -38,8 +38,11 @@ namespace AyalasLanguageAPI.Data.Model
         [Required]
         public int UserId { get; set; }
         public virtual User User { get; set; } = null!;
+        [Required]
+        public byte OwnershipType { get; set; } = 0;
 
         public virtual ICollection<Exercise> Exercises { get; set; } = new List<Exercise>();
         public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
+        
     }
 }

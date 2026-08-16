@@ -6,7 +6,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { handleKeyDown, downloadFile } from '../../utils/utils';
 import { removeLastCharIfMatch, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES, BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData } from '@ayalaslanguage/types/sharedfrontlib/learning';
-import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess } from '@ayalaslanguage/types/auth';
+import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess, type OwnershipType, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 
 import { EXERCISE_TYPE_LOGIC, replaceExerciseChars, SORTED_EXERCISE_TYPES } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { getAIInstructions, type AIChatRequestDto, type IChatMessage } from '@ayalaslanguage/types/sharedfrontlib/ai';
@@ -15,7 +15,7 @@ import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import type { NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { EditLearningPathRequest, NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { useMistakesReadd } from '../useMistakesReadd';
 import { Toaster } from 'sonner';
 import { NumberSelector } from '../number-selector/NumberSelector';
@@ -27,6 +27,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [fileForImport, setFileForImport] = useState<File | null>(null);
   const [importStart, setImportStart] = useState(false);
   const [chapter, setChapter] = useState(1);
+  const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
   const [matches, setMatches] = useState<number>(MAX_MATCHES);
   const [extraOptions, setExtraOptions] = useState<number>(BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS);
   const [title, setTitle] = useState('');
@@ -247,13 +248,18 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     setLoadingMessage('Generating exercises...');
     setIsLoading(true);
 
-
     const arrData = await parseForm();
 
     //error is displayed when arrData is null
     if (arrData != null) {
       saveToLocalStorage();
-      await handleSubmit(setError, createExercises, level, chapter, title, exerciseType, arrData);
+      await handleSubmit(setError, createExercises, 
+        {
+          level, 
+          chapter, 
+          name: title,
+          ownershipType
+      } as EditLearningPathRequest, exerciseType, arrData);
     }
     setIsLoading(false);
   };
@@ -265,7 +271,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     setLoadingMessage('Saving lesson...');
     setIsLoading(true);
 
-    await handleSubmit(setError, null, level, chapter, title, exerciseType, null);
+    await handleSubmit(setError, null, 
+      {
+          level, 
+          chapter, 
+          name: title,
+          ownershipType
+      } as EditLearningPathRequest,
+      exerciseType, null);
 
     setTimeout(() => {
       setIsLoading(false);
@@ -280,7 +293,8 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
         const responseEx = await axios.post('/api/creator/exercise', {
           learningPathId: pathId,
           exerciseTypeId: exerciseType,
-          data: JSON.stringify(exer)
+          data: JSON.stringify(exer),
+          ownershipType: ownershipType
         });
         if (responseEx.data && responseEx.data.exerciseId) {
           created.push(responseEx.data.exerciseId);
@@ -406,6 +420,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setChapter(initialRecord.chapter);
           setTitle(initialRecord.name ?? "");
           setAccess(initialRecord.access);
+          setOwnershipType(initialRecord.ownershipType);
         }
         if (isLoading) {
           setIsLoading(false);
@@ -520,6 +535,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                       <input ref={titleRef} type="text" className="form-input" data-testid="title" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={title} onKeyDown={(e) => handleKeyDown(e, exerciseTypeRef)} onChange={(e) => { setTitle(e.target.value) }} />
                     </div>
                     <div className="form-content-row">AI will generate exercises on this subject.</div>
+                  </div>
+                  <div className="form-row">
+                    <div className="form-input-row">
+                      <input type="checkbox" className="form-input" data-testid="private" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} checked={ownershipType == OWNERSHIP_TYPE.USER} onChange={(e) => { setOwnershipType(e.target.checked? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
+                      <label className="content-line-part">Private</label>
+                    </div>
+                    <div className="form-content-row">Make this lesson private, so only you can see it</div>
                   </div>
                   <div className="form-label-row">Exercise Type</div>
                   <div className="form-input-row">

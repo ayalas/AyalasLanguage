@@ -1,6 +1,7 @@
 import { CONTENT_STATUS } from "@ayalaslanguage/types/exercise";
 import { LOG_TYPE, type LogType } from "@ayalaslanguage/types/log";
 import {JOB_STATUS, JOB_TYPE, type JobStatus, type JobType } from "@ayalaslanguage/types/job";
+import { OWNERSHIP_TYPE } from "@ayalaslanguage/types/auth";
 
 export const LOG_TYPE_MAPPING = {
   [LOG_TYPE.AUTO_AI_FAILURE]: "Auto AI Failure",
@@ -33,6 +34,11 @@ export const CONTENT_STATUS_MAPPING = {
   [CONTENT_STATUS.DRAFT]: "Draft",
   [CONTENT_STATUS.APPROVED]: "Approved",
   [CONTENT_STATUS.REMOVED]: "Removed"
+} as const;
+
+export const OWNERSHIP_TYPE_MAPPING = {
+  [OWNERSHIP_TYPE.PUBLIC]: "Public",
+  [OWNERSHIP_TYPE.USER]: "User"
 } as const;
 
 export const DASHBOARD_RANG_FILTER = {
@@ -93,7 +99,8 @@ export interface IRowLearningPath
     createdOn: string,
     learningPathId: number,
     countExercises: number,
-    status: number
+    status: number,
+    ownershipType: number
 }
 
 export interface IRowExercise
@@ -109,7 +116,8 @@ export interface IRowExercise
     createdOn: string,
     learningPathId: number,
     exerciseId: number,
-    status: number
+    status: number,
+    ownershipType: number
 }
 
 export interface IRowJob

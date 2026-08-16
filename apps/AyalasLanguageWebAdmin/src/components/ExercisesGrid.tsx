@@ -2,13 +2,14 @@ import { useCallback, useRef, useState } from 'react';
 import { type CellValueChangedEvent, type ColDef } from 'ag-grid-community';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from 'axios';
-import { CONTENT_STATUS_MAPPING, type IRowExercise } from '../types/grids/grids';
+import { CONTENT_STATUS_MAPPING, OWNERSHIP_TYPE_MAPPING, type IRowExercise } from '../types/grids/grids';
 import type { ContentStatus } from '@ayalaslanguage/types/exercise';
 import dayjs from 'dayjs';
 import GenericGrid from './GenericGrid';
 import { ContentStatusFilter } from './gridfilters/ContentStatusFilter';
 import { GridLinkCell } from './gridcells/GridLinkCell';
 import type { AgGridReact } from 'ag-grid-react';
+import type { OwnershipType } from '@ayalaslanguage/types/auth';
 
 type Props = {
     learningPathId?: number;
@@ -67,6 +68,10 @@ export default function ExercisesGrid(props: Props) {
             refData: CONTENT_STATUS_MAPPING,
             // Vital: ensures the grid saves the selection as a Number, not a string
             valueParser: (params) => Number(params.newValue) as ContentStatus,
+        },
+        {
+            field: "ownershipType", flex: 2, headerName: 'Owner',
+            valueFormatter: params => OWNERSHIP_TYPE_MAPPING[params.value as OwnershipType]
         }
     ]);
 

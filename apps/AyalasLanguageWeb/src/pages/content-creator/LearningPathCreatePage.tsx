@@ -4,14 +4,15 @@ import axios from 'axios';
 import { LearningPathAuthoringForm } from '../../components/content-creator/LearningPathAuthoringForm';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { FormHeader } from '../../components/FormHeader';
+import type { EditLearningPathRequest } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
 export function LearningPathCreatePage() {
   const navigate = useNavigate();
 
-  const handleSubmit = async (setError: (s: string) => void, createExercises: any, level: number, chapter: number, title: string, exerciseType: number, arrData: any[]) => {
+  const handleSubmit = async (setError: (s: string) => void, createExercises: any, 
+      req: EditLearningPathRequest, exerciseType: number, arrData: any[]) => {
     let learningPathId = 0;
     try {
-      const req: any = { level, chapter, name: title };
 
       const response = await axios.post('/api/creator/learning-path', req);
       learningPathId = response.data.learningPathId;

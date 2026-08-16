@@ -3,8 +3,9 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
 import { MemoryRouter, useParams } from 'react-router-dom';
 import { LearningPathUpdatePage } from './LearningPathUpdatePage';
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
+import type { EditLearningPathRequest } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
 // Mock axios
 vi.mock('axios');
@@ -47,9 +48,8 @@ vi.mock('../../../components/content-creator/LearningPathAuthoringForm', () => (
           handleSubmit(
             vi.fn(), // setError
             vi.fn().mockResolvedValue({}), // createExercises
-            1, // level
-            1, // chapter
-            'Updated Title', // title
+           { level: 1 , chapter: 1
+             , title: 'Updated Title', ownershipType: OWNERSHIP_TYPE.PUBLIC } as EditLearningPathRequest,
             1, // exerciseType
             [] // arrData
           )
@@ -71,7 +71,7 @@ describe('LearningPathUpdatePage', () => {
   });
 
   it('renders correctly and fetches data on mount', async () => {
-    const mockPathData = { id: 123, name: 'Path Name', access: AUTHOR_ACCESS.CAN_EDIT };
+    const mockPathData = { id: 123, name: 'Path Name', access: AUTHOR_ACCESS.CAN_EDIT, ownershipType: OWNERSHIP_TYPE.PUBLIC };
     const mockExercises = [
       { exerciseId: 1, data: JSON.stringify({ First: 'Ex 1' }) },
       { exerciseId: 2, data: 'Plain Text Data' },
@@ -100,7 +100,7 @@ describe('LearningPathUpdatePage', () => {
   });
 
   it('handles form submission successfully', async () => {
-    const mockPathData = { id: 123, name: 'Path Name', access: AUTHOR_ACCESS.CAN_EDIT };
+    const mockPathData = { id: 123, name: 'Path Name', access: AUTHOR_ACCESS.CAN_EDIT, ownershipType: OWNERSHIP_TYPE.PUBLIC };
     mockedAxios.get.mockResolvedValue({ data: mockPathData });
     mockedAxios.put.mockResolvedValue({ data: { success: true } });
 
@@ -145,7 +145,7 @@ describe('LearningPathUpdatePage', () => {
 
   it('does not call PUT if user does not have edit access', async () => {
     // Access is View Only
-    const mockPathData = { id: 123, name: 'Path Name', access: 'VIEW_ONLY' };
+    const mockPathData = { id: 123, name: 'Path Name', access: 'VIEW_ONLY', ownershipType: OWNERSHIP_TYPE.PUBLIC };
     mockedAxios.get.mockResolvedValue({ data: mockPathData });
 
     render(

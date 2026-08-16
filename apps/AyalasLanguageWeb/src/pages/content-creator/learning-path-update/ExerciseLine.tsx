@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { SquarePen, Trash2 } from 'lucide-react';
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { KeyRound, SquarePen, Trash2 } from 'lucide-react';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { useNavigate } from 'react-router-dom';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { errorHandler } from '@ayalaslanguage/types/error';
@@ -10,6 +10,7 @@ export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseI
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
   const navigate = useNavigate();
+  const isPrivate = exerciseInfo.ownershipType == OWNERSHIP_TYPE.USER;
 
   async function onDeleteClick(e: React.MouseEvent) {
     e.preventDefault();
@@ -20,7 +21,7 @@ export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseI
       errorHandler(err, setError);
     }
   }
-  
+
   function onEditClick(e: React.MouseEvent) {
     e.preventDefault();
 
@@ -33,14 +34,17 @@ export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseI
           <div className="content-line-part">
             {exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT && (
               <>
-              <div className="form-button-cell">
-              <button data-testid="delete-item" type="button" className="form-button button-delete-item" onClick={onDeleteClick}>
-                <Trash2 className="small-icon" />
-              </button>
-              <button data-testid="edit-item" type="button" className="form-button button-edit-item" onClick={onEditClick}>
-                <SquarePen className="small-icon" />
-              </button>
-               </div>
+                <div className="form-button-cell">
+                  <button data-testid="delete-item" type="button" className="form-button button-delete-item" onClick={onDeleteClick}>
+                    <Trash2 className="small-icon" />
+                  </button>
+                  <button data-testid="edit-item" type="button" className="form-button button-edit-item" onClick={onEditClick}>
+                    <SquarePen className="small-icon" />
+                  </button>
+                  {(isPrivate && (
+                    <span title="private"><KeyRound className="learning-progress-img" /></span>
+                  ))}
+                </div>
               </>
             )}
             <span className="exercise-line-text">{exerciseInfo.exerciseObject?.First}</span>

@@ -16,6 +16,14 @@ export const ROLE_TYPE =
     ADMIN: 3
 } as const;
 
+export const OWNERSHIP_TYPE =
+  {
+    PUBLIC: 0,
+    USER: 1
+  } as const;
+
+export type OwnershipType = typeof OWNERSHIP_TYPE[keyof typeof OWNERSHIP_TYPE];
+
 export const APP_IDENTIFIER = 
 {
     MAIN: 1,

@@ -5,7 +5,7 @@ import axios from "axios";
 import { MemoryRouter, useParams } from "react-router-dom";
 import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
-import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 
 // 1. Mock Axios
@@ -78,7 +78,8 @@ describe("ExerciseUpdatePage", () => {
         exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET_BUCKET,
         exerciseObject: objData,
         data: JSON.stringify(objData),
-        access: AUTHOR_ACCESS.CAN_EDIT
+        access: AUTHOR_ACCESS.CAN_EDIT,
+        ownershipType: OWNERSHIP_TYPE.PUBLIC
     };
 
     beforeEach(() => {
