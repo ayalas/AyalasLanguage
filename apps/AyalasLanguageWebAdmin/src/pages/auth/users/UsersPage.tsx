@@ -43,6 +43,7 @@ export default function UsersPage() {
         },
         { field: "emailConfirmed", headerName: 'Confirmed', flex: 1, filter: true },
         { field: "use2FALogin", headerName: 'Enabled 2FA', flex: 1, filter: true },
+        { field: "showOnlyPrivateContent", headerName: 'Private Only', flex: 1, filter: true },
         { field: "knownLanguage", headerName: 'Known Language', flex: 1, filter: true },
         { field: "targetLanguage", headerName: 'Learning Language', flex: 1, filter: true },
         {

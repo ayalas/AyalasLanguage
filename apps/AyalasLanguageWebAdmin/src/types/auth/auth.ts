@@ -20,6 +20,7 @@ export interface IRowUser {
     role: RoleType;
     emailConfirmed: boolean;
     use2FALogin: boolean;
+    showOnlyPrivateContent: boolean;
     knownLanguage?: string;
     targetLanguage?: string;
     createdOn: string;

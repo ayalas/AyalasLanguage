@@ -748,6 +748,9 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.Property<byte>("Role")
                         .HasColumnType("tinyint unsigned");
 
+                    b.Property<bool>("ShowOnlyPrivateContent")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int?>("TargetLanguageId")
                         .HasColumnType("int");
 

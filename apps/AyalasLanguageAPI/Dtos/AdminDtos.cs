@@ -10,9 +10,9 @@ namespace AyalasLanguageAPI.AdminDTOs
     public record AdminLoginDto(string UserName, string Password);
 
     //grid dtos
-    public record AdminUserRowDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, string? KnownLanguage, string? TargetLanguage, DateTime CreatedOn);
+    public record AdminUserRowDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool ShowOnlyPrivateContent, string? KnownLanguage, string? TargetLanguage, DateTime CreatedOn);
     public record AdminUserDetailsDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, string? KnownLanguage, string? TargetLanguage, DateTime CreatedOn,
-        bool DisableAutoAI, byte? NumOfExercisesToGenerate, DateTime? ForgotEmailSent,
+        bool DisableAutoAI, bool ShowOnlyPrivateContent, byte? NumOfExercisesToGenerate, DateTime? ForgotEmailSent,
         DateTime? ForgotEmailReceived, DateTime? EmailConfirmationReceived,
         DateTime? ConfirmationEmailSent);
     public record AdminContactUsRowDto(int ContactUsId, int? UserId, string? DisplayName, string Email, string? Message, DateTime CreatedOn);

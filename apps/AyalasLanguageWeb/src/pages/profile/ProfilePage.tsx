@@ -21,6 +21,7 @@ export function ProfilePage() {
   const [numOfExercises, setNumOfExercises] = useState<number>(DEFAULT_NUM_OF_EXERCISES);
   const [error, setError] = useState('');
   const [disableAutoAI, setDisableAutoAI] = useState(false);
+  const [showOnlyPrivateContent, setShowOnlyPrivateContent] = useState(false);
   const navigate = useNavigate();
   const { user, login } = useOutletContext<{ user: User | null; login: (u: User) => void }>();
   const targetLanguageRef = useRef<HTMLSelectElement>(null);
@@ -40,6 +41,10 @@ export function ProfilePage() {
       if (user != null) {
         if (user.disableAutoAI) {
           setDisableAutoAI(true);
+        }
+
+        if (user.showOnlyPrivateContent) {
+          setShowOnlyPrivateContent(true);
         }
 
         if (user.languageSettings) {
@@ -92,6 +97,7 @@ export function ProfilePage() {
 
       const res = await axios.post('/api/profile/', {
         disableAutoAI,
+        showOnlyPrivateContent,
         numOfExercisesToGenerate: numOfExercises,
         TargetLanguageId: Number(targetLanguage),
         KnownLanguageId: Number(knownLanguage)
@@ -162,6 +168,15 @@ export function ProfilePage() {
                     </option>
                   ))}
                 </select>
+              </div>
+            </div>
+
+             <div className="form-row">
+              <div className="form-label-cell">
+                <label className="form-label">Show Only Private Content</label>
+              </div>
+              <div className="form-input-cell">
+                <input type="checkbox" data-testid="showOnlyPrivateContent" checked={showOnlyPrivateContent} onChange={(e) => setShowOnlyPrivateContent(e.target.checked)} />
               </div>
             </div>
 

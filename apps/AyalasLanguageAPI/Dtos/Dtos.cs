@@ -14,10 +14,10 @@ namespace AyalasLanguageAPI.DTOs
     public record ForgotPasswordDto(string UserName);
     //profile DTOs
     public record ResetPasswordDto(string UserName, string Password, string Token);
-    public record EditUserProfileDto(bool? DisableAutoAI, byte? NumOfExercisesToGenerate, int? TargetLanguageId, int? KnownLanguageId);
+    public record EditUserProfileDto(bool? DisableAutoAI, byte? NumOfExercisesToGenerate, int? TargetLanguageId, int? KnownLanguageId, bool? ShowOnlyPrivateContent);
     public record SwitchLanguageDto(int? TargetLanguageId, int? KnownLanguageId);
     public record CurrentLanguageResponseDto(int? TargetLanguageId, string? TargetLanguage, int? KnownLanguageId, string? KnownLanguage, LanguageDto[] otherUserLanguages, bool KnownLanguageIsRightToLeft, bool TargetLanguageIsRightToLeft, string? KeyboardLanguageName, string? TargetLanguageEnglishName, string? TargetLanguageCode, int Score);
-    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool DisableAutoAI, byte? NumOfExercisesToGenerate, int UnreadMessages, CurrentLanguageResponseDto languageSettings);
+    public record UserIdDto(int UserId, string DisplayName, string UserName, byte Role, bool EmailConfirmed, bool Use2FALogin, bool DisableAutoAI, bool ShowOnlyPrivateContent, byte? NumOfExercisesToGenerate, int UnreadMessages, CurrentLanguageResponseDto languageSettings);
     public record UserLanguageDto(int LanguageId, bool IsLearning);
 
     // Static DTOs

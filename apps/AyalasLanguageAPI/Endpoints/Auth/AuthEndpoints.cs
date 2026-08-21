@@ -212,7 +212,7 @@ public static class AuthEndpoints
             user.TargetLanguage?.EnglishName,
             user.TargetLanguage?.Code, userScore);
 
-        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin, user.DisableAutoAI,user.NumOfExercisesToGenerate,countUnread, languageSettings);
+        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin, user.DisableAutoAI, user.ShowOnlyPrivateContent, user.NumOfExercisesToGenerate,countUnread, languageSettings);
     }
 
     private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, IConfiguration config)

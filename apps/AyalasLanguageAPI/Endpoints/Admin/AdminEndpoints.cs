@@ -231,6 +231,7 @@ public static class AdminEndpoints
             u.Role,
             u.EmailConfirmed,
             u.Use2FALogin,
+            u.ShowOnlyPrivateContent,
             u.KnownLanguage == null ? null : u.KnownLanguage.EnglishName,
             u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName,
             u.CreatedOn
@@ -259,6 +260,7 @@ public static class AdminEndpoints
             u.TargetLanguage == null ? null : u.TargetLanguage.EnglishName,
             u.CreatedOn,
             u.DisableAutoAI,
+            u.ShowOnlyPrivateContent,
             u.NumOfExercisesToGenerate,
             u.ForgotEmailSent,
             u.ForgotEmailReceived, 

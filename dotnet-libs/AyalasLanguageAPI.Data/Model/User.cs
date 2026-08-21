@@ -44,6 +44,7 @@ namespace AyalasLanguageAPI.Data.Model
         public DateTime CreatedOn {get; set;} = DateTime.UtcNow;
 
         public bool DisableAutoAI {get; set;} = false;
+        public bool ShowOnlyPrivateContent {get; set;} = false;
 
         public byte? NumOfExercisesToGenerate {get; set;} = null!;
 

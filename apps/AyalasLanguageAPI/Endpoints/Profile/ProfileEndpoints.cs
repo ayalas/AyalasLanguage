@@ -49,6 +49,10 @@ namespace AyalasLanguageAPI.Endpoints.Profile
             {
                 user.DisableAutoAI = dto.DisableAutoAI.Value;
             }
+            if (dto.ShowOnlyPrivateContent != null)
+            {
+                user.ShowOnlyPrivateContent = dto.ShowOnlyPrivateContent.Value;
+            }
             user.NumOfExercisesToGenerate = dto.NumOfExercisesToGenerate;
 
             await AddLanguageToUser(userId, dto.TargetLanguageId.Value, true, db);

@@ -15,25 +15,28 @@ import { ItemType, ValueType } from 'react-native-dropdown-picker';
 import api from '@/lib/api'; //secured axios instance
 import useTextStyles from '@/lib/useTextStyles';
 import FormDropDown from '@/components/FormDropDown';
+import Checkbox from 'expo-checkbox';
 
 export default function ProfileScreen() {
-  
+
   const [allLanguages, setAllLanguages] = useState<Language[]>([]);
   const [targetLanguage, setTargetLanguage] = useState<string | number>('');
   const [knownLanguage, setKnownLanguage] = useState<string | number>('');
   const [numOfExercises, setNumOfExercises] = useState<number>(DEFAULT_NUM_OF_EXERCISES);
+  const [showOnlyPrivateContent, setShowOnlyPrivateContent] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
   const { user, login } = useAuth();
   const { styles } = useTextStyles();
-  
+
   const languageItems = useMemo(() => {
-        return allLanguages.map((language) => { 
-                    return {
-                      value: language.languageId, 
-                      label: language.englishName !== language.nativeName ? `${language.englishName} ${language.nativeName}` : language.englishName
-                  } as ItemType<ValueType>;}) as ItemType<ValueType>[];
-        }, [allLanguages]); 
+    return allLanguages.map((language) => {
+      return {
+        value: language.languageId,
+        label: language.englishName !== language.nativeName ? `${language.englishName} ${language.nativeName}` : language.englishName
+      } as ItemType<ValueType>;
+    }) as ItemType<ValueType>[];
+  }, [allLanguages]);
 
   useEffect(() => {
     async function loadData() {
@@ -53,6 +56,10 @@ export default function ProfileScreen() {
             const english = allLanguagesData.find((lang) => lang.code === 'en');
             setKnownLanguage(english?.languageId || '');
           }
+        }
+
+        if (user.showOnlyPrivateContent) {
+          setShowOnlyPrivateContent(true);
         }
 
         setNumOfExercises(user.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES)
@@ -93,6 +100,7 @@ export default function ProfileScreen() {
 
       const res = await api.post('/api/profile/', {
         disableAutoAI: null,
+        showOnlyPrivateContent,
         numOfExercisesToGenerate: numOfExercises,
         TargetLanguageId: Number(targetLanguage),
         KnownLanguageId: Number(knownLanguage)
@@ -148,26 +156,33 @@ export default function ProfileScreen() {
           </View>
 
           <View className="form-row">
+            <View className="form-input-row">
+              <Checkbox data-testid="showOnlyPrivateContent" value={showOnlyPrivateContent} onValueChange={setShowOnlyPrivateContent} />
+              <Text style={styles.text}>Show Only Private Content</Text>
+            </View>
+          </View>
+
+          <View className="form-row">
             <View className="form-label-cell">
               <Text style={styles.labelWrap}>No. of Exercises for AI Generation: {numOfExercises}</Text>
             </View>
             <Slider
-                minimumValue={0}
-                maximumValue={50}
-                step={1}
-                // Note: this library expects value to be an array or a number
-                value={[numOfExercises]} 
-                // Note: onValueChange returns an array [number]
-                onValueChange={(val: number[]) => {
-                        const nextVal = Array.isArray(val) ? val[0] : val;
-                        if (nextVal !== numOfExercises && !isNaN(nextVal)) {
-                          setNumOfExercises(nextVal)
-                        }
-                      }}
-                minimumTrackTintColor="#1EB1FC"
-                maximumTrackTintColor="#D3D3D3"
-                thumbTintColor="#1EB1FC"
-              />
+              minimumValue={0}
+              maximumValue={50}
+              step={1}
+              // Note: this library expects value to be an array or a number
+              value={[numOfExercises]}
+              // Note: onValueChange returns an array [number]
+              onValueChange={(val: number[]) => {
+                const nextVal = Array.isArray(val) ? val[0] : val;
+                if (nextVal !== numOfExercises && !isNaN(nextVal)) {
+                  setNumOfExercises(nextVal)
+                }
+              }}
+              minimumTrackTintColor="#1EB1FC"
+              maximumTrackTintColor="#D3D3D3"
+              thumbTintColor="#1EB1FC"
+            />
           </View>
           <View className="buttons-container">
             <View className="form-input-row">

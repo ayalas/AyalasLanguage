@@ -35,6 +35,7 @@ export interface User {
   emailConfirmed: boolean;
   use2FALogin: boolean;
   disableAutoAI: boolean;
+  showOnlyPrivateContent: boolean;
   numOfExercisesToGenerate?: number;
   unreadMessages: number;
   languageSettings?: LanguageSettings;
