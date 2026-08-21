@@ -6,6 +6,8 @@ import axios from 'axios';
 import { useLocation, useNavigate, useOutletContext } from 'react-router-dom';
 import { ProfilePage } from './ProfilePage';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
+import type { LanguageSettings, User } from '@ayalaslanguage/types/sharedfrontlib/user';
+import { ROLE_TYPE } from '@ayalaslanguage/types/auth';
 
 // Mock axios
 vi.mock('axios');
@@ -69,14 +71,22 @@ describe('ProfilePage', () => {
 
   const mockUser = {
     userId: 123,
-    username: 'testuser',
+    userName: 'testuser',
     disableAutoAI: true,
+    showOnlyPrivateContent: false,
+    emailConfirmed: true,
+    unreadMessages: 0,
+    role: ROLE_TYPE.CONTENT_CREATOR,
+    use2FALogin: false,
+    displayName: "test user",
     languageSettings: {
       targetLanguageId: 2,
       knownLanguageId: 1,
+      targetLanguageCode: 'en',
+      score: 0,
       otherUserLanguages: [],
-    },
-  };
+    } as LanguageSettings
+  } as User;
 
   beforeEach(() => {
     vi.clearAllMocks();

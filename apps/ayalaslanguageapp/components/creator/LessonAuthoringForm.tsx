@@ -387,6 +387,13 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
           setAccess(initialRecord.access);
           setOwnershipType(initialRecord.ownershipType);
         }
+        else {
+          //defaults for new record
+          if (user?.showOnlyPrivateContent) {
+            //defualt ownership type to user, when showing only own content
+            setOwnershipType(OWNERSHIP_TYPE.USER);
+          }
+        }
         setIsLoading(false);
       } catch (ex: unknown) {
         errorHandler(ex, setError);

@@ -82,7 +82,7 @@ public static class LearningEndpoints
         var userId = claim.GetUserId();
         bool isAdmin = claim.IsInRole("Admin");
 
-        var user = await db.Users.FindAsync(userId); // Ensure user exists
+        var user = await db.Users.FindAsync(userId);
         if (user == null) return Results.NotFound();
 
         if (user.TargetLanguageId == null || user.KnownLanguageId == null)
@@ -98,7 +98,15 @@ public static class LearningEndpoints
 
         if (!isAdmin)
         {
-            query = query.Where(lp => lp.OwnershipType == (byte)OwnershipTypeEnum.Public || lp.UserId == userId);
+            //implement ShowOnlyPrivateContent: return only content the user created (a preference in profile screen)
+            if (user.ShowOnlyPrivateContent)
+            {
+                query = query.Where(lp => lp.UserId == userId);
+            }
+            else
+            {
+                query = query.Where(lp => lp.OwnershipType == (byte)OwnershipTypeEnum.Public || lp.UserId == userId);
+            }
         }
 
         var learningPathsWithStatus = (await query.GroupJoin(
@@ -122,8 +130,9 @@ public static class LearningEndpoints
                     : up.ExerciseId == null
                         ? (byte)UserProgressEnum.Done
                         : (byte)UserProgressEnum.InProgress,
-                db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed &&
-                (e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId)),
+                db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId 
+                    && e.Status != (byte)ContentStatusEnum.Removed &&
+                    (e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId)),
                 up != null && up.practiseMistakesInThisPath,
                 up != null ? up.ModifiedOn : null,
                 // --- Get ExerciseTypeId START ---
@@ -175,7 +184,7 @@ public static class LearningEndpoints
         //validate the learning path permission once whether there is a progress record or not
         if (dto.practiseMistakesInThisPath != null && dto.practiseMistakesInThisPath.Value == true
             && await db.LearningPaths.AnyAsync(
-                lp =>  lp.LearningPathId == dto.LearningPathId &&
+                lp => lp.LearningPathId == dto.LearningPathId &&
                 lp.UserId != userId && lp.OwnershipType == (byte)OwnershipTypeEnum.User
             ))
         {
@@ -263,6 +272,9 @@ public static class LearningEndpoints
         var userId = claim.GetUserId();
         bool isAdmin = claim.IsInRole("Admin");
 
+        var user = await db.Users.FindAsync(userId);
+        if (user == null) return Results.NotFound();
+
         //Allow admin to get all exercises (but not create new ones on private lessons)
         var query = db.Exercises
             .Where(e => e.LearningPathId == pathId
@@ -270,7 +282,15 @@ public static class LearningEndpoints
 
         if (!isAdmin)
         {
-            query = query.Where(e => e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
+            if (user.ShowOnlyPrivateContent) //own content
+            {
+                query = query.Where(e => e.UserId == userId);
+            }
+            else
+            {
+                query = query.Where(e => e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
+            }
+            
             //add if we want to handle approved exercises
             //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
         }

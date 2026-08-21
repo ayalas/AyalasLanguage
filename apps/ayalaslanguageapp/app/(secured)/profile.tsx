@@ -158,7 +158,7 @@ export default function ProfileScreen() {
           <View className="form-row">
             <View className="form-input-row">
               <Checkbox data-testid="showOnlyPrivateContent" value={showOnlyPrivateContent} onValueChange={setShowOnlyPrivateContent} />
-              <Text style={styles.text}>Show Only Private Content</Text>
+              <Text style={styles.text}>Show Only Own Content</Text>
             </View>
           </View>
 

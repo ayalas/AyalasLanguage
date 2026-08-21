@@ -173,7 +173,7 @@ export function ProfilePage() {
 
              <div className="form-row">
               <div className="form-label-cell">
-                <label className="form-label">Show Only Private Content</label>
+                <label className="form-label">Show Only Own Content</label>
               </div>
               <div className="form-input-cell">
                 <input type="checkbox" data-testid="showOnlyPrivateContent" checked={showOnlyPrivateContent} onChange={(e) => setShowOnlyPrivateContent(e.target.checked)} />

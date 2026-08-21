@@ -422,6 +422,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
           setAccess(initialRecord.access);
           setOwnershipType(initialRecord.ownershipType);
         }
+        else {
+          //defaults for new record
+          if (user?.showOnlyPrivateContent) {
+            //defualt ownership type to user, when showing only own content
+            setOwnershipType(OWNERSHIP_TYPE.USER);
+          }
+        }
         if (isLoading) {
           setIsLoading(false);
           if (user?.disableAutoAI) {

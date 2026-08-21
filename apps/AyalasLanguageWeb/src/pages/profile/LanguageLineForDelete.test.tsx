@@ -26,6 +26,7 @@ describe('LanguageLineForDelete', () => {
     userId: 1,
     userName: 'testuser',
     disableAutoAI: true,
+    showOnlyPrivateContent: false,
     languageSettings: {
       targetLanguageId: 1,
       knownLanguageId: 2,

@@ -61,6 +61,7 @@ const mockUser: User = {
   unreadMessages: 0,
   use2FALogin: false,
   disableAutoAI: false,
+  showOnlyPrivateContent: false,
   role: ROLE_TYPE.CONTENT_CREATOR,
   languageSettings: {
     targetLanguageId: 10,
