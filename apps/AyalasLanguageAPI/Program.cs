@@ -40,7 +40,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication(); // Must come before UseAuthorization
 app.UseAuthorization();
 
-app.RedirectToAdminRoot(); //redirects /admin to /admin/ when serving static files
+app.RedirectToSubApps(); //redirects /admin to /admin/ and /mobile to /mobile/ when serving static files
 
 app.MapAyalasLanguageEndpoints();
 
