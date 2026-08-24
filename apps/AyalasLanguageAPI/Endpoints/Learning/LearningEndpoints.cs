@@ -96,34 +96,28 @@ public static class LearningEndpoints
         .Where(lp => lp.TargetLanguageId == languageId && lp.KnownLanguageId == user.KnownLanguageId.Value
         && lp.Status != (byte)ContentStatusEnum.Removed);
 
-        if (!isAdmin)
+        //implement ShowOnlyPrivateContent: return only content the user created (a preference in profile screen)
+        if (user.ShowOnlyPrivateContent)
         {
-            //implement ShowOnlyPrivateContent: return only content the user created (a preference in profile screen)
-            if (user.ShowOnlyPrivateContent)
-            {
-                query = query.Where(lp => lp.UserId == userId);
-            }
-            else
-            {
-                query = query.Where(lp => lp.OwnershipType == (byte)OwnershipTypeEnum.Public || lp.UserId == userId);
-            }
+            query = query.Where(lp => lp.UserId == userId);
+        }
+        else if (!isAdmin)
+        {
+            query = query.Where(lp => lp.OwnershipType == (byte)OwnershipTypeEnum.Public || lp.UserId == userId);
         }
 
         var exerciseBaseQuery = db.Exercises.Where(e => e.Status != (byte)ContentStatusEnum.Removed);
 
-        if (!isAdmin)
+        if (user.ShowOnlyPrivateContent)
         {
-            if (user.ShowOnlyPrivateContent)
-            {
-                // Only show items owned by the user
-                exerciseBaseQuery = exerciseBaseQuery.Where(e => e.UserId == userId);
-            }
-            else
-            {
-                // Show public items OR items owned by the user
-                exerciseBaseQuery = exerciseBaseQuery.Where(e =>
-                    e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
-            }
+            // Only show items owned by the user
+            exerciseBaseQuery = exerciseBaseQuery.Where(e => e.UserId == userId);
+        }
+        else if (!isAdmin)
+        {
+            // Show public items OR items owned by the user
+            exerciseBaseQuery = exerciseBaseQuery.Where(e =>
+                e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
         }
 
         var learningPathsWithStatus = (await query.GroupJoin(
@@ -295,20 +289,18 @@ public static class LearningEndpoints
             .Where(e => e.LearningPathId == pathId
             && e.Status != (byte)ContentStatusEnum.Removed).AsQueryable();
 
-        if (!isAdmin)
-        {
-            if (user.ShowOnlyPrivateContent) //own content
-            {
-                query = query.Where(e => e.UserId == userId);
-            }
-            else
-            {
-                query = query.Where(e => e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
-            }
 
-            //add if we want to handle approved exercises
-            //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
+        if (user.ShowOnlyPrivateContent) //own content
+        {
+            query = query.Where(e => e.UserId == userId);
         }
+        else if (!isAdmin)
+        {
+            query = query.Where(e => e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
+        }
+
+        //add if we want to handle approved exercises
+        //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
 
         //Filter exercises by path and user exercise types
         var exercises = await query.OrderBy(e => e.ExerciseId) // Ensure consistent ordering
