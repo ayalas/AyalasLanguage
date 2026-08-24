@@ -8,6 +8,7 @@ import { type ExerciseData, type ExerciseInfo } from '@ayalaslanguage/types/shar
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
+import { toast } from 'sonner';
 
 // Mock axios as requested
 vi.mock('axios');
@@ -16,6 +17,13 @@ const { mockNavigate } = vi.hoisted(() => {
   return {
     mockNavigate: vi.fn(),
   };
+});
+
+vi.mock('sonner', () => {
+  const toastMock = vi.fn(() => 'id-123'); // returns a fake toastId
+  // @ts-ignore
+  toastMock.dismiss = vi.fn();
+  return { toast: toastMock };
 });
 
 // Mock react-router-dom hooks
@@ -158,6 +166,18 @@ describe('LessonPage', () => {
     
     const saveBtn = await screen.findByTestId('trigger-save');
     fireEvent.click(saveBtn);
+
+    expect(toast).toHaveBeenCalledWith(
+      expect.stringContaining('Save progress to start of this lesson?'),
+      expect.any(Object)
+    );
+
+    const toastOptions = vi.mocked(toast).mock.calls[0][1] as any;
+    const confirmDeleteCallback = toastOptions.action.onClick;
+
+    await act(async () => {
+      await confirmDeleteCallback({ preventDefault: vi.fn() });
+    });
 
     await waitFor(() => {
       expect(mockedAxios.delete).toHaveBeenCalledWith('/api/learning/progress/1');
