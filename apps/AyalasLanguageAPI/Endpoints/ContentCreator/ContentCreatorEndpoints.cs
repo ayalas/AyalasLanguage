@@ -200,15 +200,26 @@ public static class ContentCreatorEndpoints
             return Results.BadRequest("Another lesson already exists with with these level and chapter values.");
         }
 
-        //check on going private: that there are no exercises by other users already
+        //check on going private
         if (path.OwnershipType == (byte)OwnershipTypeEnum.Public && dto.OwnershipType == OwnershipTypeEnum.User)
         {
+            //there are no exercises by other users already
             if (await db.Exercises.AnyAsync(
                 e => e.LearningPathId == id 
                 && e.UserId != userId 
                 && e.Status != (byte)ContentStatusEnum.Removed))
             {
-                return Results.Conflict("Lesson cannot be made private because there are exercises in it from multiple contributers");
+                return Results.Conflict("Lesson cannot be made private because there are exercises in it from multiple contributers.");
+            }
+
+            //Can't make private a Mistakes lesson of other users
+            if (await db.UserProgresses.AnyAsync(
+                up => up.LearningPathId == id
+                && up.UserId != userId
+                && up.practiseMistakesInThisPath
+            ))
+            {
+                return Results.Conflict("Lesson cannot be made private because others has designated it for new mistakes they make.");
             }
         }
 
