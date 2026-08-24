@@ -212,7 +212,7 @@ public static class ContentCreatorEndpoints
                 return Results.Conflict("Lesson cannot be made private because there are exercises in it from multiple contributers.");
             }
 
-            //Can't make private a Mistakes lesson of other users
+            //it is not a mistakes-lesson of other users
             if (await db.UserProgresses.AnyAsync(
                 up => up.LearningPathId == id
                 && up.UserId != userId
