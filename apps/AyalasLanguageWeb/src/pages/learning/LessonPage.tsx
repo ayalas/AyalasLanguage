@@ -272,7 +272,7 @@ export function LessonPage() {
                 <div className="form-header">
                   <div className="form-name">{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</div>
                   <div className="form-close-row">
-                    <Link to="/home" className="actions-menu-link-button" title="Home"><X />&nbsp;Exit</Link>
+                    <button onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault();  saveProgress(true)}} className="actions-menu-link-button" title="Home"><X />&nbsp;Exit</button>
                   </div>
                 </div>
                 {!currentExercise && (

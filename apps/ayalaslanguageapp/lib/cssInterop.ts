@@ -4,7 +4,8 @@ import { Save, Send, ArrowBigLeft, History, CircleDotDashed, X, CirclePlay, Eye,
   Ban, Trash2, ArchiveRestore, TicketPlus, FilePenLine, PenLine, PencilSparkles, Tally1, Tally4, 
   Tally2, EyeOff, ChevronFirst, ChevronLast, CircleArrowRight, CircleArrowLeft, MailWarning, 
   Reply,
-  KeyRound} from "lucide-react-native";
+  KeyRound,
+  SaveOff} from "lucide-react-native";
 
 cssInterop(LayersPlus, {
   className: {
@@ -332,6 +333,17 @@ cssInterop(KeyRound, {
     },
   },
 });
+
+cssInterop(SaveOff, {
+  className: {
+    target: "style",
+    nativeStyleToProp: {
+      color: true,
+    },
+  },
+});
+
+
 
 
 

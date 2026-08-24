@@ -14,6 +14,22 @@ import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 // Mock axios as requested
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
+const { mockNavigate } = vi.hoisted(() => {
+  return {
+    mockNavigate: vi.fn(),
+  };
+});
+
+// Mock react-router-dom hooks
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useParams: vi.fn(),
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
+    useOutletContext: vi.fn(),
+  };
+});
 
 // Mock react-router-dom's context
 vi.mock('react-router-dom', async () => {
@@ -185,9 +201,10 @@ describe('Exercise Component', () => {
             fireEvent.click(menuBtn);
         });
 
-        const saveBtn = await screen.findByTestId('save-progress');
+        const saveBtn = await screen.findByTestId('exit-nosave');
         fireEvent.click(saveBtn);
-        expect(mockProps.saveProgress).toHaveBeenCalled();
+
+        expect(mockNavigate).toHaveBeenCalledWith('/home');
 
         await act(async () => {
             fireEvent.click(menuBtn);

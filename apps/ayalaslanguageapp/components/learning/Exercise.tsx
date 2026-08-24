@@ -1,5 +1,5 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine }
+import { Ban, Eye, ListChecks, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine, SaveOff }
     from 'lucide-react-native';
 import { AudioStatus, createAudioPlayer } from 'expo-audio';
 import { Buffer } from 'buffer';
@@ -273,12 +273,12 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                             leadingIcon: (props) => <FilePenLine {...props} className="color-brand-primary" />,
                         },
                         {
-                            dataTestId: "save-progress",
-                            itemText: "Save & Exit",
-                            onClick: saveProgress,
-                            className: "lesson-button-save",
-                            titleStyle: { color: COLOR_SAVE },
-                            leadingIcon: (props) => <CircleDotDashed {...props} className="color-brand-dashed" />,
+                            dataTestId: "exit-nosave",
+                            itemText: "Exit without Save",
+                            onClick: () => {
+                                router.replace('/');
+                            },
+                            leadingIcon: (props) => <SaveOff {...props} className="color-brand-primary" />,
                         }
                     ] as ActionsMenuItem[]} anchorTitle="More" />
                 </View>

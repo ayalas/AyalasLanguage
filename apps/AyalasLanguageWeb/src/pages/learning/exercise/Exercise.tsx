@@ -1,6 +1,6 @@
 import { Fragment, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
-import { Ban, Eye, ListChecks, CircleDotDashed, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine } from 'lucide-react';
+import { Ban, Eye, ListChecks, RotateCcw, History, TicketPlus, ArrowBigLeft, FilePenLine, SaveOff } from 'lucide-react';
 import axios from 'axios';
 import { InlineExerciseWithBlanks } from './exercise-render-types/InlineExerciseWithBlanks';
 import { TwoLinesTranslationExercise } from './exercise-render-types/TwoLinesTranslationExercise';
@@ -247,10 +247,11 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                         isVisible: exerciseInfo.access == AUTHOR_ACCESS.CAN_EDIT
                     },
                     {
-                        dataTestId: "save-progress",
-                        children: <><CircleDotDashed />&nbsp;Save & Exit</>,
-                        onClick: saveProgress,
-                        className: "lesson-button-save",
+                        dataTestId: "exit-nosave",
+                        children: <><SaveOff />&nbsp;Exit without Save</>,
+                        onClick: () => { 
+                                navigate('/home');
+                            }
                     }
                 ] as ActionsMenuItem[]} anchorTitle="More" />
                 {
