@@ -13,13 +13,15 @@ namespace AyalasLanguageAPI.Routing
                     {
                         if (path.Equals("/admin", StringComparison.OrdinalIgnoreCase))
                         {
-                            context.Response.Redirect("/admin/");
+                            var adminTarget = "/admin/" + context.Request.QueryString.Value;
+                            context.Response.Redirect(adminTarget);
                             return;
                         }
 
                         if (path.Equals("/mobile", StringComparison.OrdinalIgnoreCase))
                         {
-                            context.Response.Redirect("/mobile/");
+                            var mobileTarget = "/mobile/" + context.Request.QueryString.Value;
+                            context.Response.Redirect(mobileTarget);
                             return;
                         }
                     }
