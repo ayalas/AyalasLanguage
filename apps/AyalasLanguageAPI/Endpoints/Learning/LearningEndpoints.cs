@@ -109,6 +109,23 @@ public static class LearningEndpoints
             }
         }
 
+        var exerciseBaseQuery = db.Exercises.Where(e => e.Status != (byte)ContentStatusEnum.Removed);
+
+        if (!isAdmin)
+        {
+            if (user.ShowOnlyPrivateContent)
+            {
+                // Only show items owned by the user
+                exerciseBaseQuery = exerciseBaseQuery.Where(e => e.UserId == userId);
+            }
+            else
+            {
+                // Show public items OR items owned by the user
+                exerciseBaseQuery = exerciseBaseQuery.Where(e =>
+                    e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
+            }
+        }
+
         var learningPathsWithStatus = (await query.GroupJoin(
             db.UserProgresses.Include(up => up.Exercise).Where(up => up.UserId == userId),
             lp => lp.LearningPathId,
@@ -130,15 +147,13 @@ public static class LearningEndpoints
                     : up.ExerciseId == null
                         ? (byte)UserProgressEnum.Done
                         : (byte)UserProgressEnum.InProgress,
-                db.Exercises.Count(e => e.LearningPathId == x.lp.LearningPathId 
-                    && e.Status != (byte)ContentStatusEnum.Removed &&
-                    (e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId)),
+                exerciseBaseQuery.Count(e => e.LearningPathId == x.lp.LearningPathId),
                 up != null && up.practiseMistakesInThisPath,
                 up != null ? up.ModifiedOn : null,
                 // --- Get ExerciseTypeId START ---
                 up == null || up.ExerciseId == null
-                    ? db.Exercises
-                        .Where(e => e.LearningPathId == x.lp.LearningPathId && e.Status != (byte)ContentStatusEnum.Removed)
+                    ? exerciseBaseQuery
+                        .Where(e => e.LearningPathId == x.lp.LearningPathId)
                         .OrderBy(e => e.ExerciseId) // Or your specific sequence logic
                         .Select(e => (int?)e.ExerciseTypeId)
                         .FirstOrDefault()
@@ -290,7 +305,7 @@ public static class LearningEndpoints
             {
                 query = query.Where(e => e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
             }
-            
+
             //add if we want to handle approved exercises
             //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
         }
