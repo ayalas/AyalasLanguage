@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable } from 'react-native'
+import { View, Text, ScrollView, Pressable, Platform, Alert } from 'react-native'
 import { useEffect, useState, useRef } from 'react';
 import { useLocalSearchParams, Link, useRouter } from 'expo-router';
 import api from '@/lib/api';
@@ -208,15 +208,61 @@ export default function LessonScreen() {
         await setScore(scoreToAdd);
       }
 
-      if (exerId == null) {
-        await api.delete(`/api/learning/progress/${learningPathId}`);
-      } else {
-        await api.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
+      function Finalize() {
+        if (routeToHome) {
+          router.replace('/');
+        }
       }
 
-      if (routeToHome) {
-        router.replace('/');
+      if (exerId == null) {
+
+        if (!routeToHome) {
+          return;
+        }
+
+        const title = "Save progress to start of this lesson?";
+        const message = "This will delete your progress on this lesson.";
+
+        async function onConfirmed() {
+          await api.delete(`/api/learning/progress/${learningPathId}`);
+
+          Finalize();
+        }
+
+        if (Platform.OS === 'web') {
+          // browser window.confirm returns true for "OK" and false for "Cancel"
+          const result = window.confirm(`${title}\n\n${message}`);
+          if (result) {
+            onConfirmed();
+          }
+          else {
+            Finalize();
+          }
+        } else {
+          return Alert.alert(
+            title,
+            message,
+            [
+              {
+                text: "No, continue without saving progress",
+                style: "cancel",
+                onPress: Finalize
+              },
+              {
+                text: "Yes, delete my progress",
+                onPress: onConfirmed,
+                style: "destructive"
+              },
+            ]
+          );
+        }
+
+      } else {
+        await api.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
+
+        Finalize();
       }
+
     } catch (err: unknown) {
       errorHandler(err, setError);
     }
@@ -282,7 +328,7 @@ export default function LessonScreen() {
         )}
         {learningPathData && (
           <>
-            <FormHeader titleSize='sm' OnPress={() => {saveProgress(true)}} title={`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`} />
+            <FormHeader titleSize='sm' OnPress={() => { saveProgress(true) }} title={`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`} />
             {!currentExercise && (
               <View className="form-row">
                 <View className="form-button-cell">

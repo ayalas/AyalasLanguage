@@ -9,6 +9,7 @@ import { errorHandler } from '@ayalaslanguage/types/error';
 import { EXERCISE_TYPE_LOGIC, safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
+import { toast } from 'sonner';
 
 export function LessonPage() {
   const { learningPathId } = useParams();
@@ -192,16 +193,53 @@ export function LessonPage() {
         await setScore(scoreToAdd);
       }
 
-      if (exerId == null) {
-        await axios.delete(`/api/learning/progress/${learningPathId}`);
-      } else {
-        await axios.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
+      function Finalize() {
+        if (routeToHome) {
+          navigate('/home');
+        }
       }
 
-      if (routeToHome) {
-        navigate('/home');
+      if (exerId == null) {
+
+        if (!routeToHome) {
+          return;
+        }
+
+        const toastId = toast('Save progress to start of this lesson?', {
+          description: 'This will delete your progress on this lesson.',
+          action: {
+            label: 'Yes, delete my progress',
+            onClick: async (e) => {
+              e.preventDefault();
+              await axios.delete(`/api/learning/progress/${learningPathId}`);
+              toast.dismiss(toastId);
+
+              Finalize();
+            },
+          },
+          cancel: {
+            label: 'No, continue without saving progress',
+            onClick: (e) => {
+              e.preventDefault();
+              toast.dismiss(toastId);
+
+              Finalize();
+            }
+          },
+          classNames: {
+            toast: 'my-confirm-toast',
+            description: 'my-confirm-description', // Optional: styling the description
+            actionButton: 'my-action-btn', // Makes the button full width at the bottom
+            cancelButton: 'my-cancel-btn',
+          },
+        });
+
+      } else {
+        await axios.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
+
+        Finalize();
       }
-      
+
     } catch (err: unknown) {
       errorHandler(err, setError);
     }
@@ -272,7 +310,7 @@ export function LessonPage() {
                 <div className="form-header">
                   <div className="form-name">{`Level ${learningPathData.level}, ${learningPathData.chapter}: ${learningPathData.name}`}</div>
                   <div className="form-close-row">
-                    <button onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault();  saveProgress(true)}} className="actions-menu-link-button" title="Home"><X />&nbsp;Exit</button>
+                    <button onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.preventDefault(); saveProgress(true) }} className="actions-menu-link-button" title="Home"><X />&nbsp;Exit</button>
                   </div>
                 </div>
                 {!currentExercise && (

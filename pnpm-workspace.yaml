@@ -13,7 +13,7 @@ minimumReleaseAgeExclude:
   - '@expo/prebuild-config@54.0.9'
   - '@expo/schema-utils@0.1.9'
   - babel-preset-expo@54.0.12
-  - expo@54.0.36
+  - expo@54.0.37
 overrides:
   "@babel/core": "^7.25.2"
   "@babel/traverse": "^7.25.9"

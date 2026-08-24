@@ -269,7 +269,7 @@ public static class LearningEndpoints
         var progress = await db.UserProgresses
             .FirstOrDefaultAsync(p => p.UserId == userId && p.LearningPathId == pathId);
 
-        if (progress == null) return Results.NotFound();
+        if (progress == null) return Results.NoContent();
 
         db.UserProgresses.Remove(progress);
         await db.SaveChangesAsync();
