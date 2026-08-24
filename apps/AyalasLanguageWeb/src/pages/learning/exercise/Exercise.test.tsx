@@ -15,27 +15,17 @@ import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 vi.mock('axios');
 const mockedAxios = vi.mocked(axios);
 const { mockNavigate } = vi.hoisted(() => {
-  return {
-    mockNavigate: vi.fn(),
-  };
+    return {
+        mockNavigate: vi.fn(),
+    };
 });
 
 // Mock react-router-dom hooks
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual('react-router-dom');
-  return {
-    ...actual,
-    useParams: vi.fn(),
-    useNavigate: vi.fn().mockReturnValue(mockNavigate),
-    useOutletContext: vi.fn(),
-  };
-});
-
-// Mock react-router-dom's context
-vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom');
     return {
         ...actual,
+        useNavigate: vi.fn().mockReturnValue(mockNavigate),
         useOutletContext: vi.fn(),
     };
 });
@@ -172,16 +162,16 @@ describe('Exercise Component', () => {
 
         disableClientValidation();
 
-        await act(async() => {
+        await act(async () => {
             ref.current?.setFocus();
         });
 
-        await act(async() => {
+        await act(async () => {
             const answer = ref.current?.getCurrentAnswer();
             expect(typeof answer).toBe('string');
         });
 
-        await act(async() => {
+        await act(async () => {
             const result = ref.current?.checkAnswer();
             expect(typeof result).toBe('boolean');
         });
@@ -202,7 +192,9 @@ describe('Exercise Component', () => {
         });
 
         const saveBtn = await screen.findByTestId('exit-nosave');
-        fireEvent.click(saveBtn);
+        await act(async () => {
+            fireEvent.click(saveBtn);
+        });
 
         expect(mockNavigate).toHaveBeenCalledWith('/home');
 
