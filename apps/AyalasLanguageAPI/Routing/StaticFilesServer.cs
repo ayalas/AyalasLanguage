@@ -103,7 +103,7 @@ namespace AyalasLanguageAPI.Routing
         {
             builder.Services.Configure<RouteOptions>(options =>
             {
-                options.ConstraintMap.Add("notStartWithAdmin", typeof(NotStartWithAdminConstraint));
+                options.ConstraintMap.Add("notStartWithSubUrl", typeof(NotStartWithSubUrlConstraint));
             });
         }
     }
