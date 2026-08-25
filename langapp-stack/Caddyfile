@@ -1,7 +1,19 @@
 langapp.xyz, www.langapp.xyz {
-    # Points to the absolute host directory where your script uploads the keys
     tls /langapp-stack/certs/domain.cert.pem /langapp-stack/certs/private.key.pem
-    
-    # Routes your web frontend straight to your backend container port mapping
+
+    @app_shell path / /index.html /mobile /mobile/ /mobile/* /admin /admin/ /admin/*
+    header @app_shell {
+        Cache-Control "no-cache, no-store, must-revalidate"
+        Pragma "no-cache"
+        Expires "0"
+    }
+
+    @pwa_files path /manifest.json /mobile/manifest.json /mobile/sw.js /mobile/metadata.json /mobile/_expo/* /mobile/assets/*
+    header @pwa_files {
+        Cache-Control "no-cache, no-store, must-revalidate"
+        Pragma "no-cache"
+        Expires "0"
+    }
+
     reverse_proxy 127.0.0.1:8080
 }
