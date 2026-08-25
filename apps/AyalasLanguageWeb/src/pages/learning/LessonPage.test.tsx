@@ -148,7 +148,8 @@ describe('LessonPage', () => {
     await waitFor(() => {
       expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { 
         learningPathId: '1', 
-        exerciseId: 102 
+        exerciseId: 102,
+        practiseMistakesInThisPath: false
       });
       expect(mockNavigate).toHaveBeenCalledWith('/home');
     });
