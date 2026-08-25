@@ -186,9 +186,14 @@ export function LessonPage() {
 
       const exCurInd = exercises.findIndex((e) => e.exerciseId == currentExercise.exerciseId);
       let exerId = null as number | null;
-      if (exCurInd > 0) {
+
+      if (practiseMistakesInThisPath) {
         exerId = currentExercise.exerciseId;
       }
+      else if (exCurInd > 0) {
+        exerId = currentExercise.exerciseId;
+      }
+
       if (scoreToAdd > 0) {
         await setScore(scoreToAdd);
       }
@@ -235,7 +240,11 @@ export function LessonPage() {
         });
 
       } else {
-        await axios.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
+        await axios.post('/api/learning/progress', { 
+          learningPathId, 
+          exerciseId: exerId,
+          practiseMistakesInThisPath 
+        });
 
         Finalize();
       }
@@ -337,6 +346,7 @@ export function LessonPage() {
                   saveProgress={saveProgress}
                   restartLesson={restartLesson}
                   practiseMistakesInitialValue={practiseMistakesInThisPath}
+                  onPractiseMistakesChange={setPractiseMistakesInThisPath}
                   addMistake={addMistake} />
               </>
             )}

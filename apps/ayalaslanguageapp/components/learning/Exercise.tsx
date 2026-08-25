@@ -38,11 +38,12 @@ type Props = {
     restartLesson: () => void;
     practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
+    onPractiseMistakesChange: (newValue: boolean) => void;
     ref: React.Ref<ExerciseHandle>;
 };
 
 export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress,
-    restartLesson, practiseMistakesInitialValue, addMistake, ref }: Props) {
+    restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -51,7 +52,8 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
     const { styles } = useTextStyles();
     const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({
         learningPathId: exerciseInfo.learningPathId,
-        exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue
+        exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue,
+        onChange: onPractiseMistakesChange
     });
     const router = useRouter();
 

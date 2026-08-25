@@ -9,9 +9,10 @@ interface MistakesReaddProps
     exerciseId?: number;
     setError: (arg: string) => void;
     initialValue?: boolean;
+    onChange?: (newValue: boolean) => void;
 }
 
-export function useMistakesReadd({learningPathId, exerciseId, setError, initialValue}: MistakesReaddProps) {
+export function useMistakesReadd({learningPathId, exerciseId, setError, initialValue, onChange}: MistakesReaddProps) {
     const [practiseMistakesInThisPath, setPractiseMistakesInThisPath] = useState(initialValue ?? false);
 
     const changeMistakesSetting = async function (readd: boolean) {
@@ -28,6 +29,7 @@ export function useMistakesReadd({learningPathId, exerciseId, setError, initialV
             await axios.post('/api/learning/progress', postData);
 
             setPractiseMistakesInThisPath(readd);
+            if (onChange != null) onChange(readd);
         } catch (err: unknown) {
             errorHandler(err, setError);
         }

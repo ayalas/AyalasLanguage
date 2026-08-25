@@ -32,10 +32,11 @@ type Props = {
     restartLesson: () => void;
     practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
+    onPractiseMistakesChange: (newValue: boolean) => void;
     ref: React.Ref<ExerciseHandle>;
 };
 
-export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, practiseMistakesInitialValue, addMistake, ref }: Props) {
+export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -44,7 +45,8 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     const navigate = useNavigate();
 
     const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: exerciseInfo.learningPathId , 
-        exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue});
+        exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue,
+        onChange: onPractiseMistakesChange});
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {

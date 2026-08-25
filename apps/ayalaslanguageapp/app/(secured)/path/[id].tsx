@@ -201,9 +201,13 @@ export default function LessonScreen() {
 
       const exCurInd = exercises.findIndex((e) => e.exerciseId == currentExercise.exerciseId);
       let exerId = null as number | null;
-      if (exCurInd > 0) {
+      if (practiseMistakesInThisPath) {
         exerId = currentExercise.exerciseId;
       }
+      else if (exCurInd > 0) {
+        exerId = currentExercise.exerciseId;
+      }
+      
       if (scoreToAdd > 0) {
         await setScore(scoreToAdd);
       }
@@ -258,7 +262,11 @@ export default function LessonScreen() {
         }
 
       } else {
-        await api.post('/api/learning/progress', { learningPathId, exerciseId: exerId });
+        await api.post('/api/learning/progress', { 
+          learningPathId, 
+          exerciseId: exerId,
+          practiseMistakesInThisPath
+        });
 
         Finalize();
       }
@@ -353,6 +361,7 @@ export default function LessonScreen() {
               saveProgress={saveProgress}
               restartLesson={restartLesson}
               practiseMistakesInitialValue={practiseMistakesInThisPath}
+              onPractiseMistakesChange={setPractiseMistakesInThisPath}
               addMistake={addMistake} />
           </>
         )}
