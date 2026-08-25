@@ -161,7 +161,7 @@ public static class AuthEndpoints
         {
             HttpOnly = true,
             Secure = !BypassSecureCookies,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.Lax,
             Expires = new DateTimeOffset(expires)
         });
 

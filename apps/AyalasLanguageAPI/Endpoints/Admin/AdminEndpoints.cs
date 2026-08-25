@@ -202,7 +202,7 @@ public static class AdminEndpoints
         {
             HttpOnly = true,
             Secure = !BypassSecureCookies,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.Lax,
             Expires = new DateTimeOffset(expires)
         });
 
