@@ -200,10 +200,10 @@ public static class AdminEndpoints
 
         context.Response.Cookies.Append(Constants.ADMIN_APP_COOKIE_NAME, tokenContent, new CookieOptions
         {
-            HttpOnly = true,   // ◄ CRITICAL: Darkens the cookie to JavaScript/React
-            Secure = !BypassSecureCookies,     // ◄ Forces HTTPS in production
-            SameSite = SameSiteMode.Strict // ◄ Protects against CSRF attacks
-            ,
+            HttpOnly = true,
+            Secure = !BypassSecureCookies,
+            SameSite = SameSiteMode.Lax,
+            Path = "/",
             Expires = new DateTimeOffset(expires)
         });
 
