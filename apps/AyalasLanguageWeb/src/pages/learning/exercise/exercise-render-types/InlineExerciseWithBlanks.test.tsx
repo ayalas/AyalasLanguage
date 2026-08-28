@@ -67,6 +67,7 @@ describe('InlineExerciseWithBlanks', () => {
       ownershipType: OWNERSHIP_TYPE.PUBLIC
     } as ExtendedExerciseInfo,
     setError: vi.fn(),
+    setHasAnswer: vi.fn(),
     moveNext: vi.fn(),
     displayAnswer: false,
     playTargetText: vi.fn(),

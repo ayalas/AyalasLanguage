@@ -80,6 +80,7 @@ describe('TwoLinesTranslationExercise', () => {
     moveNext: vi.fn(),
     displayAnswer: false,
     user: mockUser,
+    setHasAnswer: vi.fn(),
     playTargetText: vi.fn()
   };
 

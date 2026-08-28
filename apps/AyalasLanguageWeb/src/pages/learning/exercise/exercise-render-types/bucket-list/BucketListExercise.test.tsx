@@ -49,6 +49,7 @@ describe('BucketListExercise', () => {
         setError={mockSetError}
         moveNext={mockMoveNext}
         playTargetText={mockPlayTargetText}
+        setHasAnswer={vi.fn()}
         ref={ref}
       />
     );
