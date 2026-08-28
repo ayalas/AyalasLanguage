@@ -326,7 +326,7 @@ export default function LessonScreen() {
   }, [isMounted, isChildMounted, currentExercise, currentExercise?.exerciseId])
 
   return (
-    <View className="lesson-outer-container">
+    <View className="lesson-outer-container" style={{ paddingHorizontal: 5, paddingTop: Platform.OS === 'web' ? 5: 26, paddingBottom: 24 }}>
       <ScrollView className="lesson-inner-container" showsVerticalScrollIndicator={false}>
 
         {error !== '' && (

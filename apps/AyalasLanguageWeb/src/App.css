@@ -718,9 +718,15 @@ input:required:invalid {
   z-index: 999;
 }
 
-.menu-delimiter {
+.lesson-delimiter {
   border: 0;
   border-top: 1px solid var(--text-h);
+  margin: 4px 0;
+}
+
+.menu-delimiter {
+  border: 0;
+  border-top: 1px solid var(--border);
   margin: 4px 0;
 }
 

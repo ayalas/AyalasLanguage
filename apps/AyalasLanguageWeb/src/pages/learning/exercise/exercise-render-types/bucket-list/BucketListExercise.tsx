@@ -175,7 +175,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
             </div>
           )}
           {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasMultiBucketAnswers && (
-            <div className="menu-delimiter"></div>
+            <div className="lesson-delimiter"></div>
           )}
           {bucketList && (
             <div className="form-row bucket">
