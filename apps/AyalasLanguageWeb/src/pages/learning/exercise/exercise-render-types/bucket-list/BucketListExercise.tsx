@@ -14,10 +14,11 @@ type Props = {
   displayAnswer?: boolean;
   playTargetText: (s: string) => Promise<void>;
   user?: User | null;
+  setHasAnswer: (hasAnswer: boolean) => void;
   ref: React.Ref<ExerciseHandle>;
 };
 
-const BucketListExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, playTargetText, user, ref }: Props) {
+const BucketListExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, playTargetText, user, setHasAnswer, ref }: Props) {
   const [bucketList, setBucketList] = useState<string[]>([]);
   const [answerList, setAnswerList] = useState<string[]>([]);
   const [first, setFirst] = useState('');
@@ -124,7 +125,9 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       setHasError(false);
     }
     setBucketList([...bucketList, itemValue]);
-    setAnswerList(answerList.filter((_, ind) => ind !== position));
+    const tmpAnswerList = answerList.filter((_, ind) => ind !== position);
+    setAnswerList(tmpAnswerList);
+    setHasAnswer(tmpAnswerList.length > 0);
   }
 
   async function bucketListItemClicked(itemValue: string, position: number) {
@@ -146,6 +149,7 @@ const BucketListExercise = function ({ exerciseInfo, setError, moveNext, display
       setBucketList(bucketList.filter((_, ind) => ind !== position));
       setAnswerList([...answerList, itemValue]);
     }
+    setHasAnswer(true);
   }
 
   const isRTL = isRightToLeftInput(

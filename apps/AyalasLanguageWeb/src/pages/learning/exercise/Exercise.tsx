@@ -40,6 +40,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
+    const [hasAnswer, setHasAnswer] = useState(false);
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
     const navigate = useNavigate();
@@ -192,7 +193,8 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     <InlineExerciseWithBlanks ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer}
-                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
+                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText}
+                        setHasAnswer={setHasAnswer} />
                 ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].IsMatchingType && (
                     <MatchWordsExercise
                         exerciseInfo={exerciseInfo} setError={setError}
@@ -200,12 +202,14 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                 ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasExtraOptions && (
                     <BucketListExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} />
+                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} 
+                        setHasAnswer={setHasAnswer} />
                 )) || (
                         <TwoLinesTranslationExercise ref={refExercise}
                             exerciseInfo={exerciseInfo} setError={setError}
                             moveNext={moveNext} displayAnswer={displayAnswer}
-                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
+                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} 
+                            setHasAnswer={setHasAnswer} />
                     ))}
             </div>
             
@@ -272,7 +276,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
                     </div>
                 )}
                 {
-                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && (
+                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && hasAnswer && (
                         <div className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"}`}>
                             <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks />&nbsp;Check</button>
                         </div>

@@ -17,10 +17,11 @@ type Props = {
   parentCheckAnswer?: () => boolean;
   user?: User | null;
   playTargetText: (s: string) => Promise<void>;
+  setHasAnswer: (hasAnswer: boolean) => void;
   ref: React.Ref<ExerciseHandle>;
 };
 
-export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText, ref }: Props) {
+export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user, playTargetText, setHasAnswer, ref }: Props) {
   const inputRef = useRef<ExerciseInputHandle | null>(null);
   const [inputValue, setInputValue] = useState('');
   const [first, setFirst] = useState('');
@@ -34,6 +35,7 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       setHasError(false);
     }
     setInputValue(value);
+    setHasAnswer(value != '');
   }, [hasError]); // Stable reference
 
   function compareToAnswer(userAnswer: string, correctAnswer: string) {

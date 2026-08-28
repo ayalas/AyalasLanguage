@@ -47,6 +47,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
+    const [hasAnswer, setHasAnswer] = useState(false);
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useAuth();
     const { styles } = useTextStyles();
@@ -209,7 +210,8 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                     <InlineExerciseWithBlanks ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
                         moveNext={moveNext} displayAnswer={displayAnswer}
-                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
+                        parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} 
+                        setHasAnswer={setHasAnswer} />
                 ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].IsMatchingType && (
                     <MatchWordsExercise
                         exerciseInfo={exerciseInfo} setError={setError}
@@ -217,12 +219,14 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                 ) || (EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].HasExtraOptions && (
                     <BucketListExercise ref={refExercise}
                         exerciseInfo={exerciseInfo} setError={setError}
-                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} />
+                        moveNext={moveNext} displayAnswer={displayAnswer} user={user} playTargetText={playTargetText} 
+                        setHasAnswer={setHasAnswer} />
                 )) || (
                         <TwoLinesTranslationExercise ref={refExercise}
                             exerciseInfo={exerciseInfo} setError={setError}
                             moveNext={moveNext} displayAnswer={displayAnswer}
-                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} />
+                            parentCheckAnswer={checkAnswer} user={user} playTargetText={playTargetText} 
+                            setHasAnswer={setHasAnswer} />
                     ))}
             </View>
 
@@ -300,7 +304,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
                     </View>
                 )}
                 {
-                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && (
+                    EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && hasAnswer && (
                         <View className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "flex-1" : "exercise-footer-next-noback"} bg-brand-play p-3 border-brand-border border-solid rounded-2xl`}>
                             <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="flex-row w-full items-center justify-center bg-brand-play " ><View className="flex-row items-center justify-center bg-brand-play"><ListChecks color='white' /><Text style={[styles.text, { color: 'white', backgroundColor: COLOR_PLAY }]}> Check</Text></View></TouchableOpacity>
                         </View>

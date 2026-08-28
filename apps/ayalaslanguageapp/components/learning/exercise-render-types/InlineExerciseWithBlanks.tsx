@@ -17,11 +17,12 @@ interface Props {
     parentCheckAnswer?: () => void;
     user?: User;
     playTargetText: (s: string) => Promise<void>;
+    setHasAnswer: (hasAnswer: boolean) => void;
     ref: React.Ref<ExerciseHandle>;
 }
 
 export default function InlineExerciseWithBlanks({ exerciseInfo, setError, moveNext, displayAnswer, parentCheckAnswer, user,
-    playTargetText, ref }: Props) {
+    playTargetText, setHasAnswer, ref }: Props) {
     const questionsRefMap = useRef<Map<string, ExerciseInputHandle | undefined>>(new Map());
     const currentInputKey = useRef("");
     const [second, setSecond] = useState('');
@@ -52,13 +53,51 @@ export default function InlineExerciseWithBlanks({ exerciseInfo, setError, moveN
         }
     };
 
+    const checkIfHasAnswer =  (input: string, excludeKey: string) => {
+        if (input != '') {
+            return true;
+        }
+        else {
+            const thisQuestionRefs = new Map(
+                [...questionsRefMap.current.entries()].filter(([key]) => key !== excludeKey && key.startsWith(`${exerciseInfo.exerciseId}-`))
+            );
+
+            const realAnswers = exerciseInfo.answers?.filter((s) => s != PLACEHOLDERS.BLANKS);
+            if (realAnswers == undefined) {
+                return false;
+            }
+
+            for (let j = 0; j < (exerciseInfo.answers?.length || 0); j++) {
+
+                if (exerciseInfo.answers?.[j] == PLACEHOLDERS.BLANKS) {
+                    continue;
+                }
+
+                const inputRef = thisQuestionRefs.get(`${exerciseInfo.exerciseId}-${j}`);
+
+                if (!inputRef) {
+                    continue;
+                }
+                if (inputRef.getUserAnswer().trim() !== '') {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+    }
+
     const onChangeFromInput = useCallback((value: string, key?: string) => {
         if (hasError && value !== inputValue) {
             setError("");
             setHasError(false);
         }
         setInputValue(value);
-        if (key) currentInputKey.current = key;
+        if (key) {
+            currentInputKey.current = key;
+            setHasAnswer(checkIfHasAnswer(value, key));
+        }
+        
     }, [hasError]);
 
     useImperativeHandle(ref, () => ({
