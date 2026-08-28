@@ -676,7 +676,7 @@
 }
 
 .menu-delimiter {
-  border-color: var(--border);
+  border-color: var(--text-h);
   border-top-width: 1px;
   border-style: solid;
   margin: 4px 0;
