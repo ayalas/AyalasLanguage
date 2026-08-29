@@ -24,7 +24,8 @@ public static class LearningEndpoints
 
         learning.MapGet("/path", GetLearningPath);
         learning.MapGet("/path/{pathId:int}", GetSingleLearningPath);
-        learning.MapGet("/path/{pathId:int}/exercises", GetExercises);
+        learning.MapGet("/path/{pathId:int}/exercises", GetAllExercises);
+        learning.MapPost("/path/{pathId:int}/paged", GetPagedExercises);
         learning.MapPost("/progress", UpdateUserProgress);
         learning.MapPost("/mistake", AddMistake);
         learning.MapDelete("/progress/{pathId:int}", DeleteUserProgress);
@@ -276,13 +277,77 @@ public static class LearningEndpoints
         return Results.NoContent();
     }
 
-    private static async Task<IResult> GetExercises(int pathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> GetAllExercises(int pathId, ClaimsPrincipal claim, AyalasLanguageDbContext db)
     {
         var userId = claim.GetUserId();
         bool isAdmin = claim.IsInRole("Admin");
 
+        var query = await GetExercisesQuery(pathId, userId, isAdmin, db);
+        if (query == null)
+        {
+            return Results.NotFound();
+        }
+
+        //add if we want to handle approved exercises
+        //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
+
+        //Filter exercises by path and user exercise types
+        var exercises = await GetExercisesDtoQuery(query, userId, isAdmin)
+            .ToListAsync();
+
+        return Results.Ok(exercises);
+    }
+
+    private static async Task<IResult> GetPagedExercises(int pathId, PagedExercisesRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+        bool isAdmin = claim.IsInRole("Admin");
+        var query = await GetExercisesQuery(pathId, userId, isAdmin, db);
+        if (query == null)
+        {
+            return Results.NotFound();
+        }
+
+        int page = 0;
+        int numOfRecords = 0;
+
+        if (req.startExerciseId != null)
+        {
+            //count exercises until exercise id to find the page
+            var countToExerciseQuery = query.Where(ex => ex.ExerciseId <= req.startExerciseId);
+            int countToExercise = await countToExerciseQuery.CountAsync();
+
+            if (countToExercise > 0)
+            {
+                page = countToExercise / Constants.PAGE_SIZE;
+                if (countToExercise % Constants.PAGE_SIZE > 0)
+                {
+                    page++;
+                }
+            }
+        }
+        else
+        {
+            page = req.page ?? 0;
+        }
+
+        //if we never got the numOfRecords or we have a refreshCount
+        if (page == 0 || req.startExerciseId != null || req.RefreshCount)
+        {
+            numOfRecords = await query.CountAsync();
+        }
+
+        var exercises = await GetExercisesDtoQuery(query, userId, isAdmin)
+            .Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1)
+            .ToArrayAsync();
+        
+        return Results.Ok(new PagedExercisesResponse(numOfRecords, page, exercises));
+    }
+
+    private static async Task<IQueryable<Exercise>?> GetExercisesQuery(int pathId, int userId, bool isAdmin, AyalasLanguageDbContext db)
+    {
         var user = await db.Users.FindAsync(userId);
-        if (user == null) return Results.NotFound();
+        if (user == null) return null;
 
         //Allow admin to get all exercises (but not create new ones on private lessons)
         var query = db.Exercises
@@ -299,19 +364,17 @@ public static class LearningEndpoints
             query = query.Where(e => e.OwnershipType == (byte)OwnershipTypeEnum.Public || e.UserId == userId);
         }
 
-        //add if we want to handle approved exercises
-        //&& (e.Status == (byte)ContentStatusEnum.Approved || e.UserId == userId)
+        return query;
+    }
+    //GetPagedExercises
 
-        //Filter exercises by path and user exercise types
-        var exercises = await query.OrderBy(e => e.ExerciseId) // Ensure consistent ordering
+    private static IQueryable<ExerciseDto> GetExercisesDtoQuery(IQueryable<Exercise> query, int userId, bool isAdmin)
+    {
+        return query.OrderBy(e => e.ExerciseId) // Ensure consistent ordering
             .Select(e => new ExerciseDto(e.ExerciseId, e.ExerciseTypeId, e.Data,
                 isAdmin || e.UserId == userId ? (byte)UserAccessEnum.CanEdit : (byte)UserAccessEnum.Learner
-            , pathId, (OwnershipTypeEnum)e.OwnershipType))
-            .ToListAsync();
-
-        return Results.Ok(exercises);
+            , e.LearningPathId, (OwnershipTypeEnum)e.OwnershipType));
     }
-
     internal static async Task<UserProgress?> GetMistakesLearningPathForUser(int userId, int targetLanguageId, int knownLanguageId, AyalasLanguageDbContext db)
     {
         return await db.UserProgresses.Where(p => p.UserId == userId && p.practiseMistakesInThisPath == true)

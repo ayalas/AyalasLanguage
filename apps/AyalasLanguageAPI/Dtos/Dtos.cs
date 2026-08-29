@@ -32,6 +32,8 @@ namespace AyalasLanguageAPI.DTOs
 
     public record AddMistakeDto(int ExerciseId);
     // Exercise DTOs
+    public record PagedExercisesRequest(int? startExerciseId, int? page, bool RefreshCount = false);
+    public record PagedExercisesResponse(int NumOfRecords, int Page, ExerciseDto[] Data);
     public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access, int? LearningPathId, OwnershipTypeEnum OwnershipType);
 
     public record NextChapterDto(int Level, decimal ChapterHint);
