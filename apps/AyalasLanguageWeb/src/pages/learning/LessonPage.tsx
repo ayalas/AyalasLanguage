@@ -156,10 +156,21 @@ export function LessonPage() {
     setScoreToAdd(newScore);
 
     if ((currentExercise.index ?? 0) === exercises.length - 1) {
+      let targetPage = page;
+      let changedPage = false;
+      if (exercises.length == PAGE_SIZE || hasMoreData) {
+        //stay on page and see if there are new exercises
+        targetPage = page + 1;
+        changedPage = true;
+      }
 
-      const tempExercises = await loadExercises(page + 1, !hasMoreData || page + 1 >= totalPages);
-      if (tempExercises && tempExercises.length > 0) {
-        changeCurrentExercise(tempExercises, 0);
+      const tempExercises = await loadExercises(targetPage, !hasMoreData || page + 1 >= totalPages);
+      if (tempExercises && tempExercises.length > 0 && changedPage) {
+          changeCurrentExercise(tempExercises, 0);
+          return;
+      }
+      else if ((currentExercise.index ?? 0) < tempExercises.length - 1) {
+        changeCurrentExercise(tempExercises, (currentExercise.index ?? 0) + 1);
         return;
       }
     }
@@ -199,7 +210,7 @@ export function LessonPage() {
       const exCurInd = exercises.findIndex((e) => e.exerciseId == currentExercise.exerciseId);
       let exerId = null as number | null;
 
-      if (practiseMistakesInThisPath) {
+      if (practiseMistakesInThisPath || page > 1) {
         exerId = currentExercise.exerciseId;
       }
       else if (exCurInd > 0) {
