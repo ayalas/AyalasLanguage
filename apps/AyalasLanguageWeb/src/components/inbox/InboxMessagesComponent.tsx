@@ -11,7 +11,7 @@ import type { InboxUserMessage, PagedResponse } from "@ayalaslanguage/types/shar
 import type { User } from "@ayalaslanguage/types/sharedfrontlib/user";
 
 import { PAGE_SIZE } from "../../constants/learning";
-import { InboxPager } from "./InboxPager";
+import { GridPager } from "../GridPager";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -116,7 +116,7 @@ export function InboxMessagesComponent({ showOnNoData, learningPathId, inRespons
                                         )
                                     })}
 
-                                    <InboxPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={loadData} />
+                                    <GridPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={loadData} />
                                 </div>
                             )
                         }

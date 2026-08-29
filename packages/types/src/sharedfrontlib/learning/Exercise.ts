@@ -18,6 +18,20 @@ export interface ExerciseInfo {
   ownershipType: OwnershipType;
 }
 
+export interface PagedExercisesRequest
+{
+  startExerciseId?: number;
+  page: number;
+  refreshCount: boolean;
+}
+
+export interface PagedExercisesResponse
+{
+  numOfRecords: number;
+  page: number;
+  data: ExerciseInfo[];
+}
+
 export type ExtendedExerciseInfo = ExerciseInfo & {
   exerciseObject?: ExerciseData;
   index?: number
@@ -42,3 +56,5 @@ export type MatchSelection = {
 };
 
 export type SetColumnType = (arr: MatchCell[]) => void;
+
+

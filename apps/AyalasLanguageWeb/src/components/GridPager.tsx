@@ -7,7 +7,7 @@ interface Props {
   totalPages: number;
 }
 
-export function InboxPager({ hasMoreData, page, loadData, totalPages } : Props) {
+export function GridPager({ hasMoreData, page, loadData, totalPages } : Props) {
 
     return (totalPages > 1 && (
         <div className="form-row">
@@ -23,7 +23,7 @@ export function InboxPager({ hasMoreData, page, loadData, totalPages } : Props) 
                     <label data-testid="pagenum">{page} of {totalPages}</label>
                 </div>
                 <div className="form-button-cell">
-                    <button data-testid="next" type="button" disabled={!hasMoreData} onClick={async () => await loadData(page + 1)} className="pager-button" title="Previous page"><CircleArrowRight /></button>
+                    <button data-testid="next" type="button" disabled={!hasMoreData} onClick={async () => await loadData(page + 1)} className="pager-button" title="Next page"><CircleArrowRight /></button>
                 </div>
                 <div className="form-button-cell">
                     <button data-testid="last" type="button" disabled={totalPages == page} onClick={async () => await loadData(totalPages)} className="pager-button" title="Last page"><ChevronLast /></button>

@@ -1,6 +1,6 @@
 import { View, Text, ScrollView } from "react-native";
 import { useEffect, useState } from "react";
-import { InboxPager } from "@/components/inbox/InboxPager";
+
 import { errorHandler } from "@ayalaslanguage/types/error";
 import type { InboxUserMessage, PagedResponse } from "@ayalaslanguage/types/sharedfrontlib/inbox";
 import api from "@/lib/api";
@@ -12,6 +12,7 @@ import timezone from 'dayjs/plugin/timezone';
 import { useAuth } from "@/lib/AuthContext";
 
 import useTextStyles from "@/lib/useTextStyles";
+import { GridPager } from "../GridPager";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -116,7 +117,7 @@ export default function InboxMessagesComponent({ showOnNoData, learningPathId, i
                                         )
                                     })}
 
-                                    <InboxPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={loadData} />
+                                    <GridPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={loadData} />
                                 </View>
                             )
                         }

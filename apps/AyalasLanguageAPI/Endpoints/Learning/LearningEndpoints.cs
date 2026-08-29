@@ -298,7 +298,7 @@ public static class LearningEndpoints
         return Results.Ok(exercises);
     }
 
-    private static async Task<IResult> GetPagedExercises(int pathId, PagedExercisesRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    private static async Task<IResult> GetPagedExercises(int pathId, PagedExercisesRequest req, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
         bool isAdmin = claim.IsInRole("Admin");
@@ -311,10 +311,10 @@ public static class LearningEndpoints
         int page = 0;
         int numOfRecords = 0;
 
-        if (req.startExerciseId != null)
+        if (req.StartExerciseId != null)
         {
             //count exercises until exercise id to find the page
-            var countToExerciseQuery = query.Where(ex => ex.ExerciseId <= req.startExerciseId);
+            var countToExerciseQuery = query.Where(ex => ex.ExerciseId <= req.StartExerciseId);
             int countToExercise = await countToExerciseQuery.CountAsync();
 
             if (countToExercise > 0)
@@ -328,11 +328,11 @@ public static class LearningEndpoints
         }
         else
         {
-            page = req.page ?? 0;
+            page = req.Page ?? 0;
         }
 
         //if we never got the numOfRecords or we have a refreshCount
-        if (page == 0 || req.startExerciseId != null || req.RefreshCount)
+        if (page == 0 || req.StartExerciseId != null || req.RefreshCount)
         {
             numOfRecords = await query.CountAsync();
         }
@@ -341,6 +341,8 @@ public static class LearningEndpoints
             .Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1)
             .ToArrayAsync();
         
+        logger.LogInformation("PagedExercisesResponse for {page}, {numOfRecords}", page, numOfRecords);
+
         return Results.Ok(new PagedExercisesResponse(numOfRecords, page, exercises));
     }
 

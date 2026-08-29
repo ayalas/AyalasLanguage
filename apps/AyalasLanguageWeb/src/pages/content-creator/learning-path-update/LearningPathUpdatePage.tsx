@@ -8,12 +8,17 @@ import { AUTHOR_ACCESS } from '@ayalaslanguage/types/auth';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
 import { FormHeader } from '../../../components/FormHeader';
-import type { EditLearningPathRequest, ExerciseData, ExerciseInfo, ExtendedExerciseInfo, LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { EditLearningPathRequest, ExerciseData, ExtendedExerciseInfo, LearningPathInfo, PagedExercisesRequest, PagedExercisesResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { InboxMessagesComponent } from '../../../components/inbox/InboxMessagesComponent';
+import { PAGE_SIZE } from '../../../constants/learning';
+import { GridPager } from '../../../components/GridPager';
 
 export function LearningPathUpdatePage() {
   const [initialRecord, setInitialRecord] = useState<LearningPathInfo | null>(null);
-  const [existingExercises, setExistingExercises] = useState<any[]>([]);
+  const [existingExercises, setExistingExercises] = useState<ExtendedExerciseInfo[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [hasMoreData, setHasMoreData] = useState(false);
   const [updateFormError, setUpdateFormError] = useState('');
   const navigate = useNavigate();
   const { learningPathId } = useParams();
@@ -37,12 +42,31 @@ export function LearningPathUpdatePage() {
     }
   };
 
-  async function loadExercises() {
+  async function loadExercises(newPage: number, forceRefresh: boolean) {
     try {
+      setPage(newPage);
+
       if (Number(learningPathId) > 0) {
-        const res = await axios.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+        const res = await axios.post<PagedExercisesResponse>(`/api/learning/path/${learningPathId}/paged`,
+          {
+            page: newPage - 1,
+            refreshCount: (newPage == totalPages) || forceRefresh
+          } as PagedExercisesRequest
+        );
         const exercisesTemp: ExtendedExerciseInfo[] = [];
-        for (const ex of res.data) {
+        const pagedResponse = res.data;
+
+        if (pagedResponse.numOfRecords > 0) {
+          let numOfPages = Math.trunc(pagedResponse.numOfRecords / PAGE_SIZE);
+          if (pagedResponse.numOfRecords % PAGE_SIZE > 0)
+            numOfPages++;
+          setTotalPages(numOfPages);
+        }
+
+        setHasMoreData(pagedResponse.data.length > PAGE_SIZE);
+        const tmpExercisesRaw = pagedResponse.data.slice(0, PAGE_SIZE);
+
+        for (const ex of tmpExercisesRaw) {
           const newExercise: ExtendedExerciseInfo = { ...ex };
           try {
             newExercise.exerciseObject = safeParseData(ex.data) as ExerciseData;
@@ -65,7 +89,7 @@ export function LearningPathUpdatePage() {
         if (Number(learningPathId) > 0) {
           const res = await axios.get<LearningPathInfo>(`/api/learning/path/${learningPathId}`);
           setInitialRecord(res.data);
-          await loadExercises();
+          await loadExercises(1, true);
         }
       } catch (err: unknown) {
         errorHandler(err, setUpdateFormError);
@@ -85,8 +109,8 @@ export function LearningPathUpdatePage() {
         <FormHeader isPublic={false} title="Lesson editor" />
         {initialRecord != null && (
           <>
-            <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={loadExercises} />
-            <InboxMessagesComponent showOnNoData={false} title="Replies" learningPathId={initialRecord.learningPathId}  />
+            <LearningPathAuthoringForm handleSubmit={handleSubmit} initialRecord={initialRecord} reloadExercise={() => loadExercises(page, true)} />
+            <InboxMessagesComponent showOnNoData={false} title="Replies" learningPathId={initialRecord.learningPathId} />
             {existingExercises && existingExercises.length > 0 && (
               <>
                 <div className="inform-header">
@@ -95,6 +119,7 @@ export function LearningPathUpdatePage() {
                 {existingExercises.map((existing) => (
                   <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
                 ))}
+                <GridPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={(pgNum:number) => loadExercises(pgNum, false)} />
               </>
             )}
           </>

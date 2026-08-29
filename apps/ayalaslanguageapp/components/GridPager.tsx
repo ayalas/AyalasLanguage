@@ -9,7 +9,7 @@ interface Props {
   totalPages: number;
 }
 
-export function InboxPager(props: Props) {
+export function GridPager(props: Props) {
     const { hasMoreData, page, loadData, totalPages } = props;
     const { styles } = useTextStyles();
 
