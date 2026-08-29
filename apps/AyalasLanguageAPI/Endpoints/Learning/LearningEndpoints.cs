@@ -319,7 +319,7 @@ public static class LearningEndpoints
 
             if (countToExercise > 0)
             {
-                page = countToExercise / Constants.PAGE_SIZE;
+                page = (countToExercise / Constants.PAGE_SIZE) - 1;
                 if (countToExercise % Constants.PAGE_SIZE > 0)
                 {
                     page++;
@@ -341,7 +341,7 @@ public static class LearningEndpoints
             .Skip(page * Constants.PAGE_SIZE).Take(Constants.PAGE_SIZE + 1)
             .ToArrayAsync();
         
-        logger.LogInformation("PagedExercisesResponse for {page}, {numOfRecords}", page, numOfRecords);
+        //logger.LogInformation("PagedExercisesResponse for {page}, {numOfRecords}", page, numOfRecords);
 
         return Results.Ok(new PagedExercisesResponse(numOfRecords, page, exercises));
     }

@@ -7,9 +7,10 @@ import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAnd
 import { Exercise, type ExerciseHandle } from './exercise/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { EXERCISE_TYPE_LOGIC, safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
-import { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo, type PagedExercisesRequest, type PagedExercisesResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { toast } from 'sonner';
+import { PAGE_SIZE } from '../../constants/learning';
 
 export function LessonPage() {
   const { learningPathId } = useParams();
@@ -17,6 +18,11 @@ export function LessonPage() {
   const [scoreToAdd, setScoreToAdd] = useState(0);
   const [learningPathData, setLearningPathData] = useState<LearningPathInfo | null>(null);
   const [currentExercise, setCurrentExercise] = useState<ExtendedExerciseInfo | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [numOfRecords, setNumOfRecords] = useState(0);
+  const [hasMoreData, setHasMoreData] = useState(false);
+  const [hasData, setHasData] = useState(false);
   const [practiseMistakesInThisPath, setPractiseMistakesInThisPath] = useState(false);
   const [error, setError] = useState('');
   const exerciseRefs = useRef<Map<number, ExerciseHandle | undefined>>(new Map());
@@ -147,19 +153,18 @@ export function LessonPage() {
     if (!currentExercise) return;
 
     const newScore = scoreToAdd + 1;
+    setScoreToAdd(newScore);
 
     if ((currentExercise.index ?? 0) === exercises.length - 1) {
-      const origLength = exercises.length;
-      const tempExercises = await loadExercises();
-      if (tempExercises.length > origLength) {
-        setScoreToAdd(newScore);
-        changeCurrentExercise(tempExercises, (currentExercise.index ?? 0) + 1);
+
+      const tempExercises = await loadExercises(page + 1, !hasMoreData || page + 1 >= totalPages);
+      if (tempExercises && tempExercises.length > 0) {
+        changeCurrentExercise(tempExercises, 0);
         return;
       }
     }
 
     if ((currentExercise.index ?? 0) < exercises.length - 1) {
-      setScoreToAdd(newScore);
       changeCurrentExercise(exercises, (currentExercise.index ?? 0) + 1);
     } else {
       try {
@@ -173,10 +178,17 @@ export function LessonPage() {
     }
   };
 
-  const movePrev = function () {
+  const movePrev = async function () {
     if (currentExercise == null) return;
     if ((currentExercise.index ?? 0) > 0) {
       changeCurrentExercise(exercises, (currentExercise.index ?? 0) - 1);
+    }
+    else if (page > 1) {
+      const tempExercises = await loadExercises(page - 1, false);
+      if (tempExercises.length > 0) {
+        changeCurrentExercise(tempExercises, tempExercises.length - 1);
+        return;
+      }
     }
   }
 
@@ -240,10 +252,10 @@ export function LessonPage() {
         });
 
       } else {
-        await axios.post('/api/learning/progress', { 
-          learningPathId, 
+        await axios.post('/api/learning/progress', {
+          learningPathId,
           exerciseId: exerId,
-          practiseMistakesInThisPath 
+          practiseMistakesInThisPath
         });
 
         Finalize();
@@ -258,16 +270,38 @@ export function LessonPage() {
     changeCurrentExercise(exercises, 0);
   };
 
-  const loadExercises = async function () {
+  const loadExercises = async function (newPage: number, forceRefresh: boolean, startExerciseId?: number) {
     try {
-      const res = await axios.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+      const res = await axios.post<PagedExercisesResponse>(`/api/learning/path/${learningPathId}/paged`,
+        {
+          startExerciseId,
+          page: newPage - 1,
+          refreshCount: (newPage == totalPages) || forceRefresh
+        } as PagedExercisesRequest
+      );
+      const pagedResponse = res.data;
+      if (pagedResponse) {
+        if (pagedResponse.numOfRecords > 0) {
+          let numOfPages = Math.trunc(pagedResponse.numOfRecords / PAGE_SIZE);
+          if (pagedResponse.numOfRecords % PAGE_SIZE > 0)
+            numOfPages++;
+          setTotalPages(numOfPages);
+          setNumOfRecords(pagedResponse.numOfRecords);
+        }
 
-      if (res && res.data && res.data.length > 0) {
+        setPage(pagedResponse.page + 1);
 
-        const exercisesTemp = [...res.data];
+        if (pagedResponse.data && pagedResponse.data.length > 0) {
+          setHasData(true);
+          setHasMoreData(pagedResponse.data.length > PAGE_SIZE);
+          const exercisesTemp = pagedResponse.data.slice(0, PAGE_SIZE);
 
-        setExercises(exercisesTemp);
-        return exercisesTemp;
+          setExercises(exercisesTemp);
+          return exercisesTemp;
+        }
+        else {
+          setHasData(false);
+        }
       }
     } catch (err: unknown) {
       errorHandler(err, setError);
@@ -283,9 +317,9 @@ export function LessonPage() {
         const learningPathTemp = response.data;
         setLearningPathData(learningPathTemp);
         setPractiseMistakesInThisPath(learningPathTemp.practiseMistakesInThisPath);
-        const exercisesTemp = await loadExercises();
+        const exercisesTemp = await loadExercises(page, true, learningPathTemp.exerciseId);
 
-        if (exercisesTemp.length > 0) {
+        if (exercisesTemp && exercisesTemp.length > 0) {
           let exCurInd = 0;
           if (learningPathTemp.exerciseId != null) {
             exCurInd = exercisesTemp.findIndex((e) => e.exerciseId == learningPathTemp.exerciseId);
@@ -331,10 +365,10 @@ export function LessonPage() {
                 )}
               </>
             )}
-            {currentExercise && (
+            {currentExercise && hasData && (
               <>
                 <div className="form-row">
-                  <label className="form-label-row">{`Exercise ${(currentExercise.index ?? 0) + 1} of ${exercises.length}`}</label>
+                  <label className="form-label-row">{`Exercise ${((page - 1) * PAGE_SIZE) + (currentExercise.index ?? 0) + 1} of ${numOfRecords}`}</label>
                 </div>
 
                 <Exercise key={currentExercise.exerciseId}

@@ -71,18 +71,27 @@ describe('LearningPathUpdatePage', () => {
   });
 
   it('renders correctly and fetches data on mount', async () => {
-    const mockPathData = { id: 123, name: 'Path Name', access: AUTHOR_ACCESS.CAN_EDIT, ownershipType: OWNERSHIP_TYPE.PUBLIC };
-    const mockExercises = [
-      { exerciseId: 1, data: JSON.stringify({ First: 'Ex 1' }) },
-      { exerciseId: 2, data: 'Plain Text Data' },
-    ];
+    const mockPathData = { 
+      learningPathId: 123, // Component uses .learningPathId in some places
+      name: 'Path Name', 
+      access: AUTHOR_ACCESS.CAN_EDIT, 
+      ownershipType: OWNERSHIP_TYPE.PUBLIC 
+    };
 
-    mockedAxios.get.mockImplementation((url: string) => {
-      if (url.includes('/exercises')) {
-        return Promise.resolve({ data: mockExercises });
-      }
-      return Promise.resolve({ data: mockPathData });
-    });
+    // The component expects this specific structure for paged exercises
+    const mockPagedResponse = {
+      numOfRecords: 2,
+      data: [
+        { exerciseId: 1, data: JSON.stringify({ First: 'Ex 1' }) },
+        { exerciseId: 2, data: 'Plain Text Data' },
+      ],
+    };
+
+    // 1. Mock the GET request for the initial record
+    mockedAxios.get.mockResolvedValue({ data: mockPathData });
+
+    // 2. Mock the POST request for the paged exercises
+    mockedAxios.post.mockResolvedValue({ data: mockPagedResponse });
 
     render(
       <MemoryRouter>
@@ -90,13 +99,19 @@ describe('LearningPathUpdatePage', () => {
       </MemoryRouter>
     );
 
-    // Verify initial data fetching
+    // Verify initial data fetching (Path Name is rendered in the Authoring Form)
     expect(await screen.findByText('Path Name')).toBeInTheDocument();
     
-    // Verify existing exercises rendered
+    // Verify existing exercises rendered via ExerciseLine mocks
     const exerciseLines = await screen.findAllByTestId('exercise-line');
     expect(exerciseLines).toHaveLength(2);
+
+    // Verify specific API calls
     expect(mockedAxios.get).toHaveBeenCalledWith(`/api/learning/path/${mockLearningPathId}`);
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      `/api/learning/path/${mockLearningPathId}/paged`,
+      expect.anything()
+    );
   });
 
   it('handles form submission successfully', async () => {

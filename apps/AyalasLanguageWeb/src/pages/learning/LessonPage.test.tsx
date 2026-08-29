@@ -4,7 +4,7 @@ import axios from 'axios';
 import React from 'react';
 import { MemoryRouter, useParams, useOutletContext } from 'react-router-dom';
 import { LessonPage } from './LessonPage';
-import { type ExerciseData, type ExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import { type ExerciseData, type PagedExercisesResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
 import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
@@ -65,7 +65,7 @@ vi.mock('./exercise/Exercise', () => ({
 
 
 describe('LessonPage', () => {
-  
+
   const mockLogin = vi.fn();
   const mockUser = {
     disableAutoAI: true,
@@ -82,12 +82,16 @@ describe('LessonPage', () => {
     ownershipType: OWNERSHIP_TYPE.PUBLIC
   };
 
-  const data1: ExerciseData = {First: 'can', Second: 'will'};
-  const data2: ExerciseData = {First: 'cat', Second: 'dog'};
-  const mockExercises: ExerciseInfo[] = [
-    { exerciseId: 101, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: JSON.stringify(data1), access: AUTHOR_ACCESS.CAN_EDIT, ownershipType: OWNERSHIP_TYPE.PUBLIC },
-    { exerciseId: 102, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: JSON.stringify(data2), access: AUTHOR_ACCESS.CAN_EDIT, ownershipType: OWNERSHIP_TYPE.PUBLIC },
-  ];
+  const data1: ExerciseData = { First: 'can', Second: 'will' };
+  const data2: ExerciseData = { First: 'cat', Second: 'dog' };
+  const mockExercises: PagedExercisesResponse = {
+    page: 0,
+    numOfRecords: 2,
+    data: [
+      { exerciseId: 101, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: JSON.stringify(data1), access: AUTHOR_ACCESS.CAN_EDIT, ownershipType: OWNERSHIP_TYPE.PUBLIC },
+      { exerciseId: 102, exerciseTypeId: EXERCISE_TYPES.FROM_KNOWN_TO_TARGET, data: JSON.stringify(data2), access: AUTHOR_ACCESS.CAN_EDIT, ownershipType: OWNERSHIP_TYPE.PUBLIC }
+    ]
+  } as PagedExercisesResponse;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -95,11 +99,29 @@ describe('LessonPage', () => {
     (useOutletContext as any).mockReturnValue({ user: mockUser, login: mockLogin });
 
     mockedAxios.get.mockImplementation((url) => {
-      if (url.includes('/exercises')) return Promise.resolve({ data: mockExercises });
-      if (url.includes('/path/')) return Promise.resolve({ data: mockPathData });
+      if (url.includes('/api/learning/path/')) return Promise.resolve({ data: mockPathData });
       return Promise.reject(new Error('API Error'));
     });
-    mockedAxios.post.mockResolvedValue({ data: { languageSettings: {} } });
+
+    mockedAxios.post.mockImplementation((url, body) => {
+      if (url.includes('/paged')) {
+        // If requesting page 0, return exercises. If page > 0, return empty.
+        const requestData = body as any;
+        if (requestData.page === 0) {
+          return Promise.resolve({ data: mockExercises });
+        }
+        return Promise.resolve({
+          data: { ...mockExercises, data: [], page: requestData.page }
+        });
+      }
+
+      if (url.includes('/api/profile/score')) {
+        return Promise.resolve({ data: { /* mock user data */ } });
+      }
+
+      return Promise.resolve({ data: {} });
+    });
+
     mockedAxios.delete.mockResolvedValue({ data: {} });
   });
 
@@ -110,21 +132,21 @@ describe('LessonPage', () => {
       </MemoryRouter>
     );
 
-    // 1. Wait for Exercise 1 to load and click next
+    // 1. Trigger Next on Exercise 1
     const nextBtnEx1 = await screen.findByTestId('trigger-move-next');
-    disableClientValidation();
     fireEvent.click(nextBtnEx1);
 
-    // 2. Wait for Exercise 2 to render. This ensures the component has updated state.
+    // 2. Wait for Exercise 2 to render
     await screen.findByText('Exercise 2 of 2');
 
-    // 3. Find the NEW button for Exercise 2 (the old one is unmounted)
+    // 3. Trigger Next on Exercise 2
     const nextBtnEx2 = await screen.findByTestId('trigger-move-next');
     fireEvent.click(nextBtnEx2);
 
     // 4. Wait for sequential async score and progress calls
     await waitFor(() => {
-      expect(mockedAxios.post).toHaveBeenCalledWith('/api/profile/score', expect.any(Object));
+      // Note: scoreToAdd becomes 2 because moveNext increments it each time
+      expect(mockedAxios.post).toHaveBeenCalledWith('/api/profile/score', { scoreToAdd: 2 });
       expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { learningPathId: '1' });
       expect(mockNavigate).toHaveBeenCalledWith('/home');
     });
@@ -146,8 +168,8 @@ describe('LessonPage', () => {
     fireEvent.click(saveBtn);
 
     await waitFor(() => {
-      expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', { 
-        learningPathId: '1', 
+      expect(mockedAxios.post).toHaveBeenCalledWith('/api/learning/progress', {
+        learningPathId: '1',
         exerciseId: 102,
         practiseMistakesInThisPath: false
       });
@@ -164,7 +186,7 @@ describe('LessonPage', () => {
 
     await screen.findByText('Exercise 1 of 2');
     disableClientValidation();
-    
+
     const saveBtn = await screen.findByTestId('trigger-save');
     fireEvent.click(saveBtn);
 
@@ -193,13 +215,13 @@ describe('LessonPage', () => {
       </MemoryRouter>
     );
 
+    // Use findBy to wait for the component to finish loading data and render
     const nextBtn = await screen.findByTestId('trigger-move-next');
-    
-    // Internal code calls ref.current.setFocus() inside changeCurrentExercise
-    await act(async () => {
-      fireEvent.click(nextBtn);
-    });
 
+    // fireEvent is wrapped in act internally by RTL
+    fireEvent.click(nextBtn);
+
+    // Check if we moved to the next exercise
     expect(await screen.findByText('Exercise 2 of 2')).toBeInTheDocument();
   });
 });

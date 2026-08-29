@@ -8,11 +8,12 @@ import { getMissingParts, replaceCharsForLanguage, setLanguageSettings, splitAnd
 import Exercise, { type ExerciseHandle } from '@/components/learning/Exercise';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { EXERCISE_TYPE_LOGIC, safeParseData } from '@ayalaslanguage/types/sharedfrontlib/logic';
-import { PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import { PagedExercisesRequest, PagedExercisesResponse, PLACEHOLDERS, type ExerciseInfo, type ExtendedExerciseInfo, type LearningPathInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
 import { useAuth } from '@/lib/AuthContext';
 import { FormHeader } from '@/components/FormHeader';
 import useTextStyles from '@/lib/useTextStyles';
+import { PAGE_SIZE } from '@/constants';
 
 export default function LessonScreen() {
   const { id: learningPathId } = useLocalSearchParams<{ id?: string }>();
@@ -23,6 +24,11 @@ export default function LessonScreen() {
   const [scoreToAdd, setScoreToAdd] = useState(0);
   const [learningPathData, setLearningPathData] = useState<LearningPathInfo | null>(null);
   const [currentExercise, setCurrentExercise] = useState<ExtendedExerciseInfo | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
+  const [numOfRecords, setNumOfRecords] = useState(0);
+  const [hasMoreData, setHasMoreData] = useState(false);
+  const [hasData, setHasData] = useState(false);
   const [practiseMistakesInThisPath, setPractiseMistakesInThisPath] = useState(false);
   const [error, setError] = useState('');
   const exerciseRefs = useRef<Map<number, ExerciseHandle | undefined>>(new Map());
@@ -140,16 +146,38 @@ export default function LessonScreen() {
     setLanguageSettings(res.data, user as User, login);
   };
 
-  const loadExercises = async function () {
+  const loadExercises = async function (newPage: number, forceRefresh: boolean, startExerciseId?: number) {
     try {
-      const res = await api.get<ExerciseInfo[]>(`/api/learning/path/${learningPathId}/exercises`);
+      const res = await api.post<PagedExercisesResponse>(`/api/learning/path/${learningPathId}/paged`,
+        {
+          startExerciseId,
+          page: newPage - 1,
+          refreshCount: (newPage == totalPages) || forceRefresh
+        } as PagedExercisesRequest
+      );
+      const pagedResponse = res.data;
+      if (pagedResponse) {
+        if (pagedResponse.numOfRecords > 0) {
+          let numOfPages = Math.trunc(pagedResponse.numOfRecords / PAGE_SIZE);
+          if (pagedResponse.numOfRecords % PAGE_SIZE > 0)
+            numOfPages++;
+          setTotalPages(numOfPages);
+          setNumOfRecords(pagedResponse.numOfRecords);
+        }
 
-      if (res && res.data && res.data.length > 0) {
+        setPage(pagedResponse.page + 1);
 
-        const exercisesTemp = [...res.data];
+        if (pagedResponse.data && pagedResponse.data.length > 0) {
+          setHasData(true);
+          setHasMoreData(pagedResponse.data.length > PAGE_SIZE);
+          const exercisesTemp = pagedResponse.data.slice(0, PAGE_SIZE);
 
-        setExercises(exercisesTemp);
-        return exercisesTemp;
+          setExercises(exercisesTemp);
+          return exercisesTemp;
+        }
+        else {
+          setHasData(false);
+        }
       }
     } catch (err: unknown) {
       errorHandler(err, setError);
@@ -162,19 +190,17 @@ export default function LessonScreen() {
     if (!currentExercise) return;
 
     const newScore = scoreToAdd + 1;
+    setScoreToAdd(newScore);
 
     if ((currentExercise.index ?? 0) === exercises.length - 1) {
-      const origLength = exercises.length;
-      const tempExercises = await loadExercises();
-      if (tempExercises.length > origLength) {
-        setScoreToAdd(newScore);
-        changeCurrentExercise(tempExercises, (currentExercise.index ?? 0) + 1);
+      const tempExercises = await loadExercises(page + 1, !hasMoreData || page + 1 >= totalPages);
+      if (tempExercises && tempExercises.length > 0) {
+        changeCurrentExercise(tempExercises, 0);
         return;
       }
     }
 
     if ((currentExercise.index ?? 0) < exercises.length - 1) {
-      setScoreToAdd(newScore);
       changeCurrentExercise(exercises, (currentExercise.index ?? 0) + 1);
     } else {
       try {
@@ -188,10 +214,17 @@ export default function LessonScreen() {
     }
   };
 
-  const movePrev = function () {
+  const movePrev = async function () {
     if (currentExercise == null) return;
     if ((currentExercise.index ?? 0) > 0) {
       changeCurrentExercise(exercises, (currentExercise.index ?? 0) - 1);
+    }
+    else if (page > 1) {
+      const tempExercises = await loadExercises(page - 1, false);
+      if (tempExercises.length > 0) {
+        changeCurrentExercise(tempExercises, tempExercises.length - 1);
+        return;
+      }
     }
   }
 
@@ -288,9 +321,9 @@ export default function LessonScreen() {
         const learningPathTemp = response.data;
         setLearningPathData(learningPathTemp);
         setPractiseMistakesInThisPath(learningPathTemp.practiseMistakesInThisPath);
-        const exercisesTemp = await loadExercises();
+        const exercisesTemp = await loadExercises(page, true, learningPathTemp.exerciseId);
 
-        if (exercisesTemp.length > 0) {
+        if (exercisesTemp && exercisesTemp.length > 0) {
 
           setExercises(exercisesTemp);
           let exCurInd = 0;
@@ -346,10 +379,10 @@ export default function LessonScreen() {
             )}
           </>
         )}
-        {currentExercise && (
+        {currentExercise && hasData && (
           <>
             <View className="form-row">
-              <Text style={styles.text}>{`Exercise ${(currentExercise.index ?? 0) + 1} of ${exercises.length}`}</Text>
+              <Text style={styles.text}>{`Exercise ${((page - 1) * PAGE_SIZE) + (currentExercise.index ?? 0) + 1} of ${numOfRecords}`}</Text>
             </View>
 
             <Exercise key={currentExercise.exerciseId}
