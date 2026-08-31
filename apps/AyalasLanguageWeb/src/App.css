@@ -146,7 +146,7 @@ body {
   margin-right: 10px;
 }
 
-.exercise-type-selector-container {
+.input-and-indicator-container {
   padding-bottom: 8px;
   line-height: 1.5;
   display: flex;
@@ -156,9 +156,8 @@ body {
   flex-wrap: wrap;
 }
 
-.exercise-type-select {
+.input-and-indicator-input {
   width: calc(100% - 40px);
-  ;
   min-height: 42px;
   border: 1px solid var(--border);
   border-radius: calc(var(--radius) - 2px);
@@ -168,13 +167,37 @@ body {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
 }
 
-.exercise-type-difficulty {
+.input-and-indicator-input-with-button {
+  width: calc(100% - 50px);
+  min-height: 42px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 10px 12px;
+  background: var(--surface-strong);
+  color: var(--text-h);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+}
+
+.input-indicator {
   width: 32px;
   display: inline-flex;
   padding: 0 5px;
   margin-left: auto;
   white-space: nowrap;
   overflow-wrap: anywhere;
+}
+
+.input-indicator-button-container {
+  width: 42px;
+  display: inline-flex;
+  padding: 0;
+  margin-left: auto;
+  white-space: nowrap;
+  overflow-wrap: anywhere;
+}
+
+.input-indicator-button {
+  padding: 10px 5px 0px;
 }
 
 .exercise-line-text {
@@ -545,7 +568,11 @@ input:required:invalid {
 }
 
 .grid-unread {
-  color: rgb(55, 194, 20);
+  color: var(--play);
+}
+
+.check-valid {
+  color: var(--play);
 }
 
 .pager-button {
@@ -731,7 +758,7 @@ input:required:invalid {
 }
 
 .lucide-arrow-big-left {
-  color: rgb(55, 194, 20);
+  color: var(--play);
   stroke-width: 4px;
 }
 
@@ -757,16 +784,16 @@ input:required:invalid {
 }
 
 .lucide-rotate-ccw {
-  color: rgb(55, 194, 20);
+  color: var(--play);
 }
 
 .lucide-circle-play {
-  color: rgb(55, 194, 20);
+  color: var(--play);
   display: block;
 }
 
 .check-answer-button {
-  background-color: rgb(55, 194, 20);
+  background-color: var(--play);
   color: white;
 }
 

@@ -12,6 +12,7 @@ module.exports = {
           border: "var(--border)",
           accent: "var(--accent)",
           layers: "var(--layers)",
+          error: "var(--error)",
           play: "rgb(55, 194, 20)",
           dashed: "rgb(255, 200, 1)",
           key: "rgb(220, 189, 15)",

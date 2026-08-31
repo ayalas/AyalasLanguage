@@ -37,7 +37,10 @@ namespace AyalasLanguageAPI.DTOs
     public record ExerciseDto(int ExerciseId, int ExerciseTypeId, string Data, byte Access, int? LearningPathId, OwnershipTypeEnum OwnershipType);
 
     public record NextChapterDto(int Level, decimal ChapterHint);
+    
     public record NextChapterResponseDto(decimal Chapter);
+    public record ValidateChapterDto(uint Level, decimal Chapter, int? LearningPathId);
+    public record ValidateChapterResponseDto(bool IsUnique);
     // Content Creator DTOs
     public record CreateLearningPathResponseDto(int LearningPathId);
     public record EditLearningPathDto(uint Level, decimal Chapter, string? Name, OwnershipTypeEnum OwnershipType);

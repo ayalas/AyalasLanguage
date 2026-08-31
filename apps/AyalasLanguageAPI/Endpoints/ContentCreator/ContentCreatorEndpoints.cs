@@ -37,6 +37,7 @@ public static class ContentCreatorEndpoints
         creator.MapPost("/learning-path/{id}/import", ImportExercises).DisableAntiforgery();
         creator.MapDelete("/learning-path/{id}", DeleteLearningPath);
         creator.MapPost("/next-chapter", NextChapter);
+        creator.MapPost("/validate-chapter", ValidateChapter);
         // Exercise Creation
         creator.MapGet("/exercise/{id}", GetExercise);
         creator.MapPost("/exercise", CreateExercise);
@@ -44,6 +45,30 @@ public static class ContentCreatorEndpoints
         creator.MapDelete("/exercise/{id}", DeleteExercise);
         creator.MapPost("/log", CreateLog);
 
+    }
+
+    private static async Task<IResult> ValidateChapter(ValidateChapterDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
+    {
+        var userId = claim.GetUserId();
+
+        var user = await db.Users.FindAsync(userId);
+        if (user == null) return Results.BadRequest("User not found.");
+
+        if (user.KnownLanguageId == null || user.TargetLanguageId == null)
+            return Results.BadRequest("User must have known and target languages set.");
+
+        if (dto.Chapter <= 0)
+        {
+            return Results.Ok(new ValidateChapterResponseDto(false));
+        }
+
+        if (dto.Level < 0)
+        {
+            return Results.Ok(new ValidateChapterResponseDto(false));
+        }
+
+        var isFound = await ContentCreatorLogic.IsOtherLearningPathFoundWith(user.TargetLanguageId.Value, user.KnownLanguageId.Value, dto.Level, dto.Chapter, dto.LearningPathId, db);
+        return Results.Ok(new ValidateChapterResponseDto(!isFound));
     }
 
     private static async Task<IResult> NextChapter(NextChapterDto dto, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)

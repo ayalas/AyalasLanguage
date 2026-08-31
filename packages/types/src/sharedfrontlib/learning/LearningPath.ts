@@ -5,6 +5,16 @@ export interface NextChapterResponse {
   chapter: number;
 }
 
+export interface ValidateLevelChapterRequest {
+    level: number;
+    chapter: number;
+    learningPathId?: number;
+}
+
+export interface ValidateLevelChapterResponse {
+    isUnique: boolean;
+}
+
 export interface LearningPathInfo {
     learningPathId: number;
     level: number;

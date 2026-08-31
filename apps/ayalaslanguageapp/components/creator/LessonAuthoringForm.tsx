@@ -1,12 +1,12 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter, useLocalSearchParams, Link } from 'expo-router';
-import { LayersPlus, Trash, Ban, Workflow, UserPen, BookOpenCheck, Save, History, Send } from 'lucide-react-native';
+import { LayersPlus, Trash, Ban, Workflow, UserPen, BookOpenCheck, Save, History, Send, Check, X } from 'lucide-react-native';
 
 import { Slider } from '@miblanchard/react-native-slider';
 
 import { errorHandler } from '@ayalaslanguage/types/error';
-import { removeLastCharIfMatch, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import { removeLastCharIfMatch, useDebounce, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import {
   DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES,
   BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData
@@ -16,7 +16,7 @@ import { EXERCISE_TYPE_LOGIC, replaceExerciseChars, SORTED_EXERCISE_TYPES } from
 import { getAIInstructions, type IChatMessage, AIChatRequestDto } from '@ayalaslanguage/types/sharedfrontlib/ai';
 import type { ExerciseType } from '@ayalaslanguage/types/exercise';
 import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
-import type { EditLearningPathRequest, NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { EditLearningPathRequest, NextChapterResponse, ValidateLevelChapterRequest, ValidateLevelChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
 
 import { useMistakesReadd } from '@/lib/useMistakesReadd';
 import { useAuth } from '@/lib/AuthContext';
@@ -36,6 +36,8 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   const [error, setError] = useState('');
   const [level, setLevel] = useState(1);
   const [chapter, setChapter] = useState(1);
+  const isAutoFillingChapter = useRef(false);
+  const debouncedValues = useDebounce(`${level}-${chapter}`, 500);
   const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
   const [matches, setMatches] = useState<number>(MAX_MATCHES);
   const [extraOptions, setExtraOptions] = useState<number>(BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS);
@@ -43,7 +45,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
   const [isLoading, setIsLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [access, setAccess] = useState<AuthorAccess>(AUTHOR_ACCESS.CAN_EDIT);
-
+  const [levelChapterUnique, setLevelChapterUnique] = useState(false);
   const [exerciseType, setExerciseType] = useState<ExerciseType | 0>(0);
   const [firstSet, setFirstSet] = useState('');
   const [secondSet, setSecondSet] = useState('');
@@ -268,10 +270,10 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     if (arrData != null) {
       saveToLocalStorage();
       await handleSubmit(setError, createExercises, {
-          level, 
-          chapter, 
-          name: title,
-          ownershipType
+        level,
+        chapter,
+        name: title,
+        ownershipType
       } as EditLearningPathRequest, exerciseType, arrData);
     }
     setIsLoading(false);
@@ -281,12 +283,12 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     setLoadingMessage('Saving lesson...');
     setIsLoading(true);
 
-    await handleSubmit(setError, null, 
+    await handleSubmit(setError, null,
       {
-          level, 
-          chapter, 
-          name: title,
-          ownershipType
+        level,
+        chapter,
+        name: title,
+        ownershipType
       } as EditLearningPathRequest,
       exerciseType, null);
 
@@ -376,13 +378,44 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     handleExerciseTypeLogic(exType);
   };
 
+  async function validateLevelChapterUniqness(tempLevel: Number, hintChapter: number) {
+    try {
+      const res = await api.post<ValidateLevelChapterResponse>('/api/creator/validate-chapter',
+        { level: tempLevel, chapter: hintChapter, learningPathId: initialRecord?.learningPathId } as ValidateLevelChapterRequest);
+      setLevelChapterUnique(res.data.isUnique);
+
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
+    }
+  }
+
+  async function nextChapterApi(tempLevel: Number, hintChapter: number) {
+    const res = await api.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
+    isAutoFillingChapter.current = true;
+    setChapter(res.data.chapter);
+    setLevelChapterUnique(true);
+  }
+
+  function fixChapter() {
+    try {
+      if (levelChapterUnique) return;
+
+      nextChapterApi(level, chapter);
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
+    }
+  }
+
   useEffect(() => {
     async function execAsync() {
       try {
         loadFromLocalStorage();
         if (initialRecord != null) {
+          isAutoFillingChapter.current = true;
+
           setLevel(initialRecord.level);
           setChapter(initialRecord.chapter);
+          setLevelChapterUnique(true);
           setTitle(initialRecord.name ?? "");
           setAccess(initialRecord.access);
           setOwnershipType(initialRecord.ownershipType);
@@ -400,7 +433,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
       }
     }
     execAsync();
-  }, [initialRecord, user]);
+  }, [initialRecord?.learningPathId, user?.languageSettings?.targetLanguageId]);
 
 
   useEffect(() => {
@@ -417,8 +450,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
             if (initChapter !== '' && Number(initChapter) > 0) {
               hintChapter = Number(initChapter);
             }
-            const res = await api.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
-            setChapter(res.data.chapter);
+            await nextChapterApi(tempLevel, hintChapter);
           }
           if (initType !== null) {
             const exType = Number(initType) as ExerciseType;
@@ -442,6 +474,18 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     // This cleans up the OLD timer before starting a NEW one (for key stroke changes in title)
     return () => clearTimeout(timeoutid);
   }, [exerciseType, title]);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (isAutoFillingChapter.current) {
+      isAutoFillingChapter.current = false;
+      return;
+    }
+
+    validateLevelChapterUniqness(level, chapter);
+
+  }, [debouncedValues]);
 
   return (
     <View className="lesson-inner-container">
@@ -476,7 +520,20 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                   <Text style={styles.label}>Chapter</Text>
                   <View className="form-row">
                     <View className="form-input-row">
-                      <TextInput className="form-input" testID="chapter" keyboardType='numeric' editable={access === AUTHOR_ACCESS.CAN_EDIT} value={chapter.toString()} onChangeText={(text: string) => { setChapter(Number(text)) }} />
+                      <View className="input-and-indicator-container">
+                        <TextInput className="form-input" style={{maxWidth: '90%'}} testID="chapter" keyboardType='numeric' editable={access === AUTHOR_ACCESS.CAN_EDIT} value={chapter.toString()} onChangeText={(text: string) => { setChapter(Number(text)) }} />
+                        <View className="input-indicator">
+                          <TouchableOpacity testID="fixChapter"
+                            disabled={isLoading || levelChapterUnique} onPress={fixChapter}>
+                            {levelChapterUnique && (
+                              <Check className="color-brand-play" />
+                            ) || (
+                                <X className="color-brand-error" />
+                              )
+                            }
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                     </View>
                   </View>
                   <Text style={styles.label}>Subject</Text>
@@ -489,15 +546,15 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
 
                   <View className="form-row">
                     <View className="form-input-row">
-                      <Checkbox data-testid="private" value={ownershipType == OWNERSHIP_TYPE.USER} onValueChange={(isChecked: boolean) => { setOwnershipType(isChecked? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
+                      <Checkbox data-testid="private" value={ownershipType == OWNERSHIP_TYPE.USER} onValueChange={(isChecked: boolean) => { setOwnershipType(isChecked ? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
                       <Text style={styles.text}>Private</Text>
-                     </View>
+                    </View>
                     <Text style={styles.dimmedText}>Make this lesson private, so only you can see it</Text>
                   </View>
 
                   <Text style={styles.label}>Exercise Type</Text>
                   <View className="form-row" style={{ zIndex: 2000 }}>
-                    <View className="exercise-type-selector-container">
+                    <View className="input-and-indicator-container">
                       <FormDropDown
                         value={exerciseType}
                         setValue={setExerciseType}
@@ -507,7 +564,7 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
                         maxWidth="90%"
                         zIndex={3000}
                       />
-                      <View className="exercise-type-difficulty">
+                      <View className="input-indicator">
                         <ExerciseTypeIcon exerciseTypeId={exerciseType} />
                       </View>
                     </View>

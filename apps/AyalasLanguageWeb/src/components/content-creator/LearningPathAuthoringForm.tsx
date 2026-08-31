@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useOutletContext, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, History, Send } from 'lucide-react';
+import { LayersPlus, Trash, FileUp, FileDown, Ban, Workflow, UserPen, BookOpenCheck, Save, History, Send, Check, X, LucideMoveLeft } from 'lucide-react';
 import axios from 'axios';
 import { errorHandler } from '@ayalaslanguage/types/error';
 import { handleKeyDown, downloadFile } from '../../utils/utils';
-import { removeLastCharIfMatch, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
+import { removeLastCharIfMatch, useDebounce, writeToLog } from '@ayalaslanguage/types/sharedfrontlib/utils';
 import { DEFAULT_NUM_OF_EXERCISES, MAX_MATCHES, MIN_MATCHES, BUCKET_LIST_EXTRA_OPTIONS, type LearningPathInfo, type ExerciseData } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { ROLE_TYPE, AUTHOR_ACCESS, type AuthorAccess, type OwnershipType, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
 
@@ -15,7 +15,7 @@ import { LOG_TYPE, type LogAutoAIFailure } from '@ayalaslanguage/types/log';
 import { ActionsMenuComponent, type ActionsMenuItem } from '../ActionsMenuComponent';
 import { ExerciseTypeIcon } from '../ExerciseTypeIcon';
 import type { User } from '@ayalaslanguage/types/sharedfrontlib/user';
-import type { EditLearningPathRequest, NextChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
+import type { EditLearningPathRequest, NextChapterResponse, ValidateLevelChapterRequest, ValidateLevelChapterResponse } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { useMistakesReadd } from '../useMistakesReadd';
 import { Toaster } from 'sonner';
 import { NumberSelector } from '../number-selector/NumberSelector';
@@ -27,6 +27,9 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const [fileForImport, setFileForImport] = useState<File | null>(null);
   const [importStart, setImportStart] = useState(false);
   const [chapter, setChapter] = useState(1);
+  const isAutoFillingChapter = useRef(false);
+  const debouncedValues = useDebounce(`${level}-${chapter}`, 500);
+  const [levelChapterUnique, setLevelChapterUnique] = useState(false);
   const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
   const [matches, setMatches] = useState<number>(MAX_MATCHES);
   const [extraOptions, setExtraOptions] = useState<number>(BUCKET_LIST_EXTRA_OPTIONS.MAX_WORDS);
@@ -46,6 +49,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
   const initType = searchParams.get('type');
   const navigate = useNavigate();
   const [useAutoAI, setUseAutoAI] = useState(true);
+
 
   const titleRef = useRef<HTMLInputElement>(null);
   const exerciseTypeRef = useRef<HTMLSelectElement>(null);
@@ -253,13 +257,13 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     //error is displayed when arrData is null
     if (arrData != null) {
       saveToLocalStorage();
-      await handleSubmit(setError, createExercises, 
+      await handleSubmit(setError, createExercises,
         {
-          level, 
-          chapter, 
+          level,
+          chapter,
           name: title,
           ownershipType
-      } as EditLearningPathRequest, exerciseType, arrData);
+        } as EditLearningPathRequest, exerciseType, arrData);
     }
     setIsLoading(false);
   };
@@ -271,12 +275,12 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     setLoadingMessage('Saving lesson...');
     setIsLoading(true);
 
-    await handleSubmit(setError, null, 
+    await handleSubmit(setError, null,
       {
-          level, 
-          chapter, 
-          name: title,
-          ownershipType
+        level,
+        chapter,
+        name: title,
+        ownershipType
       } as EditLearningPathRequest,
       exerciseType, null);
 
@@ -411,13 +415,57 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     }
   }
 
+  async function onChangeLevel(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const tmpLevel = Number(e.target.value);
+    setLevel(tmpLevel);
+  }
+
+  async function onChangeChapter(e: React.ChangeEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const tmpChapter = Number(e.target.value);
+    setChapter(tmpChapter);
+  }
+
+  async function validateLevelChapterUniqness(tempLevel: Number, hintChapter: number) {
+    try {
+      const res = await axios.post<ValidateLevelChapterResponse>('/api/creator/validate-chapter',
+        { level: tempLevel, chapter: hintChapter, learningPathId: initialRecord?.learningPathId } as ValidateLevelChapterRequest);
+      setLevelChapterUnique(res.data.isUnique);
+
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
+    }
+  }
+
+  async function nextChapterApi(tempLevel: Number, hintChapter: number) {
+    const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
+    isAutoFillingChapter.current = true;
+    setChapter(res.data.chapter);
+    setLevelChapterUnique(true);
+  }
+
+  function fixChapter(e: React.MouseEvent) {
+    try {
+      e.preventDefault();
+      if (levelChapterUnique) return;
+
+      nextChapterApi(level, chapter);
+    } catch (ex: unknown) {
+      errorHandler(ex, setError);
+    }
+  }
+
   useEffect(() => {
     async function execAsync() {
       try {
         loadFromLocalStorage();
         if (initialRecord != null) {
+          isAutoFillingChapter.current = true;
+
           setLevel(initialRecord.level);
           setChapter(initialRecord.chapter);
+          setLevelChapterUnique(true);
           setTitle(initialRecord.name ?? "");
           setAccess(initialRecord.access);
           setOwnershipType(initialRecord.ownershipType);
@@ -442,7 +490,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
       }
     }
     execAsync();
-  }, [initialRecord, user]);
+  }, [initialRecord?.learningPathId, user?.languageSettings?.targetLanguageId]);
 
   useEffect(() => {
     async function execAsync() {
@@ -459,8 +507,7 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
             if (initChapter !== '' && Number(initChapter) > 0) {
               hintChapter = Number(initChapter);
             }
-            const res = await axios.post<NextChapterResponse>('/api/creator/next-chapter', { level: tempLevel, chapterHint: hintChapter });
-            setChapter(res.data.chapter);
+            await nextChapterApi(tempLevel, hintChapter);
           }
           if (initType !== null) {
             const exType = Number(initType) as ExerciseType;
@@ -485,6 +532,18 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
     // This cleans up the OLD timer before starting a NEW one (for key stroke changes in title)
     return () => clearTimeout(timeoutid);
   }, [exerciseType, title, matches, extraOptions]);
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (isAutoFillingChapter.current) {
+      isAutoFillingChapter.current = false; // Lower the flag for the next REAL user change
+      return; // Exit early
+    }
+
+    validateLevelChapterUniqness(level, chapter);
+
+  }, [debouncedValues]);
 
   return (
     <>
@@ -527,13 +586,25 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   <div className="form-label-row">Level</div>
                   <div className="form-row">
                     <div className="form-input-row">
-                      <input type="number" className="form-input" data-testid="level" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} value={level} onChange={(e) => { setLevel(Number(e.target.value)) }} />
+                      <input type="number" className="form-input" data-testid="level" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} value={level} onChange={onChangeLevel} />
                     </div>
                   </div>
                   <div className="form-label-row">Chapter</div>
                   <div className="form-row">
                     <div className="form-input-row">
-                      <input type="number" className="form-input" data-testid="chapter" min="0.01" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={(e) => { setChapter(Number(e.target.value)) }} />
+                      <div className="input-and-indicator-container">
+                        <input type="number" className="input-and-indicator-input-with-button" data-testid="chapter" min="0.01" step="any" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} required={access == AUTHOR_ACCESS.CAN_EDIT} value={chapter} onChange={onChangeChapter} />
+                        <div className="input-indicator-button-container">
+                          <button data-testid="fixChapter" type="button" disabled={isLoading || levelChapterUnique} className="input-indicator-button" onClick={fixChapter} >
+                            {levelChapterUnique && (
+                              <Check className="check-valid" />
+                            ) || (
+                                <X className="form-error" />
+                              )
+                            }
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="form-label-row">Subject</div>
@@ -545,22 +616,22 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                   </div>
                   <div className="form-row">
                     <div className="form-input-row">
-                      <input type="checkbox" data-testid="private" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} checked={ownershipType == OWNERSHIP_TYPE.USER} onChange={(e) => { setOwnershipType(e.target.checked? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
+                      <input type="checkbox" data-testid="private" readOnly={access != AUTHOR_ACCESS.CAN_EDIT} checked={ownershipType == OWNERSHIP_TYPE.USER} onChange={(e) => { setOwnershipType(e.target.checked ? OWNERSHIP_TYPE.USER : OWNERSHIP_TYPE.PUBLIC) }} />
                       <label className="content-line-part">Private</label>
                     </div>
                     <div className="form-content-row">Make this lesson private, so only you can see it</div>
                   </div>
                   <div className="form-label-row">Exercise Type</div>
                   <div className="form-input-row">
-                    <div className="exercise-type-selector-container">
-                      <select ref={exerciseTypeRef} required data-testid="exercise-type" className="exercise-type-select" value={exerciseType}
+                    <div className="input-and-indicator-container">
+                      <select ref={exerciseTypeRef} required data-testid="exercise-type" className="input-and-indicator-input" value={exerciseType}
                         onChange={onChangeExerciseType}>
                         <option value="0" disabled>-- Please choose an option --</option>
                         {SORTED_EXERCISE_TYPES.map((exType) => (
                           <option key={exType.Type} value={exType.Type}>{exType.Name}</option>
                         ))}
                       </select>
-                      <div className="exercise-type-difficulty">
+                      <div className="input-indicator">
                         <ExerciseTypeIcon exerciseTypeId={exerciseType} />
                       </div>
                     </div>

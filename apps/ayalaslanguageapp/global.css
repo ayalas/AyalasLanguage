@@ -240,7 +240,7 @@
   flex-shrink: 0;
 }
 
-.exercise-type-selector-container {
+.input-and-indicator-container {
   padding-bottom: 8px;
   line-height: 1.5;
   display: flex;
@@ -252,7 +252,7 @@
   width: 100%;
 }
 
-.exercise-type-difficulty {
+.input-indicator {
   width: 32px;
   justify-content: center;
   align-items: center;
