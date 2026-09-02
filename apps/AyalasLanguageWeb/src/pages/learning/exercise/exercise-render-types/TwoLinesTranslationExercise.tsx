@@ -114,7 +114,9 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       <div className="exercise-outer-element">
         <div className="exercise-inner-element">
           <div className="form-row-play">
-            <div className="form-play-container">{first}{EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
+            <div className="form-play-container">
+              <div className="play-text">{first}</div>
+              {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].CanPlayQuestion && (
               <div className="playButtonContainer"><button data-testid="play-question" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(first)}><CirclePlay /></button></div>
             )}</div>
           </div>
@@ -132,7 +134,8 @@ export const TwoLinesTranslationExercise = function ({ exerciseInfo, setError, m
       </div>
       {displayAnswer && (
         <div className="form-row-play">
-          <div className="form-play-container">{second}
+          <div className="form-play-container">
+            <div className="play-text">{second}</div>
             {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
               <button data-testid="play-answer" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
             )}</div>

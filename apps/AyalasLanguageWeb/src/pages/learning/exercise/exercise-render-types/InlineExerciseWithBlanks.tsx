@@ -229,7 +229,8 @@ export const InlineExerciseWithBlanks = function (props: Props) {
             </div>
             {displayAnswer && (
                 <div className="form-row-play">
-                    <div className="form-play-container">{second}
+                    <div className="form-play-container">
+                        <div className="play-text">{second}</div>
                         {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
                             <button data-testid="play-answer" type="button" className="play-button" title="Play Audio" onClick={async () => await playTargetText(second)}><CirclePlay /></button>
                         )}</div>

@@ -206,7 +206,7 @@
 }
 
 .buttons-container {
-  padding-top: 15px;
+  padding-top: 7px;
   display: flex;
   gap: 8px;
   flex-direction: column;
@@ -354,8 +354,8 @@
 }
 
 .form-row-play {
-  padding-top: 10px;
-  padding-bottom: 5px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .form-button-cell {
@@ -395,6 +395,12 @@
   gap: 6px;
   flex-wrap: wrap;
   flex-direction: row;
+}
+
+.play-text {
+  max-width: 85%;
+  flex-direction: row;
+  flex-shrink: 1;
 }
 
 .input-text-placeholder {
@@ -477,7 +483,7 @@
 }
 
 .exercise-outer-element {
-  padding: 10px 6px 12px;
+  padding: 4px 6px;
   display: flex;
   flex-direction: column;
   gap: 6px;

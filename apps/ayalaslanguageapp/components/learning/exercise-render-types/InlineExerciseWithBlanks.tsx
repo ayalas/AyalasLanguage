@@ -228,7 +228,8 @@ export default function InlineExerciseWithBlanks({ exerciseInfo, setError, moveN
             </View>
             {displayAnswer && (
                 <View className="form-row-play">
-                    <View className="form-play-container"><Text style={styles.text}>{second}</Text>
+                    <View className="form-play-container">
+                        <View className="play-text"><Text style={styles.text}>{second}</Text></View>
                         {EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShouldPlayAnswer && (
                             <TouchableOpacity testID="play-answer" className="play-button" onPress={async () => await playTargetText(second)}><CirclePlay className='color-brand-play' /></TouchableOpacity>
                         )}</View>

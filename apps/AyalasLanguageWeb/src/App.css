@@ -124,7 +124,7 @@ body {
 }
 
 .buttons-container {
-  padding-top: 15px;
+  padding-top: 7px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -266,8 +266,8 @@ body {
 }
 
 .form-row-play {
-  padding-top: 10px;
-  padding-bottom: 5px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .form-button-cell {
@@ -303,6 +303,10 @@ body {
   color: var(--text-h);
   gap: 6px;
   flex-wrap: wrap;
+}
+
+.play-text {
+  max-width: 85%;
 }
 
 input:required:invalid {
@@ -414,7 +418,7 @@ input:required:invalid {
 }
 
 .exercise-outer-element {
-  padding: 12px;
+  padding: 4px 12px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -1028,7 +1032,6 @@ input:required:invalid {
   }
 
   .buttons-container {
-    padding-top: 8px;
     flex-direction: column;
     align-items: stretch;
   }
