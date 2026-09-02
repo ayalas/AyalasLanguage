@@ -40,11 +40,15 @@ vi.mock('../../utils/utils', () => ({
   downloadFile: vi.fn(),
 }));
 
-vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', () => ({
-  removeLastCharIfMatch: vi.fn((s) => s),
-  writeToLog: vi.fn(),
-  encodeXMLElements: vi.fn((s) => s),
-}));
+vi.mock('@ayalaslanguage/types/sharedfrontlib/utils', async () => {
+  const actual = await vi.importActual('@ayalaslanguage/types/sharedfrontlib/utils');
+  return {
+    ...actual,
+    removeLastCharIfMatch: vi.fn((s) => s),
+    writeToLog: vi.fn(),
+    encodeXMLElements: vi.fn((s) => s)
+  };
+});
 
 //Mock FormHeader component to keep the test light
 vi.mock('../FormHeader', async () => {
@@ -104,7 +108,7 @@ describe('LearningPathAuthoringForm', () => {
     const saveBtn = screen.getByTestId('save');
     disableClientValidation();
 
-    await act(async() => {
+    await act(async () => {
       fireEvent.click(saveBtn);
     });
 
