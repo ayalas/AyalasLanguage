@@ -352,16 +352,17 @@ export default function LessonAuthoringForm({ handleSubmit, initialRecord, reloa
     let aiMessages: IChatMessage[];
     const numOfExercises = user?.numOfExercisesToGenerate ?? DEFAULT_NUM_OF_EXERCISES;
     const targetLanguage = user?.languageSettings?.targetLanguageEnglishName || '';
+    const targetLanguageCode = user?.languageSettings?.targetLanguageCode || '';
     const knownLanguage = user?.languageSettings?.knownLanguage || '';
     let subject = title.trim();
     if (subject === '') {
       subject = 'any language exchange';
     }
     //manual ai instructions
-    aiMessages = getAIInstructions(exType, targetLanguage, knownLanguage, numOfExercises, matches, extraOptions, false, subject);
+    aiMessages = getAIInstructions(exType, targetLanguage, targetLanguageCode, knownLanguage, numOfExercises, matches, extraOptions, false, subject);
     setAIInstructions(aiMessages.map(it => it.content).join(' '));
     //automatic ai instructions (returning json)
-    aiMessages = getAIInstructions(exType, targetLanguage, knownLanguage, numOfExercises, matches, extraOptions, true, subject);
+    aiMessages = getAIInstructions(exType, targetLanguage, targetLanguageCode,knownLanguage, numOfExercises, matches, extraOptions, true, subject);
 
     return {
       exerciseType: exrTypeValue,

@@ -15,7 +15,7 @@ function replacePlaceholders(aiDesc: string, targetLanguage: string, knownLangua
     return aiDesc.replaceAll(PLACEHOLDERS.NUM_OF_WRONG_OPTIONS_PLACEHOLDER, numOfWrongOptions.toString());
 }
 
-export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: string, 
+export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: string, targetLanguageCode: string,
     knownLanguage: string, numOfExercises: number, numOfMatches: number, numOfWrongOptions: number,
     isAuto: boolean, subject: string) {
 
@@ -24,8 +24,8 @@ export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: st
         "For each language, use its own alphabet letters.",
     ];
 
-    if (LANGUAGE_TO_POLLY_MAP[targetLanguage as AppLanguageCode]?.aiInstruction) {
-        arrSysInstructions.push(LANGUAGE_TO_POLLY_MAP[targetLanguage as AppLanguageCode]!.aiInstruction!);
+    if (LANGUAGE_TO_POLLY_MAP[targetLanguageCode as AppLanguageCode]?.aiInstruction) {
+        arrSysInstructions.push(LANGUAGE_TO_POLLY_MAP[targetLanguageCode as AppLanguageCode]!.aiInstruction!);
     }
 
     arrSysInstructions.push(replacePlaceholders(exType.ai_instruction, targetLanguage, knownLanguage, numOfMatches, numOfWrongOptions));
