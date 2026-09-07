@@ -40,11 +40,11 @@ export const LEANRING_STATUS =
  */
 export const LANGUAGE_TO_POLLY_MAP: Record<
   AppLanguageCode,
-  { language: string; engine: 'standard' | 'neural' | 'long-form' | 'generative'; voice: string; openAIVoice: string } | null
+  { language: string; engine: 'standard' | 'neural' | 'long-form' | 'generative'; voice: string; openAIVoice: string; aiInstruction?: string } | null
 > = {
   en: { language: 'en-US', engine: 'generative', voice: 'Ruth', openAIVoice: 'en-US-AvaNeural' },
   ar: { language: 'arb', engine: 'standard', voice: 'Zeina', openAIVoice: 'ar-EG-SalmaNeural' },
-  "ar-MA": { language: "ar-MA", engine: 'standard', voice: 'Mouna', openAIVoice: 'ar-MA-MounaNeural' },
+  "ar-MA": { language: "ar-MA", engine: 'standard', voice: 'Mouna', openAIVoice: 'ar-MA-MounaNeural', aiInstruction: 'For Darija use Arabic alphabet - not Arabizi or the Arabic Chat Alphabet.' },
   da: { language: 'da-DK', engine: 'standard', voice: 'Naja', openAIVoice: 'da-DK-ChristelNeural' },
   es: { language: 'es-ES', engine: 'neural', voice: 'Lucia', openAIVoice: 'es-ES-ElviraNeural' },
   fr: { language: 'fr-FR', engine: 'neural', voice: 'Lea', openAIVoice: 'fr-FR-DeniseNeural' },

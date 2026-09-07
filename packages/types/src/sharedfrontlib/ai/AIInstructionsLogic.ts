@@ -1,6 +1,7 @@
-import { PLACEHOLDERS } from "../learning/learning";
+import { LANGUAGE_TO_POLLY_MAP, PLACEHOLDERS } from "../learning/learning";
 import { encodeXMLElements } from "../utils";
 import { type ExerciseGeneration } from "../logic/ExerciseTypeLogic";
+import type { AppLanguageCode } from "../User";
 
 export interface IChatMessage {
     role: "system" | "assistant" | "user" | "tool";
@@ -21,8 +22,13 @@ export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: st
     let arrSysInstructions:string[] = [`You are an expert language teacher. You teach ${targetLanguage} from ${knownLanguage}.`,
         `Generate exactly ${numOfExercises} exercises.`,
         "For each language, use its own alphabet letters.",
-        replacePlaceholders(exType.ai_instruction, targetLanguage, knownLanguage, numOfMatches, numOfWrongOptions),
     ];
+
+    if (LANGUAGE_TO_POLLY_MAP[targetLanguage as AppLanguageCode]?.aiInstruction) {
+        arrSysInstructions.push(LANGUAGE_TO_POLLY_MAP[targetLanguage as AppLanguageCode]!.aiInstruction!);
+    }
+
+    arrSysInstructions.push(replacePlaceholders(exType.ai_instruction, targetLanguage, knownLanguage, numOfMatches, numOfWrongOptions));
 
     if (isAuto) {
         arrSysInstructions.push("The subject topic is delimited by the XML tags <subject> and </subject>.",
