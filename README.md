@@ -12,7 +12,7 @@ AyalasLanguageApp - React Native mobile app, sharing logic with AyalasLanguageWE
 
 ## Demo Site (Production)
 Served using Docker and Caddy with an internal MySQL container in this address:
-https://langapp.xyz/
+https://langappxyz.com/
 
 In the profile page after registering and logging in choose to learn Danish or Arabic.
 

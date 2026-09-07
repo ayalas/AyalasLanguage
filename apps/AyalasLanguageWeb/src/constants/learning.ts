@@ -1,2 +1,2 @@
-export const BRAND_NAME = "langapp.xyz";
+export const BRAND_NAME = "LangApp XYZ";
 export const PAGE_SIZE = 25;

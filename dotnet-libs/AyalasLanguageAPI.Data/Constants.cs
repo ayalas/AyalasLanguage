@@ -195,7 +195,7 @@ public static class Constants
 
     
     //Brand
-    public const string BRAND_NAME = "langapp.xyz";
+    public const string BRAND_NAME = "LangApp XYZ";
     public const string APP_COOKIE_NAME = "LangAppXyzCookie";
     public const string ADMIN_APP_COOKIE_NAME = "AdminLangAppXyzCookie";
 

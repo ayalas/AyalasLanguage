@@ -1,4 +1,4 @@
-langapp.xyz, www.langapp.xyz {
+langappxyz.com, www.langappxyz.com {
     tls /langapp-stack/certs/domain.cert.pem /langapp-stack/certs/private.key.pem
 
     reverse_proxy 0.0.0.0:8080
