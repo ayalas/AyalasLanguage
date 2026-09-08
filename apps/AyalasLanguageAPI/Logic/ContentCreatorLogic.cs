@@ -12,7 +12,7 @@ internal static class ContentCreatorLogic
 {
     public static void AddAlternativesToExercise(Exercise targetExercise, string[] addedAlternativesArr, string[] removedAlternativesArr)
     {
-        var dtoSimple2 = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(targetExercise.Data);
+        var dtoSimple2 = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.ExerciseData>(targetExercise.Data);
         if (dtoSimple2 != null)
         {
             bool needUpdate = false;

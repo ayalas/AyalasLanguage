@@ -373,8 +373,8 @@ public static class ContentCreatorEndpoints
             // get added alternatives
             List<string> addedAlternatives = [];
             List<string> removedAlternatives = [];
-            var dtoSimpleNew = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(dto.Data);
-            var dtoSimpleOld = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.SimpleTranslateDto>(exercise.Data);
+            var dtoSimpleNew = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.ExerciseData>(dto.Data);
+            var dtoSimpleOld = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.ExerciseData>(exercise.Data);
 
             if (dtoSimpleNew != null)
             {
@@ -457,6 +457,12 @@ public static class ContentCreatorEndpoints
 
         if ((exercise.UserId != claim.GetUserId() || exercise.Status == (byte)ContentStatusEnum.Removed) && !claim.IsInRole("Admin"))
             return Results.Forbid();
+
+        //check if the exercise holds any user Mistakes record
+        var hasMistakes = await db.UserProgresses.AnyAsync(up => up.ExerciseId == id && up.practiseMistakesInThisPath);
+
+        if (hasMistakes)
+            return Results.Conflict("Cannot delete exercise associated to users practice (where mistakes are added to) progress. First save your progress in this lesson in another (previous or next) exercise.");
 
         db.Exercises.Remove(exercise);
         await db.SaveChangesAsync();
