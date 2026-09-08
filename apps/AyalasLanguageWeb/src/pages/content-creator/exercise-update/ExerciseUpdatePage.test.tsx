@@ -115,7 +115,7 @@ describe("ExerciseUpdatePage", () => {
         mockedAxios.put.mockResolvedValueOnce({ status: 200 });
 
         render(
-            <MemoryRouter>
+            <MemoryRouter initialEntries={[{ pathname: '/edit/123', state: { returnToPage: '1' } }]}>
                 <ExerciseUpdatePage />
             </MemoryRouter>
         );
@@ -147,14 +147,14 @@ describe("ExerciseUpdatePage", () => {
         });
 
         // Verify navigation happened after success
-        expect(mockNavigate).toHaveBeenCalledWith("/author/path/456");
+        expect(mockNavigate).toHaveBeenCalledWith("/author/path/456?page=1");
     });
 
     it("navigates back when back button is clicked", async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: mockExerciseData });
 
         render(
-            <MemoryRouter>
+            <MemoryRouter initialEntries={[{ pathname: '/edit/123', state: { returnToPage: '1' } }]}>
                 <ExerciseUpdatePage />
             </MemoryRouter>
         );
@@ -166,6 +166,6 @@ describe("ExerciseUpdatePage", () => {
         const backButton = screen.getByTestId("back-editor");
         fireEvent.click(backButton);
 
-        expect(mockNavigate).toHaveBeenCalledWith("/author/path/456");
+        expect(mockNavigate).toHaveBeenCalledWith("/author/path/456?page=1");
     });
 });

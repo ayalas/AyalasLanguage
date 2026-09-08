@@ -83,7 +83,13 @@ export default function ExerciseScreen() {
   function onBackEditorClick() {
 
     if (initialRecord != null && initialRecord.learningPathId != null) {
-      router.replace(`/author/path/${initialRecord?.learningPathId}`);
+      router.replace({
+        pathname: `/author/path/[id]`,
+        params: {
+          id: initialRecord?.learningPathId || '',
+          page: returnToPage
+        }
+      });
     }
   }
 

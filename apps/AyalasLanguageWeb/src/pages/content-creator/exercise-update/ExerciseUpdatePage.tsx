@@ -76,7 +76,7 @@ export function ExerciseUpdatePage() {
         e.preventDefault();
 
         if (initialRecord != null && initialRecord.learningPathId != null) {
-            navigate(`/author/path/${initialRecord?.learningPathId}`);
+            navigate(`/author/path/${initialRecord?.learningPathId}?page=${returnToPage}`);
         }
     }
 

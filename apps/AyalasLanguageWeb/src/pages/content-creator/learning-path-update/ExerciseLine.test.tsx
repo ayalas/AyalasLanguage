@@ -52,7 +52,7 @@ describe('ExerciseLine Component', () => {
   it('renders the exercise content and action buttons', () => {
     render(
       <MemoryRouter>
-        <ExerciseLine exerciseInfo={mockExercise} />
+        <ExerciseLine exerciseInfo={mockExercise} currentPage={1}/>
       </MemoryRouter>
     );
 
@@ -64,7 +64,7 @@ describe('ExerciseLine Component', () => {
   it('navigates to the edit page when edit button is clicked', () => {
     render(
       <MemoryRouter>
-        <ExerciseLine exerciseInfo={mockExercise} />
+        <ExerciseLine exerciseInfo={mockExercise} currentPage={1} />
       </MemoryRouter>
     );
 
@@ -73,7 +73,7 @@ describe('ExerciseLine Component', () => {
     const editBtn = screen.getByTestId('edit-item');
     fireEvent.click(editBtn);
 
-    expect(mockNavigate).toHaveBeenCalledWith(`/author/exercise/${mockExercise.exerciseId}`);
+    expect(mockNavigate).toHaveBeenCalledWith(`/author/exercise/${mockExercise.exerciseId}`, { state: { returnToPage: 1 } });
   });
 
   it('calls axios delete and removes the item from view on success', async () => {
@@ -81,7 +81,7 @@ describe('ExerciseLine Component', () => {
 
     render(
       <MemoryRouter>
-        <ExerciseLine exerciseInfo={mockExercise} />
+        <ExerciseLine exerciseInfo={mockExercise} currentPage={1} />
       </MemoryRouter>
     );
 
@@ -90,7 +90,9 @@ describe('ExerciseLine Component', () => {
     const deleteBtn = screen.getByTestId('delete-item');
     fireEvent.click(deleteBtn);
 
-    expect(mockedAxios.delete).toHaveBeenCalledWith(`/api/creator/exercise/${mockExercise.exerciseId}`);
+    expect(mockedAxios.delete).toHaveBeenCalledWith(
+      `/api/creator/exercise/${mockExercise.exerciseId}`
+    );
 
     // After success, the row should no longer be in the document (exists = false)
     await waitFor(() => {
@@ -103,7 +105,7 @@ describe('ExerciseLine Component', () => {
 
     render(
       <MemoryRouter>
-        <ExerciseLine exerciseInfo={mockExercise} />
+        <ExerciseLine exerciseInfo={mockExercise} currentPage={1} />
       </MemoryRouter>
     );
 
@@ -126,7 +128,7 @@ describe('ExerciseLine Component', () => {
     readOnlyExercise.access = AUTHOR_ACCESS.LEARNER;
     render(
       <MemoryRouter>
-        <ExerciseLine exerciseInfo={readOnlyExercise as ExtendedExerciseInfo} />
+        <ExerciseLine exerciseInfo={readOnlyExercise as ExtendedExerciseInfo} currentPage={1} />
       </MemoryRouter>
     );
 
