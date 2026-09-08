@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { errorHandler } from '@ayalaslanguage/types/error';
 import axios from "axios";
 import { AuthHeader } from "../../../components/auth/AuthHeader";
@@ -22,6 +22,8 @@ export function ExerciseUpdatePage() {
     const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
     const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
     const navigate = useNavigate();
+    const location = useLocation();
+    const returnToPage = location.state?.returnToPage;
 
     async function onFormSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -51,7 +53,12 @@ export function ExerciseUpdatePage() {
 
             await axios.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType });
 
-            navigate(`/author/path/${initialRecord?.learningPathId}`);
+            if (returnToPage != null) {
+                navigate(`/author/path/${initialRecord?.learningPathId}?page=${returnToPage}`);
+            }
+            else {
+                navigate(`/path/${initialRecord?.learningPathId}`);
+            }
         } catch (ex: unknown) {
             errorHandler(ex, setError);
         }

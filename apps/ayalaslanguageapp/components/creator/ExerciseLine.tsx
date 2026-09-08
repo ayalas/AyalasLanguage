@@ -8,7 +8,12 @@ import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/
 import { errorHandler } from '@ayalaslanguage/types/error';
 import useTextStyles from '@/lib/useTextStyles';
 
-export default function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseInfo }) {
+export interface ExerciseLineProps {
+  exerciseInfo: ExtendedExerciseInfo;
+  currentPage: number;
+}
+
+export default function ExerciseLine({ exerciseInfo, currentPage }: ExerciseLineProps) {
   const router = useRouter();
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
@@ -25,7 +30,14 @@ export default function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedE
   }
 
   function onEditClick() {
-    router.replace(`/author/exercise/${exerciseInfo.exerciseId}`)
+    router.replace(
+      {
+        pathname: `/author/exercise/[id]`,
+        params: {
+          id: exerciseInfo.exerciseId,
+          returnToPage: currentPage
+        }
+      });
   }
 
   return (

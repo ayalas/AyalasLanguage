@@ -16,7 +16,7 @@ import { OWNERSHIP_TYPE, OwnershipType } from '@ayalaslanguage/types/auth';
 import Checkbox from 'expo-checkbox';
 
 export default function ExerciseScreen() {
-  const { id: exerciseId } = useLocalSearchParams<{ id?: string }>();
+  const { id: exerciseId, returnToPage } = useLocalSearchParams<{ id?: string; returnToPage?: string }>();
   const router = useRouter();
   const [error, setError] = useState('');
   const [typeName, setTypeName] = useState('');
@@ -56,7 +56,18 @@ export default function ExerciseScreen() {
 
       await api.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType });
 
-      router.replace(`/author/path/${initialRecord?.learningPathId}`);
+      if (returnToPage != null) {
+        router.replace({
+          pathname: `/author/path/[id]`,
+          params: {
+            id: initialRecord?.learningPathId || '',
+            page: returnToPage
+          }
+        });
+      }
+      else {
+        router.replace(`/path/${initialRecord?.learningPathId}`);
+      }
     } catch (ex: unknown) {
       errorHandler(ex, setError);
     }

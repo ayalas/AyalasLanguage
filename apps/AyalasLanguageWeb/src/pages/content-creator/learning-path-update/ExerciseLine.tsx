@@ -6,7 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import type { ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import { errorHandler } from '@ayalaslanguage/types/error';
 
-export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseInfo }) {
+export interface ExerciseLineProps {
+  exerciseInfo: ExtendedExerciseInfo;
+  currentPage: number;
+}
+
+export function ExerciseLine({ exerciseInfo, currentPage }: ExerciseLineProps) {
   const [error, setError] = useState('');
   const [exists, setExists] = useState(true);
   const navigate = useNavigate();
@@ -25,7 +30,7 @@ export function ExerciseLine({ exerciseInfo }: { exerciseInfo: ExtendedExerciseI
   function onEditClick(e: React.MouseEvent) {
     e.preventDefault();
 
-    navigate(`/author/exercise/${exerciseInfo.exerciseId}`)
+    navigate(`/author/exercise/${exerciseInfo.exerciseId}`, { state: { returnToPage: currentPage } });
   }
   return (
     <>

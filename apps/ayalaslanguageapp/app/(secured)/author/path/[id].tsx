@@ -24,6 +24,7 @@ export default function LessonUpdateScreen() {
   const [updateFormError, setUpdateFormError] = useState('');
   const router = useRouter();
   const { styles } = useTextStyles();
+  const { page: initPage } = useLocalSearchParams<{ page?: string }>();
 
   const handleSubmit = async (setError: (s: string) => void, createExercises: any, 
     req: EditLearningPathRequest, exerciseType: number, arrData: any[]) => {
@@ -64,6 +65,14 @@ export default function LessonUpdateScreen() {
             numOfPages++;
           setTotalPages(numOfPages);
         }
+        
+        if (pagedResponse.data.length == 0) {
+          //load page one if no records returned
+          if (newPage > 1) {
+            loadExercises(1, true);
+            return;
+          }
+        }
 
         setHasMoreData(pagedResponse.data.length > PAGE_SIZE);
         const tmpExercisesRaw = pagedResponse.data.slice(0, PAGE_SIZE);
@@ -91,7 +100,11 @@ export default function LessonUpdateScreen() {
         if (Number(learningPathId) > 0) {
           const res = await api.get<LearningPathInfo>(`/api/learning/path/${learningPathId}`);
           setInitialRecord(res.data);
-          await loadExercises(1, true);
+          let pgNum = 1;
+          if (initPage) {
+            pgNum = Number(initPage);
+          }
+          await loadExercises(pgNum, true);
         }
       } catch (err: unknown) {
         errorHandler(err, setUpdateFormError);
@@ -117,7 +130,7 @@ export default function LessonUpdateScreen() {
               <View style={{ paddingTop: 10 }}>
                   <Text style={styles.h2}>Existing exercises</Text>
                 {existingExercises.map((existing) => (
-                  <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} />
+                  <ExerciseLine key={existing.exerciseId} exerciseInfo={existing} currentPage={page} />
                 ))}
                 <GridPager hasMoreData={hasMoreData} page={page} totalPages={totalPages} loadData={(pgNum:number) => loadExercises(pgNum, false)} />
               </View>
