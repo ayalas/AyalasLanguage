@@ -72,12 +72,14 @@ async function main() {
         // 4. Download each lesson
         for (const pathItem of paths) {
             const { learningPathId, name } = pathItem;
+            /*
             const lessonResponse = await api.get<ILearningPath>(`/api/learning/path/${learningPathId}`);
             const lesson = lessonResponse.data;
             if (lesson.access !== AUTHOR_ACCESS.CAN_EDIT) {
                 console.warn(`Skipping lesson ${learningPathId} (${name || 'unnamed'}) due to insufficient access rights.`);
                 continue;
             }
+            */
             
             const sanitizedName = (name || 'unnamed').replace(/[/\\?%*:|"<>]/g, '-');
             const fileName = `${sanitizedName}-exercises-${learningPathId}.json`;
