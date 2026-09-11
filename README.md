@@ -108,6 +108,12 @@ Dummy Connection String for MySQL
     "DefaultConnection": "Server=localhost;port=3306;database=my_dummy_db;user=root;password=my_secret_password;"
 }
 
+## Backup my lessons data - NodeJS script
+Run the following script from extras/BackupToFolder to backup your current language lessons into json files.
+Set the destination folder beforehand and make sure it matches your current language.
+
+npx tsx BackupLessons.ts
+
 ## License
 Licensed under GNU v3 license to Ayala Swisa. See LICENSE file for details.
 
