@@ -114,6 +114,9 @@ Set the destination folder beforehand and make sure it matches your current lang
 
 npx tsx BackupLessons.ts
 
+or run from the root:
+npx tsx extras/BackupToFolder/BackupLessons.ts
+
 ## License
 Licensed under GNU v3 license to Ayala Swisa. See LICENSE file for details.
 
