@@ -431,9 +431,9 @@ public static class LearningEndpoints
         if (lastExercise == null || (lastExercise.ExerciseId != dto.ExerciseId
         && (lastExercise.ExerciseTypeId != exercise.ExerciseTypeId
             || lastExercise.Data != exercise.Data
-            )))
+            )
+        && lastExercise.SourceExerciseId != exercise.SourceExerciseId))
         {
-
             var exerciseToAdd = new Exercise
             {
                 TargetLanguageId = exercise.TargetLanguageId,
