@@ -72,6 +72,7 @@ describe('Exercise Component', () => {
         practiseMistakesInitialValue: false,
         addMistake: vi.fn().mockResolvedValue(undefined),
         onPractiseMistakesChange: vi.fn(),
+        page: 1,
         ref: { current: null },
     };
 
