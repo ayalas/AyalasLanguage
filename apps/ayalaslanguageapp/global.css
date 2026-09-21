@@ -393,14 +393,15 @@
   text-align: start;
   color: var(--text-h);
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   flex-direction: row;
 }
 
 .play-text {
-  max-width: 85%;
-  flex-direction: row;
+  flex-grow: 0;
   flex-shrink: 1;
+  min-width: 0;
+  flex-direction: row;
 }
 
 .input-text-placeholder {
@@ -690,6 +691,7 @@
 .play-button {
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   gap: 4px;
   height: 24px;
   width: 24px;

@@ -392,7 +392,8 @@ export function LessonPage() {
                   restartLesson={restartLesson}
                   practiseMistakesInitialValue={practiseMistakesInThisPath}
                   onPractiseMistakesChange={setPractiseMistakesInThisPath}
-                  addMistake={addMistake} />
+                  addMistake={addMistake}
+                  page={page} />
               </>
             )}
           </form>

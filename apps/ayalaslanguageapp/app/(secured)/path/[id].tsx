@@ -407,7 +407,8 @@ export default function LessonScreen() {
               restartLesson={restartLesson}
               practiseMistakesInitialValue={practiseMistakesInThisPath}
               onPractiseMistakesChange={setPractiseMistakesInThisPath}
-              addMistake={addMistake} />
+              addMistake={addMistake}
+              page={page} />
           </>
         )}
       </ScrollView>

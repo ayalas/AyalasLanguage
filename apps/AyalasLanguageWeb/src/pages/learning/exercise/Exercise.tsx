@@ -33,10 +33,11 @@ type Props = {
     practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
     onPractiseMistakesChange: (newValue: boolean) => void;
+    page: number;
     ref: React.Ref<ExerciseHandle>;
 };
 
-export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, ref }: Props) {
+export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress, restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, page, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -44,6 +45,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     const refExercise = useRef<ExerciseHandle | null>(null);
     const { user } = useOutletContext() as { user?: User };
     const navigate = useNavigate();
+    const isAtStartOfLesson = (exerciseInfo.index ?? 0) === 0 && page === 1;
 
     const { practiseMistakesInThisPath, readdMistakes, cancelMistakesAdd } = useMistakesReadd({ learningPathId: exerciseInfo.learningPathId , 
         exerciseId: exerciseInfo.exerciseId, setError, initialValue: practiseMistakesInitialValue,
@@ -270,14 +272,14 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
             </div>
             <div className="exercise-footer">
 
-                {(exerciseInfo.index ?? 0) > 0 && (
+                {!isAtStartOfLesson && (
                     <div className="exercise-footer-back">
                         <button data-testid="back" className="lesson-button-left lesson-button-back" onClick={onBackClick}><ArrowBigLeft /> Prev</button>
                     </div>
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && hasAnswer && (
-                        <div className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "" : "exercise-footer-next-noback"}`}>
+                        <div className={`exercise-footer-next ${isAtStartOfLesson ? "exercise-footer-next-noback": "" }`}>
                             <button data-testid="check-my-answers" type="button" onClick={checkAnswer} className="form-button check-answer-button" title="Check my answers"><ListChecks />&nbsp;Check</button>
                         </div>
                     )

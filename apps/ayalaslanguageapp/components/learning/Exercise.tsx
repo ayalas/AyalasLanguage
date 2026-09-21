@@ -39,11 +39,12 @@ type Props = {
     practiseMistakesInitialValue?: boolean;
     addMistake: (id: number) => Promise<void>;
     onPractiseMistakesChange: (newValue: boolean) => void;
+    page: number;
     ref: React.Ref<ExerciseHandle>;
 };
 
 export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded, saveProgress,
-    restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, ref }: Props) {
+    restartLesson, practiseMistakesInitialValue, addMistake, onPractiseMistakesChange, page, ref }: Props) {
 
     const [error, setError] = useState<string>("");
     const [displayAnswer, setDisplayAnswer] = useState(false);
@@ -57,6 +58,7 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
         onChange: onPractiseMistakesChange
     });
     const router = useRouter();
+    const isAtStartOfLesson = (exerciseInfo.index ?? 0) === 0 && page === 1;
 
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
@@ -298,14 +300,14 @@ export default function Exercise({ exerciseInfo, moveNext, movePrev, childLoaded
             </View>
             <View className="exercise-footer">
 
-                {(exerciseInfo.index ?? 0) > 0 && (
+                {!isAtStartOfLesson && (
                     <View className="exercise-footer-back">
                         <TouchableOpacity testID="back" className="lesson-button-left lesson-button-back" onPress={onBackClick}><ArrowBigLeft className='color-brand-play' strokeWidth="4" /><Text style={[styles.text, { color: COLOR_PLAY }]}> Prev</Text></TouchableOpacity>
                     </View>
                 )}
                 {
                     EXERCISE_TYPE_LOGIC[exerciseInfo.exerciseTypeId].ShowsCheckAnswers && hasAnswer && (
-                        <View className={`exercise-footer-next ${(exerciseInfo.index ?? 0) > 0 ? "flex-1" : "exercise-footer-next-noback"} bg-brand-play p-3 border-brand-border border-solid rounded-2xl`}>
+                        <View className={`exercise-footer-next ${isAtStartOfLesson ? "exercise-footer-next-noback": "flex-1" } bg-brand-play p-3 border-brand-border border-solid rounded-2xl`}>
                             <TouchableOpacity testID="check-my-answers" onPress={checkAnswer} className="flex-row w-full items-center justify-center bg-brand-play " ><View className="flex-row items-center justify-center bg-brand-play"><ListChecks color='white' /><Text style={[styles.text, { color: 'white', backgroundColor: COLOR_PLAY }]}> Check</Text></View></TouchableOpacity>
                         </View>
                     )
