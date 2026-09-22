@@ -230,8 +230,8 @@ public static class ContentCreatorEndpoints
         {
             //there are no exercises by other users already
             if (await db.Exercises.AnyAsync(
-                e => e.LearningPathId == id 
-                && e.UserId != userId 
+                e => e.LearningPathId == id
+                && e.UserId != userId
                 && e.Status != (byte)ContentStatusEnum.Removed))
             {
                 return Results.Conflict("Lesson cannot be made private because there are exercises in it from multiple contributers.");
@@ -282,10 +282,10 @@ public static class ContentCreatorEndpoints
         if (learningPath == null) return Results.BadRequest("Learning path not found.");
 
         //check that not private or is owner - only owner can create exercies on private lessons
-        if (learningPath.OwnershipType == (byte)OwnershipTypeEnum.User 
+        if (learningPath.OwnershipType == (byte)OwnershipTypeEnum.User
             && learningPath.UserId != userId)
         {
-             return Results.Forbid();
+            return Results.Forbid();
         }
 
         if (learningPath.Status == (byte)ContentStatusEnum.Removed)
@@ -367,16 +367,17 @@ public static class ContentCreatorEndpoints
             return Results.BadRequest("Invalid exercise data format for the specified exercise type.");
         }
 
+        var supportsAlternatives = ((ExerciseTypesEnum)exercise.ExerciseTypeId).SupportsAlternativeAnswers();
         //see if Alternatives changed and we have a source exercise id
-        if (((ExerciseTypesEnum)exercise.ExerciseTypeId).SupportsAlternativeAnswers())
+        if (supportsAlternatives || dto.PropagateChanges)
         {
             // get added alternatives
             List<string> addedAlternatives = [];
             List<string> removedAlternatives = [];
             var dtoSimpleNew = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.ExerciseData>(dto.Data);
             var dtoSimpleOld = System.Text.Json.JsonSerializer.Deserialize<Dtos.ExerciseDtos.ExerciseData>(exercise.Data);
-
-            if (dtoSimpleNew != null)
+            var fullDataChange = dto.PropagateChanges && !dto.Data.Equals(exercise.Data);
+            if (!fullDataChange && supportsAlternatives && dtoSimpleNew != null)
             {
                 if (dtoSimpleOld == null || dtoSimpleOld.Alternatives == null || dtoSimpleOld.Alternatives.Length == 0)
                 {
@@ -408,17 +409,35 @@ public static class ContentCreatorEndpoints
 
             //we have added alternatives - get source exercise id + all other exercises sourcing to it
             //and update alternatives for them too
-            if (addedAlternatives.Count > 0 || removedAlternatives.Count > 0)
+            if (fullDataChange || addedAlternatives.Count > 0 || removedAlternatives.Count > 0)
             {
                 string[] addedAlternativesArr = [.. addedAlternatives];
                 string[] removedAlternativesArr = [.. removedAlternatives];
                 //update the source
                 if (exercise.SourceExercise != null)
                 {
-                    ContentCreatorLogic.AddAlternativesToExercise(exercise.SourceExercise, addedAlternativesArr, removedAlternativesArr);
+                    if ((exercise.SourceExercise.UserId == userID && exercise.SourceExercise.Status != (byte)ContentStatusEnum.Removed) || claim.IsInRole("Admin"))
+                    {
+                        if (fullDataChange)
+                        {
+                            exercise.SourceExercise.Data = dto.Data;
+                            exercise.SourceExercise.OwnershipType = (byte)dto.OwnershipType;
+                            exercise.SourceExercise.Status = (byte)ContentStatusEnum.Draft;
+                            logger.LogInformation("EditExercise: fullDataChange for source exercise {exercise.SourceExercise.ExerciseId} by user {userID}", exercise.SourceExercise.ExerciseId, userID);
+                        }
+                        else
+                        {
+                            ContentCreatorLogic.AddAlternativesToExercise(exercise.SourceExercise, addedAlternativesArr, removedAlternativesArr);
+                        }
+                    }
+                    else
+                    {
+                        logger.LogInformation("EditExercise: skipping source exercise {exercise.SourceExercise.ExerciseId} by user {userID} due to ownership or status", exercise.SourceExercise.ExerciseId, userID);
+                    }
+
                     //get the source children that are not this exercise
                     var sourceChildren = await db.Exercises
-                    .Where(e => e.ExerciseId == exercise.SourceExerciseId
+                    .Where(e => e.SourceExerciseId == exercise.SourceExerciseId
                         && e.ExerciseId != id)
                         .ToListAsync();
                     //update the source children that are not this exercise
@@ -426,7 +445,24 @@ public static class ContentCreatorEndpoints
                     {
                         foreach (Exercise ex in sourceChildren)
                         {
-                            ContentCreatorLogic.AddAlternativesToExercise(ex, addedAlternativesArr, removedAlternativesArr);
+                            if ((ex.UserId == userID && ex.Status != (byte)ContentStatusEnum.Removed) || claim.IsInRole("Admin"))
+                            {
+                                if (fullDataChange)
+                                {
+                                    ex.Data = dto.Data;
+                                    ex.OwnershipType = (byte)dto.OwnershipType;
+                                    ex.Status = (byte)ContentStatusEnum.Draft;
+                                    logger.LogInformation("EditExercise: fullDataChange for source exercise child {ex.ExerciseId} by user {userID}", ex.ExerciseId, userID);
+                                }
+                                else
+                                {
+                                    ContentCreatorLogic.AddAlternativesToExercise(ex, addedAlternativesArr, removedAlternativesArr);
+                                }
+                            }
+                            else
+                            {
+                                logger.LogInformation("EditExercise: skipping source exercise child {ex.ExerciseId} by user {userID} due to ownership or status", ex.ExerciseId, userID);
+                            }
                         }
                     }
                 }
@@ -435,7 +471,24 @@ public static class ContentCreatorEndpoints
                 {
                     foreach (Exercise ex in exercise.ChildExercises)
                     {
-                        ContentCreatorLogic.AddAlternativesToExercise(ex, addedAlternativesArr, removedAlternativesArr);
+                        if ((ex.UserId == userID && ex.Status != (byte)ContentStatusEnum.Removed) || claim.IsInRole("Admin"))
+                        {
+                            if (fullDataChange)
+                            {
+                                ex.Data = dto.Data;
+                                ex.OwnershipType = (byte)dto.OwnershipType;
+                                ex.Status = (byte)ContentStatusEnum.Draft;
+                                logger.LogInformation("EditExercise: fullDataChange for exercise child {ex.ExerciseId} by user {userID}", ex.ExerciseId, userID);
+                            }
+                            else
+                            {
+                                ContentCreatorLogic.AddAlternativesToExercise(ex, addedAlternativesArr, removedAlternativesArr);
+                            }
+                        }
+                        else
+                        {
+                            logger.LogInformation("EditExercise: skipping exercise child {ex.ExerciseId} by user {userID} due to ownership or status", ex.ExerciseId, userID);
+                        }
                     }
                 }
             }

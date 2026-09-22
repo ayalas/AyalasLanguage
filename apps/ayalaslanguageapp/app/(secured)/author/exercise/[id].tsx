@@ -26,6 +26,7 @@ export default function ExerciseScreen() {
   const [translation, setTranslation] = useState('');
   const [extraOptions, setExtraOptions] = useState('');
   const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
+  const [propagateChanges, setPropagateChanges] = useState(false);
   const { styles } = useTextStyles();
   const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
 
@@ -54,7 +55,7 @@ export default function ExerciseScreen() {
 
       const data = JSON.stringify(dataToSend);
 
-      await api.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType });
+      await api.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType, propagateChanges });
 
       if (returnToPage != null) {
         router.replace({
@@ -183,6 +184,14 @@ export default function ExerciseScreen() {
                 </View>
               </>
             )}
+
+            <View className="form-row">
+              <View className="form-input-row">
+                <Checkbox data-testid="propagateChanges" value={propagateChanges} onValueChange={setPropagateChanges} />
+                <Text style={styles.text}>Change everywhere</Text>
+              </View>
+              <Text style={styles.dimmedText}>Propagate to copies of this exercise</Text>
+            </View>
 
             <View className="form-row">
               <View className="form-input-row">

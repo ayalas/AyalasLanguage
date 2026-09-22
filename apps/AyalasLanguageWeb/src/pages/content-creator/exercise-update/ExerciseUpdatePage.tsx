@@ -18,6 +18,7 @@ export function ExerciseUpdatePage() {
     const [firstLine, setFirstLine] = useState('');
     const [secondLine, setSecondLine] = useState('');
     const [translation, setTranslation] = useState('');
+    const [propagateChanges, setPropagateChanges] = useState(false);
     const [extraOptions, setExtraOptions] = useState('');
     const [ownershipType, setOwnershipType] = useState<OwnershipType>(OWNERSHIP_TYPE.PUBLIC);
     const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
@@ -51,7 +52,7 @@ export function ExerciseUpdatePage() {
 
             const data = JSON.stringify(dataToSend);
 
-            await axios.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType });
+            await axios.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType, propagateChanges});
 
             if (returnToPage != null) {
                 navigate(`/author/path/${initialRecord?.learningPathId}?page=${returnToPage}`);
@@ -164,6 +165,14 @@ export function ExerciseUpdatePage() {
                             </div>
                         </>
                     )}
+
+                    <div className="form-row">
+                        <div className="form-input-row">
+                            <input type="checkbox" data-testid="private" checked={propagateChanges} onChange={(e) => { setPropagateChanges(e.target.checked) }} />
+                            <label className="content-line-part">Change everywhere</label>
+                        </div>
+                        <div className="form-content-row">Propagate to copies of this exercise</div>
+                    </div>
 
                     <div className="form-row">
                         <div className="form-input-row">

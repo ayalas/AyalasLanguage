@@ -130,13 +130,13 @@ public static class AIIntegrationEndpoints
         var msgList = new List<ChatMessage>();
         foreach (AIChatMessageDto msg in request.Messages)
         {
-            switch (msg.role)
+            switch (msg.Role)
             {
                 case "system":
-                    msgList.Add(new SystemChatMessage(msg.content));
+                    msgList.Add(new SystemChatMessage(msg.Content));
                     break;
                 case "user":
-                    msgList.Add(new UserChatMessage(msg.content));
+                    msgList.Add(new UserChatMessage(msg.Content));
                     break;
             }
         }

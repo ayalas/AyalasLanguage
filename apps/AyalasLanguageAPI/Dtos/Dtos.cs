@@ -55,7 +55,8 @@ namespace AyalasLanguageAPI.DTOs
 
     public record EditExerciseDto(
         string Data,
-        OwnershipTypeEnum OwnershipType
+        OwnershipTypeEnum OwnershipType,
+        bool PropagateChanges = false
     );
 
     public record AddScoreDto(int ScoreToAdd);
@@ -67,7 +68,7 @@ namespace AyalasLanguageAPI.DTOs
     public record CreateLogRequestDto(LogTypeEnum LogType, string Description);
 
    // AI Chat DTOs
-    public record AIChatMessageDto(string role, string content);
+    public record AIChatMessageDto(string Role, string Content);
     
     public record AIChatRequestDto(
         ExerciseTypesEnum ExerciseType,
