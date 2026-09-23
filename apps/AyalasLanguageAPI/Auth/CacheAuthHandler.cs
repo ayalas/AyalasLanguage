@@ -13,37 +13,45 @@ namespace AyalasLanguageAPI.Auth;
 public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
 {
     private readonly IMemoryCache _cache;
+    private readonly ILogger<CacheAuthHandler> _logger;
 
     public CacheAuthHandler(
         IOptionsMonitor<CacheAuthOptions> options,
-        ILoggerFactory logger,
+        ILoggerFactory loggerFactory,
         UrlEncoder encoder,
-        IMemoryCache cache) : base(options, logger, encoder)
+        IMemoryCache cache) : base(options, loggerFactory, encoder)
     {
         _cache = cache;
+        _logger = loggerFactory.CreateLogger<CacheAuthHandler>();
     }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        string? rawToken = Request.Cookies[Options.CookieName];
+        string? rawToken = null;
 
-        if (string.IsNullOrEmpty(rawToken))
+        // 1. Check Authorization Header FIRST (critical for Mobile clients)
+        string? authHeader = Request.Headers.Authorization;
+        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
         {
-            string? authHeader = Request.Headers.Authorization;
-            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-            {
-                rawToken = authHeader["Bearer ".Length..].Trim();
-            }
+            rawToken = authHeader["Bearer ".Length..].Trim().Trim('"');
         }
 
+        // 2. Fall back to Cookie (for Web clients)
         if (string.IsNullOrEmpty(rawToken))
-            return AuthenticateResult.Fail("No token found in cookie or header");
+        {
+            rawToken = Request.Cookies[Options.CookieName];
+        }
+
+        if (string.IsNullOrWhiteSpace(rawToken))
+        {
+            _logger.LogDebug("Auth failed: No token found in Authorization header or cookie '{CookieName}'", Options.CookieName);
+            return AuthenticateResult.NoResult();
+        }
 
         AppIdEnum appId = Options.CookieName == Constants.ADMIN_APP_COOKIE_NAME 
             ? AppIdEnum.Admin 
             : AppIdEnum.Main;
 
-        // Hash the token so we never search or cache raw tokens
         string tokenHash = TokenGenerator.HashToken(rawToken);
         string cacheKey = $"sess:{appId}:{tokenHash}";
 
@@ -51,7 +59,6 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
         {
             var db = Request.HttpContext.RequestServices.GetRequiredService<AyalasLanguageDbContext>();
 
-            // Query indexed Hash directly, selecting only needed columns
             var tokenRecord = await db.Tokens
                 .AsNoTracking()
                 .Where(t => t.TokenHash == tokenHash && t.AppId == (byte)appId)
@@ -65,8 +72,17 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
                 })
                 .FirstOrDefaultAsync();
 
-            if (tokenRecord == null || tokenRecord.ExpiresOn < DateTime.UtcNow)
-                return AuthenticateResult.Fail("Invalid or Expired Token");
+            if (tokenRecord == null)
+            {
+                _logger.LogWarning("Auth failed: Token not found in DB for hash {TokenHash} and appId {AppId}", tokenHash, appId);
+                return AuthenticateResult.Fail("Invalid Token");
+            }
+
+            if (tokenRecord.ExpiresOn < DateTime.UtcNow)
+            {
+                _logger.LogWarning("Auth failed: Token expired at {ExpiresOn} UTC", tokenRecord.ExpiresOn);
+                return AuthenticateResult.Fail("Expired Token");
+            }
 
             session = new CachedUserSession(
                 tokenRecord.UserId,
@@ -75,19 +91,21 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
                 tokenRecord.ExpiresOn
             );
 
-            // Bounded cache insertion with explicit Size = 1
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(tokenRecord.ExpiresOn)
                 .SetSize(1);
 
             _cache.Set(cacheKey, session, cacheEntryOptions);
 
-            await db.Tokens.Where(t => t.TokenId == tokenRecord.TokenId)
+            _ = db.Tokens.Where(t => t.TokenId == tokenRecord.TokenId)
                 .ExecuteUpdateAsync(s => s.SetProperty(b => b.LastUsedAt, DateTime.UtcNow));
         }
 
         if (appId == AppIdEnum.Admin && session.Role != (byte)UserRoleEnum.Admin)
+        {
+            _logger.LogWarning("Auth failed: User {UserId} is not admin for admin resource", session.UserId);
             return AuthenticateResult.Fail("Non-admin user attempt to access admin resources");
+        }
 
         var claims = new[]
         {
