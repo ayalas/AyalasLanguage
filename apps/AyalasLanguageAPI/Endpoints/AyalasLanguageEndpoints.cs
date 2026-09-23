@@ -22,7 +22,7 @@ namespace AyalasLanguageAPI.Endpoints
 
     public static class AyalasLanguageEndpoints
     {
-        public static void MapAyalasLanguageEndpoints(this IEndpointRouteBuilder app)
+        public static void MapAyalasLanguageEndpoints(this WebApplication app)
         {
             // Register User APIs for the Web Frontend
             app.RegisterUserRoutes("/api");
@@ -38,7 +38,7 @@ namespace AyalasLanguageAPI.Endpoints
             app.Map("/mobile/api/{**slug}", (string? slug) => Results.NotFound());
         }
 
-        private static void RegisterUserRoutes(this IEndpointRouteBuilder app, string prefix)
+        private static void RegisterUserRoutes(this WebApplication app, string prefix)
         {
             // Pass the prefix down to each sub-module
             app.MapAuthEndpoints(prefix);
