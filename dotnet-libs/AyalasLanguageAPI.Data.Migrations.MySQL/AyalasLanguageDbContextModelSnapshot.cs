@@ -671,16 +671,23 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.Property<byte>("AppId")
                         .HasColumnType("tinyint unsigned");
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(1024)
-                        .HasColumnType("varchar(1024)");
-
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("ExpiresOn")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -688,6 +695,8 @@ namespace AyalasLanguageAPI.Data.Migrations.MySQL
                     b.HasKey("TokenId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("AppId", "TokenHash");
 
                     b.ToTable("Tokens");
                 });

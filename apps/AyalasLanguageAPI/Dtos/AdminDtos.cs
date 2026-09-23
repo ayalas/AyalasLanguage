@@ -27,7 +27,7 @@ namespace AyalasLanguageAPI.AdminDTOs
     public record AdminSetExerciseStatusRequest(int ExerciseId, ContentStatusEnum Status);
     public record AdminMultiSetExerciseStatusRequest(int[] ExerciseIds, ContentStatusEnum Status);
     
-    public record AdminLoginRowDto(int? UserId, string? Email,byte AppId, DateTime CreatedOn, DateTime ExpiresOn);
+    public record AdminLoginRowDto(int? UserId, string? Email,byte AppId, DateTime CreatedOn, DateTime ExpiresOn, DateTime? LastUsedAt);
     
     public record AdminDashboardCountersResponse(int ContactUsRecordsTotal, int LogsTotal, int LessonsTotal, int DraftLessonsTotal, int ExercisesTotal, 
         int UsersTotal, int LoginsTotal, int IncompleteJobsTotal, int FailedJobsTotal);

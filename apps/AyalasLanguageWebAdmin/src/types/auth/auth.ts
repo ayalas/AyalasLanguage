@@ -41,4 +41,5 @@ export interface IRowLogin {
     appId: number;
     createdOn: string;
     expiresOn: string;
+    lastUsedAt?: string;
 }

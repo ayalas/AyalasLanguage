@@ -8,7 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 //add services
 builder.AddAyalasLanguageDb();
-builder.Services.AddMemoryCache();
+builder.Services.AddMemoryCache(options =>
+{
+    // Set a maximum size footprint (measured in logical units, e.g., 1 unit per item)
+    options.SizeLimit = 100_000;
+});
 builder.Services.AddHttpClient(); 
 builder.AddAuthenticationSchemes();
 builder.Services.AddAuthorization();
@@ -23,13 +27,17 @@ app.MigrateDb();
 await app.MakeFirstUserAdmin();
 
 app.SetForwardOptions();
-app.UseHttpsRedirection();
-app.UseHsts();
+
 app.UseWebSockets();
+app.UseHsts();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseCors();
+}
+else
+{
+    app.UseHttpsRedirection();
 }
 
 app.UseAuthentication(); // Must come before UseAuthorization

@@ -15,22 +15,25 @@ namespace AyalasLanguageAPI.Utils
         {
             if (cache.TryGetValue(cacheKey, out T? dataFromCache))
             {
-                if (dataFromCache != null) {
+                if (dataFromCache != null)
+                {
                     return dataFromCache;
                 }
             }
-            
+
             if (getDataCallback != null)
             {
                 T? dataFromCallback = await getDataCallback(db);
 
-                DateTime dtNow = DateTime.UtcNow;
-                var expires = dtNow.AddMinutes(Constants.APP_DATA_CACHE_MINUTES);
-                cache.Set(cacheKey, dataFromCallback, expires - dtNow);
+                cache.Set(cacheKey, dataFromCallback, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Constants.APP_DATA_CACHE_MINUTES),
+                    Size = 1
+                });
 
                 return dataFromCallback;
             }
-            
+
             return default;
         }
         public static bool ProtectByCacheCount(string cacheKey, IMemoryCache cache, int maxCount)
@@ -49,11 +52,15 @@ namespace AyalasLanguageAPI.Utils
         {
             DateTime dtNow = DateTime.UtcNow;
             if (cache.TryGetValue(cacheKey, out ProtectByCountCache? objCountProtection) && objCountProtection != null)
-            {               
+            {
                 if (objCountProtection.ExpiresOn.CompareTo(dtNow) > 0)
                 {
                     objCountProtection.Counter = objCountProtection.Counter + 1;
-                    cache.Set(cacheKey, objCountProtection, objCountProtection.ExpiresOn - dtNow);
+                    cache.Set(cacheKey, objCountProtection, new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Constants.APP_DATA_CACHE_MINUTES),
+                        Size = 1
+                    });
                 }
             }
             else
@@ -63,7 +70,11 @@ namespace AyalasLanguageAPI.Utils
                 {
                     Counter = 1,
                     ExpiresOn = expires
-                }, expires - dtNow);
+                }, new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Constants.APP_DATA_CACHE_MINUTES),
+                        Size = 1
+                    });
             }
         }
     }

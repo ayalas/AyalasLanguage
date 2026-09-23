@@ -35,6 +35,13 @@ public class AyalasLanguageDbContext : DbContext
         modelBuilder.Entity<LearningPath>()
             .HasIndex(p => new { p.KnownLanguageId, p.TargetLanguageId, p.Level, p.Chapter });
 
+        // Unique index on AppId + TokenHash prevents table scans and duplicate tokens
+        modelBuilder.Entity<Token>()
+            .HasIndex(t => new { t.AppId, t.TokenHash });
+
+        modelBuilder.Entity<Token>()
+            .HasIndex(t => t.UserId);
+
         modelBuilder.Entity<ExerciseType>().HasData(
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromKnownToTarget, Name = "From known to target language" },
             new ExerciseType { ExerciseTypeId = (int)ExerciseTypesEnum.FromTargetToKnown, Name = "From target to known language" },
@@ -88,8 +95,15 @@ public class AyalasLanguageDbContext : DbContext
             new Language { LanguageId = (int)LanguageEnum.Persian, Code = "fa", EnglishName = "Persian", NativeName = "فارسی", IsRightToLeft = true },
             new Language { LanguageId = (int)LanguageEnum.Slovak, Code = "sk", EnglishName = "Slovak", NativeName = "Slovenčina" },
             new Language { LanguageId = (int)LanguageEnum.Catalan, Code = "ca", EnglishName = "Catalan", NativeName = "Català" },
-            new Language { LanguageId = (int)LanguageEnum.DarijaMoroccanArabic, Code = "ar-MA", EnglishName = "Darija - Moroccan Arabic", 
-                NativeName = "الدارجة", IsRightToLeft = true, KeyboardLanguageName = "Arabic" }
+            new Language
+            {
+                LanguageId = (int)LanguageEnum.DarijaMoroccanArabic,
+                Code = "ar-MA",
+                EnglishName = "Darija - Moroccan Arabic",
+                NativeName = "الدارجة",
+                IsRightToLeft = true,
+                KeyboardLanguageName = "Arabic"
+            }
         );
 
         base.OnModelCreating(modelBuilder);

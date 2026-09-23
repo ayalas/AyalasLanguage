@@ -51,7 +51,7 @@ public static class AuthEndpoints
 
         return Results.Ok(userIdDto);
     }
-    // --- Private Handler Implementations ---
+
     private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, ILogger<Program> logger)
     {
         if (!CacheUtils.ProtectByCacheCount(Constants.LOGIN_COUNT_CACHE_KEY, cache, Constants.MAX_LOGIN_PER_PERIOD))
@@ -59,9 +59,7 @@ public static class AuthEndpoints
             return Results.Conflict("The system cannot accept new logins at this time. Please try again later.");
         }
 
-        // 1. Find user (In production, use a proper password hasher!)
-        User? user = null;
-        user = await db.Users.FirstOrDefaultAsync(u => u.UserName == login.UserName);
+        var user = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserName == login.UserName);
 
         if (user == null || !BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash))
             return Results.Conflict("Invalid credentials. Please try again with your correct email and password.");
@@ -70,24 +68,29 @@ public static class AuthEndpoints
 
         if (user.EmailConfirmed && user.Use2FALogin)
         {
-            //generate code
-            string code = Random.Shared.Next(Constants.MIN_2FA_CODE, Constants.MAX_2FA_CODE).ToString();
-            var tokenStart = TokenGenerator.GenerateToken(); // Implement a secure token generator
+            string code = RandomNumberGenerator.GetInt32(Constants.MIN_2FA_CODE, Constants.MAX_2FA_CODE + 1).ToString();
+            string tokenStart = TokenGenerator.GenerateToken();
             var expires = DateTime.UtcNow.AddMinutes(Constants.VERIFY2FA_TOKEN_EXPIRES_MINUTES);
 
-            string token = $"{tokenStart}{code}";
+            string raw2FaToken = $"{tokenStart}{code}";
+            string tokenHash = TokenGenerator.HashToken(raw2FaToken);
 
             var tokenEntry = new Token
             {
                 UserId = user.UserId,
-                Content = token,
+                TokenHash = tokenHash,
                 ExpiresOn = expires,
                 AppId = (byte)AppIdEnum.Main2FA
             };
             db.Tokens.Add(tokenEntry);
             await db.SaveChangesAsync();
 
-            cache.Set(token, user, expires - DateTime.UtcNow);
+            var session = new CachedUserSession(user.UserId, user.UserName, user.Role, expires);
+            cache.Set($"sess:{AppIdEnum.Main2FA}:{tokenHash}", session, new MemoryCacheEntryOptions
+            {
+                AbsoluteExpiration = expires,
+                Size = 1
+            });
 
             string emailTitle = $"{Constants.BRAND_NAME}: your two factor authentication code";
             string emailContent = $"<p>{code} is your two factor authentication code.</p>";
@@ -96,66 +99,95 @@ public static class AuthEndpoints
 
             return Results.Ok(new LoginResponseDto(expires, null, true, tokenStart));
         }
-        else
-        {
-            return await FinalizeLogin(user, config, db, cache, context);
-        }
+
+        return await FinalizeLogin(user.UserId, user.UserName, user.Role, config, db, cache, context);
     }
 
     private static async Task<IResult> Verify2FA(Verify2FARequest req, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
     {
         if (!CacheUtils.ProtectByCacheCount(req.Verify2FAToken, cache, Constants.VERIFY2FA_TOKEN_MAX_RETRY))
         {
-            return Results.Conflict("Too many entry attempts for two factor authentication code. Please restart the login process.");
+            return Results.Conflict("Too many entry attempts. Please restart the login process.");
         }
 
-        string token = $"{req.Verify2FAToken}{req.Code}";
-        if (cache.TryGetValue(token, out User? user) && user != null)
+        string rawToken = $"{req.Verify2FAToken}{req.Code}";
+        string tokenHash = TokenGenerator.HashToken(rawToken);
+        string cacheKey = $"sess:{AppIdEnum.Main2FA}:{tokenHash}";
+        DateTime now = DateTime.UtcNow;
+
+        CachedUserSession? session;
+        if (!cache.TryGetValue(cacheKey, out session) || session == null)
         {
-            return await FinalizeLogin(user, config, db, cache, context);
+            var tokenRecord = await db.Tokens
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.TokenHash == tokenHash && t.AppId == (byte)AppIdEnum.Main2FA);
+
+            if (tokenRecord != null && tokenRecord.ExpiresOn >= now)
+            {
+                session = new CachedUserSession(tokenRecord.UserId, tokenRecord.User.UserName, tokenRecord.User.Role, tokenRecord.ExpiresOn);
+
+                var consumed = await db.Tokens
+                    .Where(t => t.TokenId == tokenRecord.TokenId && t.ExpiresOn >= now)
+                    .ExecuteDeleteAsync();
+
+                if (consumed != 1)
+                {
+                    session = null;
+                }
+            }
         }
         else
         {
-            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token && t.AppId == (byte)AppIdEnum.Main2FA);
+            cache.Remove(cacheKey);
 
-            if (tokenRecord != null && tokenRecord.ExpiresOn.CompareTo(DateTime.UtcNow) >= 0)
+            var consumed = await db.Tokens
+                .Where(t => t.TokenHash == tokenHash
+                    && t.AppId == (byte)AppIdEnum.Main2FA
+                    && t.ExpiresOn >= now)
+                .ExecuteDeleteAsync();
+
+            if (consumed != 1)
             {
-                return await FinalizeLogin(tokenRecord.User, config, db, cache, context);
+                session = null;
             }
         }
 
+        if (session != null)
+        {
+            return await FinalizeLogin(session.UserId, session.UserName, session.Role, config, db, cache, context);
+        }
+
         CacheUtils.AddToCountProtection(req.Verify2FAToken, cache, Constants.VERIFY2FA_TOKEN_EXPIRES_MINUTES);
-
-        return Results.Conflict("Expired or invalid two factor authentication code. Please try again or restart the login process.");
-
+        return Results.Conflict("Expired or invalid two factor authentication code.");
     }
 
-    private static async Task<IResult> FinalizeLogin(User user, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    private static async Task<IResult> FinalizeLogin(int userId, string userName, byte role, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
     {
-        // 2. Generate a unique token: improve this in production (e.g. JWT or GUID + HMAC)
-        var tokenContent = TokenGenerator.GenerateToken(); // Implement a secure token generator
-        var expires = DateTime.UtcNow.AddHours(config.GetValue<int>("Session:TokenExpirationHours"));
+        string rawToken = TokenGenerator.GenerateToken();
+        string tokenHash = TokenGenerator.HashToken(rawToken);
+        var expires = DateTime.UtcNow.AddHours(config.GetValue<int>("Session:TokenExpirationHours", 72));
 
         var tokenEntry = new Token
         {
-            UserId = user.UserId,
-            Content = tokenContent,
+            UserId = userId,
+            TokenHash = tokenHash,
             ExpiresOn = expires,
-            AppId = (byte)AppIdEnum.Main
+            AppId = (byte)AppIdEnum.Main,
+            UserAgent = context.Request.Headers.UserAgent.ToString()
         };
 
-        UserIdDto? userIdDto = await GetUserById(user.UserId, db);
-        if (userIdDto == null) return Results.InternalServerError("Could not retrieve user");
-
-        // 3. Save to DB (for persistence/audit)
         db.Tokens.Add(tokenEntry);
         await db.SaveChangesAsync();
 
-        // 4. Cache the User object keyed by the Token Content
-        // We cache the User so we don't have to query the DB in the middleware
-        cache.Set(tokenContent, user, expires);
+        // Cache small session object with explicit Size
+        var session = new CachedUserSession(userId, userName, role, expires);
+        cache.Set($"sess:{AppIdEnum.Main}:{tokenHash}", session, new MemoryCacheEntryOptions
+        {
+            AbsoluteExpiration = expires,
+            Size = 1
+        });
 
-        context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent, new CookieOptions
+        context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, rawToken, new CookieOptions
         {
             HttpOnly = true,
             Secure = true,
@@ -164,76 +196,121 @@ public static class AuthEndpoints
             IsEssential = true
         });
 
-        return Results.Ok(new LoginResponseDto(expires, userIdDto, false, tokenContent));
+        UserIdDto? userIdDto = await GetUserById(userId, db);
+        return Results.Ok(new LoginResponseDto(expires, userIdDto, false, rawToken));
+    }
+
+    private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    {
+        var userId = claim.GetUserId();
+
+        // Remove token currently used
+        string? rawToken = context.Request.Cookies[Constants.APP_COOKIE_NAME];
+        if (!string.IsNullOrEmpty(rawToken))
+        {
+            string tokenHash = TokenGenerator.HashToken(rawToken);
+            cache.Remove($"sess:{AppIdEnum.Main}:{tokenHash}");
+        }
+
+        // Delete all tokens belonging to this user
+        await db.Tokens
+            .Where(t => t.UserId == userId && (t.AppId == (byte)AppIdEnum.Main || t.AppId == (byte)AppIdEnum.Main2FA))
+            .ExecuteDeleteAsync();
+
+        context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
+        return Results.NoContent();
     }
 
     public static async Task<UserIdDto?> GetUserById(int userId, AyalasLanguageDbContext db)
     {
-        var user = await db.Users
-            .Include(u => u.KnownLanguage)
-            .Include(u => u.TargetLanguage)
-            .FirstOrDefaultAsync(u => u.UserId == userId);
-        if (user == null) return null;
-
-        //get unread messages
-        int countUnread = await db.UserMessages
-            .Where(um => um.ToUserId == userId && um.Read == false).CountAsync();
-
-        int userScore = 0;
-        if (user.TargetLanguageId != null)
-        {
-            UserLanguage? userLanguage = await db.UserLanguages.FirstOrDefaultAsync(ul => ul.UserId == userId && ul.LanguageId == user.TargetLanguageId.Value && ul.IsLearning == true);
-            if (userLanguage != null)
+        var userData = await db.Users
+            .AsNoTracking()
+            .Where(u => u.UserId == userId)
+            .Select(u => new
             {
-                userScore = userLanguage.Score;
-            }
-        }
+                u.UserId,
+                u.DisplayName,
+                u.UserName,
+                u.Role,
+                u.EmailConfirmed,
+                u.Use2FALogin,
+                u.DisableAutoAI,
+                u.ShowOnlyPrivateContent,
+                u.NumOfExercisesToGenerate,
+                u.TargetLanguageId,
+                u.KnownLanguageId,
+                KnownLanguageEnglishName = u.KnownLanguage != null ? u.KnownLanguage.EnglishName : null,
+                KnownLanguageIsRtl = u.KnownLanguage != null && u.KnownLanguage.IsRightToLeft,
+                TargetLanguageNativeName = u.TargetLanguage != null ? u.TargetLanguage.NativeName : null,
+                TargetLanguageEnglishName = u.TargetLanguage != null ? u.TargetLanguage.EnglishName : null,
+                TargetLanguageCode = u.TargetLanguage != null ? u.TargetLanguage.Code : null,
+                TargetLanguageIsRtl = u.TargetLanguage != null && u.TargetLanguage.IsRightToLeft,
+                TargetKeyboardLang = u.TargetLanguage != null
+                    ? (u.TargetLanguage.KeyboardLanguageName ?? u.TargetLanguage.EnglishName)
+                    : null
+            })
+            .FirstOrDefaultAsync();
 
-        var otherLanguages = await db.UserLanguages
-            .Include(ul => ul.Language)
-            .Where((ul) => ul.UserId == userId
-            && ul.LanguageId != user.TargetLanguageId
-            && ul.IsLearning)
-            .Select((ul) => new LanguageDto(
-                ul.LanguageId, ul.Language.Code, ul.Language.EnglishName, ul.Language.NativeName
-            ))
-        .ToArrayAsync();
+        if (userData == null) return null;
 
-        var languageSettings = new CurrentLanguageResponseDto(user.TargetLanguageId,
-            user.TargetLanguage?.NativeName, user.KnownLanguageId,
-            user.KnownLanguage?.EnglishName,
-            
+        // Single query for unread messages, score, and active learning languages
+        var unreadTask = db.UserMessages
+            .AsNoTracking()
+            .CountAsync(um => um.ToUserId == userId && !um.Read);
+
+        var userLanguagesTask = db.UserLanguages
+            .AsNoTracking()
+            .Where(ul => ul.UserId == userId && ul.IsLearning)
+            .Select(ul => new
+            {
+                ul.LanguageId,
+                ul.Score,
+                ul.Language.Code,
+                ul.Language.EnglishName,
+                ul.Language.NativeName
+            })
+            .ToListAsync();
+
+        await Task.WhenAll(unreadTask, userLanguagesTask);
+
+        int unreadCount = await unreadTask;
+        var userLanguages = await userLanguagesTask;
+
+        int userScore = userLanguages
+            .FirstOrDefault(l => l.LanguageId == userData.TargetLanguageId)?.Score ?? 0;
+
+        var otherLanguages = userLanguages
+            .Where(ul => ul.LanguageId != userData.TargetLanguageId)
+            .Select(ul => new LanguageDto(ul.LanguageId, ul.Code, ul.EnglishName, ul.NativeName))
+            .ToArray();
+
+        var languageSettings = new CurrentLanguageResponseDto(
+            userData.TargetLanguageId,
+            userData.TargetLanguageNativeName,
+            userData.KnownLanguageId,
+            userData.KnownLanguageEnglishName,
             otherLanguages,
-            user.KnownLanguage != null && user.KnownLanguage.IsRightToLeft,
-            user.TargetLanguage != null && user.TargetLanguage.IsRightToLeft,
-            user.TargetLanguage?.KeyboardLanguageName ??  user.TargetLanguage?.EnglishName,
-            user.TargetLanguage?.EnglishName,
-            user.TargetLanguage?.Code, userScore);
+            userData.KnownLanguageIsRtl,
+            userData.TargetLanguageIsRtl,
+            userData.TargetKeyboardLang,
+            userData.TargetLanguageEnglishName,
+            userData.TargetLanguageCode,
+            userScore
+        );
 
-        return new UserIdDto(user.UserId, user.DisplayName, user.UserName, user.Role, user.EmailConfirmed, user.Use2FALogin, user.DisableAutoAI, user.ShowOnlyPrivateContent, user.NumOfExercisesToGenerate,countUnread, languageSettings);
-    }
-
-    private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, IConfiguration config)
-    {
-        var userId = claim.GetUserId();
-
-        // Remove all tokens from DB and cache - keep the tokens table clean and simple
-        var tokenEntry = await db.Tokens.Where(t => t.UserId == userId && (t.AppId == (byte)AppIdEnum.Main || t.AppId == (byte)AppIdEnum.Main2FA)).ToListAsync();
-        if (tokenEntry != null && tokenEntry.Any())
-        {
-            foreach (var token in tokenEntry)
-            {
-                db.Tokens.Remove(token);
-                // Remove from Cache
-                cache.Remove(token.Content);
-            }
-            await db.SaveChangesAsync();
-
-
-            context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
-        }
-
-        return Results.NoContent();
+        return new UserIdDto(
+            userData.UserId,
+            userData.DisplayName,
+            userData.UserName,
+            userData.Role,
+            userData.EmailConfirmed,
+            userData.Use2FALogin,
+            userData.DisableAutoAI,
+            userData.ShowOnlyPrivateContent,
+            userData.NumOfExercisesToGenerate,
+            unreadCount,
+            languageSettings
+        );
     }
 
     private static async Task<IResult> RegisterUser(RegisterDto dto, IMemoryCache cache, AyalasLanguageDbContext db, ILogger<Program> logger, IConfiguration config)

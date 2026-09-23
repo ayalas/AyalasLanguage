@@ -1,12 +1,12 @@
 using System;
 using System.Security.Claims;
+using System.Text.Encodings.Web;
+using AyalasLanguageAPI.Data;
+using AyalasLanguageAPI.Data.Model;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using AyalasLanguageAPI.Data;
-using System.Text.Encodings.Web;
-using AyalasLanguageAPI.Data.Model;
-using Microsoft.EntityFrameworkCore;
 
 namespace AyalasLanguageAPI.Auth;
 
@@ -25,46 +25,75 @@ public class CacheAuthHandler : AuthenticationHandler<CacheAuthOptions>
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var token = Request.Cookies[Options.CookieName];
+        string? rawToken = Request.Cookies[Options.CookieName];
 
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(rawToken))
         {
             string? authHeader = Request.Headers.Authorization;
             if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             {
-                token = authHeader.Substring("Bearer ".Length).Trim();
+                rawToken = authHeader["Bearer ".Length..].Trim();
             }
         }
 
-        if (string.IsNullOrEmpty(token))
+        if (string.IsNullOrEmpty(rawToken))
             return AuthenticateResult.Fail("No token found in cookie or header");
 
-        AppIdEnum appId = Options.CookieName == Constants.ADMIN_APP_COOKIE_NAME? AppIdEnum.Admin : AppIdEnum.Main;
+        AppIdEnum appId = Options.CookieName == Constants.ADMIN_APP_COOKIE_NAME 
+            ? AppIdEnum.Admin 
+            : AppIdEnum.Main;
 
-        // 2. Look up user in cache
-        if (!_cache.TryGetValue(token, out User? user))
+        // Hash the token so we never search or cache raw tokens
+        string tokenHash = TokenGenerator.HashToken(rawToken);
+        string cacheKey = $"sess:{appId}:{tokenHash}";
+
+        if (!_cache.TryGetValue(cacheKey, out CachedUserSession? session) || session == null)
         {
-            // Optionally, you could also check the database for the token if it's not in cache
             var db = Request.HttpContext.RequestServices.GetRequiredService<AyalasLanguageDbContext>();
-            var tokenRecord = await db.Tokens.Include(t => t.User).FirstOrDefaultAsync(t => t.Content == token && t.AppId == (byte)appId);
+
+            // Query indexed Hash directly, selecting only needed columns
+            var tokenRecord = await db.Tokens
+                .AsNoTracking()
+                .Where(t => t.TokenHash == tokenHash && t.AppId == (byte)appId)
+                .Select(t => new
+                {
+                    t.TokenId,
+                    t.ExpiresOn,
+                    t.UserId,
+                    t.User.UserName,
+                    t.User.Role
+                })
+                .FirstOrDefaultAsync();
 
             if (tokenRecord == null || tokenRecord.ExpiresOn < DateTime.UtcNow)
                 return AuthenticateResult.Fail("Invalid or Expired Token");
 
-            user = tokenRecord.User;
+            session = new CachedUserSession(
+                tokenRecord.UserId,
+                tokenRecord.UserName,
+                tokenRecord.Role,
+                tokenRecord.ExpiresOn
+            );
+
+            // Bounded cache insertion with explicit Size = 1
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetAbsoluteExpiration(tokenRecord.ExpiresOn)
+                .SetSize(1);
+
+            _cache.Set(cacheKey, session, cacheEntryOptions);
+
+            await db.Tokens.Where(t => t.TokenId == tokenRecord.TokenId)
+                .ExecuteUpdateAsync(s => s.SetProperty(b => b.LastUsedAt, DateTime.UtcNow));
         }
 
-        if (user == null)
-            return AuthenticateResult.Fail("Unexpected error: user could not be retrieved by token");
-
-        if (appId == AppIdEnum.Admin && user.Role != (int)UserRoleEnum.Admin)
+        if (appId == AppIdEnum.Admin && session.Role != (byte)UserRoleEnum.Admin)
             return AuthenticateResult.Fail("Non-admin user attempt to access admin resources");
 
-        // 3. Create "Claims" (This represents the user in the context)
-        var claims = new[] {
-            new Claim(ClaimTypes.NameIdentifier.ToString(), user.UserId.ToString()),
-            new Claim(ClaimTypes.Name.ToString(), user.UserName),
-            new Claim(ClaimTypes.Role.ToString(), ((UserRoleEnum)user.Role).ToString())
+        var claims = new[]
+        {
+            new Claim(ClaimTypes.NameIdentifier, session.UserId.ToString()),
+            new Claim(ClaimTypes.Name, session.UserName),
+            new Claim(ClaimTypes.Role, ((UserRoleEnum)session.Role).ToString())
         };
 
         var identity = new ClaimsIdentity(claims, Scheme.Name);

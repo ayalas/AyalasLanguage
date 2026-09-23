@@ -23,6 +23,11 @@ export default function LoginsGridPage() {
             field: "expiresOn", headerName: 'Expires On',
             valueFormatter: params => dayjs(params.value).format('YYYY-MM-DD HH:mm'),
             flex: 2, filter: true
+        },
+        {
+            field: "lastUsedAt", headerName: 'Last Used At',
+            valueFormatter: params => params.value ? dayjs(params.value).format('YYYY-MM-DD HH:mm') : "",
+            flex: 2, filter: true
         }
     ]);
 
