@@ -236,7 +236,7 @@ public static class AuthEndpoints
 
         UserIdDto? userIdDto = await GetUserById(userId, db);
 
-        
+
         if (authMode == AuthModeEnum.Web || authMode == AuthModeEnum.Both)
         {
             // WEB FLOW:
@@ -259,7 +259,8 @@ public static class AuthEndpoints
             // 2. Return rawToken in the response body so mobile can save to SecureStorage / KeyStore / Keychain.
             return Results.Ok(new LoginResponseDto(expires, userIdDto, false, Token: rawToken));
         }
-        else {
+        else
+        {
             return Results.Ok(new LoginResponseDto(expires, userIdDto, false, Token: null));
         }
     }
@@ -340,12 +341,12 @@ public static class AuthEndpoints
 
         if (userData == null) return null;
 
-        // Single query for unread messages, score, and active learning languages
-        var unreadTask = db.UserMessages
+        // Await sequentially: DbContext instances cannot run parallel queries
+        int unreadCount = await db.UserMessages
             .AsNoTracking()
             .CountAsync(um => um.ToUserId == userId && !um.Read);
 
-        var userLanguagesTask = db.UserLanguages
+        var userLanguages = await db.UserLanguages
             .AsNoTracking()
             .Where(ul => ul.UserId == userId && ul.IsLearning)
             .Select(ul => new
@@ -357,11 +358,6 @@ public static class AuthEndpoints
                 ul.Language.NativeName
             })
             .ToListAsync();
-
-        await Task.WhenAll(unreadTask, userLanguagesTask);
-
-        int unreadCount = await unreadTask;
-        var userLanguages = await userLanguagesTask;
 
         int userScore = userLanguages
             .FirstOrDefault(l => l.LanguageId == userData.TargetLanguageId)?.Score ?? 0;
