@@ -155,14 +155,13 @@ public static class AuthEndpoints
         // We cache the User so we don't have to query the DB in the middleware
         cache.Set(tokenContent, user, expires);
 
-        bool BypassSecureCookies = config.GetValue<bool>(Constants.CONFIG_BYPASS_SECURE_COOKIES_KEY, false);
-
         context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, tokenContent, new CookieOptions
         {
             HttpOnly = true,
-            Secure = !BypassSecureCookies,
+            Secure = true,
             SameSite = SameSiteMode.Lax,
-            Expires = new DateTimeOffset(expires)
+            Expires = new DateTimeOffset(expires),
+            IsEssential = true
         });
 
         return Results.Ok(new LoginResponseDto(expires, userIdDto, false, tokenContent));

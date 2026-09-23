@@ -196,14 +196,13 @@ public static class AdminEndpoints
         // We cache the User so we don't have to query the DB in the middleware
         cache.Set(tokenContent, user, expires);
 
-        bool BypassSecureCookies = config.GetValue<bool>(Constants.CONFIG_BYPASS_SECURE_COOKIES_KEY, false);
-
         context.Response.Cookies.Append(Constants.ADMIN_APP_COOKIE_NAME, tokenContent, new CookieOptions
         {
             HttpOnly = true,
-            Secure = !BypassSecureCookies,
-            SameSite = SameSiteMode.Lax,
-            Expires = new DateTimeOffset(expires)
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = new DateTimeOffset(expires),
+            IsEssential = true
         });
 
         return Results.Ok(new AdminLoginResponseDto(expires, userIdDto, false, null));

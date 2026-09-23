@@ -37,7 +37,7 @@ namespace AyalasLanguageAPI.Utils
         {
             if (cache.TryGetValue(cacheKey, out ProtectByCountCache? objCountProtection))
             {
-                if (objCountProtection != null && objCountProtection.Counter > maxCount)
+                if (objCountProtection != null && objCountProtection.Counter >= maxCount)
                 {
                     return false;
                 }

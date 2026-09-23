@@ -23,9 +23,9 @@ app.MigrateDb();
 await app.MakeFirstUserAdmin();
 
 app.SetForwardOptions();
-
+app.UseHttpsRedirection();
+app.UseHsts();
 app.UseWebSockets();
-
 
 if (app.Environment.IsDevelopment())
 {

@@ -199,8 +199,6 @@ public static class Constants
     public const string APP_COOKIE_NAME = "LangAppXyzCookie";
     public const string ADMIN_APP_COOKIE_NAME = "AdminLangAppXyzCookie";
 
-    public const string CONFIG_BYPASS_SECURE_COOKIES_KEY = "BypassSecureCookies";
-
     //links in emails
     public const string CLIENT_RELATIVE_PATH_CONFIRM_EMAIL = "confirm/";
     public const string CLIENT_RELATIVE_PATH_RESET_PASSWORD = "reset/";
