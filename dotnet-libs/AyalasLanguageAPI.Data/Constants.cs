@@ -29,6 +29,13 @@ public enum UserProgressEnum
     InProgress = 2
 }
 
+public enum AuthModeEnum
+{
+    Both = 0,
+    Web = 1,
+    Mobile = 2
+}
+
 
 public enum ExerciseTypesEnum
 {

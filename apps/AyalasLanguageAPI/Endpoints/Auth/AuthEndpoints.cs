@@ -16,7 +16,7 @@ namespace AyalasLanguageAPI.Endpoints;
 
 public static class AuthEndpoints
 {
-    public static void MapAuthEndpoints(this IEndpointRouteBuilder app, string prefix)
+    public static void MapAuthEndpoints(this WebApplication app, string prefix)
     {
         var authBase = app.MapGroup($"{prefix}/auth").AddEndpointFilter<ErrorLoggingFilter>();
 
@@ -29,9 +29,26 @@ public static class AuthEndpoints
                 AuthenticationSchemes = "PublicAuth"
             });
 
+        bool isMobile = prefix.StartsWith("/mobile", StringComparison.OrdinalIgnoreCase);
+
+        // Branch web vs mobile handlers based on the route prefix
+        if (app.Environment.IsDevelopment())
+        {
+            publicAuth.MapPost("/login", LoginUserBoth);
+            publicAuth.MapPost("/verify2fa", Verify2FABoth);
+        }
+        else if (isMobile)
+        {
+            publicAuth.MapPost("/login", LoginUserMobile);
+            publicAuth.MapPost("/verify2fa", Verify2FAMobile);
+        }
+        else
+        {
+            publicAuth.MapPost("/login", LoginUserWeb);
+            publicAuth.MapPost("/verify2fa", Verify2FAWeb);
+        }
+
         publicAuth.MapPost("/register", RegisterUser);
-        publicAuth.MapPost("/login", LoginUser);
-        publicAuth.MapPost("/verify2fa", Verify2FA);
         publicAuth.MapPost("/forgot", ForgotPasswordStart);
         publicAuth.MapPost("/reset", ForgotPasswordEnd);
 
@@ -42,17 +59,31 @@ public static class AuthEndpoints
         secureAuth.MapGet("/confirm/{token}", ConfirmEmailEnd);
     }
 
-    private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    // --- Web Login Handler (Cookie Only) ---
+    private static Task<IResult> LoginUserWeb(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, ILogger<Program> logger)
     {
-        var userId = claim.GetUserId();
-
-        UserIdDto? userIdDto = await GetUserById(userId, db);
-        if (userIdDto == null) return Results.BadRequest("User not found");
-
-        return Results.Ok(userIdDto);
+        return ProcessLogin(login, AuthModeEnum.Web, config, db, cache, context, logger);
     }
 
-    private static async Task<IResult> LoginUser(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, ILogger<Program> logger)
+    // --- Mobile Login Handler (Bearer Token in Response Only) ---
+    private static Task<IResult> LoginUserMobile(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, ILogger<Program> logger)
+    {
+        return ProcessLogin(login, AuthModeEnum.Mobile, config, db, cache, context, logger);
+    }
+
+    private static Task<IResult> LoginUserBoth(LoginDto login, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context, ILogger<Program> logger)
+    {
+        return ProcessLogin(login, AuthModeEnum.Both, config, db, cache, context, logger);
+    }
+
+    private static async Task<IResult> ProcessLogin(
+        LoginDto login,
+        AuthModeEnum authMode,
+        IConfiguration config,
+        AyalasLanguageDbContext db,
+        IMemoryCache cache,
+        HttpContext context,
+        ILogger<Program> logger)
     {
         if (!CacheUtils.ProtectByCacheCount(Constants.LOGIN_COUNT_CACHE_KEY, cache, Constants.MAX_LOGIN_PER_PERIOD))
         {
@@ -97,23 +128,46 @@ public static class AuthEndpoints
 
             await Utils.Utils.SendEmail(user.UserName, emailTitle, emailContent, config, logger);
 
+            // tokenStart is only the prefix challenge, safe to return to allow the client to verify code
             return Results.Ok(new LoginResponseDto(expires, null, true, tokenStart));
         }
 
-        return await FinalizeLogin(user.UserId, user.UserName, user.Role, config, db, cache, context);
+        return await FinalizeLogin(user.UserId, user.UserName, user.Role, authMode, config, db, cache, context);
     }
 
-    private static async Task<IResult> Verify2FA(Verify2FARequest req, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    // --- Web 2FA Verification ---
+    private static Task<IResult> Verify2FAWeb(Verify2FARequest req, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    {
+        return ProcessVerify2FA(req, authMode: AuthModeEnum.Web, config, db, cache, context);
+    }
+
+    // --- Mobile 2FA Verification ---
+    private static Task<IResult> Verify2FAMobile(Verify2FARequest req, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    {
+        return ProcessVerify2FA(req, authMode: AuthModeEnum.Mobile, config, db, cache, context);
+    }
+
+    private static Task<IResult> Verify2FABoth(Verify2FARequest req, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    {
+        return ProcessVerify2FA(req, authMode: AuthModeEnum.Both, config, db, cache, context);
+    }
+
+    private static async Task<IResult> ProcessVerify2FA(
+        Verify2FARequest req,
+        AuthModeEnum authMode,
+        IConfiguration config,
+        AyalasLanguageDbContext db,
+        IMemoryCache cache,
+        HttpContext context)
     {
         if (!CacheUtils.ProtectByCacheCount(req.Verify2FAToken, cache, Constants.VERIFY2FA_TOKEN_MAX_RETRY))
         {
-            return Results.Conflict("Too many entry attempts. Please restart the login process.");
+            return Results.Conflict("Too many entry attempts for two factor authentication code. Please restart the login process.");
         }
 
         string rawToken = $"{req.Verify2FAToken}{req.Code}";
         string tokenHash = TokenGenerator.HashToken(rawToken);
         string cacheKey = $"sess:{AppIdEnum.Main2FA}:{tokenHash}";
-        DateTime now = DateTime.UtcNow;
 
         CachedUserSession? session;
         if (!cache.TryGetValue(cacheKey, out session) || session == null)
@@ -122,50 +176,44 @@ public static class AuthEndpoints
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.TokenHash == tokenHash && t.AppId == (byte)AppIdEnum.Main2FA);
 
-            if (tokenRecord != null && tokenRecord.ExpiresOn >= now)
+            if (tokenRecord != null && tokenRecord.ExpiresOn >= DateTime.UtcNow)
             {
                 session = new CachedUserSession(tokenRecord.UserId, tokenRecord.User.UserName, tokenRecord.User.Role, tokenRecord.ExpiresOn);
-
-                var consumed = await db.Tokens
-                    .Where(t => t.TokenId == tokenRecord.TokenId && t.ExpiresOn >= now)
-                    .ExecuteDeleteAsync();
-
-                if (consumed != 1)
-                {
-                    session = null;
-                }
+                db.Tokens.Remove(tokenRecord);
+                await db.SaveChangesAsync();
             }
         }
         else
         {
             cache.Remove(cacheKey);
-
-            var consumed = await db.Tokens
-                .Where(t => t.TokenHash == tokenHash
-                    && t.AppId == (byte)AppIdEnum.Main2FA
-                    && t.ExpiresOn >= now)
-                .ExecuteDeleteAsync();
-
-            if (consumed != 1)
-            {
-                session = null;
-            }
+            await db.Tokens.Where(t => t.TokenHash == tokenHash && t.AppId == (byte)AppIdEnum.Main2FA).ExecuteDeleteAsync();
         }
 
         if (session != null)
         {
-            return await FinalizeLogin(session.UserId, session.UserName, session.Role, config, db, cache, context);
+            return await FinalizeLogin(session.UserId, session.UserName, session.Role, authMode, config, db, cache, context);
         }
 
         CacheUtils.AddToCountProtection(req.Verify2FAToken, cache, Constants.VERIFY2FA_TOKEN_EXPIRES_MINUTES);
-        return Results.Conflict("Expired or invalid two factor authentication code.");
+        return Results.Conflict("Expired or invalid two factor authentication code. Please try again or restart the login process.");
     }
 
-    private static async Task<IResult> FinalizeLogin(int userId, string userName, byte role, IConfiguration config, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
+    private static async Task<IResult> FinalizeLogin(
+        int userId,
+        string userName,
+        byte role,
+        AuthModeEnum authMode,
+        IConfiguration config,
+        AyalasLanguageDbContext db,
+        IMemoryCache cache,
+        HttpContext context)
     {
         string rawToken = TokenGenerator.GenerateToken();
         string tokenHash = TokenGenerator.HashToken(rawToken);
-        var expires = DateTime.UtcNow.AddHours(config.GetValue<int>("Session:TokenExpirationHours", 72));
+
+        int expirationHours = config.GetValue<int>("Session:TokenExpirationHours", 24);
+
+        var expires = DateTime.UtcNow.AddHours(expirationHours);
 
         var tokenEntry = new Token
         {
@@ -179,7 +227,6 @@ public static class AuthEndpoints
         db.Tokens.Add(tokenEntry);
         await db.SaveChangesAsync();
 
-        // Cache small session object with explicit Size
         var session = new CachedUserSession(userId, userName, role, expires);
         cache.Set($"sess:{AppIdEnum.Main}:{tokenHash}", session, new MemoryCacheEntryOptions
         {
@@ -187,38 +234,78 @@ public static class AuthEndpoints
             Size = 1
         });
 
-        context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, rawToken, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Lax,
-            Expires = new DateTimeOffset(expires),
-            IsEssential = true
-        });
-
         UserIdDto? userIdDto = await GetUserById(userId, db);
-        return Results.Ok(new LoginResponseDto(expires, userIdDto, false, rawToken));
+
+        
+        if (authMode == AuthModeEnum.Web || authMode == AuthModeEnum.Both)
+        {
+            // WEB FLOW:
+            // 1. Append strictly protected HttpOnly cookie.
+
+            context.Response.Cookies.Append(Constants.APP_COOKIE_NAME, rawToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = new DateTimeOffset(expires),
+                IsEssential = true
+            });
+        }
+
+        if (authMode == AuthModeEnum.Mobile || authMode == AuthModeEnum.Both)
+        {
+            // MOBILE FLOW:
+            // 1. Do NOT set any cookies on the response.
+            // 2. Return rawToken in the response body so mobile can save to SecureStorage / KeyStore / Keychain.
+            return Results.Ok(new LoginResponseDto(expires, userIdDto, false, Token: rawToken));
+        }
+        else {
+            return Results.Ok(new LoginResponseDto(expires, userIdDto, false, Token: null));
+        }
     }
 
     private static async Task<IResult> LogoutUser(ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, HttpContext context)
     {
         var userId = claim.GetUserId();
 
-        // Remove token currently used
-        string? rawToken = context.Request.Cookies[Constants.APP_COOKIE_NAME];
-        if (!string.IsNullOrEmpty(rawToken))
+        // 1. Evict cookie token if present (Web)
+        string? rawCookieToken = context.Request.Cookies[Constants.APP_COOKIE_NAME];
+        if (!string.IsNullOrEmpty(rawCookieToken))
         {
-            string tokenHash = TokenGenerator.HashToken(rawToken);
+            string tokenHash = TokenGenerator.HashToken(rawCookieToken);
             cache.Remove($"sess:{AppIdEnum.Main}:{tokenHash}");
+            context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
         }
 
-        // Delete all tokens belonging to this user
+        // 2. Evict header bearer token if present (Mobile)
+        string? authHeader = context.Request.Headers.Authorization;
+        if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+        {
+            string rawBearerToken = authHeader["Bearer ".Length..].Trim();
+            string tokenHash = TokenGenerator.HashToken(rawBearerToken);
+            cache.Remove($"sess:{AppIdEnum.Main}:{tokenHash}");
+
+            // Invalidate specifically this token from DB
+            await db.Tokens.Where(t => t.TokenHash == tokenHash).ExecuteDeleteAsync();
+            return Results.NoContent();
+        }
+
+        // Invalidate web sessions in DB for this user
         await db.Tokens
             .Where(t => t.UserId == userId && (t.AppId == (byte)AppIdEnum.Main || t.AppId == (byte)AppIdEnum.Main2FA))
             .ExecuteDeleteAsync();
 
-        context.Response.Cookies.Delete(Constants.APP_COOKIE_NAME);
         return Results.NoContent();
+    }
+
+    private static async Task<IResult> CheckAuthStatus(ClaimsPrincipal claim, AyalasLanguageDbContext db)
+    {
+        var userId = claim.GetUserId();
+
+        UserIdDto? userIdDto = await GetUserById(userId, db);
+        if (userIdDto == null) return Results.BadRequest("User not found");
+
+        return Results.Ok(userIdDto);
     }
 
     public static async Task<UserIdDto?> GetUserById(int userId, AyalasLanguageDbContext db)
