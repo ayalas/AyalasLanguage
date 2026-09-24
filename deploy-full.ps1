@@ -32,7 +32,9 @@ docker save -o $localTarPath ${imageName}:latest
 # STEP 3: PREPARE SERVER & UPLOAD
 # =========================================================================
 Write-Host "Ensuring target directory exists on server..." -ForegroundColor Cyan
-ssh -i $sshKeyPath admin@$serverIP "mkdir -p $targetDir"
+ssh -vvv -n \
+    -o BatchMode=yes \
+    -o ConnectTimeout=10 -i $sshKeyPath admin@$serverIP "mkdir -p $targetDir"
 
 Write-Host "Uploading files to Webdock..." -ForegroundColor Cyan
 # Upload the tarball
