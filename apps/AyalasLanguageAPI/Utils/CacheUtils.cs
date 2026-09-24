@@ -36,6 +36,34 @@ namespace AyalasLanguageAPI.Utils
 
             return default;
         }
+
+        public static async Task<T?> GetAppDataFromCache<T>(string cacheKey, IMemoryCache cache, ILogger<Program> logger, Func<Task<T>> getDataCallback)
+        {
+            if (cache.TryGetValue(cacheKey, out T? dataFromCache))
+            {
+                if (dataFromCache != null)
+                {
+                    logger.LogDebug("Cache hit for key {cacheKey}", cacheKey);
+                    return dataFromCache;
+                }
+            }
+
+            if (getDataCallback != null)
+            {
+                logger.LogDebug("Cache miss for key {cacheKey}. Fetching data from callback.", cacheKey);
+                T? dataFromCallback = await getDataCallback();
+
+                cache.Set(cacheKey, dataFromCallback, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(Constants.APP_DATA_CACHE_MINUTES),
+                    Size = 1
+                });
+
+                return dataFromCallback;
+            }
+
+            return default;
+        }
         public static bool ProtectByCacheCount(string cacheKey, IMemoryCache cache, int maxCount)
         {
             if (cache.TryGetValue(cacheKey, out ProtectByCountCache? objCountProtection))

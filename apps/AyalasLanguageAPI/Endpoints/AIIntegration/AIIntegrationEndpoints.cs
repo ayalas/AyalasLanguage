@@ -15,6 +15,8 @@ using System.ClientModel;
 using OpenAI.Audio;
 using System.ClientModel.Primitives;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Caching.Memory;
+using AyalasLanguageAPI.Utils;
 
 namespace AyalasLanguageAPI.Endpoints.AIIntegration;
 
@@ -106,7 +108,7 @@ public static class AIIntegrationEndpoints
     private static async Task<IResult> UncloseAIChat(
         AIChatRequestDto request,
         IConfiguration config,
-        HttpClient httpClient, ClaimsPrincipal claim, AyalasLanguageDbContext db, ILogger<Program> logger)
+        HttpClient httpClient, ClaimsPrincipal claim, AyalasLanguageDbContext db, IMemoryCache cache, ILogger<Program> logger)
     {
         var userId = claim.GetUserId();
         var endpoint = config["AI:ChatEndpoint"];
@@ -117,7 +119,7 @@ public static class AIIntegrationEndpoints
         if (string.IsNullOrEmpty(model)) return Results.Problem("AI Chat model not configured.");
 
 
-        model = await AutoSelectModel(model, endpoint, apiKey, httpClient, logger, db, userId);
+        model = await AutoSelectModel(model, endpoint, apiKey, httpClient, logger, db, cache, userId);
 
         var client = new ChatClient(
             model: model,
@@ -392,7 +394,7 @@ public static class AIIntegrationEndpoints
         return Results.Content(jsonResponse, "application/json");
     }
 
-    
+
 
     private static string TransformToClientJson(string rawJson)
     {
@@ -455,48 +457,99 @@ public static class AIIntegrationEndpoints
         return JsonSerializer.Serialize(new { content = legacyContent });
     }
 
-    private static async Task<string> AutoSelectModel(string preferredModel, string endpoint, string apiKey, HttpClient httpClient, ILogger<Program> logger, AyalasLanguageDbContext db, int userId)
+    private static async Task<string> AutoSelectModel(
+    string preferredModel,
+    string endpoint,
+    string apiKey,
+    HttpClient httpClient,
+    ILogger<Program> logger,
+    AyalasLanguageDbContext db,
+    IMemoryCache cache,
+    int userId)
     {
         var endpointUrl = $"{endpoint.TrimEnd('/')}/models";
-        string? model = null;
-        try 
-        {
-            using var modelRequest = new HttpRequestMessage(HttpMethod.Get, endpointUrl);
-            modelRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-            
-            var response = await httpClient.SendAsync(modelRequest);
-            response.EnsureSuccessStatusCode();
-            
-            var modelList = await response.Content.ReadFromJsonAsync<ModelListResponse>();
+        string? selectedModel = null;
 
-            var models = modelList?.Data?.Where(m => m.Id.Equals(preferredModel, StringComparison.OrdinalIgnoreCase)).ToList();
-            model = models?.Where(m => m.Id.Equals(preferredModel, StringComparison.OrdinalIgnoreCase)).FirstOrDefault()?.Id;
-            if (string.IsNullOrEmpty(model))
+        try
+        {
+            ModelInfo[]? availableModels = await CacheUtils.GetAppDataFromCache(Constants.AI_CHAT_MODELS_CACHE_KEY, cache, logger,
+            async () =>
             {
-                model = modelList?.Data?.FirstOrDefault()?.Id;
-                logger.LogWarning("Preferred model not found in models list from the AI endpoint. Using first instead: {model}", model);
-            }
-            if (string.IsNullOrEmpty(model))
+                try
+                {
+                    using var modelRequest = new HttpRequestMessage(HttpMethod.Get, endpointUrl);
+                    if (!string.IsNullOrEmpty(apiKey))
+                    {
+                        modelRequest.Headers.Authorization =
+                            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+                    }
+
+                    var response = await httpClient.SendAsync(modelRequest);
+                    response.EnsureSuccessStatusCode();
+
+                    var modelList = await response.Content.ReadFromJsonAsync<ModelListResponse>();
+                    return modelList?.Data?.Where(m => !string.IsNullOrEmpty(m?.Id)).ToArray();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to fetch dynamic model list from {endpointUrl}", endpointUrl);
+
+                    var logData = new AIEndpointFailure
+                    {
+                        Error = ex.Message,
+                        RequestData = $"get dynamic model list for {preferredModel}",
+                        Endpoint = endpointUrl,
+                        Model = selectedModel ?? preferredModel,
+                        CallStack = ex.StackTrace
+                    };
+
+                    logger.LogError(ex, "AI Chat Error: {request}. {endpoint}: {detailedError}",
+                        logData.RequestData, endpointUrl, ex.Message);
+
+                    await db.CreateLogInternal(userId, LogTypeEnum.AIChatFailure, logData);
+                    return null;
+                }
+            });
+
+            if (availableModels == null || availableModels.Length == 0)
             {
-                logger.LogWarning("No models found in models list from the AI endpoint.");
+                logger.LogWarning("No models found in models list from AI endpoint: {endpointUrl}", endpointUrl);
                 return preferredModel;
             }
 
-            return model;
+            // 1. Try to find the preferred model (null-safe comparison)
+            selectedModel = availableModels
+                .FirstOrDefault(m => string.Equals(m.Id, preferredModel, StringComparison.OrdinalIgnoreCase))
+                ?.Id;
+
+            // 2. If preferred model not found, pick the first available model
+            if (string.IsNullOrEmpty(selectedModel))
+            {
+                selectedModel = availableModels[0].Id;
+                logger.LogWarning(
+                    "Preferred model '{preferredModel}' not found. Using first available model instead: {selectedModel}",
+                    preferredModel,
+                    selectedModel);
+            }
+
+            return selectedModel;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to fetch dynamic model list.");
+            logger.LogError(ex, "Failed to process dynamic model list from {endpointUrl}", endpointUrl);
 
             var logData = new AIEndpointFailure
             {
                 Error = ex.Message,
-                RequestData = $"get dynamic model list for {preferredModel}",
+                RequestData = $"process dynamic model list for {preferredModel}",
                 Endpoint = endpointUrl,
-                Model = model ?? preferredModel,
+                Model = selectedModel ?? preferredModel,
                 CallStack = ex.StackTrace
             };
-            logger.LogError(ex, "AI Chat Error:{request}. {endpoint}: {detailedError}", logData.RequestData, endpointUrl, ex.Message);
+
+            logger.LogError(ex, "AI Chat Error: {request}. {endpoint}: {detailedError}",
+                logData.RequestData, endpointUrl, ex.Message);
+
             await db.CreateLogInternal(userId, LogTypeEnum.AIChatFailure, logData);
             return preferredModel;
         }

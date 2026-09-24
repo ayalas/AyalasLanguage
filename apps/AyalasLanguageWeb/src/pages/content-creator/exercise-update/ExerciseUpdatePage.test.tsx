@@ -2,10 +2,10 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ExerciseUpdatePage } from "./ExerciseUpdatePage"; // Adjust path
 import axios from "axios";
-import { MemoryRouter, useParams } from "react-router-dom";
+import { MemoryRouter, useOutletContext, useParams } from "react-router-dom";
 import { type ExerciseData, type ExtendedExerciseInfo } from '@ayalaslanguage/types/sharedfrontlib/learning';
 import disableClientValidation from '@ayalaslanguage/types/test-utils';
-import { AUTHOR_ACCESS, OWNERSHIP_TYPE } from '@ayalaslanguage/types/auth';
+import { AUTHOR_ACCESS, OWNERSHIP_TYPE, ROLE_TYPE } from '@ayalaslanguage/types/auth';
 import { EXERCISE_TYPES } from '@ayalaslanguage/types/exercise';
 
 // 1. Mock Axios
@@ -16,14 +16,22 @@ const { mockNavigate } = vi.hoisted(() => {
     mockNavigate: vi.fn(),
   };
 });
+
+const mockUser = {
+  userName: 'test@example.com',
+  role: ROLE_TYPE.CONTENT_CREATOR,
+  languageSettings: { knownLanguage: 'English', targetLanguage: 'Spanish' },
+  disableAutoAI: true
+};
 // 2. Mock React Router Hooks
-vi.mock("react-router-dom", async () => {
-    const actual = await vi.importActual("react-router-dom");
-    return {
-        ...actual,
-        useNavigate: vi.fn().mockReturnValue(mockNavigate),
-        useParams: vi.fn(),
-    };
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: vi.fn().mockReturnValue(mockNavigate),
+    useParams: vi.fn(),
+    useOutletContext: vi.fn()
+  };
 });
 
 // 3. Mock AlternativeLine using an async factory to avoid hoisting errors
@@ -84,6 +92,7 @@ describe("ExerciseUpdatePage", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.mocked(useOutletContext).mockReturnValue({ user: mockUser });
         (useParams as any).mockReturnValue({ exerciseId: mockExerciseId });
     });
 
