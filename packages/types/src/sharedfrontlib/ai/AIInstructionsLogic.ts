@@ -24,7 +24,7 @@ export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: st
         "For each language, use its own alphabet letters.",
     ];
 
-    
+
 
     //language specific instructions (if any)
     if (LANGUAGE_TO_POLLY_MAP[targetLanguageCode as AppLanguageCode]?.aiInstruction) {
@@ -35,6 +35,7 @@ export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: st
     arrSysInstructions.push(replacePlaceholders(exType.ai_instruction, targetLanguage, knownLanguage, numOfMatches, numOfWrongOptions));
 
     const hasSubject = subject.trim().length > 0;
+    const hasCheckContent = checkContent && checkContent.trim().length > 0;
 
     if (isAuto) {
         if (hasSubject) {
@@ -43,6 +44,10 @@ export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: st
         }
 
         arrSysInstructions.push(`Return the result as a raw JSON array of ${numOfExercises} objects in this format: ${replacePlaceholders(exType.ai_json_format, targetLanguage, knownLanguage, numOfMatches, numOfWrongOptions)}`);
+
+        if (hasCheckContent) {
+            arrSysInstructions.push('Explain your reasoning for the content you generated in the Explanation property of the exercise, including good alternatives to the proposed content, if those are available.');
+        }
 
         let retArr: IChatMessage[] = [
             {
@@ -55,7 +60,7 @@ export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: st
                 role: "user",
                 content: `Create exercises based strictly on the following subject data: <subject>${encodeXMLElements(subject)}</subject>`
             });
-        } else if (checkContent && checkContent.trim().length > 0) {
+        } else if (hasCheckContent) {
             retArr.push({
                 role: "user",
                 content: `Here is the current content generation for an exercise. Check if it meets the requirements and return either the same content if it does or a corrected content if it does not: ${checkContent}`

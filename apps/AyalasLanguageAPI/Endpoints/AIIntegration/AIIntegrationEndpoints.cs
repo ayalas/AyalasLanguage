@@ -126,7 +126,9 @@ public static class AIIntegrationEndpoints
             credential: new ApiKeyCredential(apiKey),
             new OpenAIClientOptions
             {
-                Endpoint = new Uri(endpoint)
+                Endpoint = new Uri(endpoint),
+                NetworkTimeout = TimeSpan.FromSeconds(Constants.AI_CHAT_TIMEOUT_SECONDS),
+                RetryPolicy = new ClientRetryPolicy(maxRetries: 0)
             });
 
         var msgList = new List<ChatMessage>();
@@ -178,7 +180,7 @@ public static class AIIntegrationEndpoints
         },
         """);
             // Only these fields exist in this branch
-            requiredFields = "\"Matches\", \"Translation\", \"ExtraOptions\"";
+            requiredFields = "\"Matches\", \"Translation\", \"ExtraOptions\", \"Explanation\"";
         }
         else
         {
@@ -188,7 +190,7 @@ public static class AIIntegrationEndpoints
                 : "\"Second\": { \"type\": \"string\" },");
 
             // These fields exist in this branch
-            requiredFields = "\"First\", \"Second\", \"Translation\", \"ExtraOptions\"";
+            requiredFields = "\"First\", \"Second\", \"Translation\", \"ExtraOptions\", \"Explanation\"";
         }
 
         // Use $$ and {{ }} for interpolation in raw string literals (C# 11+)
@@ -200,6 +202,10 @@ public static class AIIntegrationEndpoints
                         "maxItems": {{request.ExtraOptions}},
                         "items": { "type": "string" }
                     }
+                },
+                "Explanation": {
+                    "type": "string",
+                    "maxLength": 1500
                 },
                 "required": [{{requiredFields}}],
                 "additionalProperties": false
@@ -226,7 +232,7 @@ public static class AIIntegrationEndpoints
                     )
                 }
             );
-
+            logger.LogDebug("AI Chat completed successfully with response: {response}. Usage: {usage}", string.Concat(completion.Content.Select(c => c.Text)), completion.Usage);
             string rawJson = TransformToClientJson(completion.Content[0].Text);
 
             return Results.Content(rawJson, "application/json");
@@ -245,6 +251,20 @@ public static class AIIntegrationEndpoints
             logger.LogError(ex, "AI Chat Error:{request}. {endpoint}: {detailedError}", logData.RequestData, endpoint, detailedError);
             await db.CreateLogInternal(userId, LogTypeEnum.AIChatFailure, logData);
             return Results.Problem($"AI Chat Error: {detailedError}.");
+        }
+        catch (Exception agex)
+        {
+            var logData = new AIEndpointFailure
+            {
+                Error = agex.Message,
+                RequestData = System.Text.Json.JsonSerializer.Serialize(request),
+                Endpoint = endpoint ?? "",
+                Model = model ?? "",
+                CallStack = agex.StackTrace
+            };
+            logger.LogError(agex, "AI Chat Exception: {request}. {endpoint}: {detailedError}", logData.RequestData, endpoint, agex.Message);
+            await db.CreateLogInternal(userId, LogTypeEnum.AIChatFailure, logData);
+            return Results.Problem(agex.Message);
         }
     }
 
@@ -454,7 +474,7 @@ public static class AIIntegrationEndpoints
         }
 
         // 3. Serialize back to the original JSON format
-        return JsonSerializer.Serialize(new { content = legacyContent });
+        return JsonSerializer.Serialize(new { content = legacyContent, explanation = newResult.Content.FirstOrDefault()?.Explanation });
     }
 
     private static async Task<string> AutoSelectModel(
@@ -578,6 +598,7 @@ internal class NewSchemaItem
     public List<MatchItem>? Matches { get; set; }
     public string? Translation { get; set; }
     public List<string>? ExtraOptions { get; set; }
+    public string? Explanation { get; set; }
 }
 
 internal class MatchItem

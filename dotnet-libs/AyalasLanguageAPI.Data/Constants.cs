@@ -167,6 +167,7 @@ public static class Constants
     //cache protections
     public const string LANGUAGE_SET_CACHE_KEY = "LanguageSet";
     public const string AI_CHAT_MODELS_CACHE_KEY = "AIChatModelList";
+    public const long AI_CHAT_TIMEOUT_SECONDS = 180;
     public const int APP_DATA_CACHE_MINUTES = 240;
     public const int CACHE_PROTECTION_MINUTES = 1440;
     public const int MAX_MESSAGE_PUBLIC_CONTACT_US = 500;

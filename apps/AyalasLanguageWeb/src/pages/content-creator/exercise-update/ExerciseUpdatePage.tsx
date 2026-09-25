@@ -22,6 +22,7 @@ export function ExerciseUpdatePage() {
     const [secondLine, setSecondLine] = useState('');
     const [translation, setTranslation] = useState('');
     const [corrections, setCorrections] = useState('');
+    const [explanation, setExplanation] = useState('');
     const [aiCheckCompleted, setAICheckCompleted] = useState(false);
     const [aiCorrections, setAICorrections] = useState<ExerciseData | null>(null);
     const [propagateChanges, setPropagateChanges] = useState(false);
@@ -33,33 +34,35 @@ export function ExerciseUpdatePage() {
     const returnToPage = location.state?.returnToPage;
     const { user } = useOutletContext<{ user: User | null }>();
 
+
+    function formToData(): string {
+        const arr: string[] = [];
+        if (initialRecord?.exerciseObject?.Alternatives != null
+            && initialRecord?.exerciseObject?.Alternatives.length > 0
+        ) {
+            const map = alternativeRefs.current;
+            for (const [key, handle] of map.entries()) {
+                if (handle.exists()) {
+                    arr.push(key);
+                }
+            }
+        }
+
+        return JSON.stringify({
+            First: firstLine,
+            Second: secondLine,
+            ExtraOptions: extraOptions,
+            Translation: translation,
+            Alternatives: arr
+        } as ExerciseData);
+    }
+
     async function onFormSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         try {
+            const dataToSend: string = formToData();
 
-            const arr: string[] = [];
-            if (initialRecord?.exerciseObject?.Alternatives != null
-                && initialRecord?.exerciseObject?.Alternatives.length > 0
-            ) {
-                const map = alternativeRefs.current;
-                for (const [key, handle] of map.entries()) {
-                    if (handle.exists()) {
-                        arr.push(key);
-                    }
-                }
-            }
-
-            const dataToSend: ExerciseData = {
-                First: firstLine,
-                Second: secondLine,
-                ExtraOptions: extraOptions,
-                Translation: translation,
-                Alternatives: arr
-            };
-
-            const data = JSON.stringify(dataToSend);
-
-            await axios.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType, propagateChanges });
+            await axios.put(`/api/creator/exercise/${exerciseId}`, { Data: dataToSend, ownershipType, propagateChanges });
 
             if (returnToPage != null) {
                 navigate(`/author/path/${initialRecord?.learningPathId}?page=${returnToPage}`);
@@ -85,8 +88,10 @@ export function ExerciseUpdatePage() {
         const matchesNum = EXERCISE_TYPE_LOGIC[exrTypeValue].IsMatchingType ? initialRecord?.exerciseObject?.Second?.split(',').length || 0 : 0;
         const extraOptionsNum = EXERCISE_TYPE_LOGIC[exrTypeValue].HasExtraOptions ? initialRecord?.exerciseObject?.ExtraOptions?.split(' ').length || 0 : 0;
 
+        const dataToSend: string = formToData();
+
         //automatic ai instructions (returning json)
-        aiMessages = getAIInstructions(exType, targetLanguage, targetLanguageCode, knownLanguage, numOfExercises, matchesNum, extraOptionsNum, true, "", initialRecord?.data || '');
+        aiMessages = getAIInstructions(exType, targetLanguage, targetLanguageCode, knownLanguage, numOfExercises, matchesNum, extraOptionsNum, true, "", dataToSend || '');
 
         return {
             exerciseType: exrTypeValue,
@@ -157,6 +162,7 @@ export function ExerciseUpdatePage() {
                         return null;
                     }
 
+                    setExplanation(objData.explanation || '');
                     arrObjects = jsonOutput;
                 }
             }
@@ -173,6 +179,7 @@ export function ExerciseUpdatePage() {
         e.preventDefault();
         setAICheckCompleted(false);
         setCorrections('');
+        setExplanation('');
         setAICorrections(null);
         setError('Processing AI check...');
         const req = prepareAIRequest();
@@ -195,7 +202,7 @@ export function ExerciseUpdatePage() {
             || theExercise.Second !== initialRecord?.exerciseObject?.Second
             || (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].ShowsTranslationOnRevealedAnswer
                 && theExercise.Translation !== initialRecord?.exerciseObject?.Translation)
-            || (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions 
+            || (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions
                 && theExercise.ExtraOptions !== initialRecord?.exerciseObject?.ExtraOptions)) {
             setAICorrections(theExercise);
             setError('AI check offers corrections for this exercise:');
@@ -203,13 +210,16 @@ export function ExerciseUpdatePage() {
                 `First line: ${theExercise.First}`,
                 `Second line: ${theExercise.Second}`
             ];
-            if ( EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions  &&
+            if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions &&
                 theExercise.ExtraOptions !== undefined && theExercise.ExtraOptions !== '') {
                 messageArr.push(`Extra options: ${theExercise.ExtraOptions}`);
             }
             if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].ShowsTranslationOnRevealedAnswer &&
                 theExercise.Translation !== undefined && theExercise.Translation !== '') {
                 messageArr.push(`Translation: ${theExercise.Translation}`);
+            }
+            if (explanation !== undefined && explanation !== '') {
+                messageArr.push(`Explanation: ${explanation}`);
             }
             setCorrections(messageArr.join('\n'));
         }
@@ -221,7 +231,7 @@ export function ExerciseUpdatePage() {
     }
 
     function onApplyAICorrections(e: React.MouseEvent) {
-        e.preventDefault(); 
+        e.preventDefault();
         if (aiCorrections) {
             setFirstLine(aiCorrections.First || '');
             setSecondLine(aiCorrections.Second || '');
@@ -235,6 +245,7 @@ export function ExerciseUpdatePage() {
 
         setAICheckCompleted(false);
         setCorrections('');
+        setExplanation('');
         setAICorrections(null);
         setError('');
     }
@@ -243,6 +254,7 @@ export function ExerciseUpdatePage() {
         e.preventDefault();
         setAICheckCompleted(false);
         setCorrections('');
+        setExplanation('');
         setAICorrections(null);
         setError('');
     }
@@ -317,9 +329,18 @@ export function ExerciseUpdatePage() {
                             </div>
                         </div>
                     ) || (aiCheckCompleted && (
-                        <div className="form-row">
-                            <label className="form-label">AI check completed. No corrections found.</label>
-                        </div>
+                        <>
+                            <div className="form-row">
+                                <label className="form-label">AI check completed. No corrections found.{explanation !== '' && (<>Here's the explanation:</>)}</label>
+                            </div>
+                            {explanation !== '' && (
+                                <div className="form-row">
+                                    <div className="form-input-long">
+                                        <textarea data-testid="explanation" className="text-area-wide" readOnly={true} value={explanation} />
+                                    </div>
+                                </div>
+                            )}
+                        </>
                     ))}
                     <div className="form-label-row">Exercise Type</div>
                     <div className="form-row">
@@ -405,18 +426,19 @@ export function ExerciseUpdatePage() {
                             <button data-testid="back-editor" className="form-button" onClick={onBackEditorClick}>Lesson Editor</button>
                         </div>
                         {corrections !== '' && (
-                            <>
-                                <div className="form-button-cell">
-                                    <button data-testid="ai-check" className="form-button" onClick={onApplyAICorrections}>Apply AI corrections</button>
-                                </div>
-                                <div className="form-button-cell">
-                                    <button data-testid="ai-check" className="form-button" onClick={onDismissAICorrections}>Dismiss AI corrections</button>
-                                </div>
-                            </>
-                        ) || (
-                                <div className="form-button-cell">
-                                    <button data-testid="ai-check" className="form-button" onClick={onAICheckClick}>Check with AI</button>
-                                </div>
+                            <div className="form-button-cell">
+                                <button data-testid="ai-check" className="form-button" onClick={onApplyAICorrections}>Apply AI corrections</button>
+                            </div>
+                        )}
+                        {(explanation !== '' || corrections !== '') && (
+                            <div className="form-button-cell">
+                                <button data-testid="ai-check" className="form-button" onClick={onDismissAICorrections}>Dismiss AI corrections</button>
+                            </div>
+                        )}
+                        {corrections === '' && (
+                            <div className="form-button-cell">
+                                <button data-testid="ai-check" className="form-button" onClick={onAICheckClick}>Check with AI</button>
+                            </div>
                         )}
                         <div className="form-button-cell">
                             <button data-testid="save" type="submit" className="form-button" title="Save"><Save />&nbsp;Save</button>

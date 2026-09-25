@@ -30,6 +30,7 @@ export default function ExerciseScreen() {
   const [secondLine, setSecondLine] = useState('');
   const [translation, setTranslation] = useState('');
   const [corrections, setCorrections] = useState('');
+  const [explanation, setExplanation] = useState('');
   const [aiCheckCompleted, setAICheckCompleted] = useState(false);
   const [aiCorrections, setAICorrections] = useState<ExerciseData | null>(null);
   const [extraOptions, setExtraOptions] = useState('');
@@ -39,32 +40,34 @@ export default function ExerciseScreen() {
   const alternativeRefs = useRef<Map<string, AlternativeHandle>>(new Map());
   const { user } = useAuth();
 
+  function formToData(): string {
+    const arr: string[] = [];
+    if (initialRecord?.exerciseObject?.Alternatives != null
+      && initialRecord?.exerciseObject?.Alternatives.length > 0
+    ) {
+      const map = alternativeRefs.current;
+      for (const [key, handle] of map.entries()) {
+        if (handle.exists()) {
+          arr.push(key);
+        }
+      }
+    }
+
+    return JSON.stringify({
+      First: firstLine,
+      Second: secondLine,
+      ExtraOptions: extraOptions,
+      Translation: translation,
+      Alternatives: arr
+    } as ExerciseData);
+  }
+
   async function onFormSubmit() {
     try {
 
-      const arr: string[] = [];
-      if (initialRecord?.exerciseObject?.Alternatives != null
-        && initialRecord?.exerciseObject?.Alternatives.length > 0
-      ) {
-        const map = alternativeRefs.current;
-        for (const [key, handle] of map.entries()) {
-          if (handle.exists()) {
-            arr.push(key);
-          }
-        }
-      }
+      const dataToSend: string = formToData();
 
-      const dataToSend: ExerciseData = {
-        First: firstLine,
-        Second: secondLine,
-        ExtraOptions: extraOptions,
-        Translation: translation,
-        Alternatives: arr
-      };
-
-      const data = JSON.stringify(dataToSend);
-
-      await api.put(`/api/creator/exercise/${exerciseId}`, { Data: data, ownershipType, propagateChanges });
+      await api.put(`/api/creator/exercise/${exerciseId}`, { Data: dataToSend, ownershipType, propagateChanges });
 
       if (returnToPage != null) {
         router.replace({
@@ -84,176 +87,185 @@ export default function ExerciseScreen() {
   }
 
   function prepareAIRequest() {
-        const exrTypeValue: ExerciseType = initialRecord?.exerciseTypeId as ExerciseType;
-        const exType = EXERCISE_TYPE_LOGIC[exrTypeValue].GenerationInfo;
-        if (exType == null) return null;
+    const exrTypeValue: ExerciseType = initialRecord?.exerciseTypeId as ExerciseType;
+    const exType = EXERCISE_TYPE_LOGIC[exrTypeValue].GenerationInfo;
+    if (exType == null) return null;
 
-        let aiMessages: IChatMessage[];
-        const numOfExercises = 1;
-        const targetLanguage = user?.languageSettings?.targetLanguageEnglishName || '';
-        const targetLanguageCode = user?.languageSettings?.targetLanguageCode || '';
-        const knownLanguage = user?.languageSettings?.knownLanguage || '';
-        const matchesNum = EXERCISE_TYPE_LOGIC[exrTypeValue].IsMatchingType ? initialRecord?.exerciseObject?.Second?.split(',').length || 0 : 0;
-        const extraOptionsNum = EXERCISE_TYPE_LOGIC[exrTypeValue].HasExtraOptions ? initialRecord?.exerciseObject?.ExtraOptions?.split(' ').length || 0 : 0;
+    let aiMessages: IChatMessage[];
+    const numOfExercises = 1;
+    const targetLanguage = user?.languageSettings?.targetLanguageEnglishName || '';
+    const targetLanguageCode = user?.languageSettings?.targetLanguageCode || '';
+    const knownLanguage = user?.languageSettings?.knownLanguage || '';
+    const matchesNum = EXERCISE_TYPE_LOGIC[exrTypeValue].IsMatchingType ? initialRecord?.exerciseObject?.Second?.split(',').length || 0 : 0;
+    const extraOptionsNum = EXERCISE_TYPE_LOGIC[exrTypeValue].HasExtraOptions ? initialRecord?.exerciseObject?.ExtraOptions?.split(' ').length || 0 : 0;
 
-        //automatic ai instructions (returning json)
-        aiMessages = getAIInstructions(exType, targetLanguage, targetLanguageCode, knownLanguage, numOfExercises, matchesNum, extraOptionsNum, true, "", initialRecord?.data || '');
+    const dataToSend: string = formToData();
 
-        return {
-            exerciseType: exrTypeValue,
-            numOfExercises,
-            matches: matchesNum,
-            extraOptions: extraOptionsNum,
-            messages: aiMessages
-        } as AIChatRequestDto;
+    //automatic ai instructions (returning json)
+    aiMessages = getAIInstructions(exType, targetLanguage, targetLanguageCode, knownLanguage, numOfExercises, matchesNum, extraOptionsNum, true, "", dataToSend || '');
+
+    return {
+      exerciseType: exrTypeValue,
+      numOfExercises,
+      matches: matchesNum,
+      extraOptions: extraOptionsNum,
+      messages: aiMessages
+    } as AIChatRequestDto;
+  }
+
+  async function sendCheckRequestToAI(req: AIChatRequestDto) {
+    let response: any;
+    let arrObjects: ExerciseData[] = [];
+    try {
+      response = await api.post('/api/ai/unclose/chat', req);
+    }
+    catch (err: unknown) {
+      errorHandler(err, (errMsg: string) => {
+        setError(`AI check failed. Error: ${errMsg}`);
+      });
+      return null;
     }
 
-    async function sendCheckRequestToAI(req: AIChatRequestDto) {
-        let response: any;
-        let arrObjects: ExerciseData[] = [];
-        try {
-            response = await api.post('/api/ai/unclose/chat', req);
-        }
-        catch (err: unknown) {
-            errorHandler(err, (errMsg: string) => {
-                setError(`AI check failed. Error: ${errMsg}`);
-            });
-            return null;
-        }
+    if (response.data !== undefined && response.data !== null) {
+      // Extract the raw string response
+      const objData = response.data;
 
-        if (response.data !== undefined && response.data !== null) {
-            // Extract the raw string response
-            const objData = response.data;
+      if (objData === undefined || objData.content === undefined) {
+        setError('AI check did not return a result.');
+        return null;
+      }
+      // Extract the raw string response
+      const jsonOutput = objData.content;
 
-            if (objData === undefined || objData.content === undefined) {
-                setError('AI check did not return a result.');
-                return null;
-            }
-            // Extract the raw string response
-            const jsonOutput = objData.content;
-
-            if (!Array.isArray(jsonOutput)) {
-                setError('AI check did not return the expected result.');
-                return null;
-            }
-            else {
-                //verify that has at least one element that can be assigned to ExerciseData
-                if (jsonOutput.length == 0) {
-                    setError('AI check returned an empty result.');
-                    return null;
-                }
-                else {
-                    //validate array structure
-                    let isValid = true;
-                    for (const item of jsonOutput) {
-                        if (!(typeof item === 'object') && item !== null && !Array.isArray(item)) {
-                            isValid = false;
-                            break;
-                        }
-                        if (!('First' in item) || !('Second' in item)
-                            || (EXERCISE_TYPE_LOGIC[req.exerciseType].HasExtraOptions && !('ExtraOptions' in item))) {
-                            isValid = false;
-                            break;
-                        }
-
-                        if ((typeof (item as Record<string, unknown>).First !== 'string') || (typeof (item as Record<string, unknown>).Second !== 'string')
-                            || (EXERCISE_TYPE_LOGIC[req.exerciseType].HasExtraOptions && (typeof (item as Record<string, unknown>).ExtraOptions !== 'string'))) {
-                            isValid = false;
-                            break;
-                        }
-                    }
-
-                    if (!isValid) {
-                        setError('AI check returned the expected result structure.');
-                        return null;
-                    }
-
-                    arrObjects = jsonOutput;
-                }
-            }
+      if (!Array.isArray(jsonOutput)) {
+        setError('AI check did not return the expected result.');
+        return null;
+      }
+      else {
+        //verify that has at least one element that can be assigned to ExerciseData
+        if (jsonOutput.length == 0) {
+          setError('AI check returned an empty result.');
+          return null;
         }
         else {
-            setError('AI check did not return a result.');
+          //validate array structure
+          let isValid = true;
+          for (const item of jsonOutput) {
+            if (!(typeof item === 'object') && item !== null && !Array.isArray(item)) {
+              isValid = false;
+              break;
+            }
+            if (!('First' in item) || !('Second' in item)
+              || (EXERCISE_TYPE_LOGIC[req.exerciseType].HasExtraOptions && !('ExtraOptions' in item))) {
+              isValid = false;
+              break;
+            }
+
+            if ((typeof (item as Record<string, unknown>).First !== 'string') || (typeof (item as Record<string, unknown>).Second !== 'string')
+              || (EXERCISE_TYPE_LOGIC[req.exerciseType].HasExtraOptions && (typeof (item as Record<string, unknown>).ExtraOptions !== 'string'))) {
+              isValid = false;
+              break;
+            }
+          }
+
+          if (!isValid) {
+            setError('AI check returned the expected result structure.');
             return null;
-        }
+          }
 
-        return arrObjects;
+          setExplanation(objData.explanation || '');
+          arrObjects = jsonOutput;
+        }
+      }
+    }
+    else {
+      setError('AI check did not return a result.');
+      return null;
     }
 
-    async function onAICheckClick() {
-        setAICheckCompleted(false);
-        setCorrections('');
-        setAICorrections(null);
-        setError('Processing AI check...');
-        const req = prepareAIRequest();
+    return arrObjects;
+  }
+
+  async function onAICheckClick() {
+    setAICheckCompleted(false);
+    setCorrections('');
+    setExplanation('');
+    setAICorrections(null);
+    setError('Processing AI check...');
+    const req = prepareAIRequest();
 
 
-        if (!req || req.messages.length == 0) {
-            setError('There is no automated AI instruction for this exercise type.');
-            return;
-        }
-
-        const arrObjects: ExerciseData[] | null = await sendCheckRequestToAI(req);
-
-        if (arrObjects == null || arrObjects.length == 0) {
-            return;
-        }
-
-        const theExercise = arrObjects[0];
-
-        if (theExercise.First !== initialRecord?.exerciseObject?.First
-            || theExercise.Second !== initialRecord?.exerciseObject?.Second
-            || (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].ShowsTranslationOnRevealedAnswer
-                && theExercise.Translation !== initialRecord?.exerciseObject?.Translation)
-            || (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions 
-                && theExercise.ExtraOptions !== initialRecord?.exerciseObject?.ExtraOptions)) {
-            setAICorrections(theExercise);
-            setError('AI check offers corrections for this exercise:');
-            let messageArr = [
-                `First line: ${theExercise.First}`,
-                `Second line: ${theExercise.Second}`
-            ];
-            if ( EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions  &&
-                theExercise.ExtraOptions !== undefined && theExercise.ExtraOptions !== '') {
-                messageArr.push(`Extra options: ${theExercise.ExtraOptions}`);
-            }
-            if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].ShowsTranslationOnRevealedAnswer &&
-                theExercise.Translation !== undefined && theExercise.Translation !== '') {
-                messageArr.push(`Translation: ${theExercise.Translation}`);
-            }
-            setCorrections(messageArr.join('\n'));
-        }
-        else {
-            setAICheckCompleted(true);
-            setError('');
-        }
-
+    if (!req || req.messages.length == 0) {
+      setError('There is no automated AI instruction for this exercise type.');
+      return;
     }
 
-    function onApplyAICorrections() {
-        if (aiCorrections) {
-            setFirstLine(aiCorrections.First || '');
-            setSecondLine(aiCorrections.Second || '');
-            if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].ShowsTranslationOnRevealedAnswer) {
-                setTranslation(aiCorrections.Translation as string);
-            }
-            if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions) {
-                setExtraOptions(aiCorrections.ExtraOptions as string);
-            }
-        }
+    const arrObjects: ExerciseData[] | null = await sendCheckRequestToAI(req);
 
-        setAICheckCompleted(false);
-        setCorrections('');
-        setAICorrections(null);
-        setError('');
+    if (arrObjects == null || arrObjects.length == 0) {
+      return;
     }
 
-    function onDismissAICorrections() {
-        setAICheckCompleted(false);
-        setCorrections('');
-        setAICorrections(null);
-        setError('');
+    const theExercise = arrObjects[0];
+
+    if (theExercise.First !== initialRecord?.exerciseObject?.First
+      || theExercise.Second !== initialRecord?.exerciseObject?.Second
+      || (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].ShowsTranslationOnRevealedAnswer
+        && theExercise.Translation !== initialRecord?.exerciseObject?.Translation)
+      || (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions
+        && theExercise.ExtraOptions !== initialRecord?.exerciseObject?.ExtraOptions)) {
+      setAICorrections(theExercise);
+      setError('AI check offers corrections for this exercise:');
+      let messageArr = [
+        `First line: ${theExercise.First}`,
+        `Second line: ${theExercise.Second}`
+      ];
+      if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions &&
+        theExercise.ExtraOptions !== undefined && theExercise.ExtraOptions !== '') {
+        messageArr.push(`Extra options: ${theExercise.ExtraOptions}`);
+      }
+      if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].ShowsTranslationOnRevealedAnswer &&
+        theExercise.Translation !== undefined && theExercise.Translation !== '') {
+        messageArr.push(`Translation: ${theExercise.Translation}`);
+      }
+      if (explanation !== undefined && explanation !== '') {
+        messageArr.push(`Explanation: ${explanation}`);
+      }
+      setCorrections(messageArr.join('\n'));
     }
+    else {
+      setAICheckCompleted(true);
+      setError('');
+    }
+
+  }
+
+  function onApplyAICorrections() {
+    if (aiCorrections) {
+      setFirstLine(aiCorrections.First || '');
+      setSecondLine(aiCorrections.Second || '');
+      if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].ShowsTranslationOnRevealedAnswer) {
+        setTranslation(aiCorrections.Translation as string);
+      }
+      if (EXERCISE_TYPE_LOGIC[initialRecord?.exerciseTypeId || 0].HasExtraOptions) {
+        setExtraOptions(aiCorrections.ExtraOptions as string);
+      }
+    }
+
+    setAICheckCompleted(false);
+    setCorrections('');
+    setAICorrections(null);
+    setExplanation('');
+    setError('');
+  }
+
+  function onDismissAICorrections() {
+    setAICheckCompleted(false);
+    setCorrections('');
+    setExplanation('');
+    setAICorrections(null);
+    setError('');
+  }
 
   function onBackClick() {
 
@@ -326,16 +338,25 @@ export default function ExerciseScreen() {
               )}
 
               {corrections !== '' && (
-                        <View className="form-row">
-                             <View className="form-input-long">
-                                <TextInput multiline={true} numberOfLines={4} testID="corrections" className="text-area-wide" readOnly={true} value={corrections} />
-                             </View>
-                        </View>
-                    ) || (aiCheckCompleted && (
-                        <View className="form-row">
-                            <Text style={styles.dimmedText}>AI check completed. No corrections found.</Text>
-                        </View>
-                    ))}
+                <View className="form-row">
+                  <View className="form-input-long">
+                    <TextInput multiline={true} numberOfLines={4} testID="corrections" className="text-area-wide" readOnly={true} value={corrections} />
+                  </View>
+                </View>
+              ) || (aiCheckCompleted && (
+                <>
+                  <View className="form-row">
+                    <Text style={styles.dimmedText}>AI check completed. No corrections found.{explanation !== '' && (<>Here's the explanation:</>)}</Text>
+                  </View>
+                  {explanation !== '' && (
+                    <View className="form-row">
+                      <View className="form-input-long">
+                        <TextInput multiline={true} numberOfLines={8} testID="explanation" className="text-area-wide" readOnly={true} value={explanation} />
+                      </View>
+                    </View>
+                  )}
+                </>
+              ))}
               <Text style={styles.label}>Exercise Type</Text>
               <View className="form-row">
                 <View className="form-input-row">
@@ -426,20 +447,21 @@ export default function ExerciseScreen() {
             <View className="form-button-cell">
               <TouchableOpacity testID="back-editor" className="form-button" onPress={onBackEditorClick}><Text style={styles.text}>Lesson Editor</Text></TouchableOpacity>
             </View>
-            {corrections !== '' && (
-                            <>
-                                <View className="form-button-cell">
-                                    <TouchableOpacity testID="ai-check" className="form-button" onPress={onApplyAICorrections}><Text style={styles.text}>Apply AI corrections</Text></TouchableOpacity>
-                                </View>
-                                <View className="form-button-cell">
-                                    <TouchableOpacity testID="ai-check" className="form-button" onPress={onDismissAICorrections}><Text style={styles.text}>Dismiss AI corrections</Text></TouchableOpacity>
-                                </View>
-                            </>
-                        ) || (
-                                <View className="form-button-cell">
-                                    <TouchableOpacity testID="ai-check" className="form-button" onPress={onAICheckClick}><Text style={styles.text}>Check with AI</Text></TouchableOpacity>
-                                </View>
-                        )}
+            {(corrections !== '') && (
+              <View className="form-button-cell">
+                <TouchableOpacity testID="ai-check" className="form-button" onPress={onApplyAICorrections}><Text style={styles.text}>Apply AI corrections</Text></TouchableOpacity>
+              </View>
+            )}
+            {(explanation !== '' || corrections !== '') && (
+              <View className="form-button-cell">
+                <TouchableOpacity testID="ai-check" className="form-button" onPress={onDismissAICorrections}><Text style={styles.text}>Dismiss AI corrections</Text></TouchableOpacity>
+              </View>
+            )}
+            {corrections === '' && (
+              <View className="form-button-cell">
+                <TouchableOpacity testID="ai-check" className="form-button" onPress={onAICheckClick}><Text style={styles.text}>Check with AI</Text></TouchableOpacity>
+              </View>
+            )}
             <View className="form-button-cell">
               <TouchableOpacity testID="save" className="form-button" onPress={onFormSubmit}><Save className='color-brand-primary' /><Text style={styles.text}>&nbsp;Save</Text></TouchableOpacity>
             </View>
