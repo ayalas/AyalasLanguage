@@ -165,7 +165,7 @@ export default function LessonScreen() {
           setNumOfRecords(pagedResponse.numOfRecords);
         }
 
-        setPage(pagedResponse.page + 1);
+        setPage(pagedResponse.page != null ? pagedResponse.page + 1 : newPage)
 
         if (pagedResponse.data && pagedResponse.data.length > 0) {
           setHasData(true);
@@ -203,8 +203,8 @@ export default function LessonScreen() {
 
       const tempExercises = await loadExercises(targetPage, !hasMoreData || page + 1 >= totalPages);
       if (tempExercises && tempExercises.length > 0 && changedPage) {
-          changeCurrentExercise(tempExercises, 0);
-          return;
+        changeCurrentExercise(tempExercises, 0);
+        return;
       }
       else if ((currentExercise.index ?? 0) < tempExercises.length - 1) {
         changeCurrentExercise(tempExercises, (currentExercise.index ?? 0) + 1);
@@ -252,7 +252,7 @@ export default function LessonScreen() {
       else if (exCurInd > 0) {
         exerId = currentExercise.exerciseId;
       }
-      
+
       if (scoreToAdd > 0) {
         await setScore(scoreToAdd);
       }
@@ -307,8 +307,8 @@ export default function LessonScreen() {
         }
 
       } else {
-        await api.post('/api/learning/progress', { 
-          learningPathId, 
+        await api.post('/api/learning/progress', {
+          learningPathId,
           exerciseId: exerId,
           practiseMistakesInThisPath
         });
@@ -322,7 +322,10 @@ export default function LessonScreen() {
   };
 
   const restartLesson = async function () {
-    changeCurrentExercise(exercises, 0);
+    const firstPageExercises = await loadExercises(1, true);
+    if (firstPageExercises && firstPageExercises.length > 0) {
+      changeCurrentExercise(firstPageExercises, 0);
+    }
   };
 
   useEffect(() => {
@@ -371,7 +374,7 @@ export default function LessonScreen() {
   }, [isMounted, isChildMounted, currentExercise, currentExercise?.exerciseId])
 
   return (
-    <View className="lesson-outer-container" style={{ paddingHorizontal: 5, paddingTop: Platform.OS === 'web' ? 5: 26, paddingBottom: 24 }}>
+    <View className="lesson-outer-container" style={{ paddingHorizontal: 5, paddingTop: Platform.OS === 'web' ? 5 : 26, paddingBottom: 24 }}>
       <ScrollView className="lesson-inner-container" showsVerticalScrollIndicator={false}>
 
         {error !== '' && (

@@ -277,8 +277,11 @@ export function LessonPage() {
     }
   };
 
-  const restartLesson = async function () {
-    changeCurrentExercise(exercises, 0);
+   const restartLesson = async function () {
+    const firstPageExercises = await loadExercises(1, true);
+    if (firstPageExercises && firstPageExercises.length > 0) {
+      changeCurrentExercise(firstPageExercises, 0);
+    }
   };
 
   const loadExercises = async function (newPage: number, forceRefresh: boolean, startExerciseId?: number) {
@@ -300,7 +303,7 @@ export function LessonPage() {
           setNumOfRecords(pagedResponse.numOfRecords);
         }
 
-        setPage(pagedResponse.page + 1);
+        setPage(pagedResponse.page != null ? pagedResponse.page + 1 : newPage)
 
         if (pagedResponse.data && pagedResponse.data.length > 0) {
           setHasData(true);
