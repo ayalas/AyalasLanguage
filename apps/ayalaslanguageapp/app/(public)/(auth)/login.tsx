@@ -58,6 +58,7 @@ const LogInScreen = () => {
 
   async function submitAction() {
     try {
+      setError("");
       if (on2FA) {
         const response = await axios.post<LoginResponse<User>>('/api/auth/verify2fa', { verify2FAToken, code } as Verify2FARequest);
 
