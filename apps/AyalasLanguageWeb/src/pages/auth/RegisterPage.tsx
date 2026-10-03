@@ -30,6 +30,7 @@ export function RegisterPage() {
 
   async function submitAction() {
     try {
+      setError("");
       if (!isValidEmail(email)) {
         setError("Please enter a valid email address");
         return;
