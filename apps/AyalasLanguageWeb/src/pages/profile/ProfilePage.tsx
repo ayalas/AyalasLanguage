@@ -182,7 +182,7 @@ export function ProfilePage() {
 
             <div className="form-row">
               <div className="form-label-cell">
-                <label className="form-label">Disable automatic use of AI in lesson generation</label>
+                <label className="form-label">Default to manual entry in lesson generation</label>
               </div>
               <div className="form-input-cell">
                 <input type="checkbox" data-testid="disableAutoAI" checked={disableAutoAI} onChange={(e) => setDisableAutoAI(e.target.checked)} />

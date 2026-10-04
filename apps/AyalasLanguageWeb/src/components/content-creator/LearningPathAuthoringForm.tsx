@@ -689,14 +689,14 @@ export function LearningPathAuthoringForm({ handleSubmit, initialRecord, reloadE
                 {
                   isVisible: useAutoAI,
                   dataTestId: "switch-ai-use",
-                  disabled: isLoading || user?.disableAutoAI,
+                  disabled: isLoading,
                   children: <><UserPen />&nbsp;Switch to Manual Entry</>,
                   onClick: () => { setUseAutoAI(!useAutoAI) }
                 },
                 {
                   isVisible: !useAutoAI,
                   dataTestId: "switch-ai-use",
-                  disabled: isLoading || user?.disableAutoAI,
+                  disabled: isLoading,
                   children: <><Workflow />&nbsp;Switch to AI Generation</>,
                   onClick: () => { setUseAutoAI(!useAutoAI) }
                 },
