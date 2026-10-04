@@ -54,7 +54,7 @@ export const Exercise = function ({ exerciseInfo, moveNext, movePrev, childLoade
     const playTargetText = async function (textToPlay: string | undefined | null = null) {
         try {
 
-            if (exerciseInfo.exerciseObject != null && !user?.disableAutoAI) {
+            if (exerciseInfo.exerciseObject != null) {
                 const langCode = user?.languageSettings?.targetLanguageCode;
                 if (langCode != undefined) {
                     const pollyObject = LANGUAGE_TO_POLLY_MAP[langCode]
