@@ -10,7 +10,7 @@ export function AboutSnippet() {
         <div className="form-label-row">{BRAND_NAME} is developed by and licensed to Ayala Swisa.
             <br />
             As of now, it is not a commercial project or held by a commercial entity.<br /><br />
-            <Link target="_blank" to="https://github.com/ayalas/AyalasLanguage">{BRAND_NAME}'s GitHub page</Link>
+            <Link target="_blank" to="https://github.com/ayalas/langappxyz.com">{BRAND_NAME}'s GitHub page</Link>
         </div>
         </>
     );
