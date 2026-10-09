@@ -242,6 +242,14 @@ export function ExerciseUpdatePage() {
         setError('');
     }
 
+    function onDismissAICorrections(e: React.MouseEvent) {
+        e.preventDefault();
+        setAICheckCompleted(false);
+        setCorrections('');
+        setAICorrections(null);
+        setError('');
+    }
+
     function onBackClick(e: React.MouseEvent) {
         e.preventDefault();
 
@@ -402,9 +410,14 @@ export function ExerciseUpdatePage() {
                             <button data-testid="back-editor" className="form-button" onClick={onBackEditorClick}>Lesson Editor</button>
                         </div>
                         {corrections !== '' && (
-                            <div className="form-button-cell">
-                                <button data-testid="ai-check" className="form-button" onClick={onApplyAICorrections}>Apply AI corrections</button>
-                            </div>
+                            <>
+                                <div className="form-button-cell">
+                                    <button data-testid="ai-check" className="form-button" onClick={onApplyAICorrections}>Apply AI corrections</button>
+                                </div>
+                                <div className="form-button-cell">
+                                    <button data-testid="ai-check" className="form-button" onClick={onDismissAICorrections}>Dismiss AI corrections</button>
+                                </div>
+                            </>
                         )}
                         {corrections === '' && (
                             <div className="form-button-cell">

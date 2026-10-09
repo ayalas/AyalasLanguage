@@ -252,6 +252,13 @@ export default function ExerciseScreen() {
     setError('');
   }
 
+  function onDismissAICorrections() {
+    setAICheckCompleted(false);
+    setCorrections('');
+    setAICorrections(null);
+    setError('');
+  }
+
   function onBackClick() {
 
     if (initialRecord != null && initialRecord.learningPathId != null) {
@@ -426,9 +433,14 @@ export default function ExerciseScreen() {
               <TouchableOpacity testID="back-editor" className="form-button" onPress={onBackEditorClick}><Text style={styles.text}>Lesson Editor</Text></TouchableOpacity>
             </View>
             {(corrections !== '') && (
-              <View className="form-button-cell">
-                <TouchableOpacity testID="ai-check" className="form-button" onPress={onApplyAICorrections}><Text style={styles.text}>Apply AI corrections</Text></TouchableOpacity>
-              </View>
+              <>
+                <View className="form-button-cell">
+                  <TouchableOpacity testID="ai-check" className="form-button" onPress={onApplyAICorrections}><Text style={styles.text}>Apply AI corrections</Text></TouchableOpacity>
+                </View>
+                <View className="form-button-cell">
+                  <TouchableOpacity testID="ai-check" className="form-button" onPress={onDismissAICorrections}><Text style={styles.text}>Dismiss AI corrections</Text></TouchableOpacity>
+                </View>
+              </>
             )}
             {corrections === '' && (
               <View className="form-button-cell">
