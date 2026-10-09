@@ -148,7 +148,7 @@ body {
 
 .input-and-indicator-container {
   padding-bottom: 8px;
-  line-height: 1.5;
+  line-height: 20px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -218,7 +218,7 @@ body {
 .form-cell-footer {
   text-align: start;
   color: var(--text-h);
-  line-height: 1.4;
+  line-height: 20px;
   padding: 0 10px;
 }
 
@@ -258,7 +258,7 @@ body {
 
 .form-row {
   padding: 8px 0;
-  line-height: 1.4;
+  line-height: 20px;
 }
 
 .inform-header {
@@ -287,13 +287,13 @@ body {
 .form-input-row {
   max-width: 800px;
   text-align: start;
-  line-height: 1.4;
+  line-height: 20px;
 }
 
 .form-input-long {
   width: 100%;
   text-align: start;
-  line-height: 1.4;
+  line-height: 20px;
 }
 
 .form-play-container {
@@ -652,7 +652,7 @@ input:required:invalid {
   padding-bottom: 3px;
   margin-top: 8px;
   margin-bottom: 8px;
-  line-height: 1.45;
+  line-height: 20px;
 }
 
 .learning-lesson-link {
