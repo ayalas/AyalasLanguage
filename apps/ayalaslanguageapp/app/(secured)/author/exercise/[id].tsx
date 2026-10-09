@@ -252,13 +252,6 @@ export default function ExerciseScreen() {
     setError('');
   }
 
-  function onDismissAICorrections() {
-    setAICheckCompleted(false);
-    setCorrections('');
-    setAICorrections(null);
-    setError('');
-  }
-
   function onBackClick() {
 
     if (initialRecord != null && initialRecord.learningPathId != null) {

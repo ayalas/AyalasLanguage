@@ -242,14 +242,6 @@ export function ExerciseUpdatePage() {
         setError('');
     }
 
-    function onDismissAICorrections(e: React.MouseEvent) {
-        e.preventDefault();
-        setAICheckCompleted(false);
-        setCorrections('');
-        setAICorrections(null);
-        setError('');
-    }
-
     function onBackClick(e: React.MouseEvent) {
         e.preventDefault();
 
