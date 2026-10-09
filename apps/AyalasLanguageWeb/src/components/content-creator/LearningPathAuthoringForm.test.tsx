@@ -16,7 +16,7 @@ const mockUser = {
   userName: 'test@example.com',
   role: ROLE_TYPE.CONTENT_CREATOR,
   languageSettings: { knownLanguage: 'English', targetLanguage: 'Spanish' },
-  disableAutoAI: true
+  disableAutoAI: false
 };
 
 // Create a STABLE searchParams object to prevent the useEffect from re-running
