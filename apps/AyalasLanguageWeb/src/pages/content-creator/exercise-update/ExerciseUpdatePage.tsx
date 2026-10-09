@@ -22,7 +22,6 @@ export function ExerciseUpdatePage() {
     const [secondLine, setSecondLine] = useState('');
     const [translation, setTranslation] = useState('');
     const [corrections, setCorrections] = useState('');
-    const [explanation, setExplanation] = useState('');
     const [aiCheckCompleted, setAICheckCompleted] = useState(false);
     const [aiCorrections, setAICorrections] = useState<ExerciseData | null>(null);
     const [propagateChanges, setPropagateChanges] = useState(false);
@@ -161,8 +160,6 @@ export function ExerciseUpdatePage() {
                         setError('AI check returned the expected result structure.');
                         return null;
                     }
-
-                    setExplanation(objData.explanation || '');
                     arrObjects = jsonOutput;
                 }
             }
@@ -179,7 +176,6 @@ export function ExerciseUpdatePage() {
         e.preventDefault();
         setAICheckCompleted(false);
         setCorrections('');
-        setExplanation('');
         setAICorrections(null);
         setError('Processing AI check...');
         const req = prepareAIRequest();
@@ -218,9 +214,6 @@ export function ExerciseUpdatePage() {
                 theExercise.Translation !== undefined && theExercise.Translation !== '') {
                 messageArr.push(`Translation: ${theExercise.Translation}`);
             }
-            if (explanation !== undefined && explanation !== '') {
-                messageArr.push(`Explanation: ${explanation}`);
-            }
             setCorrections(messageArr.join('\n'));
         }
         else {
@@ -245,7 +238,6 @@ export function ExerciseUpdatePage() {
 
         setAICheckCompleted(false);
         setCorrections('');
-        setExplanation('');
         setAICorrections(null);
         setError('');
     }
@@ -254,7 +246,6 @@ export function ExerciseUpdatePage() {
         e.preventDefault();
         setAICheckCompleted(false);
         setCorrections('');
-        setExplanation('');
         setAICorrections(null);
         setError('');
     }
@@ -331,15 +322,8 @@ export function ExerciseUpdatePage() {
                     ) || (aiCheckCompleted && (
                         <>
                             <div className="form-row">
-                                <label className="form-label">AI check completed. No corrections found.{explanation !== '' && (<>Here's the explanation:</>)}</label>
+                                <label className="form-label">AI check completed. No corrections found.</label>
                             </div>
-                            {explanation !== '' && (
-                                <div className="form-row">
-                                    <div className="form-input-long">
-                                        <textarea data-testid="explanation" className="text-area-wide" readOnly={true} value={explanation} />
-                                    </div>
-                                </div>
-                            )}
                         </>
                     ))}
                     <div className="form-label-row">Exercise Type</div>
@@ -428,11 +412,6 @@ export function ExerciseUpdatePage() {
                         {corrections !== '' && (
                             <div className="form-button-cell">
                                 <button data-testid="ai-check" className="form-button" onClick={onApplyAICorrections}>Apply AI corrections</button>
-                            </div>
-                        )}
-                        {(explanation !== '' || corrections !== '') && (
-                            <div className="form-button-cell">
-                                <button data-testid="ai-check" className="form-button" onClick={onDismissAICorrections}>Dismiss AI corrections</button>
                             </div>
                         )}
                         {corrections === '' && (

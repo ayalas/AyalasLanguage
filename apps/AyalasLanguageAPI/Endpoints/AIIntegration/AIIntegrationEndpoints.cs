@@ -180,7 +180,7 @@ public static class AIIntegrationEndpoints
         },
         """);
             // Only these fields exist in this branch
-            requiredFields = "\"Matches\", \"Translation\", \"ExtraOptions\", \"Explanation\"";
+            requiredFields = "\"Matches\", \"Translation\", \"ExtraOptions\"";
         }
         else
         {
@@ -190,7 +190,7 @@ public static class AIIntegrationEndpoints
                 : "\"Second\": { \"type\": \"string\" },");
 
             // These fields exist in this branch
-            requiredFields = "\"First\", \"Second\", \"Translation\", \"ExtraOptions\", \"Explanation\"";
+            requiredFields = "\"First\", \"Second\", \"Translation\", \"ExtraOptions\"";
         }
 
         // Use $$ and {{ }} for interpolation in raw string literals (C# 11+)
@@ -202,10 +202,6 @@ public static class AIIntegrationEndpoints
                         "maxItems": {{request.ExtraOptions}},
                         "items": { "type": "string" }
                     }
-                },
-                "Explanation": {
-                    "type": "string",
-                    "maxLength": 1500
                 },
                 "required": [{{requiredFields}}],
                 "additionalProperties": false
@@ -232,7 +228,7 @@ public static class AIIntegrationEndpoints
                     )
                 }
             );
-            logger.LogDebug("AI Chat completed successfully with response: {response}. Usage: {usage}", string.Concat(completion.Content.Select(c => c.Text)), completion.Usage);
+            //logger.LogDebug("AI Chat completed successfully with response: {response}. Usage: {usage}", string.Concat(completion.Content.Select(c => c.Text)), completion.Usage);
             string rawJson = TransformToClientJson(completion.Content[0].Text);
 
             return Results.Content(rawJson, "application/json");
@@ -474,7 +470,7 @@ public static class AIIntegrationEndpoints
         }
 
         // 3. Serialize back to the original JSON format
-        return JsonSerializer.Serialize(new { content = legacyContent, explanation = newResult.Content.FirstOrDefault()?.Explanation });
+        return JsonSerializer.Serialize(new { content = legacyContent });
     }
 
     private static async Task<string> AutoSelectModel(
@@ -598,7 +594,6 @@ internal class NewSchemaItem
     public List<MatchItem>? Matches { get; set; }
     public string? Translation { get; set; }
     public List<string>? ExtraOptions { get; set; }
-    public string? Explanation { get; set; }
 }
 
 internal class MatchItem

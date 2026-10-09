@@ -45,10 +45,6 @@ export function getAIInstructions(exType: ExerciseGeneration, targetLanguage: st
 
         arrSysInstructions.push(`Return the result as a raw JSON array of ${numOfExercises} objects in this format: ${replacePlaceholders(exType.ai_json_format, targetLanguage, knownLanguage, numOfMatches, numOfWrongOptions)}`);
 
-        if (hasCheckContent) {
-            arrSysInstructions.push('Explain your reasoning for the content you generated in the Explanation property of the exercise, including good alternatives to the proposed content, if those are available.');
-        }
-
         let retArr: IChatMessage[] = [
             {
                 role: "system",

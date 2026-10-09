@@ -30,7 +30,6 @@ export default function ExerciseScreen() {
   const [secondLine, setSecondLine] = useState('');
   const [translation, setTranslation] = useState('');
   const [corrections, setCorrections] = useState('');
-  const [explanation, setExplanation] = useState('');
   const [aiCheckCompleted, setAICheckCompleted] = useState(false);
   const [aiCorrections, setAICorrections] = useState<ExerciseData | null>(null);
   const [extraOptions, setExtraOptions] = useState('');
@@ -173,7 +172,6 @@ export default function ExerciseScreen() {
             return null;
           }
 
-          setExplanation(objData.explanation || '');
           arrObjects = jsonOutput;
         }
       }
@@ -189,7 +187,6 @@ export default function ExerciseScreen() {
   async function onAICheckClick() {
     setAICheckCompleted(false);
     setCorrections('');
-    setExplanation('');
     setAICorrections(null);
     setError('Processing AI check...');
     const req = prepareAIRequest();
@@ -228,9 +225,6 @@ export default function ExerciseScreen() {
         theExercise.Translation !== undefined && theExercise.Translation !== '') {
         messageArr.push(`Translation: ${theExercise.Translation}`);
       }
-      if (explanation !== undefined && explanation !== '') {
-        messageArr.push(`Explanation: ${explanation}`);
-      }
       setCorrections(messageArr.join('\n'));
     }
     else {
@@ -255,14 +249,12 @@ export default function ExerciseScreen() {
     setAICheckCompleted(false);
     setCorrections('');
     setAICorrections(null);
-    setExplanation('');
     setError('');
   }
 
   function onDismissAICorrections() {
     setAICheckCompleted(false);
     setCorrections('');
-    setExplanation('');
     setAICorrections(null);
     setError('');
   }
@@ -346,15 +338,8 @@ export default function ExerciseScreen() {
               ) || (aiCheckCompleted && (
                 <>
                   <View className="form-row">
-                    <Text style={styles.dimmedText}>AI check completed. No corrections found.{explanation !== '' && (<>Here's the explanation:</>)}</Text>
+                    <Text style={styles.dimmedText}>AI check completed. No corrections found.</Text>
                   </View>
-                  {explanation !== '' && (
-                    <View className="form-row">
-                      <View className="form-input-long">
-                        <TextInput multiline={true} numberOfLines={8} testID="explanation" className="text-area-wide" readOnly={true} value={explanation} />
-                      </View>
-                    </View>
-                  )}
                 </>
               ))}
               <Text style={styles.label}>Exercise Type</Text>
@@ -450,11 +435,6 @@ export default function ExerciseScreen() {
             {(corrections !== '') && (
               <View className="form-button-cell">
                 <TouchableOpacity testID="ai-check" className="form-button" onPress={onApplyAICorrections}><Text style={styles.text}>Apply AI corrections</Text></TouchableOpacity>
-              </View>
-            )}
-            {(explanation !== '' || corrections !== '') && (
-              <View className="form-button-cell">
-                <TouchableOpacity testID="ai-check" className="form-button" onPress={onDismissAICorrections}><Text style={styles.text}>Dismiss AI corrections</Text></TouchableOpacity>
               </View>
             )}
             {corrections === '' && (
