@@ -43,7 +43,7 @@ export default function useTextStyles() {
         exerciseText: {
             fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
-            fontSize: 20,
+            fontSize: 22,
             alignContent: 'center',
             fontWeight: '400',
             flexDirection: 'row',
@@ -51,7 +51,7 @@ export default function useTextStyles() {
         inlineExercise: {
             fontFamily: fontFamily,
             color: isDark ? PRIMARY_DARK : PRIMARY_LIGHT,
-            fontSize: 20,
+            fontSize: 22,
             alignContent: 'center',
             paddingHorizontal: 5,
             flexDirection: 'row',
